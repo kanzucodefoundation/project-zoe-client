@@ -1,11 +1,18 @@
 import React from 'react';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import Layout from "../../components/Layout";
+import {Grid} from "@material-ui/core";
+import ContactItem from "../contacts/ContactItem";
+import {createArray} from "../../utils/arrayHelpers";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
+import XSearchInput from "../../components/inputs/XSearchInput";
+import Button from '@material-ui/core/Button';
+import AddIcon from "@material-ui/icons/Add";
+import Fab from "@material-ui/core/Fab";
+import Hidden from "@material-ui/core/Hidden";
+import {fakeContact} from "../contacts/types";
+
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -13,61 +20,53 @@ const useStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             flexWrap: 'wrap',
         },
-        formControl: {
-            margin: theme.spacing(1),
-            minWidth: 120,
-        },
-        selectEmpty: {
-            marginTop: theme.spacing(2),
+        fab: {
+            position: 'absolute',
+            bottom: theme.spacing(2),
+            right: theme.spacing(2),
         },
     }),
 );
 
 export default function SimpleSelect() {
     const classes = useStyles();
-    const [values, setValues] = React.useState({
-        age: '',
-        name: 'hai',
-    });
 
-    const inputLabel = React.useRef<HTMLLabelElement>(null);
-    const [labelWidth, setLabelWidth] = React.useState(0);
-    React.useEffect(() => {
-        setLabelWidth(inputLabel.current!.offsetWidth);
-    }, []);
 
-    const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-        setValues(oldValues => ({
-            ...oldValues,
-            [event.target.name as string]: event.target.value,
-        }));
-    };
+    const list = createArray<number>(10, () => 0)
+
+    function handleNew() {
+
+    }
+
+    function handleToggleFilter() {
+
+    }
+
+    function handleGridToggle() {
+
+    }
 
     return (
         <Layout>
-            <form className={classes.root} autoComplete="off">
-                <FormControl variant="standard" className={classes.formControl}>
-                    <InputLabel ref={inputLabel} htmlFor="outlined-age-simple">
-                        Age
-                    </InputLabel>
-                    <Select
-                        value={values.age}
-                        onChange={handleChange}
-                        labelWidth={labelWidth}
-                        inputProps={{
-                            name: 'age',
-                            id: 'outlined-age-simple',
-                        }}
-                    >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                </FormControl>
-            </form>
+            <Box p={2}>
+
+                <Grid container spacing={1}>
+                    {
+                        list.map((it, index) =>
+                            <Grid item xs={12} sm={6} md={4} xl={3} key={index}>
+                                <ContactItem data={fakeContact()}/>
+                            </Grid>
+                        )
+                    }
+                </Grid>
+            </Box>
+
+            <Hidden smUp>
+                <Fab aria-label='add-new' className={classes.fab} color='primary' onClick={handleNew}>
+                    <AddIcon/>
+                </Fab>
+            </Hidden>
+
         </Layout>
     );
 }

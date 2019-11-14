@@ -13,6 +13,8 @@ import EditIconButton, {AddIconButton} from "../../../../components/EditIconButt
 import EmailEditor from "../editors/EmailEditor";
 import EditDialog from "../../../../components/EditDialog";
 import PhoneEditor from "../editors/PhoneEditor";
+import MailIcon from "@material-ui/core/SvgIcon/SvgIcon";
+import Typography from "@material-ui/core/Typography";
 
 interface IProps {
     data: IContact
@@ -52,8 +54,9 @@ const Phones = (props: IProps) => {
 
     const {phones, id = ''} = props.data
     const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <PhoneIcon fontSize='small'/><span>&nbsp;Phones</span>
+        <PhoneIcon fontSize='small' style={{marginTop:2}}/><Typography variant='body1'>&nbsp;<b>Phones</b></Typography>
     </div>
+
     return (
         <IBox title={title} action={<AddIconButton onClick={handleNew}/>}>
             <List className={classes.noPadding}>

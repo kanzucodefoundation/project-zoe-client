@@ -8,6 +8,8 @@ import {Divider} from "@material-ui/core";
 import ListIcon from "@material-ui/icons/List";
 import EditDialog from "../../../../components/EditDialog";
 import IdentificationEditor from "../editors/IdentificationEditor";
+import MailIcon from "@material-ui/core/SvgIcon/SvgIcon";
+import Typography from "@material-ui/core/Typography";
 
 interface IProps {
     data: IContact
@@ -61,10 +63,10 @@ const Identifications = ({data}: IProps) => {
         return index < identifications.length - 1
     }
 
-    const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <ListIcon fontSize='small'/><span>&nbsp;Identifications</span>
-    </div>
 
+    const title = <div style={{display: 'flex', flexDirection: 'row'}}>
+        <ListIcon fontSize='small' style={{marginTop:2}}/><Typography variant='body1'>&nbsp;<b>Identifications</b></Typography>
+    </div>
     return (
         <IBox title={title} action={<AddIconButton onClick={handleNew}/>}>
             {

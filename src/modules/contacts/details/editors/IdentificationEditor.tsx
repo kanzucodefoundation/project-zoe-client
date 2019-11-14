@@ -1,7 +1,7 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqString, reqDate} from "../../../../data/validations";
-import {emailCategories, idCategories} from "../../../../data/comboCategories";
+import {reqDate, reqString} from "../../../../data/validations";
+import {idCategories} from "../../../../data/comboCategories";
 import {FormikActions} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../../components/forms/XForm";
@@ -58,7 +58,7 @@ const IdentificationEditor = ({data, isNew, contactId, done}: IProps) => {
             schema={schema}
             initialValues={data}
         >
-            <Grid spacing={0} container>
+            <Grid spacing={1} container>
                 <Grid item xs={12}>
                     <XSelectInput
                         name="category"

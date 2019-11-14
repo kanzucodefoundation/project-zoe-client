@@ -15,9 +15,10 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import {createStyles, makeStyles, Theme, useTheme} from '@material-ui/core/styles';
-import {withRouter} from 'react-router'
+import {useHistory,useLocation} from 'react-router-dom'
 import {localRoutes} from "../data/constants";
 import grey from '@material-ui/core/colors/grey';
+import lightBlue from '@material-ui/core/colors/lightBlue';
 import {BarView} from "./Profile";
 import logo from "../assets/logo.png";
 import {themeBackground} from "../theme/custom-colors";
@@ -116,7 +117,8 @@ export const useStyles = makeStyles((theme: Theme) =>
 function Layout(props: any) {
     const classes = useStyles();
     const theme = useTheme();
-
+    const history = useHistory();
+    const location = useLocation();
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     function handleDrawerToggle() {
@@ -124,7 +126,7 @@ function Layout(props: any) {
     }
 
     const onClick = (path: string) => () => {
-        const {history, onClose} = props
+        const { onClose} = props
         history.push(path)
         if (onClose)
             onClose()
@@ -133,8 +135,8 @@ function Layout(props: any) {
     const pathMatches = (path: string, str: string) => path.indexOf(str) > -1
 
     const isSelected = (pathStr: string): boolean => {
-        const {match: {path}} = props
-        return pathMatches(path, pathStr)
+        const {pathname} = location
+        return pathMatches(pathname, pathStr)
     }
 
 
@@ -229,4 +231,4 @@ function Layout(props: any) {
     );
 }
 
-export default withRouter(Layout)
+export default Layout

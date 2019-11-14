@@ -39,7 +39,7 @@ function XTableHead(props: XTableHeadProps) {
             <TableRow className={classes.tableHead}>
                 {
                     useCheckbox &&
-                    <TableCell padding="checkbox">
+                    <TableCell padding="checkbox" size='small'>
                         <Checkbox
                             indeterminate={numSelected > 0 && numSelected < rowCount}
                             checked={numSelected === rowCount}
@@ -51,6 +51,7 @@ function XTableHead(props: XTableHeadProps) {
 
                 {headCells.map(headCell => (
                     <TableCell
+                        size='small'
                         key={headCell.name}
                         align={headCell.numeric ? 'right' : 'left'}
                         sortDirection={orderBy === headCell.name ? order : false}

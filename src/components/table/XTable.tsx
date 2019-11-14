@@ -92,7 +92,7 @@ export default function XTable(props: XTableProps) {
     const isEven = (num: number) => num % 2 !== 0
     return (
         <div className={classes.root}>
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} elevation={0}>
                 {
                     title &&
                     <XToolbar numSelected={selected.length} title={title} onFilterToggle={props.onFilterToggle}/>

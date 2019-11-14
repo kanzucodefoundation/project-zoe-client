@@ -29,22 +29,9 @@ export const localRoutes = {
     settings: '/settings',
 }
 
-
-
-
-const servers: any = {
-    dev: "http://localhost:9001/",
-    test: "http://localhost:9001/",
-    staging: "http://localhost:9001/",
-    production: "http://localhost:9001/",
-}
-
-const evVar = process.env.REACT_APP_ENV || 'dev'
-const environment = evVar.trim()
-console.log(`############# Env : ${environment} ###############`)
-const url = servers[environment]
-
-
+const debug = process.env.NODE_ENV !== 'production'
+export const url = debug ? 'http://localhost:9001' :
+    'https://event-yo-server.herokuapp.com'
 
 export const remoteRoutes = {
     authServer: url,

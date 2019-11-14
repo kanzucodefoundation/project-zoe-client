@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {IContact, renderName} from "../../types";
 import IBox from "../../../../components/ibox/IBox";
 import DetailView, {IRec} from "../../../../components/DetailView";
 import {printDate} from "../../../../utils/dateHelpers";
 import PersonIcon from '@material-ui/icons/PermIdentity';
-import EditIcon from '@material-ui/icons/Edit';
-import {Button} from "@material-ui/core";
+import EditIconButton from "../../../../components/EditIconButton";
+import EditDialog from "../../../../components/EditDialog";
+import PersonEditor from "../editors/PersonEditor";
+import Typography from "@material-ui/core/Typography";
 
 interface IProps {
     data: IContact
@@ -34,13 +36,28 @@ export const idFields = (data: IContact): IRec[] => {
 }
 
 const BioData = ({data}: IProps) => {
+    const [dialog, setDialog] = useState(false)
+    const {id = ''} = data
+
+    const handleClick =  () => {
+        setDialog(true)
+    }
+
+    const handleClose = () => {
+        setDialog(false)
+    }
+
     const displayData = idFields(data);
     const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <PersonIcon fontSize='small'/><span>&nbsp;Bio data</span>
+        <PersonIcon fontSize='small' style={{marginTop:2}}/><Typography variant='body1'>&nbsp;<b>Basic data</b></Typography>
     </div>
+
     return (
-        <IBox title={title} action={<Button variant='outlined' size='small'>edit</Button>}>
+        <IBox title={title} action={<EditIconButton onClick={handleClick}/>}>
             <DetailView data={displayData}/>
+            <EditDialog title='Edit Basic Data' open={dialog} onClose={handleClose}>
+                <PersonEditor data={data.person}  contactId={id} done={handleClose}/>
+            </EditDialog>
         </IBox>
     );
 }

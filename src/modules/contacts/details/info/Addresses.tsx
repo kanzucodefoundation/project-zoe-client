@@ -4,15 +4,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import PinDropIcon from '@material-ui/icons/PinDrop';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVert from '@material-ui/icons/MoreVert';
 import IBox from "../../../../components/ibox/IBox";
-import {IAddress, IContact, IEmail, printAddress} from "../../types";
+import {IAddress, IContact, printAddress} from "../../types";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import EditIconButton, {AddIconButton} from "../../../../components/EditIconButton";
-import EmailEditor from "../editors/EmailEditor";
 import EditDialog from "../../../../components/EditDialog";
 import AddressEditor from "../editors/AddressEditor";
+import Typography from "@material-ui/core/Typography";
 
 interface IProps {
     data: IContact
@@ -51,8 +49,9 @@ const Addresses = (props: IProps) => {
         setDialog(true)
     }
     const {addresses,id=''} = props.data
+
     const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <PinDropIcon fontSize='small'/><span>&nbsp;Addresses</span>
+        <PinDropIcon fontSize='small' style={{marginTop:2}}/><Typography variant='body1'>&nbsp;<b>Addresses</b></Typography>
     </div>
     return (
         <IBox title={title} action={<AddIconButton onClick={handleNew}/>}>

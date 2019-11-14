@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from "react-router";
 import Navigation from "../../../components/Layout";
 import {getRouteParam} from "../../../utils/routHelpers";
-import {fakeContact, IContact} from "../types";
+import {IContact} from "../types";
 import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";
 import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
@@ -13,18 +13,12 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Profile from "./info/Profile";
-import Paper from "@material-ui/core/Paper";
-import Identifications from "./info/Identifications";
-import Emails from "./info/Emails";
-import Phones from "./info/Phones";
-import Addresses from "./info/Addresses";
 import Loans from "./Loans";
 import Info from "./info/Info";
 import {get} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import {useDispatch, useSelector} from "react-redux";
-import {UserState} from "redux-oidc";
-import {crmConstants, ICrmState} from "../../../data/contacts/reducer";
+import {crmConstants} from "../../../data/contacts/reducer";
 
 interface IProps extends RouteComponentProps {
 
@@ -33,8 +27,7 @@ interface IProps extends RouteComponentProps {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            padding: theme.spacing(2),
-
+            padding: theme.spacing(1),
             borderRadius: 0,
             minHeight: '100%',
             overflow: 'show'
@@ -109,7 +102,7 @@ const Details = (props: IProps) => {
             {hasError && <Error text='Failed load contact'/>}
             {
                 data &&
-                <Paper className={classes.root}>
+                <div className={classes.root}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} style={{paddingBottom: 0}}>
                             <Profile data={data}/>
@@ -121,7 +114,6 @@ const Details = (props: IProps) => {
                                     <Tab
                                         value="one"
                                         label="Summary"
-                                        wrapped
                                         {...a11yProps('one')}
                                     />
                                     <Tab value="two" label="Loans" {...a11yProps('two')} />
@@ -136,7 +128,7 @@ const Details = (props: IProps) => {
                             </TabPanel>
                         </Grid>
                     </Grid>
-                </Paper>
+                </div>
             }
         </Navigation>
     );

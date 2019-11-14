@@ -2,85 +2,32 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9f69e901-f916-485c-ba34-8f918c45fb53" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/assets/download.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/assets/logo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/ApplicationLink.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/ContactLink.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/DataLabel.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/DataValue.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/DetailView.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/EmalLink.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/Error.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/GridWrapper.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/Layout.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/LoaderDialog.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/Loading.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/PhoneLink.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/Profile.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/SimpleTable.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/forms/XForm.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/ibox/IBox.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/inputs/XCheckBoxInput.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/inputs/XDateInput.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/inputs/XRadioInput.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/inputs/XSelectInput.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/inputs/XTextAreaInput.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/inputs/XTextInput.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/inputs/XTimeInput.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/inputs/inputHelpers.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/table/XTable.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/table/XTableHead.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/table/XToolbar.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/table/helpers.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/table/icons.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/table/tableStyles.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/widgets.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/xicons.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/auth/oidcActions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/auth/oidcReducer.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/auth/userManager.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/comboCategories.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/constants.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/coreActions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/coreReducer.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/store.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/types.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/validations.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/Settings.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/Test.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/Contacts.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/Filter.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/details/Details.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/details/Loans.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Addresses.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Emails.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Identifications.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Phones.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Profile.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules/contacts/types.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/theme/custom-colors.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/theme/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/theme/palette.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/theme/typography.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/Toast.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/ajax.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/arrayHelpers.test.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/arrayHelpers.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/dateHelpers.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/jsonHelpers.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/numberHelpers.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/routHelpers.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/stringHelpers.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/EditIconButton.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EditIconButton.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ibox/IBox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ibox/IBox.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/inputs/XDateInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/inputs/XDateInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/inputs/XTextAreaInput.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/inputs/XTextAreaInput.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/table/XTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/table/XTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/table/XTableHead.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/table/XTableHead.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/table/tableStyles.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/table/tableStyles.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/contacts/reducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/contacts/reducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/data/store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/store.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/contacts/Contacts.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/contacts/Contacts.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/contacts/details/Details.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/contacts/details/Details.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/contacts/details/editors/IdentificationEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/contacts/details/editors/IdentificationEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/contacts/details/info/Addresses.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Addresses.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/contacts/details/info/Biodata.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Biodata.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/contacts/details/info/Emails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Emails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/contacts/details/info/Identifications.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Identifications.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/contacts/details/info/Phones.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Phones.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/contacts/details/info/Profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/contacts/details/info/Profile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules/dashboard/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modules/dashboard/Dashboard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/theme/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/theme/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/theme/palette.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/theme/palette.ts" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -91,8 +38,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="TypeScript JSX File" />
         <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
@@ -114,18 +61,20 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
     <property name="ts.external.directory.path" value="D:\projects\eva-pro\lighter\node_modules\typescript\lib" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\projects\eva-pro\lighter\src\modules\contacts" />
+      <recent name="D:\projects\eva-pro\lighter\src\modules\contacts\details\info" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\projects\eva-pro\lighter\src\modules\contacts\details\editors" />
       <recent name="D:\projects\eva-pro\lighter\src\theme" />
       <recent name="D:\projects\eva-pro\lighter\src\components" />
       <recent name="D:\projects\eva-pro\lighter\src\modules" />
       <recent name="D:\projects\eva-pro\lighter\src" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\projects\eva-pro\lighter\src\modules\contacts\details\info" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -174,7 +123,9 @@
       <workItem from="1572957952552" duration="5806000" />
       <workItem from="1573308350164" duration="5899000" />
       <workItem from="1573464834244" duration="8390000" />
-      <workItem from="1573540486419" duration="15910000" />
+      <workItem from="1573540486419" duration="16507000" />
+      <workItem from="1573625554966" duration="13838000" />
+      <workItem from="1573716743434" duration="18617000" />
     </task>
     <servers />
   </component>

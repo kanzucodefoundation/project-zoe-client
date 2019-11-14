@@ -4,13 +4,13 @@ import {PaletteOptions} from "@material-ui/core/styles/createPalette";
 const white = '#FFFFFF';
 
 const palette: PaletteOptions = {
-    primary: colors.teal,
-    secondary: colors.blue,
+    primary: colors.indigo,
+    secondary: colors.lightBlue,
     error: colors.red,
-    text: {
-        primary: colors.blueGrey[900],
-        secondary: colors.blueGrey[600]
-    },
+    // text: {
+    //     primary: colors.blueGrey[900],
+    //     secondary: colors.blueGrey[600]
+    // },
     background: {
         default: '#F4F6F8',
         paper: white

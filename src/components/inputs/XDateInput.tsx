@@ -33,6 +33,7 @@ const Component = ({field, form, ...other}: FieldProps) => {
         {
             isSmall?
                 <DatePicker
+                    fullWidth
                     margin="normal"
                     format="dd/MM/yyyy"
                     name={field.name}
@@ -48,6 +49,7 @@ const Component = ({field, form, ...other}: FieldProps) => {
                 />
                 :
                 <KeyboardDatePicker
+                    fullWidth
                     variant="inline"
                     margin="normal"
                     format="dd/MM/yyyy"

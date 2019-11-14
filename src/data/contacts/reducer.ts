@@ -1,11 +1,10 @@
-import {ILoginResponse} from "../types";
-import {AUTH_TOKEN_KEY, AUTH_USER_KEY} from "../constants";
-import {coreConstants} from "../coreReducer";
 import {IAddress, IContact, IEmail, IIdentification, IPhone} from "../../modules/contacts/types";
 
 export const crmConstants = {
     crmFetchAll: "crmFetchAll",
     crmFetchOne: "crmFetchOne",
+
+    crmAddContact: "crmAddContact",
 
     crmEditPerson: "crmEditPerson",
     crmCreatePerson: "crmCreatePerson",
@@ -46,6 +45,11 @@ export default function reducer(state = initialState, action: any) {
             return {...state, data, loadingList: false,}
         }
 
+        case crmConstants.crmAddContact: {
+            const newContact: IContact[] = action.payload
+            return {...state, data: [state.data, newContact]}
+        }
+
         case crmConstants.crmFetchOne: {
             const selected: IContact = action.payload
             return {...state, selected}
@@ -60,6 +64,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+
         case crmConstants.crmEditEmail: {
             const email: IEmail = action.payload
             if (state.selected) {
@@ -70,6 +75,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+
         case crmConstants.crmDeleteEmail: {
             const id: string = action.payload
             if (state.selected) {
@@ -88,6 +94,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+
         case crmConstants.crmEditPhone: {
             const phone: IPhone = action.payload
             if (state.selected) {
@@ -98,6 +105,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+
         case crmConstants.crmDeletePhone: {
             const id: string = action.payload
             if (state.selected) {
@@ -107,6 +115,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+
         case crmConstants.crmAddIdentification: {
             const identification: IIdentification = action.payload
             if (state.selected) {
@@ -116,6 +125,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+
         case crmConstants.crmEditIdentification: {
             const identification: IIdentification = action.payload
             if (state.selected) {
@@ -135,6 +145,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+
         case crmConstants.crmAddAddress: {
             const address: IAddress = action.payload
             if (state.selected) {
@@ -144,6 +155,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+
         case crmConstants.crmEditAddress: {
             const address: IAddress = action.payload
             if (state.selected) {
@@ -154,6 +166,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+
         case crmConstants.crmDeleteAddress: {
             const id: string = action.payload
             if (state.selected) {
@@ -163,6 +176,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
+        
         default: {
             return state
         }

@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme: Theme) =>
             color: grey[500]
         },
         nameHolder: {
-            paddingTop: theme.spacing(2)
+            paddingTop: theme.spacing(1)
         }
     })
 );
@@ -35,7 +35,7 @@ const Profile = ({data}: IProps) => {
         <Grid container justify="flex-start" alignItems="flex-start">
             <PersonIcon className={classes.image}/>
             <Grid item className={classes.nameHolder}>
-                <Typography variant='h4'>{renderName(data.person)}</Typography>
+                <Typography variant='h6'>{renderName(data.person)}</Typography>
                 <Typography variant='body2'>{data.category}</Typography>
             </Grid>
         </Grid>
