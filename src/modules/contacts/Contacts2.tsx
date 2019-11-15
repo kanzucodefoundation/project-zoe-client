@@ -51,19 +51,19 @@ const Contacts = () => {
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
     const [createDialog, setCreateDialog] = useState(false);
-
-    const [showFilter, setShowFilter] = useState(!isSmall);
+    const [desktopFilter, setDesktopFilter] = useState(true);
+    const [mobileFilter, setMobileFilter] = useState(false);
     const [filter, setFilter] = useState({});
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const classes = useStyles();
-    useEffect(()=>{
-        if(isSmall){
-            setShowFilter(false)
-        }
-    },[isSmall])
+
     function handleFilterToggle() {
-        setShowFilter(!showFilter);
+        if (isSmall) {
+            setMobileFilter(true)
+        } else {
+            setDesktopFilter(!desktopFilter);
+        }
     }
 
     useEffect(() => {
@@ -94,7 +94,7 @@ const Contacts = () => {
                 <Header onAddNew={handleNew} onFilterToggle={handleFilterToggle} title='Contacts'/>
                 <Hidden smDown>
                     <Grid container spacing={2}>
-                        <Grid item xs={showFilter ? 9 : 12}>
+                        <Grid item xs={desktopFilter ? 9 : 12}>
                             {
                                 loading ? <Loading/> :
                                     <XTable
@@ -104,7 +104,8 @@ const Contacts = () => {
                                     />
                             }
                         </Grid>
-                        <Grid item xs={3} style={{display: showFilter ? "block" : "none"}}>
+
+                        <Grid item xs={3} style={{display: desktopFilter ? "block" : "none"}}>
                             <Paper className={classes.filterPaper} elevation={0}>
                                 <Filter onFilter={handleFilter} loading={loading}/>
                             </Paper>
@@ -122,7 +123,7 @@ const Contacts = () => {
                             )
                         }
                     </Grid>
-                    <EditDialog open={showFilter} onClose={() => setShowFilter(false)} title="Contact Filter">
+                    <EditDialog open={mobileFilter} onClose={() => setMobileFilter(false)} title="Contact Filter">
                         <Filter onFilter={handleFilter} loading={loading}/>
                     </EditDialog>
                     <Fab aria-label='add-new' className={classes.fab} color='primary' onClick={handleNew}>

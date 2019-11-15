@@ -1,10 +1,12 @@
 import React from 'react';
 import grey from '@material-ui/core/colors/grey';
-import PersonIcon from '@material-ui/icons/AccountBox';
 import Grid from '@material-ui/core/Grid';
 import {IContact, renderName} from "../../types";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
+import male from "../../../../assets/male.png";
+import female from "../../../../assets/female.png";
+import Avatar from "@material-ui/core/Avatar";
 
 interface IProps {
     data: IContact
@@ -31,9 +33,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Profile = ({data}: IProps) => {
     const classes = useStyles()
+    const isMale = data.person.gender === 'Male'
     return (
         <Grid container justify="flex-start" alignItems="flex-start">
-            <PersonIcon className={classes.image}/>
+            <Avatar alt="Avatar" src={isMale ? male : female} className={classes.image}/>
+
             <Grid item className={classes.nameHolder}>
                 <Typography variant='h6'>{renderName(data.person)}</Typography>
                 <Typography variant='body2'>{data.category}</Typography>

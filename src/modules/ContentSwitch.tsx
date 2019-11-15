@@ -5,8 +5,10 @@ import Dashboard from "./dashboard/Dashboard";
 import Contacts from "./contacts/Contacts";
 import ContactDetails from "./contacts/details/Details";
 import Settings from "./settings/Settings";
-import Layout from "../components/Layout";
+import Layout from "../components/layout/Layout";
 import CallbackPage from "./login/CallbackPage";
+import Groups from "./groups/Groups";
+import Users from "./users/Users";
 
 
 const ContentSwitch = () => {
@@ -15,6 +17,8 @@ const ContentSwitch = () => {
         <Route path={localRoutes.dashboard} component={Dashboard}/>
         <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
         <Route path={localRoutes.contacts} component={Contacts}/>
+        <Route path={localRoutes.users} component={Users}/>
+        <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
         <Route path={localRoutes.callback} component={CallbackPage}/>
         <Route component={NoMatch}/>

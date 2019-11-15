@@ -1,5 +1,5 @@
 import * as React from "react";
-import Navigation from "../../components/Layout";
+import Navigation from "../../components/layout/Layout";
 import Grid from '@material-ui/core/Grid';
 import XTextInput from "../../components/inputs/XTextInput";
 import {FormikActions} from 'formik';

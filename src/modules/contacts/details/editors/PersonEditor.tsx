@@ -1,6 +1,6 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqDate, reqEmail, reqString} from "../../../../data/validations";
+import {reqDate, reqString} from "../../../../data/validations";
 import {civilStatusCategories, genderCategories, salutationCategories} from "../../../../data/comboCategories";
 import {FormikActions} from "formik";
 import Grid from "@material-ui/core/Grid";
@@ -17,8 +17,6 @@ import Toast from "../../../../utils/Toast";
 import XRadioInput from "../../../../components/inputs/XRadioInput";
 import {IPerson} from "../../types";
 import XSelectInput from "../../../../components/inputs/XSelectInput";
-import XTextAreaInput from "../../../../components/inputs/XTextAreaInput";
-import TextField from "@material-ui/core/TextField";
 
 interface IProps {
     data: IPerson
@@ -55,7 +53,7 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
                 dispatch({
-                    type: crmConstants.crmAddContact,
+                    type: crmConstants.crmEditPerson,
                     payload: {...data},
                 })
                 if (done)

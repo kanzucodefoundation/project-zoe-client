@@ -8,18 +8,22 @@ import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 
 interface IProps {
+    title?: string
     onAddNew: () => any
     onFilterToggle: () => any
 }
 
-const Header = ({onAddNew, onFilterToggle}: IProps) => {
+const Header = ({onAddNew, onFilterToggle, title}: IProps) => {
     return (
         <Grid container spacing={0}>
-            <Grid item xs={12}>
-                <Box mb={2}>
-                    <Typography variant='h5'>Contacts</Typography>
-                </Box>
-            </Grid>
+            {
+                title &&
+                <Grid item xs={12}>
+                    <Box mb={2}>
+                        <Typography variant='h6'>{title}</Typography>
+                    </Box>
+                </Grid>
+            }
             <Grid item xs={12}>
                 <Box mb={2} display="flex">
                     <Box width="100%">

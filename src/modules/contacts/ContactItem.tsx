@@ -26,36 +26,39 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         card: {
             width: '100%',
-            borderRadius:0
+            borderRadius: 0
         },
         avatar: {
-            //backgroundColor: red[500],
+            width: 50,
+            height: 50,
         },
         header: {
             paddingBottom: theme.spacing(1),
         },
         content: {
-            paddingLeft: theme.spacing(4),
-            paddingRight: theme.spacing(4),
+            paddingLeft: theme.spacing(2),
+            paddingRight: theme.spacing(2),
             paddingTop: 0,
             paddingBottom: theme.spacing(1),
 
         },
         actions: {
             paddingBottom: theme.spacing(1),
-        }
+        },
     }),
 );
+
 interface IProps {
-    data:IContact
+    data: IContact
 }
+
 const headCells: XHeadCell[] = [
     {name: 'id', label: 'Name', render: (value, rec) => <ContactLink id={value} name={renderName(rec.person)}/>},
     {name: 'category', label: 'Category'},
     {name: 'email', label: 'Email', render: (_, rec) => <EmailLink value={getEmail(rec)}/>},
     {name: 'phone', label: 'Phone', render: (_, rec) => getPhone(rec)},
 ];
-export default function ContactItem({data}:IProps) {
+export default function ContactItem({data}: IProps) {
     const classes = useStyles();
     const theme = useTheme();
     const history = useHistory();
@@ -65,20 +68,25 @@ export default function ContactItem({data}:IProps) {
         history.push(url)
     }
 
+    const isMale = data.person.gender === 'Male'
     return (
-        <Card className={classes.card} elevation={0} onClick={handleClick}>
+        <Card className={classes.card} elevation={1} onClick={handleClick}>
             <CardHeader
                 className={classes.header}
+                // avatar={
+                //     <Avatar alt="Avatar" src={isMale ? male : female} className={classes.avatar}/>
+                // }
                 avatar={
-                    <Avatar aria-label="recipe" className={classes.avatar}>
-                        <PersonIcon/>
+                    <Avatar alt="Avatar"  className={classes.avatar}>
+                        <PersonIcon fontSize='large'/>
                     </Avatar>
                 }
-                title={<Typography variant='body1'><b>{renderName(data.person)}</b></Typography>}
+                title={<Typography variant='body1'>{renderName(data.person)}</Typography>}
                 subheader={
                     <Grid container direction="row" spacing={0}>
                         <Grid item xs={12}>
-                            <Typography variant='caption'><PhoneIcon fontSize="inherit"/>&nbsp;{getPhone(data)}</Typography>
+                            <Typography variant='caption' ><PhoneIcon fontSize="inherit"/>&nbsp;{getPhone(data)}
+                            </Typography>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant='caption' noWrap><EmailIcon
@@ -102,7 +110,7 @@ export default function ContactItem({data}:IProps) {
                         </Box>
 
                     </Grid>
-                    <Grid item xs={2} >
+                    <Grid item xs={2}>
                         <Grid container alignContent='flex-end' justify='flex-end'>
                             <MoreIconButton onClick={handleClick}/>
                         </Grid>

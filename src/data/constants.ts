@@ -25,12 +25,14 @@ export const localRoutes = {
     applicationsDetails: '/applications/:caseId',
     dashboard: '/dashboard',
     contacts: '/contacts',
+    users: '/users',
+    groups: '/groups',
     contactsDetails: '/contacts/:contactId',
     settings: '/settings',
 }
 
 const debug = process.env.NODE_ENV !== 'production'
-export const url = debug ? 'http://localhost:9001' :
+export const url = //debug ? 'http://localhost:9001' :
     'https://event-yo-server.herokuapp.com'
 
 export const remoteRoutes = {

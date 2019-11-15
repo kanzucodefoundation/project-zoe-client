@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {RouteComponentProps, withRouter} from "react-router";
-import Navigation from "../../../components/Layout";
+import Navigation from "../../../components/layout/Layout";
 import {getRouteParam} from "../../../utils/routHelpers";
 import {IContact} from "../types";
 import Loading from "../../../components/Loading";
@@ -19,7 +19,8 @@ import {get} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import {useDispatch, useSelector} from "react-redux";
 import {crmConstants} from "../../../data/contacts/reducer";
-
+import male from '../../assets/male.png'
+import female from '../../assets/female.png'
 interface IProps extends RouteComponentProps {
 
 }

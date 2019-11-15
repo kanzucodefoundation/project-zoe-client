@@ -1,6 +1,6 @@
 import React from 'react';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import Layout from "../../components/Layout";
+import Layout from "../../components/layout/Layout";
 import {Grid} from "@material-ui/core";
 import ContactItem from "../contacts/ContactItem";
 import {createArray} from "../../utils/arrayHelpers";

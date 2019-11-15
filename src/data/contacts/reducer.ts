@@ -1,4 +1,4 @@
-import {IAddress, IContact, IEmail, IIdentification, IPhone} from "../../modules/contacts/types";
+import {IAddress, IContact, IEmail, IIdentification, IPerson, IPhone} from "../../modules/contacts/types";
 
 export const crmConstants = {
     crmFetchAll: "crmFetchAll",
@@ -7,7 +7,6 @@ export const crmConstants = {
     crmAddContact: "crmAddContact",
 
     crmEditPerson: "crmEditPerson",
-    crmCreatePerson: "crmCreatePerson",
 
     crmAddEmail: "crmAddEmail",
     crmEditEmail: "crmEditEmail",
@@ -48,6 +47,15 @@ export default function reducer(state = initialState, action: any) {
         case crmConstants.crmAddContact: {
             const newContact: IContact[] = action.payload
             return {...state, data: [state.data, newContact]}
+        }
+
+        case crmConstants.crmEditPerson: {
+            const person: IPerson = action.payload
+            if (state.selected) {
+                const selected: IContact = {...state.selected, person}
+                return {...state, selected}
+            }
+            return state
         }
 
         case crmConstants.crmFetchOne: {
@@ -176,7 +184,7 @@ export default function reducer(state = initialState, action: any) {
             }
             return state
         }
-        
+
         default: {
             return state
         }
