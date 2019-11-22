@@ -15,13 +15,13 @@ const useStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             alignItems: 'center',
             width: '100%',
+            height: '100%'
         },
         input: {
             marginLeft: theme.spacing(1),
             flex: 1,
         },
-        iconButton: {
-        },
+        iconButton: {},
         divider: {
             height: 28,
             margin: 4,
@@ -30,27 +30,34 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface IProps {
-    onFilterToggle:()=>any
+    onFilterToggle?: () => any
+    onChange?: (v: string) => any
 }
 
-export default function XSearchInput({onFilterToggle}:IProps) {
+export default function XSearchInput({onFilterToggle, onChange = (v: string) => v}: IProps) {
     const classes = useStyles();
-
     return (
-        <Box component="form">
+        <Box component="form" style={{height:"100%"}}>
             <Paper className={classes.root}>
                 <InputBase
                     className={classes.input}
                     placeholder="Search here"
                     inputProps={{'aria-label': 'Search here'}}
+                    onChange={e => onChange(e.target.value)}
                 />
-                <IconButton type="submit" className={classes.iconButton} aria-label="search" size='small' >
+                <IconButton type="submit" className={classes.iconButton} aria-label="search" size='small'>
                     <SearchIcon/>
                 </IconButton>
-                <Divider className={classes.divider} orientation="vertical"/>
-                <IconButton color="primary" size='small' className={classes.iconButton} aria-label="advanced-filter" onClick={onFilterToggle}>
-                    <FilterListIcon/>
-                </IconButton>
+                {
+                    onFilterToggle &&
+                    <>
+                        <Divider className={classes.divider} orientation="vertical"/>
+                        <IconButton color="primary" size='small' className={classes.iconButton}
+                                    aria-label="advanced-filter" onClick={onFilterToggle}>
+                            <FilterListIcon/>
+                        </IconButton>
+                    </>
+                }
             </Paper>
         </Box>
 

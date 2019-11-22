@@ -26,13 +26,15 @@ export const localRoutes = {
     dashboard: '/dashboard',
     contacts: '/contacts',
     users: '/users',
+    help: '/help',
     groups: '/groups',
+    tags: '/tags',
     contactsDetails: '/contacts/:contactId',
     settings: '/settings',
 }
 
 const debug = process.env.NODE_ENV !== 'production'
-export const url = //debug ? 'http://localhost:9001' :
+export const url = debug ? 'http://localhost:9001' :
     'https://event-yo-server.herokuapp.com'
 
 export const remoteRoutes = {
@@ -47,6 +49,7 @@ export const remoteRoutes = {
     contactsPerson: url + '/api/crm/person',
     contactsChc: url + '/api/crm/person/chc',
     contactsEmail: url + '/api/crm/email',
+    tags: url + '/api/tags',
     contactsPhone: url + '/api/crm/phone',
     contactsAddress: url + '/api/crm/address',
     contactsIdentification: url + '/api/crm/identification',

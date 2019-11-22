@@ -5,24 +5,22 @@ import ContentSwitch from "./modules/ContentSwitch";
 import Login from "./modules/login/Login";
 import Splash from "./modules/login/Splash";
 import {useSelector} from 'react-redux'
-import {UserState} from "redux-oidc";
-import {localRoutes} from "./data/constants";
-import CallbackPage from "./modules/login/CallbackPage";
+import LoaderDialog from "./components/LoaderDialog";
 
 const App: React.FC = () => {
-    const authState: UserState = useSelector((state: any) => state.core)
+    const coreState: any = useSelector((state: any) => state.core)
 
-    const {isLoadingUser, user} = authState
+    const {isLoadingUser, user, globalLoader} = coreState
     if (isLoadingUser) {
         return <Splash/>
     } else {
         return <Router>
             <ToastContainer/>
             <>
+                <LoaderDialog open={globalLoader}/>
                 {user ?
                     <ContentSwitch/> :
                     <Switch>
-                        <Route path={localRoutes.callback} component={CallbackPage}/>
                         <Route exact component={Login}/>
                     </Switch>
                 }

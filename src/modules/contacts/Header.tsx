@@ -6,11 +6,12 @@ import XSearchInput from "../../components/inputs/XSearchInput";
 import Hidden from "@material-ui/core/Hidden";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
+import theme from "../../theme";
 
 interface IProps {
     title?: string
     onAddNew: () => any
-    onFilterToggle: () => any
+    onFilterToggle?: () => any
 }
 
 const Header = ({onAddNew, onFilterToggle, title}: IProps) => {
@@ -25,18 +26,18 @@ const Header = ({onAddNew, onFilterToggle, title}: IProps) => {
                 </Grid>
             }
             <Grid item xs={12}>
-                <Box mb={2} display="flex">
-                    <Box width="100%">
+                <Box mb={2} display="flex" style={{height:40}}>
+                    <Box width="100%" style={{height:"100%"}}>
                         <XSearchInput onFilterToggle={onFilterToggle}/>
                     </Box>
                     <Hidden xsDown>
-                        <Box flexShrink={0} pt={1} ml={1}>
+                        <Box flexShrink={0} ml={1}>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                size="small"
                                 startIcon={<AddIcon/>}
                                 onClick={onAddNew}
+                                style={{padding:theme.spacing(1)}}
                             >
                                 Add New
                             </Button>

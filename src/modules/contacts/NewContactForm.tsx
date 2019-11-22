@@ -91,7 +91,6 @@ const NewContactForm = ({data, done}: IProps) => {
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={data}
-            debug
         >
             <Grid spacing={1} container>
                 <Grid item xs={6}>

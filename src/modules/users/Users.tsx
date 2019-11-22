@@ -1,29 +1,13 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import Layout from "../../components/layout/Layout";
-
-
-import {useTheme} from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import {XHeadCell} from "../../components/table/XTableHead";
 import {Avatar} from "@material-ui/core";
 import {fakeUser} from "./types";
 import {IUser} from "../../data/types";
 import Typography from "@material-ui/core/Typography";
-import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Divider from '@material-ui/core/Divider';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Box from "@material-ui/core/Box";
 import Header from "../contacts/Header";
 import DataList from "../../components/DataList";
-import AddIcon from "@material-ui/core/SvgIcon/SvgIcon";
-import Fab from "@material-ui/core/Fab";
 import {AddFabButton} from "../../components/EditIconButton";
 
 

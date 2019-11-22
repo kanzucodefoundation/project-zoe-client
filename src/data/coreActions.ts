@@ -24,5 +24,17 @@ export const stopLoading = () => {
     }
 }
 
+export const coreStartGlobalLoader = () => {
+    return {
+        type: coreConstants.coreStartGlobalLoader,
+    }
+}
+
+export const coreStopGlobalLoader = () => {
+    return {
+        type: coreConstants.coreStopGlobalLoader,
+    }
+}
+
 
 

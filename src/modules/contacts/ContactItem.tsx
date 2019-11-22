@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme: Theme) =>
             borderRadius: 0
         },
         avatar: {
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
         },
         header: {
             paddingBottom: theme.spacing(1),
@@ -78,45 +78,23 @@ export default function ContactItem({data}: IProps) {
                 // }
                 avatar={
                     <Avatar alt="Avatar"  className={classes.avatar}>
-                        <PersonIcon fontSize='large'/>
+                        <PersonIcon fontSize='default'/>
                     </Avatar>
                 }
-                title={<Typography variant='body1'>{renderName(data.person)}</Typography>}
+                title={<Typography variant='body1' noWrap>{renderName(data.person)}</Typography>}
                 subheader={
-                    <Grid container direction="row" spacing={0}>
+                    <Grid container direction="row" spacing={0} wrap="wrap">
                         <Grid item xs={12}>
-                            <Typography variant='caption' ><PhoneIcon fontSize="inherit"/>&nbsp;{getPhone(data)}
+                            <Typography variant='caption' noWrap><PhoneIcon fontSize="inherit"/>&nbsp;{getPhone(data)}
                             </Typography>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} zeroMinWidth>
                             <Typography variant='caption' noWrap><EmailIcon
                                 fontSize="inherit"/>&nbsp;{getEmail(data)}</Typography>
                         </Grid>
                     </Grid>
                 }
             />
-            <CardContent className={classes.content} style={{paddingBottom: theme.spacing(2)}}>
-                <Grid container direction="row" spacing={1}>
-                    <Grid item xs={5}>
-                        <Box pt={1}>
-                            <Typography variant='body2' noWrap><PinDropIcon
-                                fontSize="inherit"/>&nbsp;WHDowntown ANd the other people</Typography>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={5}>
-                        <Box pt={1}>
-                            <Typography variant='body2' noWrap><NaturePeopleIcon
-                                fontSize="inherit"/>&nbsp;MusicMCAnd Family together</Typography>
-                        </Box>
-
-                    </Grid>
-                    <Grid item xs={2}>
-                        <Grid container alignContent='flex-end' justify='flex-end'>
-                            <MoreIconButton onClick={handleClick}/>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </CardContent>
             <Divider/>
         </Card>
     );

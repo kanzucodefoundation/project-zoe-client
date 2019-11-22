@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, {Fragment, useEffect, useState} from "react";
 import Navigation from "../../components/layout/Layout";
 import Paper from '@material-ui/core/Paper';
-import {createStyles, makeStyles, Theme, useTheme} from "@material-ui/core";
+import {Avatar, createStyles, makeStyles, Theme, useTheme} from "@material-ui/core";
 import {getEmail, getPhone, IContact, renderName} from "./types";
 import XTable from "../../components/table/XTable";
 import {XHeadCell} from "../../components/table/XTableHead";
@@ -10,17 +10,25 @@ import Filter from "./Filter";
 import EmailLink from "../../components/EmalLink";
 import ContactLink from "../../components/ContactLink";
 import {search} from "../../utils/ajax";
-import {remoteRoutes} from "../../data/constants";
+import {localRoutes, remoteRoutes} from "../../data/constants";
 import Loading from "../../components/Loading";
 import Box from "@material-ui/core/Box";
 import Header from "./Header";
 import Hidden from "@material-ui/core/Hidden";
-import ContactItem from "./ContactItem";
 import EditDialog from "../../components/EditDialog";
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 import NewContactForm from "./NewContactForm";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
+import Typography from "@material-ui/core/Typography";
+import {IMobileRow} from "../../components/DataList";
+import PersonIcon from '@material-ui/icons/Person';
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemText from "@material-ui/core/ListItemText";
+import Divider from "@material-ui/core/Divider";
+import {useHistory} from "react-router";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -46,8 +54,20 @@ const headCells: XHeadCell[] = [
     {name: 'phone', label: 'Phone', render: (_, rec) => getPhone(rec)},
 ];
 
+const toMobileRow = (data: IContact): IMobileRow => {
+    return {
+        avatar: <Avatar><PersonIcon/></Avatar>,
+        primary: renderName(data.person),
+        secondary: <>
+            <Typography variant='caption' color='textSecondary' display='block'>{getEmail(data)}</Typography>
+            <Typography variant='caption' color='textSecondary'>{getPhone(data)}</Typography>
+        </>,
+    }
+}
+
 
 const Contacts = () => {
+    const history = useHistory();
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
     const [createDialog, setCreateDialog] = useState(false);
@@ -57,11 +77,12 @@ const Contacts = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const classes = useStyles();
-    useEffect(()=>{
-        if(isSmall){
+    useEffect(() => {
+        if (isSmall) {
             setShowFilter(false)
         }
-    },[isSmall])
+    }, [isSmall])
+
     function handleFilterToggle() {
         setShowFilter(!showFilter);
     }
@@ -84,10 +105,18 @@ const Contacts = () => {
         setCreateDialog(true)
     }
 
+    const handleItemClick=(id:string)=>()=> {
+        history.push(`${localRoutes.contacts}/${id}`)
+    }
+
     function closeCreateDialog() {
         setCreateDialog(false)
     }
 
+    const  filterComponent = <Filter onFilter={handleFilter} loading={loading}/>
+    const  createComponent = <NewContactForm data={{}} done={closeCreateDialog}/>
+    const filterTitle= "Contact Filter"
+    const createTitle= "New Person"
     return (
         <Navigation>
             <Box p={1} className={classes.root}>
@@ -106,32 +135,44 @@ const Contacts = () => {
                         </Grid>
                         <Grid item xs={3} style={{display: showFilter ? "block" : "none"}}>
                             <Paper className={classes.filterPaper} elevation={0}>
-                                <Filter onFilter={handleFilter} loading={loading}/>
+                                {filterComponent}
                             </Paper>
                         </Grid>
                     </Grid>
                 </Hidden>
                 <Hidden mdUp>
-                    <Grid container spacing={1}>
+                    <List>
                         {
                             loading ? <Loading/> :
-                            data.map((it: IContact) =>
-                                <Grid item xs={12} sm={6} md={4} xl={3} key={it.id}>
-                                    <ContactItem data={it}/>
-                                </Grid>
-                            )
+                            data.map((row: any) => {
+                                const mobileRow = toMobileRow(row)
+                                return <Fragment key={row.id}>
+                                    <ListItem alignItems="flex-start" button disableGutters
+                                              onClick={handleItemClick(row.id)}
+                                    >
+                                        <ListItemAvatar>
+                                            {mobileRow.avatar}
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={mobileRow.primary}
+                                            secondary={mobileRow.secondary}
+                                        />
+                                    </ListItem>
+                                    <Divider component="li"/>
+                                </Fragment>
+                            })
                         }
-                    </Grid>
-                    <EditDialog open={showFilter} onClose={() => setShowFilter(false)} title="Contact Filter">
-                        <Filter onFilter={handleFilter} loading={loading}/>
+                    </List>
+                    <EditDialog open={showFilter} onClose={() => setShowFilter(false)} title={filterTitle}>
+                        {filterComponent}
                     </EditDialog>
                     <Fab aria-label='add-new' className={classes.fab} color='primary' onClick={handleNew}>
                         <AddIcon/>
                     </Fab>
                 </Hidden>
             </Box>
-            <EditDialog title='New Person' open={createDialog} onClose={closeCreateDialog}>
-                <NewContactForm data={{}} done={closeCreateDialog}/>
+            <EditDialog title={createTitle} open={createDialog} onClose={closeCreateDialog}>
+                {createComponent}
             </EditDialog>
         </Navigation>
     );

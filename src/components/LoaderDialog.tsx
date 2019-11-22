@@ -5,10 +5,10 @@ import Dialog from "@material-ui/core/Dialog";
 
 interface IProps {
     open: boolean
-    onClose: () => any
+    onClose?: () => any
 }
 
-const LoaderDialog = ({open, onClose}: IProps) => {
+const LoaderDialog = ({open, onClose = () => undefined}: IProps) => {
     return (
         <Dialog open={open} onClose={onClose} disableBackdropClick disableEscapeKeyDown>
             <DialogContent>
@@ -17,6 +17,5 @@ const LoaderDialog = ({open, onClose}: IProps) => {
         </Dialog>
     );
 }
-
 
 export default LoaderDialog;

@@ -9,6 +9,7 @@ import Layout from "../components/layout/Layout";
 import CallbackPage from "./login/CallbackPage";
 import Groups from "./groups/Groups";
 import Users from "./users/Users";
+import Tags from "./tags/Tags";
 
 
 const ContentSwitch = () => {
@@ -18,6 +19,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
         <Route path={localRoutes.contacts} component={Contacts}/>
         <Route path={localRoutes.users} component={Users}/>
+        <Route path={localRoutes.tags} component={Tags}/>
         <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
         <Route path={localRoutes.callback} component={CallbackPage}/>
