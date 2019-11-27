@@ -45,6 +45,7 @@ const Component = ({field, form, ...other}: FieldProps) => {
                     onTouchEnd={handleTouch}
                     onBlur={handleTouch}
                     autoOk
+
                     {...other}
                 />
                 :

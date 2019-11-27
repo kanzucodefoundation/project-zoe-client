@@ -40,7 +40,7 @@ export default function reducer(state = initialState, action: any) {
         }
         case tagConstants.tagsDelete: {
             const id: string = action.payload
-            return {...state, data: [state.data.filter(it => it.id !== id)]}
+            return {...state, data: [...state.data.filter(it => it.id !== id)]}
         }
         case tagConstants.tagsEdit: {
             const dt: ITag = action.payload

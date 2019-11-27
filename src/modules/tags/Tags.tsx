@@ -78,6 +78,7 @@ const Tags = (props: IProps) => {
                                             </ListItemIcon>
                                             <ListItemText
                                                 primary={it.name}
+                                                secondary={it.category}
                                             />
                                         </ListItem>
                                     })

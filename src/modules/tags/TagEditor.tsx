@@ -15,6 +15,7 @@ import {ITag, tagCategories} from "./types";
 import {tagConstants, tagsDeleteTag} from "../../data/tags/reducer";
 import {coreStartGlobalLoader, coreStopGlobalLoader} from "../../data/coreActions";
 import {del} from "../../utils/ajax";
+import XColorPicker from "../../components/inputs/XColorPicker";
 
 interface IProps {
     data: ITag | null
@@ -84,7 +85,7 @@ const TagEditor = ({data, isNew, done}: IProps) => {
                     <XTextInput
                         name="name"
                         label="Name"
-                        type="test"
+                        type="text"
                         variant='outlined'
                     />
                 </Grid>
@@ -92,8 +93,14 @@ const TagEditor = ({data, isNew, done}: IProps) => {
                     <XTextInput
                         name="color"
                         label="Color"
-                        type="test"
+                        type="text"
                         variant='outlined'
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <XColorPicker
+                        name="color"
+                        label="Color"
                     />
                 </Grid>
             </Grid>

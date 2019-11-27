@@ -49,7 +49,7 @@ const BioData = ({data}: IProps) => {
 
     const displayData = idFields(data);
     const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <PersonIcon fontSize='small' style={{marginTop:2}}/><Typography variant='body1'>&nbsp;<b>Basic data</b></Typography>
+        <PersonIcon fontSize='small' /><Typography variant='body2'>&nbsp;<b>Basic data</b></Typography>
     </div>
 
     return (

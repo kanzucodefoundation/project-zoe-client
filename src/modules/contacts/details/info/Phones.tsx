@@ -54,7 +54,7 @@ const Phones = (props: IProps) => {
 
     const {phones, id = ''} = props.data
     const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <PhoneIcon fontSize='small' style={{marginTop:2}}/><Typography variant='body1'>&nbsp;<b>Phones</b></Typography>
+        <PhoneIcon fontSize='small'/><Typography variant='body2'>&nbsp;<b>Phones</b></Typography>
     </div>
 
     return (

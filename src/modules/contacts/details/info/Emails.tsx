@@ -50,7 +50,7 @@ const Emails = (props: IProps) => {
     }
 
     const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <MailIcon fontSize='small' style={{marginTop:2}}/><Typography variant='body1'>&nbsp;<b>Emails</b></Typography>
+        <MailIcon fontSize='small' /><Typography variant='body2'>&nbsp;<b>Emails</b></Typography>
     </div>
     return (
         <IBox title={title} action={<AddIconButton onClick={handleNew}/>}>

@@ -1,6 +1,12 @@
 import {TypographyOptions} from "@material-ui/core/styles/createTypography";
-import p from "./palette";
-const palette: any = p
+import {colors} from "@material-ui/core";
+const palette: any = {
+    text: {
+        primary: colors.blueGrey[900],
+        secondary: colors.blueGrey[600],
+        //link: colors.blue[600]
+    }
+}
 const typography: TypographyOptions = {
     h1: {
         color: palette.text.primary,

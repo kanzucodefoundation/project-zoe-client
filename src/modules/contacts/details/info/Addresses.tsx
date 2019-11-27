@@ -51,7 +51,7 @@ const Addresses = (props: IProps) => {
     const {addresses,id=''} = props.data
 
     const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <PinDropIcon fontSize='small' style={{marginTop:2}}/><Typography variant='body1'>&nbsp;<b>Addresses</b></Typography>
+        <PinDropIcon fontSize='small'/><Typography variant='body2'>&nbsp;<b>Addresses</b></Typography>
     </div>
     return (
         <IBox title={title} action={<AddIconButton onClick={handleNew}/>}>
