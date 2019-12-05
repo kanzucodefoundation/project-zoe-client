@@ -50,9 +50,14 @@ export const remoteRoutes = {
     contactsChc: url + '/api/crm/person/chc',
     contactsEmail: url + '/api/crm/email',
     tags: url + '/api/tags',
+    users: url + '/api/auth/users',
     contactsPhone: url + '/api/crm/phone',
     contactsAddress: url + '/api/crm/address',
     contactsIdentification: url + '/api/crm/identification',
+
+
+
+    groups: url + '/api/groups/group',
 
     contactsCompany: url + '/api/crm/contact/company',
     contactsAvatar: url + '/api/crm/contact/avatar',

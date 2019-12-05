@@ -2,7 +2,7 @@ import React, {Fragment, useEffect, useState} from "react";
 import Navigation from "../../components/layout/Layout";
 import Paper from '@material-ui/core/Paper';
 import {Avatar, createStyles, makeStyles, Theme, useTheme} from "@material-ui/core";
-import {getEmail, getPhone, IContact, renderName} from "./types";
+import {getEmail, getPhone, IContact, IContactsFilter, renderName} from "./types";
 import XTable from "../../components/table/XTable";
 import {XHeadCell} from "../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
@@ -29,6 +29,7 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
 import {useHistory} from "react-router";
+import {hasValue} from "../../components/inputs/inputHelpers";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -55,8 +56,13 @@ const headCells: XHeadCell[] = [
 ];
 
 const toMobileRow = (data: IContact): IMobileRow => {
+    const hasAvatar = hasValue(data.person.avatar)
     return {
-        avatar: <Avatar><PersonIcon/></Avatar>,
+        avatar: hasAvatar ?
+            <Avatar
+                alt="Avatar"
+                src={data.person.avatar}
+            /> : <Avatar><PersonIcon/></Avatar>,
         primary: renderName(data.person),
         secondary: <>
             <Typography variant='caption' color='textSecondary' display='block'>{getEmail(data)}</Typography>
@@ -73,7 +79,7 @@ const Contacts = () => {
     const [createDialog, setCreateDialog] = useState(false);
 
     const [showFilter, setShowFilter] = useState(!isSmall);
-    const [filter, setFilter] = useState({});
+    const [filter, setFilter] = useState<IContactsFilter>({});
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const classes = useStyles();
@@ -105,7 +111,7 @@ const Contacts = () => {
         setCreateDialog(true)
     }
 
-    const handleItemClick=(id:string)=>()=> {
+    const handleItemClick = (id: string) => () => {
         history.push(`${localRoutes.contacts}/${id}`)
     }
 
@@ -113,14 +119,23 @@ const Contacts = () => {
         setCreateDialog(false)
     }
 
-    const  filterComponent = <Filter onFilter={handleFilter} loading={loading}/>
-    const  createComponent = <NewContactForm data={{}} done={closeCreateDialog}/>
-    const filterTitle= "Contact Filter"
-    const createTitle= "New Person"
+    function handleNameSearch(query: string) {
+        setFilter({...filter, query})
+    }
+
+    const filterComponent = <Filter onFilter={handleFilter} loading={loading}/>
+    const createComponent = <NewContactForm data={{}} done={closeCreateDialog}/>
+    const filterTitle = "Contact Filter"
+    const createTitle = "New Person"
     return (
         <Navigation>
             <Box p={1} className={classes.root}>
-                <Header onAddNew={handleNew} onFilterToggle={handleFilterToggle} title='Contacts'/>
+                <Header
+                    onAddNew={handleNew}
+                    onFilterToggle={handleFilterToggle}
+                    title='Contacts'
+                    onChange={handleNameSearch}
+                />
                 <Hidden smDown>
                     <Grid container spacing={2}>
                         <Grid item xs={showFilter ? 9 : 12}>
@@ -144,23 +159,23 @@ const Contacts = () => {
                     <List>
                         {
                             loading ? <Loading/> :
-                            data.map((row: any) => {
-                                const mobileRow = toMobileRow(row)
-                                return <Fragment key={row.id}>
-                                    <ListItem alignItems="flex-start" button disableGutters
-                                              onClick={handleItemClick(row.id)}
-                                    >
-                                        <ListItemAvatar>
-                                            {mobileRow.avatar}
-                                        </ListItemAvatar>
-                                        <ListItemText
-                                            primary={mobileRow.primary}
-                                            secondary={mobileRow.secondary}
-                                        />
-                                    </ListItem>
-                                    <Divider component="li"/>
-                                </Fragment>
-                            })
+                                data.map((row: any) => {
+                                    const mobileRow = toMobileRow(row)
+                                    return <Fragment key={row.id}>
+                                        <ListItem alignItems="flex-start" button disableGutters
+                                                  onClick={handleItemClick(row.id)}
+                                        >
+                                            <ListItemAvatar>
+                                                {mobileRow.avatar}
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={mobileRow.primary}
+                                                secondary={mobileRow.secondary}
+                                            />
+                                        </ListItem>
+                                        <Divider component="li"/>
+                                    </Fragment>
+                                })
                         }
                     </List>
                     <EditDialog open={showFilter} onClose={() => setShowFilter(false)} title={filterTitle}>

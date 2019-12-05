@@ -18,6 +18,7 @@ import {
 import {toOptions} from "../../components/inputs/inputHelpers";
 import XTextAreaInput from "../../components/inputs/XTextAreaInput";
 import XForm from "../../components/forms/XForm";
+import XRemoteSelect from "../../components/inputs/XRemoteSelect";
 
 const Settings = () => {
     function handleSubmission(values: any, actions: FormikActions<any>) {
@@ -124,6 +125,8 @@ const Settings = () => {
                         </Grid>
                     </Grid>
                 </XForm>
+
+                <XRemoteSelect />
             </Grid>
         </Grid>
 

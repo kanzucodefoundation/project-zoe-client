@@ -7,6 +7,8 @@ import Typography from "@material-ui/core/Typography";
 import male from "../../../../assets/male.png";
 import female from "../../../../assets/female.png";
 import Avatar from "@material-ui/core/Avatar";
+import {hasValue} from "../../../../components/inputs/inputHelpers";
+import PersonIcon from "@material-ui/icons/Person";
 
 interface IProps {
     data: IContact
@@ -20,10 +22,10 @@ const useStyles = makeStyles((theme: Theme) =>
         },
 
         image: {
-            height: 70,
-            width: 70,
+            height: 50,
+            width: 50,
             marginRight: theme.spacing(1),
-            color: grey[500]
+            marginTop: theme.spacing(1)
         },
         nameHolder: {
             paddingTop: theme.spacing(1)
@@ -33,11 +35,17 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const Profile = ({data}: IProps) => {
     const classes = useStyles()
-    const isMale = data.person.gender === 'Male'
+    const hasAvatar = hasValue(data.person.avatar)
     return (
         <Grid container justify="flex-start" alignItems="flex-start">
-            <Avatar alt="Avatar" src={isMale ? male : female} className={classes.image}/>
-
+            {
+                hasAvatar ?
+                    <Avatar
+                        alt="Avatar"
+                        src={data.person.avatar}
+                        className={classes.image}
+                    /> : <Avatar className={classes.image}><PersonIcon fontSize='large'/></Avatar>
+            }
             <Grid item className={classes.nameHolder}>
                 <Typography variant='h6'>{renderName(data.person)}</Typography>
                 <Typography variant='body2'>{data.category}</Typography>

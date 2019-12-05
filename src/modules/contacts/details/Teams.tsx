@@ -3,23 +3,22 @@ import React, {useState} from "react";
 import XTable from "../../../components/table/XTable";
 import {XHeadCell} from "../../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
-import {fakeLoan, IConsumerLoan} from "../types";
-import {printDecimal, printMoney} from "../../../utils/numberHelpers";
+import {fakeTeam, ITeamMember} from "../types";
 import {trimGuid} from "../../../utils/stringHelpers";
 
 const headCells: XHeadCell[] = [
     {name: 'id', label: 'ID', render: (dt) => trimGuid(dt)},
-    {name: 'lender', label: 'Lender',},
-    {name: 'amount', label: 'Amount', numeric: true, render: (dt) => printMoney(dt)},
-    {name: 'interestRate', label: 'Interest', numeric: true, render: (dt) => `${printDecimal(dt)}%`},
-    {name: 'durationInMonths', label: 'Duration(Months)', numeric: true},
+    {name: 'name', label: 'Name'},
+    {name: 'details', label: 'Details'},
+    {name: 'role', label: 'Role'},
+
 ];
 
-const fakeData: IConsumerLoan[] = [];
-for (let i = 0; i < 65; i++) {
-    fakeData.push(fakeLoan())
+const fakeData: ITeamMember[] = [];
+for (let i = 0; i < 12; i++) {
+    fakeData.push(fakeTeam())
 }
-const Loans = () => {
+const Teams = () => {
     const [data, setData] = useState(fakeData);
     return (
         <Grid container spacing={2}>
@@ -34,4 +33,4 @@ const Loans = () => {
     );
 }
 
-export default Loans
+export default Teams

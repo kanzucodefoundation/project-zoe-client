@@ -36,6 +36,7 @@ interface IProps {
 
 export default function XSearchInput({onFilterToggle, onChange = (v: string) => v}: IProps) {
     const classes = useStyles();
+
     return (
         <Box component="form" style={{height:"100%"}}>
             <Paper className={classes.root}>

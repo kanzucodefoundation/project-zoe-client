@@ -12,9 +12,10 @@ interface IProps {
     title?: string
     onAddNew: () => any
     onFilterToggle?: () => any
+    onChange?: (v: string) => any
 }
 
-const Header = ({onAddNew, onFilterToggle, title}: IProps) => {
+const Header = ({onAddNew, onFilterToggle,onChange, title}: IProps) => {
     return (
         <Grid container spacing={0}>
             {
@@ -28,7 +29,7 @@ const Header = ({onAddNew, onFilterToggle, title}: IProps) => {
             <Grid item xs={12}>
                 <Box mb={2} display="flex" style={{height:40}}>
                     <Box width="100%" style={{height:"100%"}}>
-                        <XSearchInput onFilterToggle={onFilterToggle}/>
+                        <XSearchInput onFilterToggle={onFilterToggle} onChange={onChange}/>
                     </Box>
                     <Hidden xsDown>
                         <Box flexShrink={0} ml={1}>

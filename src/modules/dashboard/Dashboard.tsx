@@ -5,9 +5,6 @@ import {Grid} from "@material-ui/core";
 import ContactItem from "../contacts/ContactItem";
 import {createArray} from "../../utils/arrayHelpers";
 import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
-import XSearchInput from "../../components/inputs/XSearchInput";
-import Button from '@material-ui/core/Button';
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
 import Hidden from "@material-ui/core/Hidden";
@@ -38,13 +35,7 @@ export default function SimpleSelect() {
 
     }
 
-    function handleToggleFilter() {
 
-    }
-
-    function handleGridToggle() {
-
-    }
 
     return (
         <Layout>

@@ -6,8 +6,7 @@ import Contacts from "./contacts/Contacts";
 import ContactDetails from "./contacts/details/Details";
 import Settings from "./settings/Settings";
 import Layout from "../components/layout/Layout";
-import CallbackPage from "./login/CallbackPage";
-import Groups from "./groups/Groups";
+import Groups from "./groups/GroupsList";
 import Users from "./users/Users";
 import Tags from "./tags/Tags";
 
@@ -22,7 +21,6 @@ const ContentSwitch = () => {
         <Route path={localRoutes.tags} component={Tags}/>
         <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
-        <Route path={localRoutes.callback} component={CallbackPage}/>
         <Route component={NoMatch}/>
     </Switch>
 }

@@ -5,23 +5,20 @@ import {ThemeProvider,} from '@material-ui/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import 'react-toastify/dist/ReactToastify.css';
 import store from "./data/store";
+import 'react-sortable-tree/style.css';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import theme from "./theme";
-import {OidcProvider} from "redux-oidc";
-import userManager from "./data/auth/userManager";
 
 
 ReactDOM.render(
     <Provider store={store}>
         <ThemeProvider theme={theme}>
-            <OidcProvider store={store} userManager={userManager}>
-                <>
-                    <CssBaseline/>
-                    <App/>
-                </>
-            </OidcProvider>
+            <>
+                <CssBaseline/>
+                <App/>
+            </>
         </ThemeProvider>
     </Provider>, document.getElementById('root'));
 

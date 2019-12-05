@@ -4,16 +4,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import PhoneIcon from '@material-ui/icons/Phone';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import MoreVert from '@material-ui/icons/MoreVert';
 import IBox from "../../../../components/ibox/IBox";
 import {IContact, IEmail} from "../../types";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import EditIconButton, {AddIconButton} from "../../../../components/EditIconButton";
-import EmailEditor from "../editors/EmailEditor";
 import EditDialog from "../../../../components/EditDialog";
 import PhoneEditor from "../editors/PhoneEditor";
-import MailIcon from "@material-ui/core/SvgIcon/SvgIcon";
 import Typography from "@material-ui/core/Typography";
 
 interface IProps {

@@ -13,14 +13,13 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Profile from "./info/Profile";
-import Loans from "./Loans";
+import Teams from "./Teams";
 import Info from "./info/Info";
 import {get} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import {useDispatch, useSelector} from "react-redux";
 import {crmConstants} from "../../../data/contacts/reducer";
-import male from '../../assets/male.png'
-import female from '../../assets/female.png'
+
 interface IProps extends RouteComponentProps {
 
 }
@@ -117,7 +116,7 @@ const Details = (props: IProps) => {
                                         label="Summary"
                                         {...a11yProps('one')}
                                     />
-                                    <Tab value="two" label="Loans" {...a11yProps('two')} />
+                                    <Tab value="two" label="Teams" {...a11yProps('two')} />
                                 </Tabs>
                             </AppBar>
                             <Divider/>
@@ -125,7 +124,7 @@ const Details = (props: IProps) => {
                                 <Info data={data}/>
                             </TabPanel>
                             <TabPanel value={value} index="two">
-                                <Loans/>
+                                <Teams/>
                             </TabPanel>
                         </Grid>
                     </Grid>

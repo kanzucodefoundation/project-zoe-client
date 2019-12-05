@@ -22,8 +22,7 @@ export interface IEmail {
     isPrimary: boolean
 }
 
-export enum IdentificationCategory
-{
+export enum IdentificationCategory {
     Nin = 'Nin',
     Passport = 'Passport',
     DrivingPermit = 'DrivingPermit',
@@ -32,8 +31,7 @@ export enum IdentificationCategory
     Other = 'Other'
 }
 
-export enum CivilStatus
-{
+export enum CivilStatus {
     Other = 'Other',
     Single = 'Single',
     Married = 'Married',
@@ -52,6 +50,7 @@ export enum PhoneCategory {
     Fax = "Fax",
     Other = "Other"
 }
+
 export enum EmailCategory {
     Work = 'Work',
     Personal = 'Personal',
@@ -130,22 +129,30 @@ export interface IContactQuery {
 }
 
 
-export interface IConsumerLoan {
-    id?: string
-    lender: string
-    amount: number
-    interestRate: number
-    durationInMonths: number
+enum TeamRole {
+    Leader = "Leader",
+    Member = "Member"
 }
 
-export const fakeLoan = (): IConsumerLoan => {
+export interface ITeamMember {
+    id?: string
+    name: string
+    details: string
+    role: TeamRole
+}
 
+export interface IContactsFilter {
+    query?: string
+    skip?: string
+    limit?: string
+}
+
+export const fakeTeam = (): ITeamMember => {
     return {
         id: uuid(),
-        lender: faker.company.companyName(),
-        amount: faker.random.number({max: 100, min: 3}) * 1000,
-        durationInMonths: faker.random.number(36),
-        interestRate: faker.random.number({max: 2000, min: 1100}) / 100,
+        name: faker.company.companyName(),
+        details: faker.company.catchPhrase(),
+        role: TeamRole.Member
     }
 }
 
@@ -230,7 +237,7 @@ export const renderName = (person: IPerson, salutation?: boolean): string => {
 };
 
 export const renderName1 = (person: IPerson): string => {
-    const name= `${person.firstName || ''} ${person.middleName || ''} ${person.lastName || ''}`;
+    const name = `${person.firstName || ''} ${person.middleName || ''} ${person.lastName || ''}`;
     return name.trim().replace(/\s+/g, ' ');
 };
 

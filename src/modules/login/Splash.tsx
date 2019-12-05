@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import GridWrapper from "../../components/GridWrapper";
-import userManager from "../../data/auth/userManager";
 import {remoteRoutes} from "../../data/constants";
 import {useDispatch} from "react-redux";
 import {handleLogin, handleLogout, startLoading, stopLoading} from "../../data/coreActions";
