@@ -4,21 +4,13 @@ import Grid from '@material-ui/core/Grid';
 import XTextInput from "../../components/inputs/XTextInput";
 import {FormikActions} from 'formik';
 import XSelectInput from "../../components/inputs/XSelectInput";
-import XCheckBoxInput from "../../components/inputs/XCheckBoxInput";
-import XRadioInput from "../../components/inputs/XRadioInput";
-import XDateInput from "../../components/inputs/XDateInput";
 import * as yup from 'yup';
-import {nullableString, reqDate, reqString} from "../../data/validations";
-import {
-    civilStatusCategories,
-    genderCategories,
-    hobbyCategories,
-    salutationCategories
-} from "../../data/comboCategories";
+import {reqString} from "../../data/validations";
+import {hobbyCategories} from "../../data/comboCategories";
 import {toOptions} from "../../components/inputs/inputHelpers";
-import XTextAreaInput from "../../components/inputs/XTextAreaInput";
 import XForm from "../../components/forms/XForm";
-import XRemoteSelect from "../../components/inputs/XRemoteSelect";
+import {ISelectOpt, RemoteSelect, XRemoteSelect} from "../../components/inputs/XRemoteSelect2";
+import {remoteRoutes} from "../../data/constants";
 
 const Settings = () => {
     function handleSubmission(values: any, actions: FormikActions<any>) {
@@ -30,28 +22,20 @@ const Settings = () => {
 
     const schema = yup.object().shape(
         {
-            gender: reqString.oneOf(genderCategories),
             firstName: reqString,
-            lastName: reqString,
-            hobbies: reqString,
-            birthDate: reqDate,
-            salutation: nullableString.oneOf(salutationCategories),
-            middleName: nullableString,
-            civilStatus: nullableString.oneOf(civilStatusCategories),
-            about: reqString,
-            avatar: nullableString
+            hobbies: reqString
         }
     )
     return <Navigation>
         <Grid spacing={2} container>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
                 <XForm
                     onSubmit={handleSubmission}
                     schema={schema}
                     debug
                 >
                     <Grid spacing={2} container>
-                        <Grid item sm={4}>
+                        <Grid item sm={6}>
                             <XTextInput
                                 name="firstName"
                                 label="First Name"
@@ -59,29 +43,8 @@ const Settings = () => {
                                 variant='outlined'
                             />
                         </Grid>
-                        <Grid item sm={4}>
-                            <XTextInput
-                                name="lastName"
-                                label="Last Name"
-                                type="text"
-                            />
-                        </Grid>
-                        <Grid item sm={4}>
-                            <XTextInput
-                                name="email"
-                                label="Email"
-                                type="email"
-                            />
-                        </Grid>
-                        <Grid item sm={4}>
-                            <XSelectInput
-                                name="hobbies"
-                                label="Hobbies"
-                                options={toOptions(hobbyCategories)}
-                                variant='outlined'
-                            />
-                        </Grid>
-                        <Grid item sm={4}>
+
+                        <Grid item sm={6}>
                             <XSelectInput
                                 name="hobbies"
                                 label="Hobbies"
@@ -89,47 +52,25 @@ const Settings = () => {
                                 variant='standard'
                             />
                         </Grid>
-                        <Grid item sm={4}>
-                            <XSelectInput
-                                name="hobbies2"
-                                label="Hobbies2"
-                                multiple={true}
-                                options={toOptions(hobbyCategories)}
-                            />
-                        </Grid>
-                        <Grid item sm={4}>
-                            <XTextAreaInput
-                                name="about"
-                                label="About Me"
-                                rowsMax={4}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <XCheckBoxInput
-                                name="accept"
-                                label="Accept Terms"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <XRadioInput
-                                name="gender"
-                                label="Gender"
-                                options={toOptions(genderCategories)}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <XDateInput
-                                name="birthDate"
-                                label="Birth Date"
+
+                        <Grid item sm={6}>
+                            <XRemoteSelect
+                                name="person"
+                                label="Person"
+                                remote={remoteRoutes.contactsPerson}
+                                parser={({id, fullName}: any):ISelectOpt => ({id, label: fullName})}
                             />
                         </Grid>
                     </Grid>
                 </XForm>
-
-                <XRemoteSelect />
+                <RemoteSelect
+                    name="person"
+                    label="Person"
+                    remote={remoteRoutes.contactsPerson}
+                    parser={({id, fullName}: any):ISelectOpt => ({id, label: fullName})}
+                />
             </Grid>
         </Grid>
-
     </Navigation>
 }
 

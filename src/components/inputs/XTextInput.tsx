@@ -20,10 +20,11 @@ const XTextInput = (props: TextFieldProps & IProps) => {
             fullWidth
             margin="normal"
             error={Boolean(showError)}
+            helperText={showError && error}
             {...field}
             {...props}
             value={field.value || ""}
-            helperText={showError && error}
+
         />
     }
     return (

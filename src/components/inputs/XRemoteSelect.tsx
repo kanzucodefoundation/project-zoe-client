@@ -5,10 +5,6 @@ import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
 import {IOption} from "./inputHelpers";
 
-
-
-
-
 interface IProps {
 
 }

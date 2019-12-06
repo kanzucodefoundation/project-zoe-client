@@ -13,13 +13,13 @@ export const useStyles = makeStyles((theme: Theme) =>
         },
         drawer: {
             backgroundColor: navBackgroundColor,
-            [theme.breakpoints.up('sm')]: {
+            [theme.breakpoints.up('md')]: {
                 width: drawerWidth,
                 flexShrink: 0,
             },
         },
         appBar: {
-            [theme.breakpoints.up('sm')]: {
+            [theme.breakpoints.up('md')]: {
                 width: `calc(100% - ${drawerWidth}px)`,
                 marginLeft: drawerWidth,
             },
@@ -30,7 +30,7 @@ export const useStyles = makeStyles((theme: Theme) =>
         },
         menuButton: {
             color: grey[50],
-            [theme.breakpoints.up('sm')]: {
+            [theme.breakpoints.up('md')]: {
                 display: 'none',
             },
         },

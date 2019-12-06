@@ -16,6 +16,7 @@ interface IProps {
 const Component = ({field, form, ...other}: FieldProps) => {
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+
     const error = getIn(form.errors, field.name);
     const isTouched = getIn(form.touched, field.name);
     const wasSubmitted = form.submitCount > 0;
