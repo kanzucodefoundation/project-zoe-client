@@ -3,19 +3,10 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
+import {IOption} from "./inputHelpers";
 
 
-interface PlaceType {
-    structured_formatting: {
-        secondary_text: string;
-        main_text_matched_substrings: [
-            {
-                offset: number;
-                length: number;
-            }
-        ];
-    };
-}
+
 
 
 interface IProps {
@@ -24,7 +15,7 @@ interface IProps {
 
 export default function XRemoteSelect() {
     const [loading, setLoading] = React.useState(false);
-    const [options, setOptions] = React.useState<PlaceType[]>([]);
+    const [options, setOptions] = React.useState<IOption[]>([]);
     const handleInputChange = (event: React.ChangeEvent<any>) => {
         if (!event)
             return

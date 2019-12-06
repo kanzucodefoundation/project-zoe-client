@@ -8,7 +8,8 @@ export const createNode = (parent: string | null = null): IGroup => ({
     name: faker.company.catchPhrase(),
     parent,
     description: faker.company.catchPhrase(),
-    privacy: GroupPrivacy.Public
+    privacy: GroupPrivacy.Public,
+    tag: "Location"
 });
 
 

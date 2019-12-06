@@ -1,68 +1,89 @@
 import React, {useState} from 'react';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import TextField from '@material-ui/core/TextField';
-import {useTheme} from '@material-ui/core/styles';
+import {IGroup} from "./types";
+import EditDialog from "../../components/EditDialog";
+import GroupEditor from "./GroupEditor";
+import Box from "@material-ui/core/Box";
+import Avatar from "@material-ui/core/Avatar";
+import PersonIcon from "@material-ui/icons/People";
+import Typography from "@material-ui/core/Typography";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import {createStyles, makeStyles} from "@material-ui/core/styles";
+import {Theme} from "@material-ui/core";
 
 interface IProps {
-    open: boolean
-    nodeData: any
-    handleClose: () => any
-    handleChange: (data: any) => any
+    data: IGroup
+    onEdited: (data: any) => any
 }
 
-export default function Details({nodeData, handleClose, open, handleChange}: IProps) {
-    const {node, path} = nodeData
-    const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
-    const [name, setTitle] = useState<string>(node.name)
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        root: {
+            [theme.breakpoints.only('md')]: {
+                maxWidth: 350
+            },
+            [theme.breakpoints.up('lg')]: {
+                maxWidth: 450
+            },
+            [theme.breakpoints.down('sm')]: {
+                width: '100%'
+            }
+        },
+    }),
+);
 
-    function onChange(e: any) {
-        const title = e.target.value
-        setTitle(title)
+export default function Details({data, onEdited}: IProps) {
+    const [dialog, setDialog] = useState<boolean>(false)
+    const classes = useStyles()
+
+    function handleClose() {
+        setDialog(false)
     }
 
-    function onSubmit() {
-        const nodeChanges = {name}
-        handleChange({nodeChanges, node, path})
+    function handleEdit() {
+        setDialog(true)
+    }
+
+    function handleDelete() {
+        //TODO implement delete
+    }
+
+    function handleEdited(dt: any) {
+        setDialog(false)
+        onEdited(dt)
     }
 
     return (
-        <Dialog
-            fullScreen={fullScreen}
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="responsive-dialog-title"
-
-        >
-            <DialogTitle id="responsive-dialog-title">{node.name}</DialogTitle>
-            <DialogContent>
-                <TextField
-                    required
-                    id="outlined-required"
-                    label="Required"
-                    value={name}
-                    margin="normal"
-                    variant="outlined"
-                    fullWidth
-                    onChange={onChange}
+        <Box px={1} display='flex' justifyContent='center'>
+            <Card className={classes.root} elevation={0}>
+                <CardHeader
+                    avatar={
+                        <Avatar><PersonIcon/></Avatar>
+                    }
+                    title={<Typography variant='body1'>{data.name}</Typography>}
+                    subheader={`${data.privacy}, ${data.tag}`}
                 />
-                <pre>
-                        {JSON.stringify(node, null, 2)}
-                </pre>
-            </DialogContent>
-            <DialogActions>
-                <Button color="primary" onClick={onSubmit}>
-                    Submit
-                </Button>
-                <Button onClick={handleClose} color="primary" autoFocus>
-                    Cancel
-                </Button>
-            </DialogActions>
-        </Dialog>
+                <CardContent>
+                    <Typography variant="body2" color="textSecondary" component="p">
+                        {data.description}
+                    </Typography>
+                    <Box display='flex' justifyContent='flex-end' pt={2}>
+                        <Button variant="outlined" color="default" size='small' onClick={handleDelete}>
+                            Delete
+                        </Button>
+                        <Box pl={1}>
+                            <Button variant="outlined" color="primary" size='small' onClick={handleEdit}>
+                                Edit
+                            </Button>
+                        </Box>
+                    </Box>
+                </CardContent>
+                <EditDialog open={dialog} onClose={handleClose} title='Edit Group'>
+                    <GroupEditor data={data} isNew={false} onGroupEdited={handleEdited}/>
+                </EditDialog>
+            </Card>
+        </Box>
     );
 }

@@ -11,6 +11,7 @@ import AddIcon from '@material-ui/icons/Add';
 import InfoIcon from '@material-ui/icons/ZoomIn';
 import Typography from "@material-ui/core/Typography";
 import {Box} from "@material-ui/core";
+
 function TransitionComponent(props: TransitionProps) {
     return (
         <Collapse {...props} />
@@ -43,7 +44,8 @@ const useStyles = makeStyles(
 interface IProps {
     data: ITreeData[]
     onDetails: (d: any) => any
-    onAdd: (d: any) => any
+    onAddUnder: (d: any) => any
+    open?: any[]
 }
 
 export interface ITreeData {
@@ -91,8 +93,7 @@ export default function XTreeData(props: IProps) {
     const handleAddClick = (data: any) => (e: any) => {
         e.preventDefault()
         e.stopPropagation();
-        console.log("Add Clicked", data)
-        props.onAdd(data)
+        props.onAddUnder(data)
     }
 
     const handleDetailClick = (data: any) => (e: any) => {
@@ -101,8 +102,8 @@ export default function XTreeData(props: IProps) {
         props.onDetails(data)
     }
 
-    const createItem = (dt: any) => {
-        if (dt.children) {
+    const createItem = ({children, ...dt}: any) => {
+        if (children) {
             return <StyledTreeItem
                 key={dt.id}
                 nodeId={dt.id}
@@ -113,7 +114,7 @@ export default function XTreeData(props: IProps) {
                 />}
             >
                 {
-                    dt.children.map(createItem)
+                    children.map(createItem)
                 }
             </StyledTreeItem>
         }
@@ -127,11 +128,10 @@ export default function XTreeData(props: IProps) {
             />}
         />
     }
-
     return (
         <TreeView
+            defaultExpanded={props.open}
             className={classes.root}
-            defaultExpanded={['1']}
             defaultCollapseIcon={<MinusSquare/>}
             defaultExpandIcon={<PlusSquare/>}
             defaultEndIcon={<CloseSquare/>}

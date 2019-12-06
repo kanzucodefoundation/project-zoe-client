@@ -40,7 +40,7 @@ const Header = ({onAddNew, onFilterToggle,onChange, title}: IProps) => {
                                 onClick={onAddNew}
                                 style={{padding:theme.spacing(1)}}
                             >
-                                Add New
+                                New&nbsp;&nbsp;
                             </Button>
                         </Box>
                     </Hidden>

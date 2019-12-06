@@ -1,6 +1,7 @@
 export interface IGroup{
-    id: string
+    id?: string
     name: string
+    tag: string
     privacy: GroupPrivacy
     description?: string
     parent: any | null
