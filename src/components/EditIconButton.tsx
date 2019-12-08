@@ -13,7 +13,7 @@ interface IProps {
 const EditIconButton = ({onClick}: IProps) => {
     return (
         <IconButton aria-label="delete" size="small" title='Edit' style={{marginTop: 5}} onClick={onClick}>
-            <EditIcon/>
+            <EditIcon style={{fontSize:'1rem'}}/>
         </IconButton>
     );
 }
