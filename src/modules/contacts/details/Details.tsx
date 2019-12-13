@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Profile from "./info/Profile";
-import Teams from "./Teams";
+import Groups from "./Groups";
 import Info from "./info/Info";
 import {get} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
@@ -124,7 +124,7 @@ const Details = (props: IProps) => {
                                 <Info data={data}/>
                             </TabPanel>
                             <TabPanel value={value} index="two">
-                                <Teams/>
+                                <Groups/>
                             </TabPanel>
                         </Grid>
                     </Grid>

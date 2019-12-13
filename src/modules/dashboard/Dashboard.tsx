@@ -2,61 +2,32 @@ import React from 'react';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Layout from "../../components/layout/Layout";
 import {Grid} from "@material-ui/core";
-import ContactItem from "../contacts/ContactItem";
-import {createArray} from "../../utils/arrayHelpers";
+import Typography from "@material-ui/core/Typography";
+import {useSelector} from "react-redux";
+import {IState} from "../../data/types";
+import Widget from "./Widget";
 import Box from "@material-ui/core/Box";
-import AddIcon from "@material-ui/icons/Add";
-import Fab from "@material-ui/core/Fab";
-import Hidden from "@material-ui/core/Hidden";
-import {fakeContact} from "../contacts/types";
-
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            display: 'flex',
-            flexWrap: 'wrap',
-        },
-        fab: {
-            position: 'absolute',
-            bottom: theme.spacing(2),
-            right: theme.spacing(2),
-        },
-    }),
-);
 
 export default function SimpleSelect() {
-    const classes = useStyles();
-
-
-    const list = createArray<number>(10, () => 0)
-
-    function handleNew() {
-
-    }
-
-
-
+    const profile = useSelector((state: IState) => state.core.user)
+    const data = [1, 2, 3, 4]
     return (
         <Layout>
             <Box p={2}>
-
-                <Grid container spacing={1}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Typography variant='overline'>Dashboard</Typography>
+                        <Typography variant='h6'>Hello {profile.fullName}</Typography>
+                        <Typography variant='caption'>Here's what's happening</Typography>
+                    </Grid>
                     {
-                        list.map((it, index) =>
-                            <Grid item xs={12} sm={6} md={4} xl={3} key={index}>
-                                <ContactItem data={fakeContact()}/>
-                            </Grid>
-                        )
+                        data.map(it => <Grid item xs={12} sm={6} md={4} lg={3} key={it}>
+                            <Widget/>
+                        </Grid>)
                     }
+
                 </Grid>
             </Box>
-
-            <Hidden smUp>
-                <Fab aria-label='add-new' className={classes.fab} color='primary' onClick={handleNew}>
-                    <AddIcon/>
-                </Fab>
-            </Hidden>
 
         </Layout>
     );

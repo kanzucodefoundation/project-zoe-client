@@ -10,8 +10,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import HelpIcon from '@material-ui/icons/Help';
 import {useHistory, useLocation} from 'react-router-dom'
 import {localRoutes} from "../../data/constants";
-import logo from "../../assets/logo.png";
-import cool from "../../assets/cool.png";
+import appLogo from "../../assets/cool.png";
 import {navBackgroundColor} from "./styles";
 import {createStyles, makeStyles, Theme, withStyles} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
@@ -21,8 +20,7 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
-const debug = process.env.NODE_ENV !== 'production'
-const appLogo = debug?logo:cool;
+
 interface IProps {
 }
 
