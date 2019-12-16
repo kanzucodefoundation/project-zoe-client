@@ -12,8 +12,11 @@ import {remoteRoutes} from "../../data/constants";
 import {hasValue} from "../../components/inputs/inputHelpers";
 import PersonIcon from "@material-ui/icons/Person";
 import Hidden from "@material-ui/core/Hidden";
-interface IProps {
-}
+import EditDialog from "../../components/EditDialog";
+import UserEditor from "./UserEditor";
+import Loading from "../../components/Loading";
+
+
 const columns: XHeadCell[] = [
     {
         name: 'avatar',
@@ -40,7 +43,10 @@ const columns: XHeadCell[] = [
         cellProps: {
             component: "th", scope: "row"
         }
-    }
+    }, {
+        name: 'group',
+        label: 'Group'
+    },
 ]
 
 interface IMobileRow {
@@ -66,44 +72,66 @@ const toMobile = (data: any): IMobileRow => {
 }
 
 
-
-const Users = (props: IProps) => {
-    const [query, setQuery] = useState<string>("")
+const Users = () => {
+    const [filter, setFilter] = useState<any>({})
     const [loading, setLoading] = useState<boolean>(true)
     const [data, setData] = useState<[]>([])
+    const [selected, setSelected] = useState<any | null>(null)
+    const [dialog, setDialog] = useState<boolean>(false)
     useEffect(() => {
         setLoading(true)
-        search(remoteRoutes.users, {}, resp => {
+        search(remoteRoutes.users, filter, resp => {
             setData(resp)
         }, undefined, () => setLoading(false))
-    }, [query])
+    }, [filter])
 
-    function handleFilterToggle() {
-
+    function handleFilter(query: string) {
+        setFilter({query})
     }
 
     function handleNew() {
-
+        setSelected(null)
+        setDialog(true)
     }
 
-    const handleEdit=(dt:any) =>{
+    const handleEdit = (dt: any) => {
+        setSelected(dt)
+        setDialog(true)
+    }
 
+    const handleComplete = (dt: any) => {
+        if (selected) {
+            console.log("Updated", dt)
+        } else {
+            console.log("New data", dt)
+        }
+    }
+    const handleClose = () => {
+        setSelected(null)
+        setDialog(false)
     }
 
     return (
         <Layout>
             <Box p={2}>
-                <Header title='Users' onAddNew={handleNew} onFilterToggle={handleFilterToggle}/>
-                <DataList
-                    data={data}
-                    toMobileRow={toMobile}
-                    columns={columns}
-                    onEditClick={handleEdit}
-                />
+                <Header title='Users' onAddNew={handleNew} onChange={handleFilter}/>
+                {
+                    loading ?
+                        <Loading/> :
+                        <DataList
+                            data={data}
+                            toMobileRow={toMobile}
+                            columns={columns}
+                            onEditClick={handleEdit}
+                        />
+                }
             </Box>
             <Hidden mdUp>
                 <AddFabButton onClick={handleNew}/>
             </Hidden>
+            <EditDialog title={selected ? 'Edit User' : 'Create User'} open={dialog} onClose={handleClose}>
+                <UserEditor data={selected} isNew={!selected} done={handleComplete}/>
+            </EditDialog>
         </Layout>
     );
 }

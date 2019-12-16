@@ -57,6 +57,17 @@ export enum EmailCategory {
     Other = 'Other',
 }
 
+export enum RelationshipCategory {
+    Mother = 'Mother',
+    Father = 'Father',
+    Daughter = 'Daughter',
+    Son = 'Son',
+    Fiancee = 'Fiancee',
+    Sister = 'Sister',
+    Brother = 'Brother',
+    Other = 'Other',
+}
+
 export interface IPhone {
     id?: string
     value: string

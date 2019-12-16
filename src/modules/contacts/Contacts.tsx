@@ -30,6 +30,9 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
 import {useHistory} from "react-router";
 import {hasValue} from "../../components/inputs/inputHelpers";
+import {useDispatch, useSelector} from "react-redux";
+import {crmConstants, ICrmState} from "../../data/contacts/reducer";
+import {ITagState} from "../../data/tags/reducer";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -73,15 +76,16 @@ const toMobileRow = (data: IContact): IMobileRow => {
 
 
 const Contacts = () => {
+    const dispatch = useDispatch();
     const history = useHistory();
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
     const [createDialog, setCreateDialog] = useState(false);
-
+    const {data, loading}: ICrmState = useSelector((state: any) => state.crm)
     const [showFilter, setShowFilter] = useState(!isSmall);
     const [filter, setFilter] = useState<IContactsFilter>({});
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+
+
     const classes = useStyles();
     useEffect(() => {
         if (isSmall) {
@@ -93,15 +97,30 @@ const Contacts = () => {
         setShowFilter(!showFilter);
     }
 
+
     useEffect(() => {
-        setLoading(true)
+        dispatch({
+            type: crmConstants.crmFetchLoading,
+            payload: true,
+        })
         search(
             remoteRoutes.contacts,
             filter,
-            setData,
+            (resp) => {
+                dispatch({
+                    type: crmConstants.crmFetchAll,
+                    payload: [...resp],
+                })
+            },
             undefined,
-            () => setLoading(false))
-    }, [filter])
+            () => {
+                dispatch({
+                    type: crmConstants.crmFetchLoading,
+                    payload: false,
+                })
+            })
+    }, [filter, dispatch])
+
 
     function handleFilter(value: any) {
         setFilter({...filter, ...value})

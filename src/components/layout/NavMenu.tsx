@@ -155,7 +155,7 @@ const NavMenu = (props: any) => {
                                     {open[it.name] ? <ExpandLess className={classes.whiteText}/> :
                                         <ExpandMore className={classes.whiteText}/>}
                                 </StyledListItem>
-                                <Collapse in={open[it.name]} timeout="auto" unmountOnExit>
+                                <Collapse in={open[it.name] || isSelected(it.name.toLocaleLowerCase())} timeout="auto" unmountOnExit>
                                     <List component="div" disablePadding>
                                         {
                                             it.items.map(ch => <StyledListItem

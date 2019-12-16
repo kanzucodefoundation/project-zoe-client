@@ -42,7 +42,7 @@ function Login() {
                 </Typography>
                 <Formik
                     initialValues={{
-                        "email": "ekastimo@gmail.com",
+                        "username": "ekastimo@gmail.com",
                         "password": "Xpass@123"
                     }}
                     validationSchema={schema}
@@ -52,8 +52,8 @@ function Login() {
                         <Form className={classes.form}>
                             <XTextInput
                                 type='email'
-                                name='email'
-                                label='Email Address'
+                                name='username'
+                                label='Email'
                                 autoComplete="off"
                                 autoFocus
                                 margin="normal"
@@ -87,7 +87,7 @@ function Login() {
 
 export const schema = yup.object().shape(
     {
-        email: yup.string().email('Invalid email').required("Email is required"),
+        username: yup.string().email('Invalid email').required("Email is required"),
         password: yup.string().required("Password is required")
     }
 );

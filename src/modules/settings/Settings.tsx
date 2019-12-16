@@ -58,7 +58,7 @@ const Settings = () => {
                                 name="person"
                                 label="Person"
                                 remote={remoteRoutes.contactsPerson}
-                                parser={({id, fullName}: any):ISelectOpt => ({id, label: fullName})}
+                                parser={({id, name}: any):ISelectOpt => ({id, label: name})}
                             />
                         </Grid>
                     </Grid>

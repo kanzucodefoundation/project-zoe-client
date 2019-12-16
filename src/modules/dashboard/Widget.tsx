@@ -2,7 +2,7 @@ import React from 'react';
 import {makeStyles} from '@material-ui/styles';
 import {Avatar, Card, CardContent, Grid, Theme, Typography} from '@material-ui/core';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import MoneyIcon from '@material-ui/icons/Money';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -17,8 +17,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     avatar: {
         backgroundColor: theme.palette.error.main,
-        height: 50,
-        width: 50
+        height: 45,
+        width: 45
+    },
+    avatarPlus: {
+        backgroundColor: theme.palette.primary.main,
+        height: 45,
+        width: 45
     },
     icon: {
         height: 32,
@@ -32,14 +37,24 @@ const useStyles = makeStyles((theme: Theme) => ({
     differenceIcon: {
         color: theme.palette.error.dark
     },
+    positiveIcon: {
+        color: theme.palette.primary.dark
+    },
     differenceValue: {
         color: theme.palette.error.dark,
+        marginRight: theme.spacing(1)
+    },
+    positiveValue: {
+        color: theme.palette.primary.dark,
         marginRight: theme.spacing(1)
     }
 }));
 
 interface IProps {
-
+    title: string
+    value: any
+    percentage: number
+    icon: any
 }
 
 const Widget = (props: IProps) => {
@@ -60,23 +75,27 @@ const Widget = (props: IProps) => {
                             gutterBottom
                             variant="body2"
                         >
-                            BUDGET
+                            {props.title.toLocaleUpperCase()}
                         </Typography>
-                        <Typography variant="h5">$24,000</Typography>
+                        <Typography variant="h6">{props.value}</Typography>
                     </Grid>
                     <Grid item>
-                        <Avatar className={classes.avatar}>
-                            <MoneyIcon className={classes.icon}/>
+                        <Avatar className={props.percentage < 0 ? classes.avatar : classes.avatarPlus}>
+                            <props.icon className={classes.icon}/>
                         </Avatar>
                     </Grid>
                 </Grid>
                 <div className={classes.difference}>
-                    <ArrowDownwardIcon className={classes.differenceIcon}/>
+                    {props.percentage < 0 ?
+                        <ArrowDownwardIcon className={classes.differenceIcon}/> :
+                        <ArrowUpwardIcon className={classes.positiveIcon}/>
+                    }
+
                     <Typography
-                        className={classes.differenceValue}
+                        className={props.percentage < 0 ? classes.differenceValue : classes.positiveValue}
                         variant="body2"
                     >
-                        12%
+                        {props.percentage}%
                     </Typography>
                     <Typography
                         variant="caption"

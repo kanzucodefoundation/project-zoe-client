@@ -7,7 +7,7 @@ export interface BaseModel {
     isDeleted: boolean
 }
 
-export interface IUser {
+export interface IAuthUser {
     id: string
     avatar: string
     username: string
@@ -18,7 +18,7 @@ export interface IUser {
 
 export interface ILoginResponse {
     token: string
-    user: IUser
+    user: IAuthUser
 }
 
 export interface IState {
@@ -28,7 +28,7 @@ export interface IState {
 }
 
 export interface ICoreState {
-    user: IUser
+    user: IAuthUser
     token: string
 }
 

@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme:Theme) => ({
     },
     chartContainer: {
         position: 'relative',
-        height: '300px'
+        height: '200px'
     },
     stats: {
         marginTop: theme.spacing(2),
@@ -105,7 +105,7 @@ const UsersByDevice = () => {
                         <RefreshIcon />
                     </IconButton>
                 }
-                title="Users By Device"
+                title={<Typography variant='h6'>Users By Device</Typography>}
             />
             <Divider />
             <CardContent>
@@ -125,7 +125,7 @@ const UsersByDevice = () => {
                             <Typography variant="body1">{device.title}</Typography>
                             <Typography
                                 style={{ color: device.color }}
-                                variant="h2"
+                                variant="h6"
                             >
                                 {device.value}%
                             </Typography>

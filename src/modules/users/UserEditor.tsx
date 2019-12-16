@@ -7,59 +7,42 @@ import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
 
 import {remoteRoutes} from "../../data/constants";
-import {useDispatch} from 'react-redux'
-import {crmConstants} from "../../data/contacts/reducer";
-import {put} from "../../utils/ajax";
-import Toast from "../../utils/Toast";
-import {IPerson} from "../contacts/types";
-import {IUser} from "../../data/types";
+import {IAuthUser} from "../../data/types";
+import {ISelectOpt, XRemoteSelect} from "../../components/inputs/XRemoteSelect2";
+import {handleSubmission, ISubmission} from "../../utils/formHelpers";
+import {IUser} from "./types";
 
 interface IProps {
-    data: IUser
-    contactId: string
-    done?: () => any
+    data: IAuthUser
+    isNew: boolean
+    done: (dt:any) => any
 }
 
 const schema = yup.object().shape(
     {
         username: reqString,
         contactId: reqString,
-        role: reqString
+        group: reqString
     }
 )
 
-const UserEditor = ({data, done,contactId}: IProps) => {
-    const dispatch = useDispatch();
+const UserEditor = ({data,isNew, done}: IProps) => {
 
     function handleSubmit(values: any, actions: FormikActions<any>) {
-        const toSave: IPerson = {
-            firstName: values.firstName,
-            middleName: values.middleName,
-            lastName: values.lastName,
-            dateOfBirth: values.dateOfBirth,
-            gender: values.gender,
-            salutation: values.salutation,
-            civilStatus: values.civilStatus,
-            about: values.about,
-            avatar: ""
-        }
-        put(`${remoteRoutes.contactsPerson}/${contactId}`, toSave,
-            (data) => {
-                Toast.info('Operation successful')
-                actions.resetForm()
-                dispatch({
-                    type: crmConstants.crmEditPerson,
-                    payload: {...data},
-                })
-                if (done)
-                    done()
-            },
-            undefined,
-            () => {
-                actions.setSubmitting(false);
 
-            }
-        )
+
+        const toSave: IUser = {
+            username:  values.username,
+            contactId:  values.person.id,
+            group:  values.userGroup.id
+        }
+
+        const submission: ISubmission = {
+            url: remoteRoutes.users,
+            values:toSave, actions, isNew,
+            onAjaxComplete:done
+        }
+        handleSubmission(submission)
     }
 
     return (
@@ -69,18 +52,26 @@ const UserEditor = ({data, done,contactId}: IProps) => {
             initialValues={data}
         >
             <Grid spacing={1} container>
-                <Grid item xs={8}>
+                <Grid item xs={12}>
+                    <XRemoteSelect
+                        name="person"
+                        label="Person"
+                        remote={remoteRoutes.contactsPerson}
+                        parser={({id, name}: any):ISelectOpt => ({id, label: name})}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <XRemoteSelect
+                        name="userGroup"
+                        label="Group"
+                        remote={remoteRoutes.userGroups}
+                        parser={({id, name}: any):ISelectOpt => ({id, label: name})}
+                    />
+                </Grid>
+                <Grid item xs={12}>
                     <XTextInput
                         name="username"
                         label="Username"
-                        type="text"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <XTextInput
-                        name="role"
-                        label="Role"
                         type="text"
                         variant='outlined'
                     />

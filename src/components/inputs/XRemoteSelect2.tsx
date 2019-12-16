@@ -61,7 +61,7 @@ export function RemoteSelect(props: IProps) {
 
     return (
         <Autocomplete
-            style={{width: 300}}
+            style={{width: "100%"}}
             getOptionLabel={getOptionLabel}
             filterOptions={x => x}
             options={options}

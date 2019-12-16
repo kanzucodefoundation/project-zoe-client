@@ -19,23 +19,22 @@ export const redux = {
 };
 
 export const localRoutes = {
-    callback: '/callback',
-    pending: '/pending',
-    applications: '/applications',
-    applicationsDetails: '/applications/:caseId',
+
     dashboard: '/dashboard',
-    contacts: '/contacts',
-    users: '/users',
-    help: '/help',
-    groups: '/groups',
-    tags: '/tags',
-    contactsDetails: '/contacts/:contactId',
-    settings: '/settings',
+    contacts: '/people/contacts',
+    contactsDetails: '/people/contacts/:contactId',
+    groups: '/people/groups',
+
+    users: '/admin/users',
+    tags: '/admin/tags',
+    settings: '/admin/settings',
+
+    help: '/help'
 }
 
 const debug = process.env.NODE_ENV !== 'production'
-export const url = debug ? 'http://localhost:9001' :
-    'https://event-yo-server.herokuapp.com'
+export const url = debug ? 'http://localhost:3004' :
+    'https://angie-server.herokuapp.com'
 
 export const remoteRoutes = {
     authServer: url,
@@ -50,18 +49,17 @@ export const remoteRoutes = {
     contactsChc: url + '/api/crm/person/chc',
     contactsEmail: url + '/api/crm/email',
     tags: url + '/api/tags',
-    users: url + '/api/auth/users',
+    users: url + '/api/users',
+    userGroups: url + '/api/user-groups',
     contactsPhone: url + '/api/crm/phone',
     contactsAddress: url + '/api/crm/address',
     contactsIdentification: url + '/api/crm/identification',
-
-
 
     groups: url + '/api/groups/group',
 
     contactsCompany: url + '/api/crm/contact/company',
     contactsAvatar: url + '/api/crm/contact/avatar',
-    workflows: url + '/api/workflows',
+
 }
 
 

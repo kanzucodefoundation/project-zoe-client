@@ -24,6 +24,7 @@ interface IProps {
 const schema = yup.object().shape(
     {
         name: reqString,
+        privacy: reqString,
         description: reqString,
         tag: reqString
     }
