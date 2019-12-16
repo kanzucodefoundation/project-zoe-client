@@ -80,7 +80,7 @@ export interface IIdentification {
     value: string
     cardNumber?: string
     issuingCountry: string
-    startDate: Date
+    issueDate: Date
     expiryDate: Date
     category: string
     isPrimary: boolean
@@ -214,7 +214,8 @@ export const fakeContact = (): IContact => {
                 isPrimary: false,
                 country: faker.address.country(),
                 district: faker.address.city(),
-                county: faker.address.city()
+                county: faker.address.city(),
+                freeForm: faker.address.streetName()
             }
         ],
         identifications: [
@@ -223,7 +224,7 @@ export const fakeContact = (): IContact => {
                 category: 'Nin',
                 value: getRandomStr(),
                 cardNumber: getRandomStr(5),
-                startDate: faker.date.past(),
+                issueDate: faker.date.past(),
                 expiryDate: faker.date.future(),
                 issuingCountry: 'Uganda',
                 isPrimary: true,

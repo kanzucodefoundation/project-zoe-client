@@ -11,6 +11,9 @@ import {toOptions} from "../../components/inputs/inputHelpers";
 import XForm from "../../components/forms/XForm";
 import {ISelectOpt, RemoteSelect, XRemoteSelect} from "../../components/inputs/XRemoteSelect2";
 import {remoteRoutes} from "../../data/constants";
+import {Button} from "@material-ui/core";
+import {post} from "../../utils/ajax";
+import {fakeContact} from "../contacts/types";
 
 const Settings = () => {
     function handleSubmission(values: any, actions: FormikActions<any>) {
@@ -26,6 +29,13 @@ const Settings = () => {
             hobbies: reqString
         }
     )
+
+    function handleFakeContact() {
+        post(remoteRoutes.contacts, fakeContact(), resp => {
+            console.log('Contatc created', resp)
+        })
+    }
+
     return <Navigation>
         <Grid spacing={2} container>
             <Grid item xs={12}>
@@ -58,7 +68,7 @@ const Settings = () => {
                                 name="person"
                                 label="Person"
                                 remote={remoteRoutes.contactsPerson}
-                                parser={({id, name}: any):ISelectOpt => ({id, label: name})}
+                                parser={({id, name}: any): ISelectOpt => ({id, label: name})}
                             />
                         </Grid>
                     </Grid>
@@ -67,8 +77,9 @@ const Settings = () => {
                     name="person"
                     label="Person"
                     remote={remoteRoutes.contactsPerson}
-                    parser={({id, fullName}: any):ISelectOpt => ({id, label: fullName})}
+                    parser={({id, fullName}: any): ISelectOpt => ({id, label: fullName})}
                 />
+                <Button onBlur={handleFakeContact}>Fake Contact</Button>
             </Grid>
         </Grid>
     </Navigation>

@@ -27,7 +27,7 @@ const displayData = (idData: IIdentification): IRec[] => {
         },
         {
             label: 'Date of Issue',
-            value: printDate(idData.startDate)
+            value: printDate(idData.issueDate)
         },
         {
             label: 'Date of Expiry',
