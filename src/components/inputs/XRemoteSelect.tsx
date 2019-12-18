@@ -5,6 +5,7 @@ import {search} from "../../utils/ajax";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {Field, FieldProps, getIn} from "formik";
 import {hasValue} from "./inputHelpers";
+import {Box} from "@material-ui/core";
 
 interface IProps {
     name: string
@@ -23,6 +24,8 @@ export interface ISelectOpt {
     label: string
     id: any
 }
+
+const FakeProgress = () => <div style={{height: 20, width: 20}}>&nbsp;</div>
 
 export function RemoteSelect(props: IProps) {
     const [loading, setLoading] = React.useState(false);
@@ -48,9 +51,7 @@ export function RemoteSelect(props: IProps) {
                 setLoading(false)
             })
     }
-
     const handleChange = (event: React.ChangeEvent<any>, value: any) => {
-        console.log("Value changed", value)
         props.onChange && props.onChange(value)
     }
     const handleTouched = () => {
@@ -60,39 +61,40 @@ export function RemoteSelect(props: IProps) {
     const getOptionLabel = (option: any) => option.label
 
     return (
-        <Autocomplete
-            style={{width: "100%"}}
-            getOptionLabel={getOptionLabel}
-            filterOptions={x => x}
-            options={options}
-            onChange={handleChange}
-            autoComplete
-            includeInputInList
-            freeSolo
-            disableOpenOnFocus
-            value={props.value}
-            onInputChange={handleInputChange}
-            renderInput={params => (
-                <TextField
-                    {...params}
-                    label={props.label}
-                    variant="outlined"
-                    fullWidth
-                    onBlur={handleTouched}
-                    error={props.error}
-                    helperText={props.helperText}
-                    InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                            <React.Fragment>
-                                {loading ? <CircularProgress color="inherit" size={20}/> : null}
-                                {params.InputProps.endAdornment}
-                            </React.Fragment>
-                        ),
-                    }}
-                />
-            )}
-        />
+        <Box pt={2} pb={1}>
+            <Autocomplete
+                getOptionLabel={getOptionLabel}
+                filterOptions={x => x}
+                options={options}
+                onChange={handleChange}
+                autoComplete
+                includeInputInList
+                freeSolo
+                disableOpenOnFocus
+                value={props.value}
+                onInputChange={handleInputChange}
+                renderInput={params => (
+                    <TextField
+                        {...params}
+                        label={props.label}
+                        variant="outlined"
+                        fullWidth
+                        onBlur={handleTouched}
+                        error={props.error}
+                        helperText={props.helperText}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20}/> : <FakeProgress/>}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                        }}
+                    />
+                )}
+            />
+        </Box>
     );
 }
 
@@ -113,6 +115,7 @@ export const Component = ({field, form, ...other}: FieldProps & IProps) => {
 
     return <RemoteSelect
         {...other}
+        value={field.value}
         onChange={handleChange}
         onBlur={handleTouch}
         error={Boolean(showError)}

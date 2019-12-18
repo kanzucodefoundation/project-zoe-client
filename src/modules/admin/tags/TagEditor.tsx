@@ -1,21 +1,21 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqString} from "../../data/validations";
+import {reqString} from "../../../data/validations";
 import {FormikActions} from "formik";
 import Grid from "@material-ui/core/Grid";
-import XForm from "../../components/forms/XForm";
-import XTextInput from "../../components/inputs/XTextInput";
-import XSelectInput from "../../components/inputs/XSelectInput";
-import {toOptions} from "../../components/inputs/inputHelpers";
+import XForm from "../../../components/forms/XForm";
+import XTextInput from "../../../components/inputs/XTextInput";
+import XSelectInput from "../../../components/inputs/XSelectInput";
+import {toOptions} from "../../../components/inputs/inputHelpers";
 
-import {remoteRoutes} from "../../data/constants";
+import {remoteRoutes} from "../../../data/constants";
 import {useDispatch} from 'react-redux'
-import {handleSubmission, ISubmission} from "../../utils/formHelpers";
+import {handleSubmission, ISubmission} from "../../../utils/formHelpers";
 import {ITag, tagCategories} from "./types";
-import {tagConstants, tagsDeleteTag} from "../../data/tags/reducer";
-import {coreStartGlobalLoader, coreStopGlobalLoader} from "../../data/coreActions";
-import {del} from "../../utils/ajax";
-import XColorPicker from "../../components/inputs/XColorPicker";
+import {tagConstants, tagsDeleteTag} from "../../../data/tags/reducer";
+import {coreStartGlobalLoader, coreStopGlobalLoader} from "../../../data/coreActions";
+import {del} from "../../../utils/ajax";
+import XColorPicker from "../../../components/inputs/XColorPicker";
 
 interface IProps {
     data: ITag | null

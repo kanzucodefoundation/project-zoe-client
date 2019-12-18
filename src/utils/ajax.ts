@@ -15,20 +15,16 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
     if ((res && res.forbidden) || (res && res.unauthorized)) {
         Toast.error("Authentication Error")
     } else if (res && res.badRequest) {
-
         const {message, errors} = res.body
         let msg = message + '\n'
-        for (const key in errors) {
-            if (errors.hasOwnProperty(key)) {
-                const error = errors[key][0]
-                msg += (error + '\n')
-            }
+        for (const err of errors) {
+            const error = Object.values(err)[0]
+            msg += (error + '\n')
         }
         Toast.error(msg || defaultMessage)
     } else if ((res && res.clientError) || (res && res.notAcceptable) || (res && res.error)) {
-        Toast.error(defaultMessage)
-    } else if (res && res.body && res.body.message) {
-        Toast.error(res.body.message)
+        const {message} = res.body || {}
+        Toast.error(message || defaultMessage)
     } else {
         const message = err.message || 'Unknown error, contact admin'
         const finalMessage = message.indexOf("offline") !== -1

@@ -4,16 +4,14 @@ import {reqString} from "../../../../data/validations";
 import {FormikActions} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../../components/forms/XForm";
-import XTextInput from "../../../../components/inputs/XTextInput";
 
 import {remoteRoutes} from "../../../../data/constants";
 import {post, put} from "../../../../utils/ajax";
 import Toast from "../../../../utils/Toast";
-import {GroupPrivacy, GroupRole, IGroup} from "../../../groups/types";
+import {GroupRole, IGroup} from "../../../groups/types";
 import XSelectInput from "../../../../components/inputs/XSelectInput";
 import {toOptions} from "../../../../components/inputs/inputHelpers";
 import {enumToArray} from "../../../../utils/stringHelpers";
-import {XRemoteSelect} from "../../../../components/inputs/XRemoteSelect2";
 
 interface IProps {
     data?: Partial<IGroup>

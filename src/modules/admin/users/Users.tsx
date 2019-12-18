@@ -1,21 +1,20 @@
 import React, {useEffect, useState} from 'react';
-import Layout from "../../components/layout/Layout";
-import {XHeadCell} from "../../components/table/XTableHead";
+import Layout from "../../../components/layout/Layout";
+import {XHeadCell} from "../../../components/table/XTableHead";
 import {Avatar} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import Header from "../contacts/Header";
-import DataList from "../../components/DataList";
-import {AddFabButton} from "../../components/EditIconButton";
-import {search} from "../../utils/ajax";
-import {remoteRoutes} from "../../data/constants";
-import {hasValue} from "../../components/inputs/inputHelpers";
+import Header from "../../contacts/Header";
+import DataList from "../../../components/DataList";
+import {AddFabButton} from "../../../components/EditIconButton";
+import {search} from "../../../utils/ajax";
+import {remoteRoutes} from "../../../data/constants";
+import {hasValue} from "../../../components/inputs/inputHelpers";
 import PersonIcon from "@material-ui/icons/Person";
 import Hidden from "@material-ui/core/Hidden";
-import EditDialog from "../../components/EditDialog";
+import EditDialog from "../../../components/EditDialog";
 import UserEditor from "./UserEditor";
-import Loading from "../../components/Loading";
-
+import Loading from "../../../components/Loading";
 
 const columns: XHeadCell[] = [
     {
@@ -75,7 +74,7 @@ const toMobile = (data: any): IMobileRow => {
 const Users = () => {
     const [filter, setFilter] = useState<any>({})
     const [loading, setLoading] = useState<boolean>(true)
-    const [data, setData] = useState<[]>([])
+    const [data, setData] = useState<any[]>([])
     const [selected, setSelected] = useState<any | null>(null)
     const [dialog, setDialog] = useState<boolean>(false)
     useEffect(() => {
@@ -95,16 +94,30 @@ const Users = () => {
     }
 
     const handleEdit = (dt: any) => {
-        setSelected(dt)
+        const {id, username, contactId, fullName, groupId, group} = dt
+        const toEdit = {
+            id,
+            username,
+            group: {id: groupId, label: group},
+            contact: {id: contactId, label: fullName}
+        }
+        setSelected(toEdit)
         setDialog(true)
     }
 
     const handleComplete = (dt: any) => {
         if (selected) {
-            console.log("Updated", dt)
+            const newData = data.map((it: any) => {
+                if (it.id === dt.id)
+                    return dt
+                else return it
+            })
+            setData(newData)
         } else {
-            console.log("New data", dt)
+            const newData = [...data, dt]
+            setData(newData)
         }
+        handleClose()
     }
     const handleClose = () => {
         setSelected(null)

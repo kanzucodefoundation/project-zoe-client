@@ -1,4 +1,4 @@
-import {ITag} from "../../modules/tags/types";
+import {ITag} from "../../modules/admin/tags/types";
 import {Dispatch} from "redux";
 import {search} from "../../utils/ajax";
 import {remoteRoutes} from "../constants";

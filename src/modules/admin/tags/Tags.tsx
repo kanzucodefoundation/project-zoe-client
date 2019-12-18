@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import Layout from "../../components/layout/Layout";
+import Layout from "../../../components/layout/Layout";
 import {Grid} from "@material-ui/core";
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -7,13 +7,14 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import LabelIcon from '@material-ui/icons/Label';
-import Header from "../contacts/Header";
+import Header from "../../contacts/Header";
 import {ITag} from "./types";
-import EditDialog from "../../components/EditDialog";
+import EditDialog from "../../../components/EditDialog";
 import TagEditor from "./TagEditor";
-import Loading from "../../components/Loading";
+import Loading from "../../../components/Loading";
 import {useDispatch, useSelector} from "react-redux";
-import {ITagState, tagsFetchAsync, tagsStartLoading} from "../../data/tags/reducer";
+import {ITagState, tagsFetchAsync, tagsStartLoading} from "../../../data/tags/reducer";
+import InfoMessage from "../../../components/messages/InfoMessage";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -61,6 +62,10 @@ const Tags = (props: IProps) => {
         setDialog(true)
     }
 
+    const hasNoData = (): boolean => {
+        return data.length === 0
+    }
+
     return (
         <Layout>
             <Grid container spacing={1}>
@@ -70,18 +75,24 @@ const Tags = (props: IProps) => {
                     <div className={classes.demo}>
                         <List>
                             {
-                                loading ? <Loading/> :
-                                    data.map(it => {
-                                        return <ListItem key={it.id} button onClick={handleClick(it)}>
-                                            <ListItemIcon>
-                                                <LabelIcon style={{color: it.color}}/>
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={it.name}
-                                                secondary={it.category}
-                                            />
-                                        </ListItem>
-                                    })
+                                loading ?
+                                    <Loading/> :
+                                    <>{
+                                        hasNoData() ?
+                                            <InfoMessage text='No tags found'/> :
+                                            data.map(it => {
+                                                return <ListItem key={it.id} button onClick={handleClick(it)}>
+                                                    <ListItemIcon>
+                                                        <LabelIcon style={{color: it.color}}/>
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary={it.name}
+                                                        secondary={it.category}
+                                                    />
+                                                </ListItem>
+                                            })
+
+                                    }</>
                             }
                         </List>
                     </div>
@@ -93,6 +104,5 @@ const Tags = (props: IProps) => {
         </Layout>
     );
 }
-
 
 export default Tags;

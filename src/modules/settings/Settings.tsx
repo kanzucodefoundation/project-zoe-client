@@ -9,7 +9,7 @@ import {reqString} from "../../data/validations";
 import {hobbyCategories} from "../../data/comboCategories";
 import {toOptions} from "../../components/inputs/inputHelpers";
 import XForm from "../../components/forms/XForm";
-import {ISelectOpt, RemoteSelect, XRemoteSelect} from "../../components/inputs/XRemoteSelect2";
+import {ISelectOpt, RemoteSelect, XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {remoteRoutes} from "../../data/constants";
 import {Button} from "@material-ui/core";
 import {post} from "../../utils/ajax";
@@ -79,7 +79,7 @@ const Settings = () => {
                     remote={remoteRoutes.contactsPerson}
                     parser={({id, fullName}: any): ISelectOpt => ({id, label: fullName})}
                 />
-                <Button onBlur={handleFakeContact}>Fake Contact</Button>
+                <Button onBlur={handleFakeContact} >Fake Contact</Button>
             </Grid>
         </Grid>
     </Navigation>
