@@ -14,7 +14,8 @@ import {Typography} from "@material-ui/core";
 
 interface IProps {
     title?: string
-    children?: any
+    children?: any,
+    mobilePadding?: boolean
 }
 
 function Layout(props: IProps) {
@@ -76,7 +77,7 @@ function Layout(props: IProps) {
             </nav>
             <main className={classes.content}>
                 <div className={classes.toolbar}/>
-                <Paper className={classes.body}>
+                <Paper className={classes.body} >
                     {props.children}
                 </Paper>
             </main>

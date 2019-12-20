@@ -1,43 +1,34 @@
 import React from 'react';
-import clsx from 'clsx';
 import {makeStyles} from '@material-ui/styles';
 import {
     Button,
     Card,
     CardActions,
     CardContent,
-    CardHeader,
     Checkbox,
     Divider,
     FormControlLabel,
     Grid,
     Typography
 } from '@material-ui/core';
+import XHeader from "../../components/ibox/XHeader";
 
 const useStyles = makeStyles(() => ({
-    root: {},
+    root: {
+        borderRadius: 0,
+    },
     item: {
         display: 'flex',
         flexDirection: 'column'
     }
 }));
 
-const Notifications = (props: any) => {
-    const {className, ...rest} = props;
-
+const Notifications = () => {
     const classes = useStyles();
-
     return (
-        <Card
-            {...rest}
-            className={clsx(classes.root, className)}
-        >
+        <Card className={classes.root} elevation={0}>
+            <XHeader title='Notifications'/>
             <form>
-                <CardHeader
-                    subheader="Manage the notifications"
-                    title="Notifications"
-                />
-                <Divider/>
                 <CardContent>
                     <Grid
                         container
@@ -47,7 +38,6 @@ const Notifications = (props: any) => {
                         <Grid
                             className={classes.item}
                             item
-                            md={4}
                             sm={6}
                             xs={12}
                         >

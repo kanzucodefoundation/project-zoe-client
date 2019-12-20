@@ -1,5 +1,5 @@
 import React from 'react';
-import {Grid} from "@material-ui/core";
+import {Divider, Grid} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import XSearchInput from "../../components/inputs/XSearchInput";

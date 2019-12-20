@@ -57,6 +57,18 @@ export const useStyles = makeStyles((theme: Theme) =>
             },
             overflow: 'auto'
         },
+        bodyPadded: {
+            backgroundColor: grey[50],
+            padding: theme.spacing(2),
+            [theme.breakpoints.only('xs')]: {
+                padding: theme.spacing(1),
+            },
+            height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
+            [theme.breakpoints.up('sm')]: {
+                height: `calc(100% - 64px)`
+            },
+            overflow: 'auto'
+        },
         logoHolder: {
             flexGrow: 1,
         },

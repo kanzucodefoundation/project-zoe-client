@@ -58,10 +58,6 @@ const routes = [
                 route: localRoutes.usersGroups
             },
             {
-                name: "Tags",
-                route: localRoutes.tags
-            },
-            {
                 name: "Settings",
                 route: localRoutes.settings
             },
