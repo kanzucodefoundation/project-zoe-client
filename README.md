@@ -1,6 +1,28 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# About project Angie
 
-## Available Scripts
+Angie is a church management centered on what's at the heart of all ministry - people. The platform simplifies the process of managing people and their relationships between each other and the church, keeping track of data across the organization and creates a foundation for adding new features that are specific to your church.
+
+# The tech
+
+This repo holds the Angie church relationship management system (RMS) client. 
+It was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Getting started
+
+Clone the repository:
+`git clone git@github.com:kanzucode/angie-client.git`
+
+Install the dependencies:
+`npm install`
+
+**PS:** If you don't have `npm` installed, check out this guide https://www.npmjs.com/get-npm
+
+Finally, start the party:
+`npm start`
+
+This repo works with the server at https://github.com/kanzucode/angie-server so be sure to set that up too.
+
+## Available npm scripts
 
 In the project directory, you can run:
 
@@ -39,6 +61,6 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 ## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- To learn React, check out the [React documentation](https://reactjs.org/).
