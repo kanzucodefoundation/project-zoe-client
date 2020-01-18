@@ -1,12 +1,14 @@
 import React from 'react';
 import * as yup from "yup";
 import {reqDate, reqEmail, reqString} from "../../data/validations";
-import {genderCategories} from "../../data/comboCategories";
+import {genderCategories,ageCategories} from "../../data/comboCategories";
 import {FormikActions} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
 import XDateInput from "../../components/inputs/XDateInput";
+import XSelectInput from "../../components/inputs/XSelectInput";
+import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {toOptions} from "../../components/inputs/inputHelpers";
 
 import {remoteRoutes} from "../../data/constants";
@@ -133,6 +135,13 @@ const NewContactForm = ({data, done}: IProps) => {
                     />
                 </Grid>
                 <Grid item xs={12}>
+                    <XSelectInput
+                        name="age"
+                        label="Age"
+                        options={toOptions(ageCategories)}
+                    />                    
+                </Grid>
+                <Grid item xs={12}>
                     <XTextInput
                         name="phone"
                         label="Phone"
@@ -148,6 +157,30 @@ const NewContactForm = ({data, done}: IProps) => {
                         variant='outlined'
                     />
                 </Grid>
+                <Grid item xs={12}>
+                    <XTextInput
+                      name="mc"
+                      label="Missional Community"
+                      type="text"
+                      variant='outlined'                      
+                    />                    
+                </Grid>                
+                <Grid item xs={12}>
+                    <XTextInput
+                      name="place-of-work"
+                      label="Place of work"
+                      type="text"
+                      variant='outlined'                      
+                    />                    
+                </Grid>                
+                <Grid item xs={12}>
+                    <XTextInput
+                      name="residence"
+                      label="Residence"
+                      type="text"
+                      variant='outlined'                      
+                    />                    
+                </Grid>                
             </Grid>
         </XForm>
     );

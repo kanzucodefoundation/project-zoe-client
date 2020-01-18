@@ -27,7 +27,7 @@ const data = [
         icon: Info
     },
     {
-        title: "MCs",
+        title: "MC Attendance",
         value: 256,
         percentage: 1,
         icon: People
@@ -37,7 +37,37 @@ const data = [
         value: 45,
         percentage: 2,
         icon: People
-    }
+    },
+    {
+        title: "No. of mechanics",
+        value: 56,
+        percentage: 4,
+        icon: People
+    },
+    {
+        title: "No. of Baptisms",
+        value: 5,
+        percentage: 5,
+        icon: People
+    },
+    {
+        title: "No. of recommitments",
+        value: 23,
+        percentage: 7,
+        icon: People
+    },
+    {
+        title: "No. of babies born",
+        value: 5,
+        percentage: 1,
+        icon: People
+    },             
+    {
+        title: "No. of weddings",
+        value: 3,
+        percentage: 6,
+        icon: People
+    }             
 ]
 
 export default function SimpleSelect() {
