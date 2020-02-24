@@ -43,7 +43,7 @@ export const localRoutes = {
 
 const debug = process.env.NODE_ENV !== 'production'
 export const url = debug ? 'http://localhost:3004' :
-    'https://angie-server.herokuapp.com'
+    'http://hgjyuk.com/api'
 
 export const remoteRoutes = {
     authServer: url,
@@ -65,6 +65,7 @@ export const remoteRoutes = {
     contactsIdentification: url + '/api/crm/identification',
 
     groups: url + '/api/groups/group',
+    groupsLocationCombo: url + '/api/groups/combo',
 
     contactsCompany: url + '/api/crm/contact/company',
     contactsAvatar: url + '/api/crm/contact/avatar',

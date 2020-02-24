@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {search} from "../../utils/ajax";
@@ -12,6 +12,7 @@ interface IProps {
     label: string
     remote: string
     value?: any
+    filter?: any
     parser: (d: any) => ISelectOpt
     onChange?: (d: any) => any
     onBlur?: () => any
@@ -29,19 +30,24 @@ const FakeProgress = () => <div style={{height: 20, width: 20}}>&nbsp;</div>
 
 export function RemoteSelect(props: IProps) {
     const [loading, setLoading] = React.useState(false);
+    const [qString, setQString] = React.useState('');
     const [options, setOptions] = React.useState<ISelectOpt[]>([]);
     const handleInputChange = (event: React.ChangeEvent<any>) => {
         if (!event)
             return
         loadData(event.target.value)
     }
-
     const loadData = (query: string) => {
         const noQuery = query === undefined || query === null || query.length === 0
         if (noQuery && options.length > 0)
             return
+        if (query === qString) {
+            console.log("Using cached")
+            return
+        }
         setLoading(true)
-        search(props.remote, {query},
+        setQString(qString)
+        search(props.remote, {...props.filter, query},
             resp => {
                 const data = resp.map(props.parser)
                 setOptions(data)
@@ -51,6 +57,7 @@ export function RemoteSelect(props: IProps) {
                 setLoading(false)
             })
     }
+
     const handleChange = (event: React.ChangeEvent<any>, value: any) => {
         props.onChange && props.onChange(value)
     }
