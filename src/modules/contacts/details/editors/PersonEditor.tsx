@@ -38,6 +38,9 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
 
     function handleSubmit(values: any, actions: FormikActions<any>) {
         const toSave: IPerson = {
+            age: values.age,
+            id: values.id,
+            placeOfWork: values.placeOfWork,
             firstName: values.firstName,
             middleName: values.middleName,
             lastName: values.lastName,
@@ -45,7 +48,6 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
             gender: values.gender,
             salutation: values.salutation,
             civilStatus: values.civilStatus,
-            about: values.about,
             avatar: ""
         }
         put(`${remoteRoutes.contactsPerson}/${contactId}`, toSave,

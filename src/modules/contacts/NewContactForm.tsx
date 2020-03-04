@@ -1,14 +1,13 @@
 import React from 'react';
 import * as yup from "yup";
 import {reqDate, reqEmail, reqString} from "../../data/validations";
-import {genderCategories,ageCategories,signupDesireCategories} from "../../data/comboCategories";
+import {genderCategories,ageCategories} from "../../data/comboCategories";
 import {FormikActions} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
 import XDateInput from "../../components/inputs/XDateInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
-import XCheckBoxInput from "../../components/inputs/XCheckBoxInput";
 import {XRemoteSelect, ISelectOpt} from "../../components/inputs/XRemoteSelect";
 import {toOptions} from "../../components/inputs/inputHelpers";
 
@@ -18,6 +17,7 @@ import {crmConstants} from "../../data/contacts/reducer";
 import {post} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import XRadioInput from "../../components/inputs/XRadioInput";
+import {Box} from "@material-ui/core";
 
 interface IProps {
     data: any | null
@@ -46,7 +46,11 @@ const NewContactForm = ({data, done}: IProps) => {
                 middleName: values.middleName,
                 lastName: values.lastName,
                 dateOfBirth: values.dateOfBirth,
-                gender: values.gender
+                gender: values.gender,
+                ageGroup: values.ageGroup,
+                placeOfWork: values.placeOfWork,
+                cellGroupId: values.cellGroup.id,
+                churchLocationId: values.churchLocation.id,
             },
             phones: [
                 {
@@ -62,13 +66,18 @@ const NewContactForm = ({data, done}: IProps) => {
                     value: values.email
                 }
             ],
-            addresses: [],
+            addresses: [
+                {
+                    category: 'Home',
+                    isPrimary: false,
+                    country: 'Uganda',
+                    district: 'Kampala',
+                    county: '-NA-',
+                    freeForm: values.residence
+                }
+            ],
             identifications: [],
-            events: [],
-            metaData: {
-                cellGroup: 'Music MC',
-                churchLocation: 'WHDowntown',
-            }
+            events: []
         }
         post(remoteRoutes.contacts, toSave,
             (data) => {
@@ -121,26 +130,28 @@ const NewContactForm = ({data, done}: IProps) => {
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <XRadioInput
-                        name="gender"
-                        label="Gender"
-                        options={toOptions(genderCategories)}
-                    />
+                    <Box pt={3}>
+                        <XRadioInput
+                            name="gender"
+                            label="Gender"
+                            options={toOptions(genderCategories)}
+                        />
+                    </Box>
                 </Grid>
-
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                     <XDateInput
                         name="dateOfBirth"
                         label="Date of Birth"
                         inputVariant='outlined'
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                     <XSelectInput
-                        name="age-group"
-                        label="Age Group"
+                        name="ageGroup"
+                        label="Age"
                         options={toOptions(ageCategories)}
-                    />                    
+                        variant='outlined'
+                    />
                 </Grid>
                 <Grid item xs={12}>
                     <XTextInput
@@ -158,14 +169,24 @@ const NewContactForm = ({data, done}: IProps) => {
                         variant='outlined'
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                     <XRemoteSelect
-                        name="missional-community"
+                        remote={remoteRoutes.groupsLocationCombo}
+                        filter={{category:'Location'}}
+                        parser={({name, id}: any) => ({label: name, id})}
+                        name="churchLocation"
+                        label="Church Location"
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <XRemoteSelect
+                        remote={remoteRoutes.groupsLocationCombo}
+                        filter={{category:'MC'}}
+                        parser={({name, id}: any) => ({label: name, id})}
+                        name="cellGroup"
                         label="Missional Community"
-                        remote={remoteRoutes.contactsPerson}
-                        parser={({id, name}: any): ISelectOpt => ({id, label: name})}
-                    />                                     
-                </Grid>                
+                    />
+                </Grid>             
                 <Grid item xs={12}>
                     <XRemoteSelect
                         name="workplace"
@@ -181,40 +202,7 @@ const NewContactForm = ({data, done}: IProps) => {
                         remote={remoteRoutes.contactsPerson}
                         parser={({id, name}: any): ISelectOpt => ({id, label: name})}
                     />                   
-                </Grid>                
-                <Grid item xs={12}>
-                    <XRemoteSelect
-                        name="wh-location"
-                        label="Worship Harvest Location"
-                        remote={remoteRoutes.contactsPerson}
-                        parser={({id, name}: any): ISelectOpt => ({id, label: name})}
-                    />                   
-                </Grid>     
-                <Grid item xs={12}>  
-                    <XSelectInput
-                        name="signup-desire"
-                        label="I would like to"
-                        options={toOptions(Object.values(signupDesireCategories))}
-                        variant='outlined'
-                        multiple
-                    />                
-                </Grid>     
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="prayer-request"
-                        label="How may we pray for you?"
-                        type="text"
-                        variant='outlined'
-                    />
-                </Grid>                                      
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="member-question"
-                        label="Do you have any questions you'd like to ask us?"
-                        type="text"
-                        variant='outlined'
-                    />
-                </Grid>                                      
+                </Grid>                                                                                         
             </Grid>
         </XForm>
     );

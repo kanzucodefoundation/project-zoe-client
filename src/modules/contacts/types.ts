@@ -1,14 +1,17 @@
 import * as faker from 'faker';
 import {getRandomStr} from "../../utils/stringHelpers";
+import {ageCategories} from "../../data/comboCategories";
 
 const uuid = require('uuid/v4');
 
 export interface IPerson {
+    id: string
     salutation: string,
     firstName: string
     lastName: string
     middleName: string
-    about: string
+    age: string
+    placeOfWork: string
     gender: string
     civilStatus: string
     avatar: string
@@ -174,13 +177,15 @@ export const fakeContact = (): IContact => {
         id: uuid(),
         category: 'Person',
         person: {
+            id: uuid(),
             firstName: firstName,
             middleName: faker.name.lastName(),
             lastName: lastName,
             civilStatus: 'Single',
             salutation: 'Mr',
             dateOfBirth: faker.date.past(),
-            about: faker.lorem.sentence(),
+            age: faker.random.arrayElement(ageCategories),
+            placeOfWork: faker.random.arrayElement(ageCategories),
             avatar: faker.image.avatar(),
             gender: 'Male'
         },
