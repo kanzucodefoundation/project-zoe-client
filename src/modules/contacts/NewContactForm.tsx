@@ -1,14 +1,15 @@
 import React from 'react';
 import * as yup from "yup";
 import {reqDate, reqEmail, reqString} from "../../data/validations";
-import {genderCategories,ageCategories} from "../../data/comboCategories";
+import {genderCategories,ageCategories,signupDesireCategories} from "../../data/comboCategories";
 import {FormikActions} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
 import XDateInput from "../../components/inputs/XDateInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
-import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
+import XCheckBoxInput from "../../components/inputs/XCheckBoxInput";
+import {XRemoteSelect, ISelectOpt} from "../../components/inputs/XRemoteSelect";
 import {toOptions} from "../../components/inputs/inputHelpers";
 
 import {remoteRoutes} from "../../data/constants";
@@ -136,8 +137,8 @@ const NewContactForm = ({data, done}: IProps) => {
                 </Grid>
                 <Grid item xs={12}>
                     <XSelectInput
-                        name="age"
-                        label="Age"
+                        name="age-group"
+                        label="Age Group"
                         options={toOptions(ageCategories)}
                     />                    
                 </Grid>
@@ -158,29 +159,62 @@ const NewContactForm = ({data, done}: IProps) => {
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <XTextInput
-                      name="mc"
-                      label="Missional Community"
-                      type="text"
-                      variant='outlined'                      
-                    />                    
+                    <XRemoteSelect
+                        name="missional-community"
+                        label="Missional Community"
+                        remote={remoteRoutes.contactsPerson}
+                        parser={({id, name}: any): ISelectOpt => ({id, label: name})}
+                    />                                     
                 </Grid>                
                 <Grid item xs={12}>
-                    <XTextInput
-                      name="place-of-work"
-                      label="Place of work"
-                      type="text"
-                      variant='outlined'                      
-                    />                    
+                    <XRemoteSelect
+                        name="workplace"
+                        label="Workplace"
+                        remote={remoteRoutes.contactsPerson}
+                        parser={({id, name}: any): ISelectOpt => ({id, label: name})}
+                    />                
                 </Grid>                
                 <Grid item xs={12}>
-                    <XTextInput
-                      name="residence"
-                      label="Residence"
-                      type="text"
-                      variant='outlined'                      
-                    />                    
+                    <XRemoteSelect
+                        name="residence"
+                        label="Residence"
+                        remote={remoteRoutes.contactsPerson}
+                        parser={({id, name}: any): ISelectOpt => ({id, label: name})}
+                    />                   
                 </Grid>                
+                <Grid item xs={12}>
+                    <XRemoteSelect
+                        name="wh-location"
+                        label="Worship Harvest Location"
+                        remote={remoteRoutes.contactsPerson}
+                        parser={({id, name}: any): ISelectOpt => ({id, label: name})}
+                    />                   
+                </Grid>     
+                <Grid item xs={12}>  
+                    <XSelectInput
+                        name="signup-desire"
+                        label="I would like to"
+                        options={toOptions(Object.values(signupDesireCategories))}
+                        variant='outlined'
+                        multiple
+                    />                
+                </Grid>     
+                <Grid item xs={12}>
+                    <XTextInput
+                        name="prayer-request"
+                        label="How may we pray for you?"
+                        type="text"
+                        variant='outlined'
+                    />
+                </Grid>                                      
+                <Grid item xs={12}>
+                    <XTextInput
+                        name="member-question"
+                        label="Do you have any questions you'd like to ask us?"
+                        type="text"
+                        variant='outlined'
+                    />
+                </Grid>                                      
             </Grid>
         </XForm>
     );
