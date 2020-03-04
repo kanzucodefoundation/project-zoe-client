@@ -30,7 +30,6 @@ const schema = yup.object().shape(
         lastName: reqString,
         gender: reqString,
         dateOfBirth: reqDate,
-        email: reqEmail,
         phone: reqString,
     }
 )
