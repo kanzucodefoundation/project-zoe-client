@@ -1,4 +1,3 @@
-import grey from '@material-ui/core/colors/grey';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 
 export const useTableStyles = makeStyles((theme: Theme) =>
@@ -14,8 +13,7 @@ export const useTableStyles = makeStyles((theme: Theme) =>
             minWidth: "100%",
         },
         tableWrapper: {
-            overflowX: 'auto',
-           padding: theme.spacing(1),
+            overflowX: 'auto'
         },
         visuallyHidden: {
             border: 0,
@@ -29,7 +27,7 @@ export const useTableStyles = makeStyles((theme: Theme) =>
             width: 1,
         },
         tableHead: {
-            backgroundColor: grey[100]
+            backgroundColor: 'white'
         }
     }),
 );

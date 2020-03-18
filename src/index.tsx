@@ -11,7 +11,6 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import theme from "./theme";
 
-
 ReactDOM.render(
     <Provider store={store}>
         <ThemeProvider theme={theme}>

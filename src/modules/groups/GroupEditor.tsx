@@ -1,7 +1,7 @@
 import React from 'react';
 import * as yup from "yup";
 import {reqString} from "../../data/validations";
-import {FormikActions} from "formik";
+import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
@@ -33,7 +33,7 @@ const schema = yup.object().shape(
 const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
 
 
-    function handleSubmit(values: any, actions: FormikActions<any>) {
+    function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const toSave: IGroup = {
             ...data,
             name: values.name,

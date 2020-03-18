@@ -24,7 +24,6 @@ const XTextInput = (props: TextFieldProps & IProps) => {
             {...field}
             {...props}
             value={field.value || ""}
-
         />
     }
     return (

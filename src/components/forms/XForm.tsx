@@ -1,12 +1,12 @@
 import React, {useState} from "react";
-import {Form, Formik, FormikActions} from 'formik';
+import {Form, Formik, FormikHelpers} from 'formik';
 
 import {Grid} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 
 interface IProps {
     schema?: any
-    onSubmit: (values: any, actions: FormikActions<any>) => any
+    onSubmit: (values: any, actions: FormikHelpers<any>) => any
     onCancel?: () => any
     onDelete?: () => any
     debug?: boolean

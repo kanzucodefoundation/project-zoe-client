@@ -1,12 +1,12 @@
 import {handleError, post, put} from "./ajax";
 import Toast from "./Toast";
-import {FormikActions} from "formik";
+import {FormikHelpers} from "formik";
 
 export interface ISubmission {
     url: string
     values: any
     isNew: boolean
-    actions: FormikActions<any>
+    actions: FormikHelpers<any>
     onAjaxComplete?: (data: any) => any
 }
 

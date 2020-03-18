@@ -32,7 +32,6 @@ import {useHistory} from "react-router";
 import {hasValue} from "../../components/inputs/inputHelpers";
 import {useDispatch, useSelector} from "react-redux";
 import {crmConstants, ICrmState} from "../../data/contacts/reducer";
-import {ITagState} from "../../data/tags/reducer";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -59,12 +58,12 @@ const headCells: XHeadCell[] = [
 ];
 
 const toMobileRow = (data: IContact): IMobileRow => {
-    const hasAvatar = hasValue(data.person.avatar)
+    const hasAvatar = hasValue(data.person?.avatar)
     return {
         avatar: hasAvatar ?
             <Avatar
                 alt="Avatar"
-                src={data.person.avatar}
+                src={data.person?.avatar}
             /> : <Avatar><PersonIcon/></Avatar>,
         primary: renderName(data.person),
         secondary: <>

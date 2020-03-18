@@ -1,24 +1,25 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {search} from "../../utils/ajax";
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {Field, FieldProps, getIn} from "formik";
 import {hasValue} from "./inputHelpers";
-import {Box} from "@material-ui/core";
+import {TextFieldProps} from "@material-ui/core/TextField/TextField";
 
 interface IProps {
     name: string
     label: string
     remote: string
-    value?: any
     filter?: any
+    value?: any
     parser: (d: any) => ISelectOpt
     onChange?: (d: any) => any
     onBlur?: () => any
     error?: boolean;
     fullWidth?: boolean;
     helperText?: React.ReactNode;
+    textFieldProps?: TextFieldProps
 }
 
 export interface ISelectOpt {
@@ -27,26 +28,27 @@ export interface ISelectOpt {
 }
 
 const FakeProgress = () => <div style={{height: 20, width: 20}}>&nbsp;</div>
-
-export function RemoteSelect(props: IProps) {
+const labelParser = (option: any) => {
+    if(hasValue(option)){
+        return option.label
+    }
+    return ''
+}
+export function PRemoteSelect(props: IProps) {
     const [loading, setLoading] = React.useState(false);
-    const [qString, setQString] = React.useState('');
     const [options, setOptions] = React.useState<ISelectOpt[]>([]);
-    const handleInputChange = (event: React.ChangeEvent<any>) => {
+
+    const handleInputChange = (event: React.ChangeEvent<any>, value: string) => {
         if (!event)
             return
-        loadData(event.target.value)
+        loadData(value)
     }
+
     const loadData = (query: string) => {
         const noQuery = query === undefined || query === null || query.length === 0
         if (noQuery && options.length > 0)
             return
-        if (query === qString) {
-            console.log("Using cached")
-            return
-        }
         setLoading(true)
-        setQString(qString)
         search(props.remote, {...props.filter, query},
             resp => {
                 const data = resp.map(props.parser)
@@ -57,7 +59,6 @@ export function RemoteSelect(props: IProps) {
                 setLoading(false)
             })
     }
-
     const handleChange = (event: React.ChangeEvent<any>, value: any) => {
         props.onChange && props.onChange(value)
     }
@@ -65,48 +66,44 @@ export function RemoteSelect(props: IProps) {
         props.onBlur && props.onBlur()
     }
 
-    const getOptionLabel = (option: any) => option.label
-
     return (
-        <Box pt={2} pb={1}>
-            <Autocomplete
-                getOptionLabel={getOptionLabel}
-                filterOptions={x => x}
-                options={options}
-                onChange={handleChange}
-                autoComplete
-                includeInputInList
-                freeSolo
-                disableOpenOnFocus
-                value={props.value}
-                onInputChange={handleInputChange}
-                renderInput={params => (
-                    <TextField
-                        {...params}
-                        label={props.label}
-                        variant="outlined"
-                        fullWidth
-                        onBlur={handleTouched}
-                        error={props.error}
-                        helperText={props.helperText}
-                        InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                                <React.Fragment>
-                                    {loading ? <CircularProgress color="inherit" size={20}/> : <FakeProgress/>}
-                                    {params.InputProps.endAdornment}
-                                </React.Fragment>
-                            ),
-                        }}
-                    />
-                )}
-            />
-        </Box>
+        <Autocomplete
+            getOptionLabel={labelParser}
+            filterOptions={x => x}
+            options={options}
+            onChange={handleChange}
+            autoComplete
+            includeInputInList
+            freeSolo
+            disableOpenOnFocus
+            value={props.value}
+            onInputChange={handleInputChange}
+            renderInput={params => {
+                return <TextField
+                    {...params}
+                    {...props.textFieldProps}
+                    label={props.label}
+                    fullWidth
+                    onBlur={handleTouched}
+                    error={props.error}
+                    helperText={props.helperText}
+                    InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                            <React.Fragment>
+                                {loading ? <CircularProgress color="inherit" size={20}/> : <FakeProgress/>}
+                                {params.InputProps.endAdornment}
+                            </React.Fragment>
+                        ),
+                    }}
+                />
+            }}
+        />
     );
 }
 
 
-export const Component = ({field, form, ...other}: FieldProps & IProps) => {
+const Component = ({field, form, ...other}: FieldProps & IProps) => {
     const error = getIn(form.errors, field.name);
     const isTouched = getIn(form.touched, field.name);
     const wasSubmitted = form.submitCount > 0;
@@ -120,7 +117,7 @@ export const Component = ({field, form, ...other}: FieldProps & IProps) => {
         return form.setFieldValue(field.name, date, true);
     }
 
-    return <RemoteSelect
+    return <PRemoteSelect
         {...other}
         value={field.value}
         onChange={handleChange}

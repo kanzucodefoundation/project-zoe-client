@@ -1,5 +1,5 @@
 import React from 'react';
-import Table from '@material-ui/core/Table';
+import Table, {Size} from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TablePagination from '@material-ui/core/TablePagination';
@@ -11,6 +11,9 @@ import {getSorting, Order, stableSort} from "./helpers";
 import XToolbar from "./XToolbar";
 import {useTableStyles} from "./tableStyles";
 import XTableHead, {XHeadCell} from "./XTableHead";
+import Loading from "../Loading";
+import {parseXpath} from "../../utils/jsonHelpers";
+import Alert from '@material-ui/lab/Alert';
 
 interface XTableProps {
     initialSortBy?: string
@@ -18,14 +21,19 @@ interface XTableProps {
     initialRowsPerPage?: number
     headCells: XHeadCell[]
     title?: string
+    primaryKey?: string
     data: any[]
     useCheckbox?: boolean
     handleSelection?: (id: any) => any
     onFilterToggle?: () => any
+    usePagination?: boolean
+    headerSize?: Size
+    bodySize?: Size
+    loading?: boolean
 }
 
 export default function XTable(props: XTableProps) {
-    const {title, headCells, data, useCheckbox, initialSortBy = 'id', initialOrder = 'asc', initialRowsPerPage = 10} = props
+    const {primaryKey='id',usePagination = true, title, headCells, data, useCheckbox, initialSortBy = 'id', initialOrder = 'asc', initialRowsPerPage = 10, headerSize = 'medium', bodySize = 'medium'} = props
     const classes = useTableStyles();
     const [order, setOrder] = React.useState<Order>(initialOrder);
     const [orderBy, setOrderBy] = React.useState<string>(initialSortBy);
@@ -89,6 +97,7 @@ export default function XTable(props: XTableProps) {
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
+
     const isEven = (num: number) => num % 2 !== 0
     return (
         <div className={classes.root}>
@@ -102,9 +111,10 @@ export default function XTable(props: XTableProps) {
                     <Table
                         className={classes.table}
                         aria-labelledby="tableTitle"
-                        size="medium"
+                        size="small"
                     >
                         <XTableHead
+                            headerSize={headerSize}
                             headCells={headCells}
                             classes={classes}
                             numSelected={selected.length}
@@ -114,68 +124,92 @@ export default function XTable(props: XTableProps) {
                             onRequestSort={handleRequestSort}
                             rowCount={data.length}
                         />
-                        <TableBody>
-                            {stableSort(data, getSorting(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row: any, index: number) => {
-                                    const isItemSelected = isSelected(row.id);
-                                    const labelId = `enhanced-table-checkbox-${index}`;
-                                    return (
-                                        <TableRow
-                                            hover
-                                            onClick={event => handleClick(event, row.id)}
-                                            role="checkbox"
-                                            aria-checked={isItemSelected}
-                                            tabIndex={-1}
-                                            key={row.id}
-                                            selected={isItemSelected}
-                                            style={{backgroundColor: isEven(index) ? grey[100] : 'white'}}
-                                        >
-                                            {
-                                                useCheckbox &&
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        checked={isItemSelected}
-                                                        inputProps={{'aria-labelledby': labelId}}
-                                                    />
+                        {
+                            props.loading ?
+                                <TableBody>
+                                    <TableRow style={{height: 49 * emptyRows}}>
+                                        <TableCell colSpan={headCells.length}>
+                                            <Loading/>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>:
+                                <TableBody>
+                                    {
+                                        data.length>0?
+                                        stableSort(data, getSorting(order, orderBy))
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((row: any, index: number) => {
+                                            const isItemSelected = isSelected(row[primaryKey]);
+                                            const labelId = `enhanced-table-checkbox-${index}`;
+                                            return (
+                                                <TableRow
+                                                    hover
+                                                    onClick={event => handleClick(event, row[primaryKey])}
+                                                    role="checkbox"
+                                                    aria-checked={isItemSelected}
+                                                    tabIndex={-1}
+                                                    key={row[primaryKey]}
+                                                    selected={isItemSelected}
+                                                    style={{backgroundColor: isEven(index) ? 'white' : grey[50]}}
+                                                >
+                                                    {
+                                                        useCheckbox &&
+                                                        <TableCell padding="checkbox" size={bodySize}>
+                                                            <Checkbox
+                                                                checked={isItemSelected}
+                                                                inputProps={{'aria-labelledby': labelId}}
+                                                            />
+                                                        </TableCell>
+                                                    }
+                                                    {
+                                                        headCells.map(it => (
+                                                            <TableCell
+                                                                size={bodySize}
+                                                                key={it.name}
+                                                                align={it.numeric ? 'right' : 'left'}
+                                                                style={{whiteSpace: 'nowrap'}}
+                                                                {...it.cellProps}>
+                                                                {it.render ? it.render(parseXpath(row,it.name), row) : parseXpath(row,it.name)}
+                                                            </TableCell>
+                                                        ))
+                                                    }
+                                                </TableRow>
+                                            );
+                                        }):
+                                            <TableRow style={{height: 49 * 2}}>
+                                                <TableCell colSpan={headCells.length}>
+                                                    <Alert severity="warning">No records to display</Alert>
                                                 </TableCell>
-                                            }
-                                            {
-                                                headCells.map(it => (
-                                                    <TableCell
-                                                        key={it.name}
-                                                        align={it.numeric ? 'right' : 'left'}
-                                                        {...it.cellProps}>
-                                                        {it.render ? it.render(row[it.name], row) : row[it.name]}
-                                                    </TableCell>
-                                                ))
-                                            }
+                                            </TableRow>
+                                    }
+                                    {emptyRows > 0 && (
+                                        <TableRow style={{height: 49 * emptyRows}}>
+                                            <TableCell colSpan={headCells.length}/>
                                         </TableRow>
-                                    );
-                                })}
-                            {emptyRows > 0 && (
-                                <TableRow style={{height: 49 * emptyRows}}>
-                                    <TableCell colSpan={6}/>
-                                </TableRow>
-                            )}
-                        </TableBody>
+                                    )}
+                                </TableBody>
+                        }
+
                     </Table>
                 </div>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={data.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    backIconButtonProps={{
-                        'aria-label': 'previous page',
-                    }}
-                    nextIconButtonProps={{
-                        'aria-label': 'next page',
-                    }}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                />
+                {
+                    usePagination && <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={data.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        backIconButtonProps={{
+                            'aria-label': 'previous page',
+                        }}
+                        nextIconButtonProps={{
+                            'aria-label': 'next page',
+                        }}
+                        onChangePage={handleChangePage}
+                        onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
+                }
+
             </Paper>
         </div>
     );

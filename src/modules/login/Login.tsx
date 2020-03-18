@@ -5,7 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import LockIcon from '@material-ui/icons/LockOutlined';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import {Form, Formik, FormikActions} from 'formik';
+import {Form, Formik, FormikHelpers} from 'formik';
 import {useDispatch} from 'react-redux'
 import {handleLogin} from "../../data/coreActions";
 
@@ -20,7 +20,7 @@ import {useLoginStyles} from "./loginStyles";
 function Login() {
     const classes = useLoginStyles();
     const dispatch = useDispatch();
-    const onSubmit = (data: any, actions: FormikActions<any>) => {
+    const onSubmit = (data: any, actions: FormikHelpers<any>) => {
         post(remoteRoutes.login, data, resp => {
             dispatch(handleLogin(resp))
         }, () => {

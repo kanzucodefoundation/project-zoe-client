@@ -7,6 +7,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import {Order} from "./helpers";
 import {useTableStyles} from "./tableStyles";
+import {Size} from "@material-ui/core/Table";
 
 
 export interface XTableHeadProps {
@@ -19,6 +20,7 @@ export interface XTableHeadProps {
     rowCount: number;
     headCells: XHeadCell[];
     useCheckbox?: boolean
+    headerSize?: Size
 }
 
 export interface XHeadCell {
@@ -27,6 +29,7 @@ export interface XHeadCell {
     numeric?: boolean
     cellProps?: any
     render?: (data: any, rec: any) => any
+
 }
 
 function XTableHead(props: XTableHeadProps) {
@@ -39,8 +42,9 @@ function XTableHead(props: XTableHeadProps) {
             <TableRow className={classes.tableHead}>
                 {
                     useCheckbox &&
-                    <TableCell padding="checkbox" size='small'>
+                    <TableCell padding="checkbox" size={props.headerSize}>
                         <Checkbox
+
                             indeterminate={numSelected > 0 && numSelected < rowCount}
                             checked={numSelected === rowCount}
                             onChange={onSelectAllClick}
@@ -51,7 +55,7 @@ function XTableHead(props: XTableHeadProps) {
 
                 {headCells.map(headCell => (
                     <TableCell
-                        size='small'
+                        size={props.headerSize}
                         key={headCell.name}
                         align={headCell.numeric ? 'right' : 'left'}
                         sortDirection={orderBy === headCell.name ? order : false}
@@ -63,7 +67,7 @@ function XTableHead(props: XTableHeadProps) {
                             direction={order}
                             onClick={createSortHandler(headCell.name)}
                         >
-                            <Typography variant='body2'><b>{headCell.label}</b></Typography>
+                            <Typography variant='body2' noWrap><b>{headCell.label.toUpperCase()}</b></Typography>
                             {orderBy === headCell.name ? (
                                 <span className={classes.visuallyHidden}>
                                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}

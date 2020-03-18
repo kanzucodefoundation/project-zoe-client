@@ -1,106 +1,41 @@
 import React from 'react';
-import * as yup from "yup";
-import {reqDate, reqEmail, reqString} from "../../data/validations";
-import {ageCategories, genderCategories} from "../../data/comboCategories";
-import {FormikHelpers} from "formik";
+import XForm from "../components/forms/XForm";
 import Grid from "@material-ui/core/Grid";
-import XForm from "../../components/forms/XForm";
-import XTextInput from "../../components/inputs/XTextInput";
-import XDateInput from "../../components/inputs/XDateInput";
-import XSelectInput from "../../components/inputs/XSelectInput";
-import {toOptions} from "../../components/inputs/inputHelpers";
-
-import {remoteRoutes} from "../../data/constants";
-import {useDispatch} from 'react-redux'
-import {crmConstants} from "../../data/contacts/reducer";
-import {post} from "../../utils/ajax";
-import Toast from "../../utils/Toast";
-import XRadioInput from "../../components/inputs/XRadioInput";
-import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
+import XTextInput from "../components/inputs/XTextInput";
 import {Box} from "@material-ui/core";
+import XRadioInput from "../components/inputs/XRadioInput";
+import {toOptions} from "../components/inputs/inputHelpers";
+import {ageCategories, genderCategories} from "../data/comboCategories";
+import XDateInput from "../components/inputs/XDateInput";
+import XSelectInput from "../components/inputs/XSelectInput";
+import {XRemoteSelect} from "../components/inputs/XRemoteSelect";
+import {remoteRoutes} from "../data/constants";
+import * as yup from "yup";
+import {reqDate, reqEmail, reqString} from "../data/validations";
 
-interface IProps {
-    data: any | null
-    done?: () => any
-}
+export default {
+    title: 'FormInputs',
+    component: XForm,
+};
 
-const schema = yup.object().shape(
-    {
-        firstName: reqString,
-        lastName: reqString,
-        gender: reqString,
-        dateOfBirth: reqDate,
-        email: reqEmail,
-        phone: reqString,
+export const Emoji = () => {
+    const onSubmit = (values) => {
+        alert(JSON.stringify(values, null, 2));
     }
-)
-
-const NewContactForm = ({data, done}: IProps) => {
-    const dispatch = useDispatch();
-
-    function handleSubmit(values: any, actions: FormikHelpers<any>) {
-        const toSave = {
-            category: 'Person',
-            person: {
-                firstName: values.firstName,
-                middleName: values.middleName,
-                lastName: values.lastName,
-                dateOfBirth: values.dateOfBirth,
-                gender: values.gender,
-                ageGroup: values.ageGroup,
-                placeOfWork: values.placeOfWork,
-                cellGroupId: values.cellGroup.id,
-                churchLocationId: values.churchLocation.id,
-            },
-            phones: [
-                {
-                    category: 'Mobile',
-                    isPrimary: true,
-                    value: values.phone
-                }
-            ],
-            emails: [
-                {
-                    category: 'Personal',
-                    isPrimary: true,
-                    value: values.email
-                }
-            ],
-            addresses: [
-                {
-                    category: 'Home',
-                    isPrimary: false,
-                    country: 'Uganda',
-                    district: 'Kampala',
-                    county: '-NA-',
-                    freeForm: values.residence
-                }
-            ],
-            identifications: [],
-            events: []
+    const schema = yup.object().shape(
+        {
+            firstName: reqString,
+            lastName: reqString,
+            gender: reqString,
+            dateOfBirth: reqDate,
+            email: reqEmail,
+            phone: reqString,
         }
-        post(remoteRoutes.contacts, toSave,
-            (data) => {
-                Toast.info('Operation successful')
-                actions.resetForm()
-                dispatch({
-                    type: crmConstants.crmAddContact,
-                    payload: {...data},
-                })
-                if (done)
-                    done()
-            },
-            undefined,
-            () => {
-                actions.setSubmitting(false);
-
-            }
-        )
-    }
-
+    )
+    const data={}
     return (
         <XForm
-            onSubmit={handleSubmit}
+            onSubmit={onSubmit}
             schema={schema}
             initialValues={data}
             debug
@@ -173,8 +108,8 @@ const NewContactForm = ({data, done}: IProps) => {
                 <Grid item xs={6}>
                     <XRemoteSelect
                         remote={remoteRoutes.groupsLocationCombo}
-                        filter={{category:'Location'}}
-                        parser={({name, id}: any) => ({label: name, id})}
+                        filter={{category: 'Location'}}
+                        parser={({name, id}) => ({label: name, id})}
                         name="churchLocation"
                         label="Church Location"
                     />
@@ -182,8 +117,8 @@ const NewContactForm = ({data, done}: IProps) => {
                 <Grid item xs={6}>
                     <XRemoteSelect
                         remote={remoteRoutes.groupsLocationCombo}
-                        filter={{category:'MC'}}
-                        parser={({name, id}: any) => ({label: name, id})}
+                        filter={{category: 'MC'}}
+                        parser={({name, id}) => ({label: name, id})}
                         name="cellGroup"
                         label="Missional Community"
                     />
@@ -206,8 +141,6 @@ const NewContactForm = ({data, done}: IProps) => {
                 </Grid>
             </Grid>
         </XForm>
+
     );
-}
-
-
-export default NewContactForm;
+};

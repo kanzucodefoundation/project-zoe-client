@@ -42,7 +42,7 @@ export const localRoutes = {
 }
 
 const debug = process.env.NODE_ENV !== 'production'
-export const url = debug ? 'http://localhost:3004' :
+export const url = debug ? 'http://localhost:4002' :
     'http://hgjyuk.com/server'
 
 export const remoteRoutes = {
@@ -51,18 +51,19 @@ export const remoteRoutes = {
     profile: url + '/api/auth/profile',
     register: url + '/api/auth/register',
     resetPass: url + '/reset',
-    contacts: url + '/api/crm/contact',
+    contacts: url + '/api/crm/contacts',
     contactSearch: url + '/api/crm/contact/search',
-    contactById: url + '/api/crm/contact/id',
-    contactsPerson: url + '/api/crm/person',
+    contactById: url + '/api/crm/contacts/id',
+    contactsPerson: url + '/api/crm/people',
     contactsChc: url + '/api/crm/person/chc',
-    contactsEmail: url + '/api/crm/email',
+    contactsEmail: url + '/api/crm/emails',
     tags: url + '/api/tags',
     users: url + '/api/users',
     userGroups: url + '/api/user-groups',
-    contactsPhone: url + '/api/crm/phone',
-    contactsAddress: url + '/api/crm/address',
-    contactsIdentification: url + '/api/crm/identification',
+    contactsPhone: url + '/api/crm/phones',
+    contactsAddress: url + '/api/crm/addresses',
+    contactsIdentification: url + '/api/crm/identifications',
+    contactsRequests: url + '/api/crm/requests',
 
     groups: url + '/api/groups/group',
     groupsLocationCombo: url + '/api/groups/combo',
