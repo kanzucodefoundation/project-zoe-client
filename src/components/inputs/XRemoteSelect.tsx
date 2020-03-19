@@ -75,7 +75,6 @@ export function PRemoteSelect(props: IProps) {
             autoComplete
             includeInputInList
             freeSolo
-            disableOpenOnFocus
             value={props.value}
             onInputChange={handleInputChange}
             renderInput={params => {
