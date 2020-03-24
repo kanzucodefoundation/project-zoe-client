@@ -65,8 +65,9 @@ export const remoteRoutes = {
     contactsIdentification: url + '/api/crm/identifications',
     contactsRequests: url + '/api/crm/requests',
 
-    groups: url + '/api/groups/group',
-    groupsLocationCombo: url + '/api/groups/combo',
+    groups: url + '/api/groups/groups',
+    groupsCombo: url + '/api/groups/combo',
+    groupsCategories: url + '/api/groups/categories',
 
     contactsCompany: url + '/api/crm/contact/company',
     contactsAvatar: url + '/api/crm/contact/avatar',

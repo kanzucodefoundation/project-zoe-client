@@ -11,14 +11,14 @@ interface IProps {
     label: string
     name: string
     variant?: "outlined" | "filled" | 'standard'
-    multiple?: false;
+    multiple?: any;
+    size?: 'medium' | 'small'
 }
-
-const XComboInput = (props: IProps & Partial<AutocompleteProps<any>>) => {
+type AutoProps = Omit<Partial<AutocompleteProps<any>>, 'variant'|'multiple'|'renderInput'>;
+const XComboInput = (props: IProps & AutoProps) => {
     const [field, meta, helpers] = useField({name: props.name});
     const error = hasValue(meta.error) ? meta.error : undefined
     const showError = Boolean(error && meta.touched)
-
     function handleChange(
         event: React.ChangeEvent<{}>,
         value: IOption | null,
@@ -35,7 +35,6 @@ const XComboInput = (props: IProps & Partial<AutocompleteProps<any>>) => {
                 {...params}
                 label={props.label}
                 variant={props.variant}
-                margin='normal'
                 fullWidth
                 error={showError}
                 helperText={showError && error}
@@ -43,7 +42,7 @@ const XComboInput = (props: IProps & Partial<AutocompleteProps<any>>) => {
             />}
             onChange={handleChange}
             onBlur={() => helpers.setTouched(true)}
-            value={field.value || ""}
+            value={field.value || (props.multiple ? [] : null)}
             clearOnEscape
             multiple={props.multiple}
             filterSelectedOptions

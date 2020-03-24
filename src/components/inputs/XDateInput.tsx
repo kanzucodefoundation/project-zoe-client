@@ -5,8 +5,8 @@ import DateFnsUtils from '@date-io/date-fns';
 import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
 import {hasValue} from "./inputHelpers";
 import {dateFormat} from "../../utils/dateHelpers";
-import {KeyboardDatePickerProps} from "@material-ui/pickers/DatePicker/DatePicker";
 import {MaterialUiPickersDate} from "@material-ui/pickers/typings/date";
+import {KeyboardDatePickerProps} from "@material-ui/pickers/DatePicker/DatePicker";
 
 interface IProps {
     name: string
@@ -14,20 +14,23 @@ interface IProps {
     pickerVariant?: 'inline' | 'dialog' | 'static'
 }
 
-const XDateInput = (props: IProps & Partial<KeyboardDatePickerProps>) => {
+type PickerProps = Omit<KeyboardDatePickerProps, 'variant'|'inputVariant'>;
+
+const XDateInput = (props: IProps & Partial<PickerProps>) => {
+    const {variant,pickerVariant,...rest}=props
     const [field, meta, helpers] = useField({name: props.name});
     const error = hasValue(meta.error) ? meta.error : undefined
     const showError = Boolean(error && meta.touched)
 
     function handleChange(date: MaterialUiPickersDate) {
-        return helpers.setValue(date?.toLocaleString())
+        return helpers.setValue(date?.toISOString())
     }
 
     return <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardDatePicker
-            {...props}
+            {...rest}
             fullWidth
-            variant={props.pickerVariant}
+            variant={pickerVariant}
             margin="normal"
             format={dateFormat}
             autoOk
@@ -37,7 +40,7 @@ const XDateInput = (props: IProps & Partial<KeyboardDatePickerProps>) => {
             error={Boolean(showError)}
             onChange={handleChange}
             onBlur={() => helpers.setTouched(true)}
-            inputVariant={props.variant}
+            inputVariant={variant}
         />
     </MuiPickersUtilsProvider>
 }

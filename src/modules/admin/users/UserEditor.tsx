@@ -7,8 +7,9 @@ import XForm from "../../../components/forms/XForm";
 import XTextInput from "../../../components/inputs/XTextInput";
 
 import {remoteRoutes} from "../../../data/constants";
-import {ISelectOpt, XRemoteSelect} from "../../../components/inputs/XRemoteSelect";
+import {XRemoteSelect} from "../../../components/inputs/XRemoteSelect";
 import {handleSubmission, ISubmission} from "../../../utils/formHelpers";
+import {IOption} from "../../../components/inputs/inputHelpers";
 
 interface IProps {
     data: any
@@ -63,7 +64,7 @@ const UserEditor = ({data, isNew, done}: IProps) => {
                         name="contact"
                         label="Person"
                         remote={remoteRoutes.contactsPerson}
-                        parser={({id, name}: any): ISelectOpt => ({id, label: name})}
+                        parser={({id, name}: any): IOption => ({value: id, label: name})}
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -71,7 +72,7 @@ const UserEditor = ({data, isNew, done}: IProps) => {
                         name="group"
                         label="Group"
                         remote={remoteRoutes.userGroups}
-                        parser={({id, name}: any): ISelectOpt => ({id, label: name})}
+                        parser={({id, name}: any): IOption => ({value: id, label: name})}
                     />
                 </Grid>
                 <Grid item xs={12}>

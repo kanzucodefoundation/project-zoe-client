@@ -2,7 +2,7 @@ import React, {Fragment, useEffect, useState} from "react";
 import Navigation from "../../components/layout/Layout";
 import Paper from '@material-ui/core/Paper';
 import {Avatar, createStyles, makeStyles, Theme, useTheme} from "@material-ui/core";
-import {getEmail, getPhone, IContact, IContactsFilter, renderName} from "./types";
+import {IContactListDto, IContactsFilter} from "./types";
 import XTable from "../../components/table/XTable";
 import {XHeadCell} from "../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
@@ -17,7 +17,7 @@ import Header from "./Header";
 import Hidden from "@material-ui/core/Hidden";
 import EditDialog from "../../components/EditDialog";
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
-import NewContactForm from "./NewContactForm";
+import NewPersonForm from "./NewPersonForm";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
@@ -32,6 +32,8 @@ import {useHistory} from "react-router";
 import {hasValue} from "../../components/inputs/inputHelpers";
 import {useDispatch, useSelector} from "react-redux";
 import {crmConstants, ICrmState} from "../../data/contacts/reducer";
+import {printBirthday} from "../../utils/dateHelpers";
+import GroupLink from "../../components/GroupLink";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -51,28 +53,37 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const headCells: XHeadCell[] = [
-    {name: 'id', label: 'Name', render: (value, rec) => <ContactLink id={value} name={renderName(rec.person)}/>},
-    {name: 'category', label: 'Category'},
-    {name: 'email', label: 'Email', render: (_, rec) => <EmailLink value={getEmail(rec)}/>},
-    {name: 'phone', label: 'Phone', render: (_, rec) => getPhone(rec)},
+    {name: 'id', label: 'Name', render: (value, rec) => <ContactLink id={value} name={rec.name}/>},
+    {name: 'email', label: 'Email', render: (value) => <EmailLink value={value}/>},
+    {name: 'phone', label: 'Phone'},
+    {name: 'dateOfBirth', label: 'D.O.B', render: printBirthday},
+    {
+        name: 'cellGroup',
+        label: 'MC',
+        render: value => hasValue(value) ? <GroupLink id={value.id} name={value.name}/> : '-na-'
+    },
+    {
+        name: 'location',
+        label: 'Location',
+        render: value => hasValue(value) ? <GroupLink id={value.id} name={value.name}/> : '-na-'
+    },
 ];
 
-const toMobileRow = (data: IContact): IMobileRow => {
-    const hasAvatar = hasValue(data.person?.avatar)
+const toMobileRow = (data: IContactListDto): IMobileRow => {
+    const hasAvatar = hasValue(data.avatar)
     return {
         avatar: hasAvatar ?
             <Avatar
                 alt="Avatar"
-                src={data.person?.avatar}
+                src={data.avatar}
             /> : <Avatar><PersonIcon/></Avatar>,
-        primary: renderName(data.person),
+        primary: data.name,
         secondary: <>
-            <Typography variant='caption' color='textSecondary' display='block'>{getEmail(data)}</Typography>
-            <Typography variant='caption' color='textSecondary'>{getPhone(data)}</Typography>
+            <Typography variant='caption' color='textSecondary' display='block'>{data.email}</Typography>
+            <Typography variant='caption' color='textSecondary'>{data.phone}</Typography>
         </>,
     }
 }
-
 
 const Contacts = () => {
     const dispatch = useDispatch();
@@ -84,7 +95,6 @@ const Contacts = () => {
     const [showFilter, setShowFilter] = useState(!isSmall);
     const [filter, setFilter] = useState<IContactsFilter>({});
 
-
     const classes = useStyles();
     useEffect(() => {
         if (isSmall) {
@@ -95,7 +105,6 @@ const Contacts = () => {
     function handleFilterToggle() {
         setShowFilter(!showFilter);
     }
-
 
     useEffect(() => {
         dispatch({
@@ -142,7 +151,7 @@ const Contacts = () => {
     }
 
     const filterComponent = <Filter onFilter={handleFilter} loading={loading}/>
-    const createComponent = <NewContactForm data={{}} done={closeCreateDialog}/>
+    const createComponent = <NewPersonForm data={{}} done={closeCreateDialog}/>
     const filterTitle = "Contact Filter"
     const createTitle = "New Person"
     return (

@@ -13,6 +13,7 @@ interface IProps {
     options: IOption[]
     multiple?: boolean
     variant?: 'standard' | 'outlined' | 'filled'
+    size?: 'small' | 'medium'
 }
 
 const XSelectInput = (props: IProps) => {
@@ -26,7 +27,7 @@ const XSelectInput = (props: IProps) => {
         setLabelWidth(inputLabel.current!.offsetWidth);
     }, []);
 
-    return <FormControl error={showError} fullWidth variant={variant} margin='normal'>
+    return <FormControl error={showError} fullWidth variant={variant} margin='normal' size={props.size}>
         <InputLabel htmlFor={name} ref={inputLabel}>{rest.label}</InputLabel>
         <Select
             {...rest}

@@ -4,6 +4,23 @@ import {ageCategories} from "../../data/comboCategories";
 
 const uuid = require('uuid/v4');
 
+
+export interface ICreatePersonDto {
+    email: string;
+    phone: string;
+    firstName: string;
+    lastName: string;
+    middleName?: string;
+    gender: Gender;
+    civilStatus: CivilStatus;
+    dateOfBirth: string;
+    ageGroup: string;
+    cellGroupId: string;
+    churchLocationId: string;
+    residence: string;
+    placeOfWork: string;
+}
+
 export interface IPerson {
     id: string
     salutation: string,
@@ -120,6 +137,18 @@ export interface ICompany {
 export interface IMetaData {
     churchLocation: string
     cellGroup: string
+}
+
+export  interface IContactListDto {
+    id: number;
+    name: string;
+    avatar: string;
+    ageGroup: string;
+    dateOfBirth: Date;
+    email: string;
+    phone: string;
+    cellGroup: any;
+    location: any;
 }
 
 export interface IContact {

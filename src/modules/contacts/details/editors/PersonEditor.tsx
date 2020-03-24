@@ -120,7 +120,7 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
                     <XDateInput
                         name="dateOfBirth"
                         label="Date of Birth"
-                        inputVariant='outlined'
+                        variant='outlined'
                     />
                 </Grid>
                 <Grid item xs={6}>

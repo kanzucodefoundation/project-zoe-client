@@ -1,5 +1,3 @@
-import {UserState} from "redux-oidc";
-
 export interface BaseModel {
     id: string
     createdAt: Date
@@ -24,7 +22,6 @@ export interface ILoginResponse {
 export interface IState {
     core: ICoreState
     contacts: any
-    oidc: UserState
 }
 
 export interface ICoreState {
@@ -33,31 +30,10 @@ export interface ICoreState {
 }
 
 export interface ISearch {
-    limit: number,
+    limit: number ,
     skip: number,
     query?: string
 }
 
-export interface IOidcUser {
-    access_token: string
-    expires_at: number
-    id_token: string
-    profile: IOidcProfile
-    refresh_token: string
-    scope: string
-    session_state: string
-    state: string
-    token_type: string
-}
 
-export interface IOidcProfile {
-    amr: string[]
-    auth_time: number
-    given_name: string
-    idp: string
-    name: string
-    preferred_username: string
-    role: string
-    sid: string
-    sub: string
-}
+

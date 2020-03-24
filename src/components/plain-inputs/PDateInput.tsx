@@ -4,7 +4,6 @@ import DateFnsUtils from '@date-io/date-fns';
 import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers';
 import {dateFormat} from "../../utils/dateHelpers";
 
-
 interface IProps {
     onChange:(date: Date | null) => any
     value:Date | null

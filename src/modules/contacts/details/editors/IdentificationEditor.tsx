@@ -87,14 +87,14 @@ const IdentificationEditor = ({data, isNew, contactId, done}: IProps) => {
                     <XDateInput
                         name="startDate"
                         label="Issue Date"
-                        inputVariant='outlined'
+                        variant='outlined'
                     />
                 </Grid>
                 <Grid item xs={6}>
                     <XDateInput
                         name="expiryDate"
                         label="Expiry Date"
-                        inputVariant='outlined'
+                        variant='outlined'
                     />
                 </Grid>
                 <Grid item xs={12}>

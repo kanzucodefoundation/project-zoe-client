@@ -13,7 +13,7 @@ export default {
 };
 
 export const Input = () => {
-    const onSubmit = (values) => {
+    const onSubmit = (values:any) => {
         alert(JSON.stringify(values, null, 2));
     }
     const schema = yup.object().shape(

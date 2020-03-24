@@ -14,6 +14,16 @@ export const printDateTime = (value: any): string => {
         return ''
 }
 
+export const isoDateString = (value: any): string => {
+    if (typeof value === 'string') {
+        return strToDate(value)?.toISOString()||""
+    }
+    if (isValid(value))
+        return value?.toISOString()
+    else
+        return ''
+}
+
 export const printBirthday = (value: any): string => {
     if (typeof value === 'string') {
         return printBirthday(strToDate(value))

@@ -1,7 +1,7 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqDate, reqEmail, reqString} from "../../data/validations";
-import {ageCategories, genderCategories} from "../../data/comboCategories";
+import {reqDate, reqEmail, reqObject, reqString} from "../../data/validations";
+import {ageCategories, civilStatusCategories, genderCategories} from "../../data/comboCategories";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
@@ -18,6 +18,8 @@ import Toast from "../../utils/Toast";
 import XRadioInput from "../../components/inputs/XRadioInput";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
+import {ICreatePersonDto} from "./types";
+import {isoDateString} from "../../utils/dateHelpers";
 
 interface IProps {
     data: any | null
@@ -28,58 +30,80 @@ const schema = yup.object().shape(
     {
         firstName: reqString,
         lastName: reqString,
+        // middleName: reqString,
         gender: reqString,
         dateOfBirth: reqDate,
+        civilStatus: reqString,
+
+        ageGroup: reqString,
+        placeOfWork: reqString,
+        residence: reqString,
+
+        cellGroup: reqObject,
+        churchLocation: reqObject,
+
         email: reqEmail,
-        phone: reqString,
+        phone: reqString
     }
 )
 
-const NewContactForm = ({data, done}: IProps) => {
+const initialValues = {
+
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    dateOfBirth: '',
+    gender: '',
+    civilStatus: '',
+    ageGroup: '',
+    placeOfWork: '',
+    residence: '',
+    cellGroup: null,
+    churchLocation: null,
+    email: '',
+    phone: '',
+
+}
+
+const RightPadded = ({children,...props}: any) => <Grid item xs={6}>
+    <Box pr={1} {...props}>
+        {children}
+    </Box>
+</Grid>
+
+const LeftPadded = ({children,...props}: any) => <Grid item xs={6}>
+    <Box pl={1} {...props}>
+        {children}
+    </Box>
+</Grid>
+
+const NewPersonForm = ({done}: IProps) => {
     const dispatch = useDispatch();
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
-        const toSave = {
-            category: 'Person',
-            person: {
-                firstName: values.firstName,
-                middleName: values.middleName,
-                lastName: values.lastName,
-                dateOfBirth: values.dateOfBirth,
-                gender: values.gender,
-                ageGroup: values.ageGroup,
-                placeOfWork: values.placeOfWork,
-                cellGroupId: values.cellGroup.id,
-                churchLocationId: values.churchLocation.id,
-            },
-            phones: [
-                {
-                    category: 'Mobile',
-                    isPrimary: true,
-                    value: values.phone
-                }
-            ],
-            emails: [
-                {
-                    category: 'Personal',
-                    isPrimary: true,
-                    value: values.email
-                }
-            ],
-            addresses: [
-                {
-                    category: 'Home',
-                    isPrimary: false,
-                    country: 'Uganda',
-                    district: 'Kampala',
-                    county: '-NA-',
-                    freeForm: values.residence
-                }
-            ],
-            identifications: [],
-            events: []
+
+        const toSave: ICreatePersonDto = {
+
+            firstName: values.firstName,
+            middleName: values.middleName,
+            lastName: values.lastName,
+            dateOfBirth: isoDateString(values.dateOfBirth),
+            gender: values.gender,
+            civilStatus: values.civilStatus,
+
+            ageGroup: values.ageGroup,
+            placeOfWork: values.placeOfWork,
+            residence: values.residence,
+
+            cellGroupId: values.cellGroup.value,
+            churchLocationId: values.churchLocation.value,
+
+            email: values.email,
+            phone: values.phone,
+
         }
-        post(remoteRoutes.contacts, toSave,
+
+        post(remoteRoutes.contactsPerson, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
@@ -98,31 +122,31 @@ const NewContactForm = ({data, done}: IProps) => {
         )
     }
 
+
     return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
-            initialValues={data}
-            debug
+            initialValues={initialValues}
         >
-            <Grid spacing={1} container>
-                <Grid item xs={6}>
+            <Grid spacing={0} container>
+                <RightPadded>
                     <XTextInput
                         name="firstName"
                         label="First Name"
                         type="text"
                         variant='outlined'
                     />
-                </Grid>
-                <Grid item xs={6}>
+                </RightPadded>
+                <LeftPadded>
                     <XTextInput
                         name="lastName"
                         label="Last Name"
                         type="text"
                         variant='outlined'
                     />
-                </Grid>
-                <Grid item xs={6}>
+                </LeftPadded>
+                <Grid item xs={12}>
                     <XTextInput
                         name="middleName"
                         label="Other Names"
@@ -130,30 +154,36 @@ const NewContactForm = ({data, done}: IProps) => {
                         variant='outlined'
                     />
                 </Grid>
-                <Grid item xs={6}>
-                    <Box pt={3}>
-                        <XRadioInput
-                            name="gender"
-                            label="Gender"
-                            options={toOptions(genderCategories)}
-                        />
-                    </Box>
-                </Grid>
-                <Grid item xs={6}>
+                <RightPadded >
+                    <XSelectInput
+                        name="civilStatus"
+                        label="Civil Status"
+                        options={toOptions(civilStatusCategories)}
+                        variant='outlined'
+                    />
+                </RightPadded>
+                <LeftPadded pt={3}>
+                    <XRadioInput
+                        name="gender"
+                        label=''
+                        options={toOptions(genderCategories)}
+                    />
+                </LeftPadded>
+                <RightPadded >
                     <XDateInput
                         name="dateOfBirth"
                         label="Date of Birth"
-                        inputVariant='outlined'
+                        variant='outlined'
                     />
-                </Grid>
-                <Grid item xs={6}>
+                </RightPadded>
+                <LeftPadded >
                     <XSelectInput
                         name="ageGroup"
                         label="Age"
                         options={toOptions(ageCategories)}
                         variant='outlined'
                     />
-                </Grid>
+                </LeftPadded>
                 <Grid item xs={12}>
                     <XTextInput
                         name="phone"
@@ -170,24 +200,26 @@ const NewContactForm = ({data, done}: IProps) => {
                         variant='outlined'
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <RightPadded >
                     <XRemoteSelect
-                        remote={remoteRoutes.groupsLocationCombo}
-                        filter={{category:'Location'}}
-                        parser={({name, id}: any) => ({label: name, id})}
+                        remote={remoteRoutes.groupsCombo}
+                        filter={{'categories[]': 'Location'}}
+                        parser={({name, id}: any) => ({label: name, value: id})}
                         name="churchLocation"
                         label="Church Location"
+                        variant='outlined'
                     />
-                </Grid>
-                <Grid item xs={6}>
+                </RightPadded>
+                <LeftPadded >
                     <XRemoteSelect
-                        remote={remoteRoutes.groupsLocationCombo}
-                        filter={{category:'MC'}}
-                        parser={({name, id}: any) => ({label: name, id})}
+                        remote={remoteRoutes.groupsCombo}
+                        filter={{'categories[]': 'MC'}}
+                        parser={({name, id}: any) => ({label: name, value: id})}
                         name="cellGroup"
                         label="Missional Community"
+                        variant='outlined'
                     />
-                </Grid>
+                </LeftPadded>
                 <Grid item xs={12}>
                     <XTextInput
                         name="placeOfWork"
@@ -210,4 +242,4 @@ const NewContactForm = ({data, done}: IProps) => {
 }
 
 
-export default NewContactForm;
+export default NewPersonForm;
