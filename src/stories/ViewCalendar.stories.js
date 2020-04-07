@@ -3,7 +3,7 @@ import Paper from '@material-ui/core/Paper';
 import { ViewState } from '@devexpress/dx-react-scheduler';
 import {
   Scheduler,
-  DayView,
+  WeekView,
   Appointments,
 } from '@devexpress/dx-react-scheduler-material-ui';
 
@@ -24,7 +24,7 @@ export default {
       <ViewState
         currentDate={currentDate}
       />
-      <DayView
+      <WeekView
         startDayHour={9}
         endDayHour={14}
       />
