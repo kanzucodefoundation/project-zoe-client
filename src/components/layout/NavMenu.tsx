@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, {Fragment} from 'react';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -52,10 +52,6 @@ const routes = [
             {
                 name: "Users",
                 route: localRoutes.users
-            },
-            {
-                name: "User Groups",
-                route: localRoutes.usersGroups
             },
             {
                 name: "Settings",
@@ -156,7 +152,8 @@ const NavMenu = (props: any) => {
                                     {open[it.name] ? <ExpandLess className={classes.whiteText}/> :
                                         <ExpandMore className={classes.whiteText}/>}
                                 </StyledListItem>
-                                <Collapse in={open[it.name] || isSelected(it.name.toLocaleLowerCase())} timeout="auto" unmountOnExit>
+                                <Collapse in={open[it.name] || isSelected(it.name.toLocaleLowerCase())} timeout="auto"
+                                          unmountOnExit>
                                     <List component="div" disablePadding>
                                         {
                                             it.items.map(ch => <StyledListItem
