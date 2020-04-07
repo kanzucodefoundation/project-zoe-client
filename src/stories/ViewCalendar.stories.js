@@ -3,21 +3,24 @@ import Paper from '@material-ui/core/Paper';
 import { ViewState } from '@devexpress/dx-react-scheduler';
 import {
   Scheduler,
-  DayView,
+  WeekView,
   Appointments,
 } from '@devexpress/dx-react-scheduler-material-ui';
 
-const currentDate = '2018-11-01';
+const currentDate = '2020-04-07';
 const schedulerData = [
-  { startDate: '2018-11-01T09:45', endDate: '2018-11-01T11:00', title: 'Meeting' },
-  { startDate: '2018-11-01T12:00', endDate: '2018-11-01T13:30', title: 'Go to a gym' },
+  { startDate: '2020-04-07T09:45', endDate: '2020-04-07T11:00', title: 'Cleaning the church' },
+  { startDate: '2020-04-07T12:00', endDate: '2020-04-07T13:30', title: 'Setting up the cameras' },
+  { startDate: '2020-04-08T03:45', endDate: '2020-04-08T04:00', title: 'Cleaning the church' },
+  { startDate: '2020-04-09T12:00', endDate: '2020-04-09T13:30', title: 'Setting up the cameras' },
+  { startDate: '2020-04-10T09:45', endDate: '2020-04-10T11:00', title: 'Cleaning the church' },
+  { startDate: '2020-04-11T12:00', endDate: '2020-04-11T13:30', title: 'Setting up the cameras' },
 ];
 
 export default {
     title: 'ViewCalendar'
   };
-
-export const Calendar = () => (
+  export const Calendar = () => (
   <Paper>
     <Scheduler
       data={schedulerData}
@@ -25,9 +28,9 @@ export const Calendar = () => (
       <ViewState
         currentDate={currentDate}
       />
-      <DayView
-        startDayHour={9}
-        endDayHour={14}
+      <WeekView
+        startDayHour={1}
+        endDayHour={24}
       />
       <Appointments />
     </Scheduler>
