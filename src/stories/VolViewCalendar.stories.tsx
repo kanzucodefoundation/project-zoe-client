@@ -183,7 +183,27 @@ export default {
         </Toolbar>
       </AppBar>
     </div>
-    <MuiThemeProvider theme={leftNavBar}>
+    
+
+  <Paper>
+    <Scheduler
+      data={schedulerData}
+    
+    >
+      
+      <ViewState
+        currentDate={currentDate}
+       
+      />
+      <WeekView
+        startDayHour={1}
+        endDayHour={24}
+      />
+      <Appointments />
+    </Scheduler>
+  </Paper>
+
+  <MuiThemeProvider theme={leftNavBar}>
       <CssBaseline />
       <Container>
         <Typography component="div">
@@ -233,24 +253,6 @@ export default {
         </Typography>
       </Container>
     </MuiThemeProvider>
-
-  <Paper>
-    <Scheduler
-      data={schedulerData}
-    
-    >
-      
-      <ViewState
-        currentDate={currentDate}
-       
-      />
-      <WeekView
-        startDayHour={1}
-        endDayHour={24}
-      />
-      <Appointments />
-    </Scheduler>
-  </Paper>
   </Typography>
       </Container>
     </MuiThemeProvider>
