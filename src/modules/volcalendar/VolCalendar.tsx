@@ -6,8 +6,8 @@ import {
   WeekView,
   Appointments,
 } from '@devexpress/dx-react-scheduler-material-ui';
+import Layout from "../../components/layout/Layout";
 
-// import LeftNavigationMenu from './VolLeftNav.stories'
 
 
 
@@ -22,11 +22,12 @@ const schedulerData = [
   { startDate: '2020-04-11T01:00', endDate: '2020-04-11T03:30', title: 'Setting up the cameras' },
 ];
 
-export default {
-    title: 'VolViewCalendar'
-  };
-  
-  export const Calendar = () => (
+
+export default function VolCalendar() {
+    
+
+    return (
+        <Layout>
   <Paper>
     <Scheduler
       data={schedulerData}
@@ -42,4 +43,6 @@ export default {
       <Appointments />
     </Scheduler>
   </Paper>
-);
+  </Layout>
+)
+}

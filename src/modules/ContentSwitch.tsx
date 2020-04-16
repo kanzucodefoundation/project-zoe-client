@@ -9,6 +9,7 @@ import Layout from "../components/layout/Layout";
 import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
+import volcalendar from "./volcalendar/VolCalendar"
 
 
 const ContentSwitch = () => {
@@ -21,6 +22,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.usersGroups} component={UserGroups}/>
         <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
+        <Route path={localRoutes.volcalendar} component={volcalendar}/>
         <Route component={NoMatch}/>
     </Switch>
 }
