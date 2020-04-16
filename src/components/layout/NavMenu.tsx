@@ -33,6 +33,11 @@ const routes = [
         icon: AppsIcon
     },
     {
+        name: "Volunteer Dashboard",
+        route: localRoutes.voldashboard,
+        icon: AppsIcon
+    },
+    {
         name: "People",
         icon: PeopleIcon,
         items: [

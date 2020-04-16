@@ -38,6 +38,7 @@ export const localRoutes = {
     tags: '/admin/tags',
     settings: '/admin/settings',
     volcalendar: '/volcalendar',
+    voldashboard: '/voldashboard',
 
     help: '/help'
 }

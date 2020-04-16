@@ -10,6 +10,7 @@ import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
 import volcalendar from "./volcalendar/VolCalendar"
+import VolDashboard from "./voldashboard/Dashboard";
 
 
 const ContentSwitch = () => {
@@ -23,6 +24,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
         <Route path={localRoutes.volcalendar} component={volcalendar}/>
+        <Route path={localRoutes.voldashboard} component={VolDashboard}/>
         <Route component={NoMatch}/>
     </Switch>
 }
