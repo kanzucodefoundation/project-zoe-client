@@ -39,6 +39,8 @@ export const localRoutes = {
     settings: '/admin/settings',
     volcalendar: '/volcalendar',
     voldashboard: '/voldashboard',
+    volblockdate: '/volblockdate',
+    volviewteam: '/volviewteam',
 
     help: '/help'
 }
