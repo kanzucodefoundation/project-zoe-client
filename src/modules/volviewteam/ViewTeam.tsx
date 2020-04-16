@@ -67,10 +67,7 @@ const Notifications = () => {
                                 }
                                 label="2 : Timothy"
                             />
-                            <FormControlLabel
-                                control={<Checkbox color="primary"/>}
-                                label="Text Messages"
-                            />
+                            
                             <FormControlLabel
                                 control={
                                     <Checkbox
@@ -93,14 +90,7 @@ const Notifications = () => {
                     </Grid>
                 </CardContent>
                 <Divider/>
-                <CardActions>
-                    <Button
-                        color="primary"
-                        variant="outlined"
-                    >
-                        Save
-                    </Button>
-                </CardActions>
+                
             </form>
         </Card>
         </Layout>
