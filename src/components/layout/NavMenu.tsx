@@ -20,6 +20,8 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
+import AssignmentIcon from '@material-ui/icons/Assignment';
+
 
 interface IProps {
 }
@@ -63,6 +65,13 @@ const routes = [
             },
         ]
     },
+
+    {
+        name: "View Assigned Tasks",
+        route: localRoutes.volcalendar,
+        icon: AssignmentIcon
+    },
+
     {
         name: "Help",
         route: localRoutes.help,
