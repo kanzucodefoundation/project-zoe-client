@@ -50,7 +50,7 @@ const XRadioInput = (props: IProps) => {
                             key={it.value}
                             value={it.value}
                             label={it.label}
-                            control={<Radio/>}
+                            control={<Radio color='primary'/>}
                         />
                     )
                 }

@@ -33,6 +33,7 @@ const PSelectInput = ({name, multiple, helperText, size, options, variant, label
                 onChange={onChange}
                 labelWidth={variant === "outlined" ? labelWidth : undefined}
                 multiple={multiple}
+                autoComplete="off"
             >
                 {options.map(it => <MenuItem value={it.value} key={it.value}>{it.label}</MenuItem>)}
             </Select>

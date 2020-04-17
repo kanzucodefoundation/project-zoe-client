@@ -23,6 +23,7 @@ const XTextAreaInput = ({name, ...props}: TextFieldProps & IProps) => {
             multiline
             rowsMax="4"
             rows={4}
+            autoComplete="off"
         />
     )
 }

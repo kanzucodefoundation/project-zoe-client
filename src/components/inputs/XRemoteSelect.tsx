@@ -12,6 +12,8 @@ export interface IXRemoteProps {
     variant?: 'outlined' | 'filled' | 'standard'
     multiple?: any
     size?: 'small' | 'medium';
+    searchOnline?: boolean
+    defaultOptions?: IOption[]
 }
 
 export const XRemoteSelect = (props: IXRemoteProps) => {

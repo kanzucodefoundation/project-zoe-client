@@ -6,19 +6,17 @@ export const appRoles = {
     roleCrmView: "CRM_VIEW",
     roleCrmEdit: "CRM_EDIT",
 
-    roleAuthUserView: "AUTH_USER_VIEW",
-    roleAuthUserEdit: "AUTH_USER_EDIT",
+    roleUserView: "USER_VIEW",
+    roleUserEdit: "USER_EDIT",
 
-    roleAuthGroupView: "AUTH_GROUP_VIEW",
-    roleAuthGroupEdit: "AUTH_GROUP_EDIT",
-
-    roleTagView: "AUTH_TAG_VIEW",
-    roleTagEdit: "AUTH_TAG_EDIT",
+    roleTagView: "TAG_VIEW",
+    roleTagEdit: "TAG_EDIT",
 
     roleGroupView: "GROUP_VIEW",
     roleGroupEdit: "GROUP_EDIT",
 }
 
+export const rolesList = Object.values(appRoles)
 
 export const redux = {
     doLogin: 'DO_LOGIN',
@@ -54,7 +52,8 @@ export const remoteRoutes = {
     contacts: url + '/api/crm/contacts',
     contactSearch: url + '/api/crm/contact/search',
     contactById: url + '/api/crm/contacts/id',
-    contactsPerson: url + '/api/crm/people',
+    contactsPeople: url + '/api/crm/people',
+    contactsPeopleCombo: url + '/api/crm/people/combo',
     contactsChc: url + '/api/crm/person/chc',
     contactsEmail: url + '/api/crm/emails',
     tags: url + '/api/tags',

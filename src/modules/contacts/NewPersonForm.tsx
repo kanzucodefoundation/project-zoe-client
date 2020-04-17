@@ -103,7 +103,7 @@ const NewPersonForm = ({done}: IProps) => {
 
         }
 
-        post(remoteRoutes.contactsPerson, toSave,
+        post(remoteRoutes.contactsPeople, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()

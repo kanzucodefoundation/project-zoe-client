@@ -45,6 +45,7 @@ export default function XSearchInput({onFilterToggle, onChange = (v: string) => 
                     placeholder="Search here"
                     inputProps={{'aria-label': 'Search here'}}
                     onChange={e => onChange(e.target.value)}
+                    autoComplete="off"
                 />
                 <IconButton type="submit" className={classes.iconButton} aria-label="search" size='small'>
                     <SearchIcon/>

@@ -1,10 +1,10 @@
-import React, {useEffect} from "react";
+import React, {useCallback, useEffect} from "react";
 import {search} from "../../utils/ajax";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import {hasValue, IOption} from "../inputs/inputHelpers";
+import {hasNoValue, hasValue, IOption} from "../inputs/inputHelpers";
 import {TextFieldProps} from "@material-ui/core/TextField/TextField";
 import {AutocompleteChangeDetails, AutocompleteChangeReason} from "@material-ui/lab/useAutocomplete/useAutocomplete";
 import {IXRemoteProps} from "../inputs/XRemoteSelect";
@@ -19,6 +19,7 @@ export interface IProps extends IXRemoteProps {
     fullWidth?: boolean;
     helperText?: React.ReactNode;
     textFieldProps?: TextFieldProps
+
 }
 
 const FakeProgress = () => <div style={{height: 20, width: 20}}>&nbsp;</div>
@@ -29,79 +30,40 @@ const labelParser = (option: any) => {
     return ''
 }
 
-const cacheData = (query: any, data: any) => {
-    try {
-        const key = JSON.stringify(query).replace(/\s+/g, '-').toLowerCase()
-        const value = JSON.stringify(data)
-        localStorage.setItem(key, value)
-    } catch (e) {
-        console.error(e)
-    }
-
-}
-
-const getCacheData = (query: any,) => {
-    try {
-        const key = JSON.stringify(query).replace(/\s+/g, '-').toLowerCase()
-        const value = localStorage.getItem(key)
-        if (value && hasValue(value)) {
-            return JSON.parse(value)
-        }
-    } catch (e) {
-        console.error(e)
-    }
-}
 
 export function PRemoteSelect(props: IProps) {
     const [loading, setLoading] = React.useState(false);
-    const [options, setOptions] = React.useState<IOption[]>([]);
+    const [options, setOptions] = React.useState<IOption[]>(props.defaultOptions || []);
+    const [query, setQuery] = React.useState<string>('');
 
     function handleInputChange(event: React.ChangeEvent<any>, value: string) {
         if (!event)
             return
-        loadData(value)
+        fetch(value)
     }
+
+    const fetch = useCallback((query: string) => {
+        if (hasNoValue(props.remote)) {
+            return
+        }
+        const filter = {...props.filter, query, limit: 50}
+        setLoading(true)
+        search(props.remote, filter,
+            resp => {
+                const data = resp.map(props.parser)
+                setOptions(data)
+            },
+            undefined,
+            () => {
+                setLoading(false)
+            })
+    }, [props.filter, props.parser, props.remote]);
 
     useEffect(() => {
-        const filter = {...props.filter, query: "", limit: 50}
-        const cached = getCacheData(filter)
-        if (cached) {
-            setOptions(cached)
-            return;
+        if (hasValue(props.remote)) {
+            fetch(query)
         }
-        setLoading(true)
-        search(props.remote, filter,
-            resp => {
-                const data = resp.map(props.parser)
-                cacheData(filter, data)
-                setOptions(data)
-            },
-            undefined,
-            () => {
-                setLoading(false)
-            })
-    }, [props.filter, props.remote, props.parser])
-
-    function loadData(query: string) {
-
-        const filter = {...props.filter, query, limit: 50}
-        const cached = getCacheData(filter)
-        if (cached) {
-            setOptions(cached)
-            return;
-        }
-        setLoading(true)
-        search(props.remote, filter,
-            resp => {
-                const data = resp.map(props.parser)
-                cacheData(filter, data)
-                setOptions(data)
-            },
-            undefined,
-            () => {
-                setLoading(false)
-            })
-    }
+    }, [fetch, props.remote, query])
 
     function handleChange(
         event: React.ChangeEvent<{}>,
@@ -115,7 +77,17 @@ export function PRemoteSelect(props: IProps) {
     const handleTouched = () => {
         props.onBlur && props.onBlur()
     }
-    const {error, helperText, parser, ...autoProps} = {...props}
+
+    const handleMouseEnter = () => {
+        if (hasNoValue(options)) {
+            fetch("")
+        }
+    }
+    const {error, helperText, parser, defaultOptions, ...autoProps} = {...props}
+
+    const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setQuery(event.target.value);
+    };
 
     return (
         <Autocomplete
@@ -130,6 +102,7 @@ export function PRemoteSelect(props: IProps) {
             value={props.value}
             loading={loading}
             onInputChange={handleInputChange}
+            onMouseEnter={handleMouseEnter}
             renderInput={params => {
                 return <TextField
                     {...params}
@@ -138,9 +111,11 @@ export function PRemoteSelect(props: IProps) {
                     margin='normal'
                     fullWidth
                     onBlur={handleTouched}
+                    onChange={props.searchOnline ? handleQueryChange : undefined}
                     error={props.error}
                     helperText={props.helperText}
                     variant={props.variant}
+                    autoComplete="off"
                     InputProps={{
                         ...params.InputProps,
                         endAdornment: (

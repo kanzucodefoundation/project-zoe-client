@@ -1,6 +1,7 @@
 import React from "react";
-import {Field} from 'formik';
-import {CheckboxWithLabel} from 'formik-material-ui';
+import {useField} from 'formik';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 interface IProps {
     name: string
@@ -8,11 +9,18 @@ interface IProps {
 }
 
 const XCheckBoxInput = (props: IProps) => {
-    return <Field
-        {...props}
-        Label={{label: props.label}}
-        component={CheckboxWithLabel}
+    const [field] = useField({name: props.name});
+    return <FormControlLabel
+        label={props.label}
+        control={
+            <Checkbox
+                checked={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                name={props.name}
+                color="primary"
+            />
+        }
     />
 }
-
 export default XCheckBoxInput

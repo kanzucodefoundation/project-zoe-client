@@ -38,6 +38,7 @@ const XSelectInput = (props: IProps) => {
             multiple={rest.multiple}
             inputProps={{name}}
             labelWidth={labelWidth}
+            autoComplete="off"
         >
             {
                 options.map(

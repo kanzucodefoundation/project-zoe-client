@@ -16,6 +16,8 @@ export const toOptions = (data: string[]): IOption[] => {
     return data.map(it => ({label: it, value: it}))
 }
 
+export const comboParser = ({id, name}: any) => ({value: id, label: name})
+
 
 export const hasValue = (text: any) => {
     return !isEmpty(text)

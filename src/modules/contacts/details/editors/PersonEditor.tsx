@@ -50,7 +50,7 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
             civilStatus: values.civilStatus,
             avatar: ""
         }
-        put(`${remoteRoutes.contactsPerson}/${contactId}`, toSave,
+        put(`${remoteRoutes.contactsPeople}/${contactId}`, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()

@@ -34,6 +34,7 @@ const Component = ({field, form, ...other}: FieldProps) => {
             onChange={handleChange}
             fullWidth
             {...other}
+            autoComplete="off"
         />
     </MuiPickersUtilsProvider>
 }

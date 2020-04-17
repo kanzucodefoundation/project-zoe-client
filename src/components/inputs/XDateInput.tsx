@@ -1,6 +1,7 @@
 import React from "react";
 import {useField} from 'formik';
 import 'date-fns';
+import {isValid} from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
 import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
 import {hasValue} from "./inputHelpers";
@@ -14,16 +15,20 @@ interface IProps {
     pickerVariant?: 'inline' | 'dialog' | 'static'
 }
 
-type PickerProps = Omit<KeyboardDatePickerProps, 'variant'|'inputVariant'>;
+type PickerProps = Omit<KeyboardDatePickerProps, 'variant' | 'inputVariant'>;
 
 const XDateInput = (props: IProps & Partial<PickerProps>) => {
-    const {variant,pickerVariant,...rest}=props
+    const {variant, pickerVariant, ...rest} = props
     const [field, meta, helpers] = useField({name: props.name});
     const error = hasValue(meta.error) ? meta.error : undefined
     const showError = Boolean(error && meta.touched)
 
     function handleChange(date: MaterialUiPickersDate) {
-        return helpers.setValue(date?.toISOString())
+        if (isValid(date)) {
+            return helpers.setValue(date?.toISOString())
+        } else {
+            return helpers.setValue(null)
+        }
     }
 
     return <MuiPickersUtilsProvider utils={DateFnsUtils}>

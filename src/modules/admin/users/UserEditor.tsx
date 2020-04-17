@@ -1,48 +1,51 @@
-import React from 'react';
+import React, {useState} from 'react';
 import * as yup from "yup";
-import {reqString} from "../../../data/validations";
+import {reqArray, reqObject, reqString} from "../../../data/validations";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../components/forms/XForm";
 import XTextInput from "../../../components/inputs/XTextInput";
 
-import {remoteRoutes} from "../../../data/constants";
+import {remoteRoutes, rolesList} from "../../../data/constants";
 import {XRemoteSelect} from "../../../components/inputs/XRemoteSelect";
 import {handleSubmission, ISubmission} from "../../../utils/formHelpers";
-import {IOption} from "../../../components/inputs/inputHelpers";
+import {comboParser, toOptions} from "../../../components/inputs/inputHelpers";
+import {del} from "../../../utils/ajax";
+import Toast from "../../../utils/Toast";
 
 interface IProps {
     data: any
     isNew: boolean
     done: (dt: any) => any
+    onDeleted: (dt: any) => any
+    onCancel?: () => any
 }
 
 const schema = yup.object().shape(
     {
-        username: reqString,
-        contact: yup.object().required(),
-        group: yup.object().required()
+        password: reqString.min(8),
+        contact: reqObject,
+        roles: reqArray,
     }
 )
 
-const schemaNew = yup.object().shape(
+const editSchema = yup.object().shape(
     {
-        password: reqString,
-        username: reqString,
-        contact: yup.object().required(),
-        group: yup.object().required()
+        password: yup.string().min(8),
+        roles: reqArray,
     }
 )
+const initialValues = {contact: null, password: '', roles: []}
+const UserEditor = ({data, isNew, done, onDeleted, onCancel}: IProps) => {
 
-const UserEditor = ({data, isNew, done}: IProps) => {
+    const [loading, setLoading] = useState<boolean>(false)
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const toSave: any = {
-            id: values.id,
-            username: values.username,
-            contact: values.contact.id,
-            group: values.group.id,
-            password: values.password
+            ...values,
+            contactId: values.contact.value,
+            password: values.password,
+            roles: values.roles?.map((it: any) => it.value)
         }
         const submission: ISubmission = {
             url: remoteRoutes.users,
@@ -52,35 +55,49 @@ const UserEditor = ({data, isNew, done}: IProps) => {
         handleSubmission(submission)
     }
 
+    function handleDelete() {
+        setLoading(true)
+        del(
+            remoteRoutes.users,
+            dt => {
+                console.log("Delete response", dt)
+                Toast.success("Operation succeeded")
+                onDeleted(data)
+            },
+            undefined,
+            () => {
+                setLoading(false)
+            })
+    }
+
     return (
         <XForm
             onSubmit={handleSubmit}
-            schema={isNew ? schemaNew : schema}
-            initialValues={data}
+            schema={isNew ? schema : editSchema}
+            initialValues={data || initialValues}
+            onDelete={isNew ? undefined : handleDelete}
+            loading={loading}
+            onCancel={onCancel}
         >
             <Grid spacing={1} container>
                 <Grid item xs={12}>
                     <XRemoteSelect
                         name="contact"
                         label="Person"
-                        remote={remoteRoutes.contactsPerson}
-                        parser={({id, name}: any): IOption => ({value: id, label: name})}
+                        remote={remoteRoutes.contactsPeopleCombo}
+                        parser={comboParser}
+                        variant='outlined'
                     />
                 </Grid>
                 <Grid item xs={12}>
                     <XRemoteSelect
-                        name="group"
-                        label="Group"
-                        remote={remoteRoutes.userGroups}
-                        parser={({id, name}: any): IOption => ({value: id, label: name})}
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="username"
-                        label="Username"
-                        type="text"
+                        name="roles"
+                        label="Roles"
+                        remote=''
+                        defaultOptions={toOptions(rolesList)}
+                        parser={comboParser}
                         variant='outlined'
+                        multiple
                     />
                 </Grid>
                 <Grid item xs={12}>
