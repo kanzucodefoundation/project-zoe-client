@@ -10,6 +10,10 @@ import Layout from "../components/layout/Layout";
 import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
+import volcalendar from "./volcalendar/VolCalendar"
+import VolDashboard from "./voldashboard/Dashboard";
+import VolBlockDate from "./volblockdate/VolCalendar";
+import VolViewTeam from "./volviewteam/ViewTeam";
 
 
 const ContentSwitch = () => {
@@ -25,6 +29,11 @@ const ContentSwitch = () => {
         
         {/* For Team Lead */}
         <Route path={localRoutes.addVolunteers} component={AddVolunteers}/>
+        
+        <Route path={localRoutes.volcalendar} component={volcalendar}/>
+        <Route path={localRoutes.voldashboard} component={VolDashboard}/>
+        <Route path={localRoutes.volblockdate} component={VolBlockDate}/>
+        <Route path={localRoutes.volviewteam} component={VolViewTeam}/>
         <Route component={NoMatch}/>
     </Switch>
 }

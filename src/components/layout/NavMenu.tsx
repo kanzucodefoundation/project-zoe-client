@@ -20,6 +20,8 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
+import AssignmentIcon from '@material-ui/icons/Assignment';
+
 
 interface IProps {
 }
@@ -30,6 +32,7 @@ const routes = [
         route: localRoutes.dashboard,
         icon: AppsIcon
     },
+    
     {
         name: "People",
         icon: PeopleIcon,
@@ -63,6 +66,29 @@ const routes = [
             },
         ]
     },
+
+    
+    {
+        name: "Volunteer Dashboard",
+        route: localRoutes.voldashboard,
+        icon: AppsIcon
+    },
+    {
+        name: "View Assigned Tasks",
+        route: localRoutes.volcalendar,
+        icon: AssignmentIcon
+    },
+    {
+        name: "Block Dates",
+        route: localRoutes.volblockdate,
+        icon: AssignmentIcon
+    },
+    {
+        name: "View Team",
+        route: localRoutes.volviewteam,
+        icon: PeopleIcon
+    },
+
     {
         name: "Help",
         route: localRoutes.help,
