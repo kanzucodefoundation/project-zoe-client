@@ -38,7 +38,11 @@ export const localRoutes = {
     tags: '/admin/tags',
     settings: '/admin/settings',
 
-    help: '/help'
+    help: '/help',
+
+
+    // For Team Lead
+    addVolunteers: '/volunteers/add-volunteers',
 }
 
 const debug = process.env.NODE_ENV !== 'production'
@@ -72,6 +76,7 @@ export const remoteRoutes = {
     contactsCompany: url + '/api/crm/contact/company',
     contactsAvatar: url + '/api/crm/contact/avatar',
 
+    volunteers: url + '/api/services/volunteers',
 }
 
 
