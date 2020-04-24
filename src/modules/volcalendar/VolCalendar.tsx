@@ -21,9 +21,10 @@ import WbSunny from '@material-ui/icons/WbSunny';
 import FilterDrama from '@material-ui/icons/FilterDrama';
 import Opacity from '@material-ui/icons/Opacity';
 import ColorLens from '@material-ui/icons/ColorLens';
-import { createStyles, withStyles, Theme } from '@material-ui/core/styles';
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { owners } from '../../data/volcalendar/tasks';
 import Layout from "../../components/layout/Layout";
+
 
 const appointments = [
   {
@@ -107,9 +108,7 @@ const DayScaleCell = (props: any) => (
 
 
 
-const styles = withStyles((theme:Theme) => 
-createStyles({
-
+const styles = (theme: Theme) => createStyles({
   cell: {
     color: '#78909C!important',
     position: 'relative',
@@ -227,7 +226,7 @@ createStyles({
   container: {
     paddingBottom: theme.spacing(1.5),
   },
-}));
+});
 
 interface IProp {
   classes: any;
@@ -290,20 +289,20 @@ const CellBase = React.memo(({
   );
 });
 
-const TimeTableCell = withStyles(styles, { name: 'Cell' })(CellBase);
+const TimeTableCell: any = withStyles(styles, { name: 'Cell' })(CellBase);
 
-const Appointment = withStyles(styles, { name: 'Appointment' })(({ classes, ...restProps }: any) => (
+const Appointment: any = withStyles(styles, { name: 'Appointment' })(({ classes, ...restProps }: any) => (
   <Appointments.Appointment
     {...restProps}
     className={classes.appointment}
   />
 ));
 
-const AppointmentContent = withStyles(styles, { name: 'AppointmentContent' })(({ classes, ...restProps }: any) => (
+const AppointmentContent: any = withStyles(styles, { name: 'AppointmentContent' })(({ classes, ...restProps }: any) => (
   <Appointments.AppointmentContent {...restProps} className={classes.apptContent} />
 ));
 
-const FlexibleSpace = withStyles(styles, { name: 'ToolbarRoot' })(({ classes, ...restProps }: any) => (
+const FlexibleSpace: any = withStyles(styles, { name: 'ToolbarRoot' })(({ classes, ...restProps }: any) => (
   <Toolbar.FlexibleSpace {...restProps} className={classes.flexibleSpace}>
     <div className={classes.flexContainer}>
       <ColorLens fontSize="large" htmlColor="#FF7043" />
