@@ -43,9 +43,9 @@ const UserEditor = ({data, isNew, done, onDeleted, onCancel}: IProps) => {
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const toSave: any = {
             ...values,
-            contactId: values.contact.value,
+            contactId: values.contact.id,
             password: values.password,
-            roles: values.roles?.map((it: any) => it.value)
+            roles: values.roles?.map((it: any) => it.id)
         }
         const submission: ISubmission = {
             url: remoteRoutes.users,

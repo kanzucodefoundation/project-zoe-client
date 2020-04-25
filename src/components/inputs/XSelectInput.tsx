@@ -43,9 +43,9 @@ const XSelectInput = (props: IProps) => {
             {
                 options.map(
                     it => <MenuItem
-                        value={it.value}
-                        key={it.value}
-                    >{it.label}</MenuItem>
+                        value={it.id}
+                        key={it.id}
+                    >{it.name}</MenuItem>
                 )
             }
         </Select>

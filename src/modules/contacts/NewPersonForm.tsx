@@ -95,8 +95,8 @@ const NewPersonForm = ({done}: IProps) => {
             placeOfWork: values.placeOfWork,
             residence: values.residence,
 
-            cellGroupId: values.cellGroup.value,
-            churchLocationId: values.churchLocation.value,
+            cellGroupId: values.cellGroup.id,
+            churchLocationId: values.churchLocation.id,
 
             email: values.email,
             phone: values.phone,
@@ -204,7 +204,7 @@ const NewPersonForm = ({done}: IProps) => {
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCombo}
                         filter={{'categories[]': 'Location'}}
-                        parser={({name, id}: any) => ({label: name, value: id})}
+                        parser={({name, id}: any) => ({name: name, id: id})}
                         name="churchLocation"
                         label="Church Location"
                         variant='outlined'
@@ -214,7 +214,7 @@ const NewPersonForm = ({done}: IProps) => {
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCombo}
                         filter={{'categories[]': 'MC'}}
-                        parser={({name, id}: any) => ({label: name, value: id})}
+                        parser={({name, id}: any) => ({name: name, id: id})}
                         name="cellGroup"
                         label="Missional Community"
                         variant='outlined'

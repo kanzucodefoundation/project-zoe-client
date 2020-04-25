@@ -39,13 +39,13 @@ export const Input = () => {
                         name="movie"
                         label="Latest Movie"
                         variant='standard'
-                        options={top100Films.map(({title, year}) => ({label: title, value: `${year}`}))}
+                        options={top100Films.map(({title, year}) => ({name: title, id: `${year}`}))}
                     />
                     <XComboInput
                         name="movie"
                         label="Latest Movie"
                         variant='outlined'
-                        options={top100Films.map(({title, year}) => ({label: title, value: `${year}`}))}
+                        options={top100Films.map(({title, year}) => ({name: title, id: `${year}`}))}
                     />
                 </XForm>
             </Grid>
@@ -79,14 +79,14 @@ export const MultiInput = () => {
                         name="movie"
                         label="Latest Movie"
                         variant='standard'
-                        options={top100Films.map(({title, year}) => ({label: title, value: `${year}`}))}
+                        options={top100Films.map(({title, year}) => ({name: title, id: `${year}`}))}
                         multiple
                     />
                     <XComboInput
                         name="movie"
                         label="Latest Movie"
                         variant='outlined'
-                        options={top100Films.map(({title, year}) => ({label: title, value: `${year}`}))}
+                        options={top100Films.map(({title, year}) => ({name: title, id: `${year}`}))}
                         multiple
                     />
                 </XForm>
@@ -114,8 +114,8 @@ export const RemoteInput = () => {
     const url = "http://www.mocky.io/v2/5e74d15b3000004395a5f716"
     const parser = (dt:any):IOption=>{
         return {
-            value:parseXpath(dt,"$.guid"),
-            label:parseXpath(dt,"$.name")
+            id:parseXpath(dt,"$.guid"),
+            name:parseXpath(dt,"$.name")
         }
     }
 

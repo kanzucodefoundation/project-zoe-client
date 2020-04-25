@@ -9,9 +9,7 @@ import {TextFieldProps} from "@material-ui/core/TextField/TextField";
 import {AutocompleteChangeDetails, AutocompleteChangeReason} from "@material-ui/lab/useAutocomplete/useAutocomplete";
 import {IXRemoteProps} from "../inputs/XRemoteSelect";
 
-
 export interface IProps extends IXRemoteProps {
-
     value?: any
     onChange?: (d: any) => any
     onBlur?: () => any
@@ -23,9 +21,9 @@ export interface IProps extends IXRemoteProps {
 }
 
 const FakeProgress = () => <div style={{height: 20, width: 20}}>&nbsp;</div>
-const labelParser = (option: any) => {
+const labelParser = (option: IOption) => {
     if (hasValue(option)) {
-        return option.label
+        return option.name
     }
     return ''
 }

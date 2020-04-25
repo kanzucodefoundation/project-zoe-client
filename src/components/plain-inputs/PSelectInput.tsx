@@ -35,7 +35,7 @@ const PSelectInput = ({name, multiple, helperText, size, options, variant, label
                 multiple={multiple}
                 autoComplete="off"
             >
-                {options.map(it => <MenuItem value={it.value} key={it.value}>{it.label}</MenuItem>)}
+                {options.map(it => <MenuItem value={it.id} key={it.id}>{it.name}</MenuItem>)}
             </Select>
             {helperText && <FormHelperText>{helperText}</FormHelperText>}
         </FormControl>

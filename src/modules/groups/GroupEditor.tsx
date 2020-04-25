@@ -1,6 +1,6 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqString} from "../../data/validations";
+import {reqObject, reqString} from "../../data/validations";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
@@ -13,6 +13,7 @@ import {GroupPrivacy, IGroup} from "./types";
 import XSelectInput from "../../components/inputs/XSelectInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
 import {enumToArray} from "../../utils/stringHelpers";
+import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 
 interface IProps {
     data?: Partial<IGroup>
@@ -25,22 +26,30 @@ const schema = yup.object().shape(
     {
         name: reqString,
         privacy: reqString,
-        description: reqString,
-        tag: reqString
+        details: reqString,
+        category: reqObject,
+        parent: reqObject
     }
 )
 
+const initialData = {
+    name: '',
+    privacy: '',
+    details: '',
+    category: null,
+    parent: null
+}
+
 const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
-
-
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const toSave: IGroup = {
+            id: 0,
             ...data,
             name: values.name,
-            description: values.description,
+            details: values.details,
             privacy: values.privacy,
-            tag: values.tag,
-            parent: values.parent
+            categoryId: values.category.id,
+            parentId: values.parent.id
         }
         if (isNew) {
             post(remoteRoutes.groups, toSave,
@@ -73,10 +82,11 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
-            initialValues={data}
+            initialValues={{...initialData, ...data}}
+            debug
         >
             <Grid spacing={1} container>
-                <Grid item xs={12}>
+                <Grid item xs={4}>
                     <XSelectInput
                         name="privacy"
                         label="Privacy"
@@ -84,8 +94,19 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
                         variant='outlined'
                     />
                 </Grid>
+                <Grid item xs={8}>
+                    <XRemoteSelect
+                        remote={remoteRoutes.groupsCategories}
+                        parser={({name, id}: any) => ({name, id})}
+                        name="category"
+                        label="category"
+                        variant='outlined'
+                    />
+                </Grid>
                 <Grid item xs={12}>
-                    <XTextInput
+                    <XRemoteSelect
+                        remote={remoteRoutes.groupsCombo}
+                        parser={({name, id}: any) => ({name, id})}
                         name="parent"
                         label="Parent Group"
                         variant='outlined'
@@ -101,19 +122,12 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
                 </Grid>
                 <Grid item xs={12}>
                     <XTextInput
-                        name="tag"
-                        label="Tag"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="description"
-                        label="Description"
+                        name="details"
+                        label="Details"
                         variant='outlined'
                         multiline
-                        rowsMax="4"
-                        rows={4}
+                        rowsMax="3"
+                        rows={3}
                     />
                 </Grid>
             </Grid>

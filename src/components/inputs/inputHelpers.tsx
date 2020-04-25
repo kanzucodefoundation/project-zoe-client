@@ -8,15 +8,15 @@ import XSelectInput from "./XSelectInput";
 import XTextAreaInput from "./XTextAreaInput";
 
 export interface IOption {
-    label: string
-    value: any
+    name: string
+    id: any
 }
 
 export const toOptions = (data: string[]): IOption[] => {
-    return data.map(it => ({label: it, value: it}))
+    return data.map(it => ({name: it, id: it}))
 }
 
-export const comboParser = ({id, name}: any) => ({value: id, label: name})
+export const comboParser = ({id, name}: any):IOption => ({id, name})
 
 
 export const hasValue = (text: any) => {

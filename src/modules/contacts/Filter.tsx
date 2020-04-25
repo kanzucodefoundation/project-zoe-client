@@ -38,8 +38,8 @@ const Filter = ({onFilter, loading}: IProps) => {
     function handleSubmission(values: any) {
         const filter: IContactSearchDto = {
             ageGroups: values.ageGroups,
-            cellGroups: values.cellGroups?.map((it: any) => it.value),
-            churchLocations: values.churchLocations?.map((it: any) => it.value),
+            cellGroups: values.cellGroups?.map((it: any) => it.id),
+            churchLocations: values.churchLocations?.map((it: any) => it.id),
             query: values.query,
             email: values.email,
             phone: values.phone,
@@ -103,7 +103,7 @@ const Filter = ({onFilter, loading}: IProps) => {
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCombo}
                         filter={{'categories[]': 'Location'}}
-                        parser={({name, id}: any) => ({label: name, value: id})}
+                        parser={({name, id}: any) => ({name: name, id: id})}
                         name="churchLocations"
                         label="Church Locations"
                         variant='outlined'
@@ -115,7 +115,7 @@ const Filter = ({onFilter, loading}: IProps) => {
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCombo}
                         filter={{'categories[]': 'MC'}}
-                        parser={({name, id}: any) => ({label: name, value: id})}
+                        parser={({name, id}: any) => ({name: name, id: id})}
                         name="cellGroups"
                         label="Missional Communities"
                         variant='outlined'

@@ -8,9 +8,14 @@ import Settings from "./settings/Settings";
 import Layout from "../components/layout/Layout";
 import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
+import {useSelector} from "react-redux";
+import {IState} from "../data/types";
+
 
 
 const ContentSwitch = () => {
+    const user = useSelector((state:IState) =>state.core.user )
+
     return <Switch>
         <Route exact={true} path="/" component={Dashboard}/>
         <Route path={localRoutes.dashboard} component={Dashboard}/>

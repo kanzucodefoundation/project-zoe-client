@@ -124,5 +124,4 @@ const ListView = (props: IProps) => {
     );
 }
 
-
 export default ListView;

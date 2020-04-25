@@ -32,11 +32,11 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const toSave: IGroup = {
+            categoryId: "", id: 0,
             ...data,
             name: values.name,
-            description: values.description,
+            details: values.description,
             privacy: values.privacy,
-            tag: values.tag,
             parent: values.parent
         }
         if (isNew) {

@@ -1,10 +1,12 @@
-export interface IGroup{
-    id?: string
-    name: string
-    tag: string
-    privacy: GroupPrivacy
-    description?: string
-    parent: any | null
+export interface IGroup {
+    id: number;
+    privacy: GroupPrivacy;
+    name: string;
+    details?: string;
+    category?: any;
+    categoryId: string;
+    parent?: any;
+    parentId?: number;
 }
 
 export enum GroupPrivacy {

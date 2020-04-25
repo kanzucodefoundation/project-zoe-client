@@ -78,10 +78,14 @@ const GroupsList = () => {
     const openRecords = data.map(it => it.id)
 
     const treeData: any = arrayToTree(data, {
-        parentProperty: 'parent',
+        parentProperty: 'parentId',
         customID: 'id'
     })
-    const starterData = selected ? {parent: selected.id} : undefined
+    const starterData = selected ? {
+        parent: {
+            id: selected.id, name: selected.name
+        }
+    } : undefined
     return (
         <Layout>
             <Box p={1}>

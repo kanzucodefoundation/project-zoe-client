@@ -55,7 +55,6 @@ const EditForm = ({
     function handleDelete() {
         const delUrl = `${url}/${data[primaryKey]}`
         del(delUrl, resp => {
-            console.log("deleted", resp)
             Toast.success("Operation succeeded")
             props.onDeleted(data)
         })
