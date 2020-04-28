@@ -7,3 +7,14 @@ export interface ICreateVolunteerDto {
     profession: string;
 }
 
+// export  interface IVolunteerListDto {
+//     id: number;
+//     name: string;
+//     cellGroup: any;
+// }
+
+// export interface IVolunteersFilter {
+//     query?: string
+//     skip?: string
+//     limit?: string
+// }
