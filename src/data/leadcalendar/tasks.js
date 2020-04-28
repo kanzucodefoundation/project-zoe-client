@@ -2,37 +2,37 @@ import { green, deepOrange, lightBlue } from '@material-ui/core/colors';
 
 export const tasks = [
   {
-    title: 'Recall Rebate Form',
+    title: 'Sweeping',
     priorityId: 2,
     startDate: '2018-04-17T09:30',
     endDate: '2018-04-17T10:00',
   },
   {
-    title: 'Create Report on Customer Feedback',
+    title: 'Mopping',
     priorityId: 2,
     startDate: '2018-04-17T10:30',
     endDate: '2018-04-17T12:00',
   },
   {
-    title: 'Review Customer Feedback Report',
+    title: 'Arranging church',
     priorityId: 2,
     startDate: '2018-04-17T12:15',
     endDate: '2018-04-17T13:30',
   },
   {
-    title: 'Google AdWords Strategy',
+    title: 'Decorate Alter',
     priorityId: 2,
     startDate: '2018-04-20T09:30',
     endDate: '2018-04-20T11:30',
   },
   {
-    title: 'Rollout of New Website and Marketing Brochures',
+    title: 'Organize stage for chior',
     priorityId: 2,
     startDate: '2018-04-19T10:30',
     endDate: '2018-04-19T12:30',
   },
   {
-    title: 'Create New Shipping Return Labels',
+    title: 'Attend to sunday school kids',
     priorityId: 3,
     startDate: '2018-04-19T13:00',
     endDate: '2018-04-19T14:30',
