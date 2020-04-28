@@ -37,6 +37,8 @@ export const localRoutes = {
     usersGroups: '/admin/user-groups',
     tags: '/admin/tags',
     settings: '/admin/settings',
+    TeamLeadCalendar: '/admin/TeamLeadCalendar',
+    TeamLeadDashboard: '/admin/TeamLeadDashboard',
 
     help: '/help'
 }

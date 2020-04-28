@@ -9,8 +9,8 @@ import Layout from "../components/layout/Layout";
 import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
-import TeamLeadCalendar from "./teamlead/teamleadcalendar/teamleadcalendar";
-import TeamLeadDashboard from "./teamlead/teamleaddashboard/teamleadDashboard";
+import TeamLeadCalendar from "./TeamLeadCalendar/leadcalendar";
+import TeamLeadDashboard from "./TeamLeadDashboard/teamleadDashboard";
 
 const ContentSwitch = () => {
   return (
@@ -23,8 +23,8 @@ const ContentSwitch = () => {
       <Route path={localRoutes.usersGroups} component={UserGroups} />
       <Route path={localRoutes.groups} component={Groups} />
       <Route path={localRoutes.settings} component={Settings} />
-      <Route path={localRoutes.teamleadcalendar} component={TeamLeadCalendar} />
-      <Route path={localRoutes.teamleaddashboard}component={TeamLeadDashboard} />
+      <Route path={localRoutes.TeamLeadCalendar} component={TeamLeadCalendar} />
+      <Route path={localRoutes.TeamLeadDashboard}component={TeamLeadDashboard} />
             
       <Route component={NoMatch} />
     </Switch>

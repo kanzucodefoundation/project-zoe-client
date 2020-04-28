@@ -21,9 +21,10 @@ import WbSunny from '@material-ui/icons/WbSunny';
 import FilterDrama from '@material-ui/icons/FilterDrama';
 import Opacity from '@material-ui/icons/Opacity';
 import ColorLens from '@material-ui/icons/ColorLens';
-import { withStyles } from '@material-ui/core/styles';
-import { owners } from '../../../data/leadcalendar/tasks';
-import Layout from "../../../components/layout/Layout";
+import { withStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { owners } from '../../data/leadcalendar/tasks';
+import Layout from "../../components/layout/Layout";
+
 
 const appointments = [
   {
@@ -95,17 +96,19 @@ const resources = [{
   instances: owners,
 }];
 
-const getBorder = theme => (`1px solid ${
+const getBorder = (theme: any) => (`1px solid ${
   theme.palette.type === 'light'
     ? lighten(fade(theme.palette.divider, 1), 0.88)
     : darken(fade(theme.palette.divider, 1), 0.68)
 }`);
 
-const DayScaleCell = props => (
+const DayScaleCell = (props: any) => (
   <MonthView.DayScaleCell {...props} style={{ textAlign: 'center', fontWeight: 'bold' }} />
 );
 
-const styles = theme => ({
+
+
+const styles = (theme: Theme) => createStyles({
   cell: {
     color: '#78909C!important',
     position: 'relative',
@@ -225,7 +228,13 @@ const styles = theme => ({
   },
 });
 
-const WeatherIcon = ({ classes, id }) => {
+interface IProp {
+  classes: any;
+  id: number;
+
+}
+
+const WeatherIcon = ({ classes, id }: IProp) => {
   switch (id) {
     case 0:
       return <Opacity className={classes.rain} fontSize="large" />;
@@ -238,20 +247,28 @@ const WeatherIcon = ({ classes, id }) => {
   }
 };
 
-// #FOLD_BLOCK
+interface IProps {
+  classes: any;
+  startDate: any;
+  formatDate: any;
+  otherMonth: any;
+}
+
+
+
 const CellBase = React.memo(({
   classes,
   startDate,
   formatDate,
   otherMonth,
-  // #FOLD_BLOCK
-}) => {
+}: IProps) => {
   const iconId = Math.abs(Math.floor(Math.sin(startDate.getDate()) * 10) % 3);
   const isFirstMonthDay = startDate.getDate() === 1;
   const formatOptions = isFirstMonthDay
     ? { day: 'numeric', month: 'long' }
     : { day: 'numeric' };
   return (
+    
     <TableCell
       tabIndex={0}
       className={classNames({
@@ -272,31 +289,30 @@ const CellBase = React.memo(({
   );
 });
 
-const TimeTableCell = withStyles(styles, { name: 'Cell' })(CellBase);
+const TimeTableCell: any = withStyles(styles, { name: 'Cell' })(CellBase);
 
-const Appointment = withStyles(styles, { name: 'Appointment' })(({ classes, ...restProps }) => (
+const Appointment: any = withStyles(styles, { name: 'Appointment' })(({ classes, ...restProps }: any) => (
   <Appointments.Appointment
     {...restProps}
     className={classes.appointment}
   />
 ));
 
-const AppointmentContent = withStyles(styles, { name: 'AppointmentContent' })(({ classes, ...restProps }) => (
+const AppointmentContent: any = withStyles(styles, { name: 'AppointmentContent' })(({ classes, ...restProps }: any) => (
   <Appointments.AppointmentContent {...restProps} className={classes.apptContent} />
 ));
 
-const FlexibleSpace = withStyles(styles, { name: 'ToolbarRoot' })(({ classes, ...restProps }) => (
+const FlexibleSpace: any = withStyles(styles, { name: 'ToolbarRoot' })(({ classes, ...restProps }: any) => (
   <Toolbar.FlexibleSpace {...restProps} className={classes.flexibleSpace}>
     <div className={classes.flexContainer}>
       <ColorLens fontSize="large" htmlColor="#FF7043" />
-      <Typography variant="h5" style={{ marginLeft: '10px' }}>Art School</Typography>
+      <Typography variant="h5" style={{ marginLeft: '10px' }}>angie Volunteer</Typography>
     </div>
   </Toolbar.FlexibleSpace>
 ));
 
-export default class Demo extends React.PureComponent {
-  // #FOLD_BLOCK
-  constructor(props) {
+export default class VolCalendar extends React.PureComponent<{},any> {
+  constructor(props: any) {
     super(props);
 
     this.state = {
@@ -306,20 +322,22 @@ export default class Demo extends React.PureComponent {
     this.commitChanges = this.commitChanges.bind(this);
   }
 
-  // #FOLD_BLOCK
-  commitChanges({ added, changed, deleted }) {
-    this.setState((state) => {
+
+
+  
+  commitChanges({ added, changed, deleted }: any) {
+    this.setState((state: any) => {
       let { data } = state;
       if (added) {
         const startingAddedId = data.length > 0 ? data[data.length - 1].id + 1 : 0;
         data = [...data, { id: startingAddedId, ...added }];
       }
       if (changed) {
-        data = data.map(appointment => (
+        data = data.map((appointment: { id: any;}) => (
           changed[appointment.id] ? { ...appointment, ...changed[appointment.id] } : appointment));
       }
       if (deleted !== undefined) {
-        data = data.filter(appointment => appointment.id !== deleted);
+        data = data.filter((appointment: { id: any; }) => appointment.id !== deleted);
       }
       return { data };
     });
@@ -329,7 +347,7 @@ export default class Demo extends React.PureComponent {
     const { data } = this.state;
 
     return (
-        <Layout>
+      <Layout>
       <Paper>
         <Scheduler
           data={data}
