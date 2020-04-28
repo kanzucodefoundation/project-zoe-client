@@ -306,12 +306,12 @@ const FlexibleSpace: any = withStyles(styles, { name: 'ToolbarRoot' })(({ classe
   <Toolbar.FlexibleSpace {...restProps} className={classes.flexibleSpace}>
     <div className={classes.flexContainer}>
       <ColorLens fontSize="large" htmlColor="#FF7043" />
-      <Typography variant="h5" style={{ marginLeft: '10px' }}>angie Volunteer</Typography>
+      <Typography variant="h5" style={{ marginLeft: '10px' }}>angie Team Lead</Typography>
     </div>
   </Toolbar.FlexibleSpace>
 ));
 
-export default class VolCalendar extends React.PureComponent<{},any> {
+export default class TeamLeadCalendar extends React.PureComponent<{},any> {
   constructor(props: any) {
     super(props);
 
