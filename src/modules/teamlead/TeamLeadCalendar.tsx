@@ -22,7 +22,7 @@ import FilterDrama from '@material-ui/icons/FilterDrama';
 import Opacity from '@material-ui/icons/Opacity';
 import ColorLens from '@material-ui/icons/ColorLens';
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { owners } from '../../data/volcalendar/tasks';
+import { owners } from '../../data/teamlead/tasks';
 import Layout from "../../components/layout/Layout";
 
 
@@ -306,7 +306,7 @@ const FlexibleSpace: any = withStyles(styles, { name: 'ToolbarRoot' })(({ classe
   <Toolbar.FlexibleSpace {...restProps} className={classes.flexibleSpace}>
     <div className={classes.flexContainer}>
       <ColorLens fontSize="large" htmlColor="#FF7043" />
-      <Typography variant="h5" style={{ marginLeft: '10px' }}>angie Team Lead</Typography>
+      <Typography variant="h5" style={{ marginLeft: '10px' }}>angie Volunteer</Typography>
     </div>
   </Toolbar.FlexibleSpace>
 ));

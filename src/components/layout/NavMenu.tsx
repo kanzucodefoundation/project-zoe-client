@@ -69,26 +69,11 @@ const routes = [
 
     
     {
-        name: "Volunteer Dashboard",
-        route: localRoutes.voldashboard,
-        icon: AppsIcon
-    },
-    {
-        name: "View Assigned Tasks",
-        route: localRoutes.volcalendar,
+        name: "Team Lead Calendar",
+        route: localRoutes.teamleadcalendar,
         icon: AssignmentIcon
     },
-    {
-        name: "Block Dates",
-        route: localRoutes.volblockdate,
-        icon: AssignmentIcon
-    },
-    {
-        name: "View Team",
-        route: localRoutes.volviewteam,
-        icon: PeopleIcon
-    },
-
+   
     {
         name: "Help",
         route: localRoutes.help,

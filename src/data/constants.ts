@@ -37,11 +37,8 @@ export const localRoutes = {
     usersGroups: '/admin/user-groups',
     tags: '/admin/tags',
     settings: '/admin/settings',
-    volcalendar: '/volcalendar',
-    voldashboard: '/voldashboard',
-    volblockdate: '/volblockdate',
-    volviewteam: '/volviewteam',
-
+    teamleadcalendar: '/teamleadcalendar',
+ 
     help: '/help'
 }
 
