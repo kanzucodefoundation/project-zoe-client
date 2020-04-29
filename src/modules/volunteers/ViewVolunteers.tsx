@@ -7,7 +7,6 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Header from "./Header";
 
 import MaterialTable, { Column } from 'material-table';
-import {printBirthday} from "../../utils/dateHelpers";
 
 interface IProps {
     data: any | null
