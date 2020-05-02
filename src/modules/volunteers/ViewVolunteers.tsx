@@ -80,6 +80,21 @@ const ListOfVolunteers = ({done}: IProps) => {
                     title="Volunteers"
                     columns={state.columns}
                     data={state.data}
+                    editable={{
+                        onRowUpdate: (newData, oldData) =>
+                          new Promise((resolve) => {
+                            setTimeout(() => {
+                              resolve();
+                              if (oldData) {
+                                setData((prevState) => {
+                                  const data = [...prevState.data];
+                                  data[data.indexOf(oldData)] = newData;
+                                  return { ...prevState, data };
+                                });
+                              }
+                            }, 600);
+                          }),
+                      }}
                 />
             </Box>
         </Navigation>
