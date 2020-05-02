@@ -46,6 +46,7 @@ export const localRoutes = {
 
 
     // For Team Lead
+    viewVolunteers: '/volunteers/view-volunteers',
     addVolunteers: '/volunteers/add-volunteers',
 }
 
