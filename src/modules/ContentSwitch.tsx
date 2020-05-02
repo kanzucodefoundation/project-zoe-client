@@ -10,6 +10,8 @@ import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import {useSelector} from "react-redux";
 import {IState} from "../data/types";
+import MembersList from "./groups/members/MembersList";
+import MembersEditor from "./groups/members/MembersEditor";
 
 
 
@@ -24,9 +26,16 @@ const ContentSwitch = () => {
         <Route path={localRoutes.users} component={Users}/>
         <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
+        <Route path={localRoutes.test} component={Testing}/>
         <Route component={NoMatch}/>
     </Switch>
 }
+
+const Testing = () => (
+    <Layout>
+        <MembersEditor group={{id:1}}/>
+    </Layout>
+)
 
 const NoMatch = () => (
     <Layout>

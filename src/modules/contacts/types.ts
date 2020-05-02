@@ -21,6 +21,13 @@ export interface ICreatePersonDto {
     placeOfWork: string;
 }
 
+export interface IPersonComboValue {
+    id: number
+    name: string
+    avatar: string
+}
+
+
 export interface IPerson {
     id: string
     salutation: string,

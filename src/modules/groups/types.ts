@@ -1,3 +1,5 @@
+import {IOption} from "../../components/inputs/inputHelpers";
+
 export interface IGroup {
     id: number;
     privacy: GroupPrivacy;
@@ -8,6 +10,16 @@ export interface IGroup {
     parent?: any;
     parentId?: number;
 }
+
+export interface IGroupMembership {
+    id: number;
+    group: IOption,
+    groupId: number,
+    contact: any,
+    contactId: number,
+    role: GroupRole
+}
+
 
 export enum GroupPrivacy {
     Private = "Private",

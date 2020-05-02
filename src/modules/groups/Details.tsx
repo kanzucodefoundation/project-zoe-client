@@ -13,6 +13,7 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import MembersList from "./members/MembersList";
+import {grey} from "@material-ui/core/colors";
 
 interface IProps {
     data: IGroup
@@ -33,6 +34,11 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(2),
             borderRadius: 0
         },
+        description: {
+            minHeight: 100,
+            borderRadius: 5,
+            backgroundColor: grey[100]
+        }
     }),
 );
 
@@ -75,22 +81,19 @@ export default function Details({data, onEdited}: IProps) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box display='flex' flexDirection='column'>
-                            <Box>
+                            <Box pb={1}>
                                 <Typography variant='h6' style={{fontSize: '0.92rem'}}>Details</Typography>
                             </Box>
-                            <Box>
-                                <Typography variant='body2'>{data.details}</Typography>
+                            <Box className={classes.description} p={2}>
+                                <Typography variant='body2'>
+                                    {data.details}
+                                </Typography>
                             </Box>
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
-                        <Box display='flex' flexDirection='column'>
-                            <Box>
-                                <Typography variant='h6' style={{fontSize: '0.92rem'}}>Members</Typography>
-                            </Box>
-                            <Box>
-                                <MembersList data={data}/>
-                            </Box>
+                        <Box>
+                            <MembersList group={data}/>
                         </Box>
                     </Grid>
                     <Grid item xs={12}>

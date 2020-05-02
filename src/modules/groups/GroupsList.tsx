@@ -14,27 +14,28 @@ import EditDialog from "../../components/EditDialog";
 import GroupEditor from "./GroupEditor";
 import Loading from "../../components/Loading";
 import Hidden from "@material-ui/core/Hidden";
-import {useTheme} from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import {hasValue} from "../../components/inputs/inputHelpers";
 
 const GroupsList = () => {
-    const [loading, setLoading] = useState<boolean>(true)
-    const [dialog, setDialog] = useState<boolean>(false)
-    const [detailsDialog, setDetailsDialog] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true);
+    const [dialog, setDialog] = useState<boolean>(false);
+    const [detailsDialog, setDetailsDialog] = useState<boolean>(false);
     const [filter, setFilter] = useState<any>({});
     const [selected, setSelected] = useState<IGroup | null>(null);
     const [data, setData] = useState<IGroup[]>([]);
-    const theme = useTheme();
-    const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+
 
     useEffect(() => {
-        setLoading(true)
+        setLoading(true);
         search(remoteRoutes.groups, filter, data => {
             setData(data)
+            if (hasValue(data)) {
+                setSelected(data[0])
+            }
         }, undefined, () => {
             setLoading(false)
         })
-    }, [filter])
+    }, [filter]);
 
     function handleClose() {
         setDialog(false)
@@ -45,29 +46,29 @@ const GroupsList = () => {
     }
 
     function handleNew() {
-        setSelected(null)
+        setSelected(null);
         setDialog(true)
     }
 
     function handleAddUnder(dt: any) {
-        setSelected(dt)
+        setSelected(dt);
         setDialog(true)
     }
 
     function handleAdded(dt: any) {
-        setSelected(dt)
-        setDialog(false)
+        setSelected(dt);
+        setDialog(false);
         setData([...data, dt])
     }
 
     function handleDetails(dt: any) {
-        setDetailsDialog(true)
+        setDetailsDialog(true);
         setSelected(dt)
     }
 
     function handleEdited(dt: any) {
-        const newData = data.filter(it => it.id !== dt.id)
-        setData([...newData, dt])
+        const newData = data.filter(it => it.id !== dt.id);
+        setData([...newData, dt]);
         setSelected(dt)
     }
 
@@ -75,17 +76,17 @@ const GroupsList = () => {
         setFilter({...filter, query})
     }
 
-    const openRecords = data.map(it => it.id)
+    const openRecords = data.map(it => it.id);
 
     const treeData: any = arrayToTree(data, {
         parentProperty: 'parentId',
         customID: 'id'
-    })
+    });
     const starterData = selected ? {
         parent: {
             id: selected.id, name: selected.name
         }
-    } : undefined
+    } : undefined;
     return (
         <Layout>
             <Box p={1}>
@@ -135,6 +136,6 @@ const GroupsList = () => {
             </EditDialog>
         </Layout>
     );
-}
+};
 
 export default GroupsList;

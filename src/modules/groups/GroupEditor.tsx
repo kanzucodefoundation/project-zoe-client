@@ -5,15 +5,13 @@ import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
-
 import {remoteRoutes} from "../../data/constants";
-import {post, put} from "../../utils/ajax";
-import Toast from "../../utils/Toast";
 import {GroupPrivacy, IGroup} from "./types";
 import XSelectInput from "../../components/inputs/XSelectInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
 import {enumToArray} from "../../utils/stringHelpers";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
+import {handleSubmission, ISubmission} from "../../utils/formHelpers";
 
 interface IProps {
     data?: Partial<IGroup>
@@ -27,8 +25,7 @@ const schema = yup.object().shape(
         name: reqString,
         privacy: reqString,
         details: reqString,
-        category: reqObject,
-        parent: reqObject
+        category: reqObject
     }
 )
 
@@ -40,42 +37,32 @@ const initialData = {
     parent: null
 }
 
+
 const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
-        const toSave: IGroup = {
-            id: 0,
-            ...data,
+        const toSave: any = {
+            id: values.id,
             name: values.name,
             details: values.details,
             privacy: values.privacy,
             categoryId: values.category.id,
-            parentId: values.parent.id
+            parentId: values.parent?.id
         }
-        if (isNew) {
-            post(remoteRoutes.groups, toSave,
-                (data) => {
-                    Toast.info('Group created')
-                    actions.resetForm()
+
+        const submission: ISubmission = {
+            url: remoteRoutes.groups,
+            values: toSave, actions, isNew,
+            onAjaxComplete: (data: any) => {
+                if (isNew) {
                     onGroupAdded && onGroupAdded(data)
-                },
-                undefined,
-                () => {
-                    actions.setSubmitting(false);
-                }
-            )
-        } else {
-            put(remoteRoutes.groups, toSave,
-                (data) => {
-                    Toast.info('Group updated')
-                    actions.resetForm()
+                } else {
                     onGroupEdited && onGroupEdited(data)
-                },
-                undefined,
-                () => {
-                    actions.setSubmitting(false);
                 }
-            )
+                actions.resetForm()
+                actions.setSubmitting(false);
+            }
         }
+        handleSubmission(submission)
     }
 
     return (
@@ -83,7 +70,6 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={{...initialData, ...data}}
-            debug
         >
             <Grid spacing={1} container>
                 <Grid item xs={4}>

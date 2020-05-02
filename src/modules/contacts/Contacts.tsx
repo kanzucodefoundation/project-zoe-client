@@ -22,7 +22,6 @@ import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
 import {IMobileRow} from "../../components/DataList";
-import PersonIcon from '@material-ui/icons/Person';
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -34,6 +33,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {crmConstants, ICrmState} from "../../data/contacts/reducer";
 import {printBirthday} from "../../utils/dateHelpers";
 import GroupLink from "../../components/GroupLink";
+import XAvatar from "../../components/XAvatar";
+
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -72,11 +73,7 @@ const headCells: XHeadCell[] = [
 const toMobileRow = (data: IContactListDto): IMobileRow => {
     const hasAvatar = hasValue(data.avatar)
     return {
-        avatar: hasAvatar ?
-            <Avatar
-                alt="Avatar"
-                src={data.avatar}
-            /> : <Avatar><PersonIcon/></Avatar>,
+        avatar: <XAvatar data={data}/>,
         primary: data.name,
         secondary: <>
             <Typography variant='caption' color='textSecondary' display='block'>{data.email}</Typography>
