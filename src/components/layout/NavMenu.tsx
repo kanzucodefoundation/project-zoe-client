@@ -69,7 +69,19 @@ const routes = [
 
     
     {
-        name: "Team Lead Calendar",
+        name: "Assign Task",
+        route: localRoutes.assigntask,
+        icon: AssignmentIcon
+    },
+
+    {
+        name: "View Assigned Tasks",
+        route: localRoutes.assignedtasks,
+        icon: AssignmentIcon
+    },
+
+    {
+        name: "Teamlead Calendar",
         route: localRoutes.teamleadcalendar,
         icon: AssignmentIcon
     },

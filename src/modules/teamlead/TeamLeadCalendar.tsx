@@ -24,6 +24,7 @@ import ColorLens from '@material-ui/icons/ColorLens';
 import { withStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { owners } from '../../data/teamlead/tasks';
 import Layout from "../../components/layout/Layout";
+import {remoteRoutes} from "../../data/constants";
 
 
 const appointments = [
@@ -391,5 +392,3 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
     );
   }
 }
-
-

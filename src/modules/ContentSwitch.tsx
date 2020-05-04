@@ -10,6 +10,8 @@ import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
 import teamleadcalendar from "./teamlead/TeamLeadCalendar"
+import assignedtasks from "./teamlead/AssignedTasks"
+import assigntask from "./teamlead/AssignTask"
 
 
 
@@ -24,6 +26,8 @@ const ContentSwitch = () => {
         <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
         <Route path={localRoutes.teamleadcalendar} component={teamleadcalendar}/>
+        <Route path={localRoutes.assignedtasks} component={assignedtasks}/>
+        <Route path={localRoutes.assigntask} component={assigntask}/>
         <Route component={NoMatch}/>
     </Switch>
 }
