@@ -1,5 +1,4 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {IGroupMembership} from "../types";
 import {search} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import {Grid} from "@material-ui/core";
@@ -14,6 +13,7 @@ import {IPersonComboValue} from "../../contacts/types";
 import XSearchInput from "../../../components/inputs/XSearchInput";
 import {grey} from "@material-ui/core/colors";
 import Typography from "@material-ui/core/Typography";
+import CodeView from "../../../components/CodeView";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -73,8 +73,10 @@ const MembersEditor = (props: IProps) => {
     }
 
     const handleAddNew = (dt: IPersonComboValue) => () => {
-        setSelected([...selected, dt])
-        setSelectedIdList([...selectedIdList, dt.id])
+        if (!isAlreadyAdded(dt)) {
+            setSelected([...selected, dt])
+            setSelectedIdList([...selectedIdList, dt.id])
+        }
     }
 
     return (
@@ -88,7 +90,7 @@ const MembersEditor = (props: IProps) => {
                 <Box className={classes.details} width='100%' display='flex'>
                     {
                         selected.map(it => {
-                            return <Box className={classes.selBox} mr={1}>
+                            return <Box className={classes.selBox} mr={1} key={it.id}>
                                 <Box
                                     width='100%'
                                     display='flex'
@@ -120,6 +122,9 @@ const MembersEditor = (props: IProps) => {
                         })
                     }
                 </List>
+            </Grid>
+            <Grid item xs={12}>
+                <CodeView data={{selectedIdList,selected}}/>
             </Grid>
         </Grid>
     );
