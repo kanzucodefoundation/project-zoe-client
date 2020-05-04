@@ -1,4 +1,4 @@
-import { green, deepOrange, lightBlue } from '@material-ui/core/colors';
+import { green, deepOrange, lightBlue, grey } from '@material-ui/core/colors';
 
 export const tasks = [
   {
@@ -213,6 +213,7 @@ export const priorities = [
   { id: 1, text: 'Low Priority', color: green },
   { id: 2, text: 'Medium Priority', color: lightBlue },
   { id: 3, text: 'High Priority', color: deepOrange },
+  { id: 4, text: 'Blocked Date', color: grey },
 ];
 
 export const owners = [
@@ -240,5 +241,9 @@ export const owners = [
     text: 'Arthur Miller',
     id: 6,
     color: '#FFA726',
+  }, {
+    text: 'Blocked Date',
+    id: 7,
+    color: '#A9A9A9',
   },
 ];

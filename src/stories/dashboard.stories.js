@@ -1,4 +1,8 @@
+dashboard.stories.js
+
+
 import React from "react";
+import { storiesOf } from "@storybook/react"
 import clsx from "clsx";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
@@ -18,7 +22,14 @@ import ListItemText from "@material-ui/core/ListItemText";
 import InboxIcon from "@material-ui/icons/MoveToInbox";
 import MailIcon from "@material-ui/icons/Mail";
 import Card from "@material-ui/core/Card";
+import Dashboard from '../modules/dashboard/Dashboard';
 
+
+
+
+export default {
+	title: "test-dashboard"
+};
 
 const drawerWidth = 240;
 
@@ -79,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function PersistentDrawerLeft() {
+export function PersistentDrawerLeft() {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -164,13 +175,12 @@ export default function PersistentDrawerLeft() {
       >
         <div className={classes.drawerHeader} />
         <div>
-          <Card className={classes.root} variant="outlined">
-            <Typography variant="h1">
-            <h1>Welcome to your dashboard</h1>
-            </Typography>
-          </Card>
+          <Dashboard/>
         </div>        
       </main>
     </div>
   );
 }
+
+
+storiesOf("test-dashboard", module).add("test-dashboard", () => <testDashboard/>);

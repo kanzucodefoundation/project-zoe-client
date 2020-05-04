@@ -11,7 +11,7 @@ import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
 import TeamLeadCalendar from "./TeamLeadCalendar/leadcalendar";
 import TeamLeadDashboard from "./TeamLeadDashboard/teamleadDashboard";
-
+import VolCalendar from "./VolunteerCalendar/volCalendar";
 const ContentSwitch = () => {
   return (
     <Switch>
@@ -25,6 +25,7 @@ const ContentSwitch = () => {
       <Route path={localRoutes.settings} component={Settings} />
       <Route path={localRoutes.TeamLeadCalendar} component={TeamLeadCalendar} />
       <Route path={localRoutes.TeamLeadDashboard}component={TeamLeadDashboard} />
+      <Route path={localRoutes.VolCalendar}component={VolCalendar} />
             
       <Route component={NoMatch} />
     </Switch>

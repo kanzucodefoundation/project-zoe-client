@@ -18,16 +18,17 @@ import {
   AppointmentTooltip,
   AppointmentForm,
   EditRecurrenceMenu,
-  Resources,
-  DragDropProvider,
+  Resources,  
 } from "@devexpress/dx-react-scheduler-material-ui";
 import WbSunny from "@material-ui/icons/WbSunny";
 import FilterDrama from "@material-ui/icons/FilterDrama";
 import Opacity from "@material-ui/icons/Opacity";
 import ColorLens from "@material-ui/icons/ColorLens";
 import { withStyles, createStyles, Theme } from "@material-ui/core/styles";
+
 import { owners } from "../../data/leadcalendar/tasks";
 import Layout from "../../components/layout/Layout";
+
 
 const appointments = [
   {
@@ -98,6 +99,11 @@ const appointments = [
     startDate: new Date(2018, 6, 9, 11, 0),
     endDate: new Date(2018, 6, 9, 12, 0),
     ownerId: 3,
+  },
+  {
+  	id: 9,
+  	title: "Volunteer Unavailable",
+  	ownerId: 7,
   },
 ];
 
@@ -306,6 +312,7 @@ const Appointment: any = withStyles(styles, {
   <Appointments.Appointment {...restProps} className={classes.appointment} />
 ));
 
+
 const AppointmentContent: any = withStyles(styles, {
   name: "AppointmentContent",
 })(({ classes, ...restProps }: any) => (
@@ -321,7 +328,7 @@ const FlexibleSpace: any = withStyles(styles, { name: "ToolbarRoot" })(
       <div className={classes.flexContainer}>
         <ColorLens fontSize="large" htmlColor="#FF7043" />
         <Typography variant="h5" style={{ marginLeft: "10px" }}>
-          angie Planner
+          angie Team Planner
         </Typography>
       </div>
     </Toolbar.FlexibleSpace>
@@ -337,9 +344,9 @@ export default class LeadCalendar extends React.PureComponent<{}, any> {
     };
 
     this.commitChanges = this.commitChanges.bind(this);
-  }
+    }
 
-  commitChanges({ added, changed, deleted }: any) {
+    commitChanges({ added, changed }: any) {
     this.setState((state: any) => {
       let { data } = state;
       if (added) {
@@ -354,11 +361,7 @@ export default class LeadCalendar extends React.PureComponent<{}, any> {
             : appointment
         );
       }
-      if (deleted !== undefined) {
-        data = data.filter(
-          (appointment: { id: any }) => appointment.id !== deleted
-        );
-      }
+
       return { data };
     });
   }
@@ -389,12 +392,13 @@ export default class LeadCalendar extends React.PureComponent<{}, any> {
 
             <EditRecurrenceMenu />
             <AppointmentTooltip
-              showCloseButton
-              showDeleteButton
-              showOpenButton
+              showCloseButton 
+              showOpenButton             
             />
-            <AppointmentForm />
-            <DragDropProvider />
+            <AppointmentForm
+         
+            />
+                        
           </Scheduler>
         </Paper>
       </Layout>

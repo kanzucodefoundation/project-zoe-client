@@ -39,6 +39,7 @@ export const localRoutes = {
     settings: '/admin/settings',
     TeamLeadCalendar: '/admin/TeamLeadCalendar',
     TeamLeadDashboard: '/admin/TeamLeadDashboard',
+    VolCalendar: '/admin/VolCalendar',
 
     help: '/help'
 }

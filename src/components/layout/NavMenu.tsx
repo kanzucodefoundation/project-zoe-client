@@ -15,6 +15,9 @@ import {navBackgroundColor} from "./styles";
 import {createStyles, makeStyles, Theme, withStyles} from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import grey from '@material-ui/core/colors/grey';
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import EventNoteIcon from '@material-ui/icons/EventNote';
 
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
@@ -62,6 +65,21 @@ const routes = [
                 route: localRoutes.settings
             },
         ]
+    },
+    {
+        name: "Admin Planner",
+        route: localRoutes.TeamLeadCalendar,
+        icon:  CalendarTodayIcon
+    },
+    {
+        name: "Test-Dashboard",
+        route: localRoutes.TeamLeadDashboard,
+        icon: DashboardIcon
+    },
+    {
+        name: "Test-Volunteer-Calendar",
+        route: localRoutes.VolCalendar,
+        icon: EventNoteIcon
     },
     {
         name: "Help",
