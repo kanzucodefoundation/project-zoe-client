@@ -256,6 +256,12 @@ interface IProps {
 }
 
 
+interface Teamappointment {
+  appointments: [];
+}
+
+
+
 
 const CellBase = React.memo(({
   classes,
@@ -317,13 +323,42 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
     super(props);
 
     this.state = {
-      data: appointments,
+      data: [],
     };
 
     this.commitChanges = this.commitChanges.bind(this);
   }
 
+  async componentDidMount() {
+  
+    const res = await fetch(remoteRoutes.teamlead);
+    const json = await res.json();
+    console.log(json);
+   console.log("ffffff")
+  
+   
 
+   
+  const appoints: any = [];
+  json.map((item: any, index: any)=>{
+    appoints.push({
+      id:item["id"],
+      title:item["taskname"],
+      startDate:new Date(item["startdate"]),
+      endDate:new Date(item["enddate"]),
+      ownerId:1
+    })
+    return ""
+  });
+  console.log("hhhhhhhhhhhhhhhhhhhh");
+  console.log(appoints);
+  this.setState({
+    data: appoints
+    }) 
+}
+
+
+ 
 
   
   commitChanges({ added, changed, deleted }: any) {
