@@ -14,6 +14,7 @@ interface IProps {
 }
 
 interface Row {
+    id: number;
     firstName: string;
     surname: string;
     ministry: string;
@@ -62,7 +63,6 @@ const ListOfVolunteers = ({done}: IProps) => {
         async function fetchVolunteers() {
             const res = await fetch(remoteRoutes.volunteers);
             const json = await res.json();
-            console.log(json);
             setData({
                 ...state,
                 data:json
@@ -83,6 +83,16 @@ const ListOfVolunteers = ({done}: IProps) => {
                     editable={{
                         onRowUpdate: (newData, oldData) =>
                           new Promise((resolve) => {
+                            
+                            // Update user with id 3
+                            fetch(remoteRoutes.volunteers + "/" + newData.id, {
+                            headers: { "Content-Type": "application/json; charset=utf-8" },
+                            method: 'PATCH',
+                            body: JSON.stringify({
+                                newData
+                            })
+                            })
+
                             setTimeout(() => {
                               resolve();
                               if (oldData) {
