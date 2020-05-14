@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-
-import {IGroup, IGroupMembership} from "../types";
+import {IGroupMembership} from "../types";
 import {search} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import XAvatar from "../../../components/XAvatar";
@@ -16,9 +15,12 @@ import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import Divider from "@material-ui/core/Divider";
 import {Alert} from "@material-ui/lab";
+import Loading from "../../../components/Loading";
+import EditDialog from "../../../components/EditDialog";
+import MembersEditor from "./MembersEditor";
 
 interface IProps {
-    group: IGroup
+    groupId: number
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,30 +33,50 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const MembersList = ({group}: IProps) => {
+const MembersList = ({groupId}: IProps) => {
     const classes = useStyles()
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [addingMembers, setAddingMembers] = useState<boolean>(false);
     const [selected, setSelected] = useState<IGroupMembership | null>(null);
     const [data, setData] = useState<IGroupMembership[]>([]);
 
-    useEffect(() => {
+    const fetchMembers = useCallback(() => {
         setLoading(true);
         search(remoteRoutes.groupsMembership,
             {
-                groupId: group.id
+                groupId: groupId
             }, data => {
                 setData(data)
             }, undefined, () => {
                 setLoading(false)
             })
-    }, [group.id]);
+    }, [groupId]);
+
+    useEffect(() => {
+        fetchMembers()
+    }, [fetchMembers]);
 
     function handleAddNew() {
-
+        setAddingMembers(true)
     }
 
-    return (
+    function handleCloseDialog() {
+        setAddingMembers(false)
+    }
 
+    const handleSelected = (mbr: IGroupMembership) => () => {
+        setSelected(mbr)
+    }
+
+    function handleDone() {
+        fetchMembers()
+        setAddingMembers(false)
+    }
+
+    if (loading)
+        return <Loading/>
+
+    return (
         <Grid container>
             <Grid item xs={12}>
                 <Box display='flex' pt={1}>
@@ -79,12 +101,12 @@ const MembersList = ({group}: IProps) => {
                 <List dense className={classes.root}>
                     {
                         data.length === 0 ?
-                            <ListItem button onClick={handleAddNew} >
+                            <ListItem button onClick={handleAddNew}>
                                 <Alert severity='info' style={{width: '100%'}}>No members click to add new</Alert>
                             </ListItem> :
                             data.map(mbr => {
                                 return (
-                                    <ListItem key={mbr.id} button>
+                                    <ListItem key={mbr.id} button onClick={handleSelected(mbr)}>
                                         <ListItemAvatar>
                                             <XAvatar data={mbr.contact}/>
                                         </ListItemAvatar>
@@ -97,6 +119,15 @@ const MembersList = ({group}: IProps) => {
                             })}
                 </List>
             </Grid>
+
+            <EditDialog
+                open={addingMembers}
+                onClose={handleCloseDialog}
+                title="MembersEditor"
+                maxWidth="lg"
+            >
+                <MembersEditor group={{id: groupId}} done={handleDone}/>
+            </EditDialog>
         </Grid>
     );
 }

@@ -7,16 +7,15 @@ import ContactDetails from "./contacts/details/Details";
 import Settings from "./settings/Settings";
 import Layout from "../components/layout/Layout";
 import Groups from "./groups/GroupsList";
+import GroupDetails from "./groups/Details";
 import Users from "./admin/users/Users";
 import {useSelector} from "react-redux";
 import {IState} from "../data/types";
-import MembersList from "./groups/members/MembersList";
 import MembersEditor from "./groups/members/MembersEditor";
 
 
-
 const ContentSwitch = () => {
-    const user = useSelector((state:IState) =>state.core.user )
+    const user = useSelector((state: IState) => state.core.user)
 
     return <Switch>
         <Route exact={true} path="/" component={Dashboard}/>
@@ -24,6 +23,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
         <Route path={localRoutes.contacts} component={Contacts}/>
         <Route path={localRoutes.users} component={Users}/>
+        <Route path={localRoutes.groupsDetails} component={GroupDetails}/>
         <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
         <Route path={localRoutes.test} component={Testing}/>
@@ -33,7 +33,7 @@ const ContentSwitch = () => {
 
 const Testing = () => (
     <Layout>
-        <MembersEditor group={{id:1}}/>
+        <MembersEditor group={{id: 1}} done={() => undefined}/>
     </Layout>
 )
 

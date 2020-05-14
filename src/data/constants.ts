@@ -30,6 +30,7 @@ export const localRoutes = {
     contacts: '/people/contacts',
     contactsDetails: '/people/contacts/:contactId',
     groups: '/people/groups',
+    groupsDetails: '/people/groups/:groupId',
 
     users: '/admin/users',
     usersGroups: '/admin/user-groups',

@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {search} from "../../../utils/ajax";
+import {post, search} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
 import {Grid} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
@@ -13,13 +13,21 @@ import {IPersonComboValue} from "../../contacts/types";
 import XSearchInput from "../../../components/inputs/XSearchInput";
 import {grey} from "@material-ui/core/colors";
 import Typography from "@material-ui/core/Typography";
-import CodeView from "../../../components/CodeView";
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import AddIcon from '@material-ui/icons/Add';
+import red from "@material-ui/core/colors/red";
+import Button from "@material-ui/core/Button";
+import {hasNoValue} from "../../../components/inputs/inputHelpers";
+import {GroupRole, ICreateBatchMembership, IGroupMembership} from "../types";
+import Toast from "../../../utils/Toast";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             width: '100%',
             maxWidth: 360,
+            minHeight: 300,
             backgroundColor: theme.palette.background.paper,
         },
         details: {
@@ -30,42 +38,64 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(2)
         },
         selBox: {
-            width: 70
+            width: 70,
+            position: 'relative'
+        },
+        closeIcon: {
+            position: 'absolute',
+            zIndex: 200
         }
     }),
 );
 
 interface IProps {
     group: any
+    done: () => any
 }
 
 
 const MembersEditor = (props: IProps) => {
     const classes = useStyles()
-    const [loading, setLoading] = useState<boolean>(true);
+    const [fetchingPeople, setFetchingPeople] = useState<boolean>(true);
+    const [addingMembers, setAddingMembers] = useState<boolean>(false);
+    const [fetchingMembers, setFetchingMembers] = useState<boolean>(true);
     const [selected, setSelected] = useState<IPersonComboValue[]>([]);
     const [selectedIdList, setSelectedIdList] = useState<number[]>([]);
-    const [data, setData] = useState<IPersonComboValue[]>([]);
+    const [peopleData, setPeopleData] = useState<IPersonComboValue[]>([]);
+    const [membership, setMembership] = useState<IGroupMembership[]>([]);
     const [query, setQuery] = useState<string>("");
 
     const fetchData = useCallback((query: string) => {
-        setLoading(true);
+        setFetchingPeople(true);
         search(remoteRoutes.contactsPeopleCombo,
             {
                 query
             }, data => {
-                setData(data)
+                setPeopleData(data)
             }, undefined, () => {
-                setLoading(false)
+                setFetchingPeople(false)
             })
     }, [])
+
+    useEffect(() => {
+        setFetchingMembers(true);
+        search(remoteRoutes.groupsMembership,
+            {
+                groupId: props.group.id
+            }, data => {
+                setMembership(data)
+            }, undefined, () => {
+                setFetchingMembers(false)
+            })
+    }, [props.group.id])
 
     useEffect(() => {
         fetchData(query)
     }, [fetchData, query]);
 
     const isAlreadyAdded = (psn: IPersonComboValue): boolean => {
-        return selectedIdList.indexOf(psn.id) > -1;
+        const mbr = membership.find(it => it.contactId === psn.id)
+        return !!mbr || selectedIdList.indexOf(psn.id) > -1;
     }
 
     function handleSearch(v: string) {
@@ -79,52 +109,98 @@ const MembersEditor = (props: IProps) => {
         }
     }
 
+    const handleDelete = (id: number) => () => {
+        setSelected([...selected.filter(it => it.id !== id)])
+        setSelectedIdList([...selectedIdList.filter(it => it !== id)])
+    }
+
+    function handleAddMembers() {
+        const toSave: ICreateBatchMembership = {
+            groupId: props.group.id,
+            members: selectedIdList,
+            role: GroupRole.Member
+        }
+        setAddingMembers(true)
+        post(remoteRoutes.groupsMembership, toSave, resp => {
+            Toast.success(`${resp?.inserted} Members Added`);
+            props.done()
+        })
+    }
+
+    const isLoading = fetchingPeople || fetchingMembers || addingMembers;
     return (
         <Grid container>
             <Grid item xs={12}>
                 <Box display='flex' pt={1} pb={1} width='100%'>
-                    <XSearchInput onChange={handleSearch}/>
+                    <XSearchInput onChange={handleSearch} disable={isLoading}/>
                 </Box>
             </Grid>
             <Grid item xs={12}>
-                <Box className={classes.details} width='100%' display='flex'>
-                    {
-                        selected.map(it => {
-                            return <Box className={classes.selBox} mr={1} key={it.id}>
-                                <Box
-                                    width='100%'
-                                    display='flex'
-                                    pl={1}
-                                >
-                                    <XAvatar data={it}/>
-                                </Box>
-                                <Typography noWrap variant='body2'>{it.name}</Typography>
-                            </Box>
-                        })
-                    }
+                <Box width='100%' display='flex'>
+                    <Box flexGrow={1} mr={3}>
+                        <Box className={classes.details} width='100%' display='flex'>
+                            {
+                                selected.map(it => {
+                                    return <Box className={classes.selBox} mr={1} key={it.id}>
+                                        <Box
+                                            width='100%'
+                                            display='flex'
+                                            justifyContent='flex-end'
+                                            pr={1}
+                                        >
+                                            <IconButton
+                                                aria-label="delete"
+                                                size='small'
+                                                onClick={handleDelete(it.id)}
+                                                className={classes.closeIcon}>
+                                                <CloseIcon style={{fontSize: '0.9rem', color: red[900]}}/>
+                                            </IconButton>
+                                        </Box>
+
+                                        <Box
+                                            width='100%'
+                                            display='flex'
+                                            pl={1}
+                                        >
+                                            <XAvatar data={it}/>
+                                        </Box>
+                                        <Typography noWrap variant='body2'>{it.name}</Typography>
+                                    </Box>
+                                })
+                            }
+                        </Box>
+                    </Box>
+                    <Box pt={2}>
+                        <Button
+                            disabled={hasNoValue(selectedIdList) || isLoading}
+                            startIcon={<AddIcon/>}
+                            color='primary'
+                            variant='contained'
+                            size='large'
+                            onClick={handleAddMembers}
+                        >Add</Button>
+                    </Box>
                 </Box>
             </Grid>
             <Grid item xs={12}>
                 <List dense className={classes.root}>
                     {
-                        data.map(person => {
+                        peopleData.map(person => {
                             return (
-                                <ListItem key={person.id} button onClick={handleAddNew(person)}>
+                                <ListItem disabled={isAlreadyAdded(person) || isLoading} key={person.id} button
+                                          onClick={handleAddNew(person)}>
                                     <ListItemAvatar>
                                         <XAvatar data={person}/>
                                     </ListItemAvatar>
                                     <ListItemText
                                         primary={person.name}
-                                        secondary={isAlreadyAdded(person) ? "Already added to group" : ''}
+                                        secondary={isAlreadyAdded(person) ? <i>Already added</i> : ''}
                                     />
                                 </ListItem>
                             );
                         })
                     }
                 </List>
-            </Grid>
-            <Grid item xs={12}>
-                <CodeView data={{selectedIdList,selected}}/>
             </Grid>
         </Grid>
     );

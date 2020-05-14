@@ -1,17 +1,17 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqObject, reqString} from "../../data/validations";
+import {reqObject, reqString} from "../../../data/validations";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
-import XForm from "../../components/forms/XForm";
-import XTextInput from "../../components/inputs/XTextInput";
-import {remoteRoutes} from "../../data/constants";
-import {GroupPrivacy, IGroup} from "./types";
-import XSelectInput from "../../components/inputs/XSelectInput";
-import {toOptions} from "../../components/inputs/inputHelpers";
-import {enumToArray} from "../../utils/stringHelpers";
-import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
-import {handleSubmission, ISubmission} from "../../utils/formHelpers";
+import XForm from "../../../components/forms/XForm";
+import XTextInput from "../../../components/inputs/XTextInput";
+import {remoteRoutes} from "../../../data/constants";
+import {GroupPrivacy, IGroup} from "../types";
+import XSelectInput from "../../../components/inputs/XSelectInput";
+import {toOptions} from "../../../components/inputs/inputHelpers";
+import {enumToArray} from "../../../utils/stringHelpers";
+import {XRemoteSelect} from "../../../components/inputs/XRemoteSelect";
+import {handleSubmission, ISubmission} from "../../../utils/formHelpers";
 
 interface IProps {
     data?: Partial<IGroup>

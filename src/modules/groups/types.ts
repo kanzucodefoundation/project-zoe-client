@@ -21,6 +21,13 @@ export interface IGroupMembership {
 }
 
 
+export interface ICreateBatchMembership {
+    groupId: number,
+    members: number[],
+    role: GroupRole
+}
+
+
 export enum GroupPrivacy {
     Private = "Private",
     Public = "Public"

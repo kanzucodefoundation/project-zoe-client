@@ -61,20 +61,10 @@ interface ILabelProps {
 }
 
 const TreeLabel = (props: ILabelProps) => <Box display='flex'>
-    <Box p={1} flexGrow={1}>
+    <Box p={1} flexGrow={1} onClick={props.onDetailClick}>
         <Typography variant="body1" style={{padding: 4, maxWidth: "100%"}}>
             {props.labelText}
         </Typography>
-    </Box>
-    <Box p={1}>
-        <IconButton
-            color="primary"
-            size='small'
-            onClick={props.onDetailClick}
-            title='Details'
-        >
-            <InfoIcon/>
-        </IconButton>
     </Box>
     <Box p={1} pl={0}>
         <IconButton
@@ -105,8 +95,8 @@ export default function XTreeData(props: IProps) {
     const createItem = ({children, ...dt}: any) => {
         if (children) {
             return <StyledTreeItem
-                key={dt.id}
-                nodeId={dt.id}
+                key={`${dt.id}`}
+                nodeId={`${dt.id}`}
                 label={<TreeLabel
                     labelText={dt.name}
                     onAddClick={handleAddClick(dt)}
@@ -119,8 +109,8 @@ export default function XTreeData(props: IProps) {
             </StyledTreeItem>
         }
         return <StyledTreeItem
-            key={dt.id}
-            nodeId={dt.id}
+            key={`${dt.id}`}
+            nodeId={`${dt.id}`}
             label={<TreeLabel
                 labelText={dt.name}
                 onAddClick={handleAddClick(dt)}
@@ -128,9 +118,10 @@ export default function XTreeData(props: IProps) {
             />}
         />
     }
+    const open = props.open?.map(it => `${it}`)
     return (
         <TreeView
-            defaultExpanded={props.open}
+            defaultExpanded={open}
             className={classes.root}
             defaultCollapseIcon={<MinusSquare/>}
             defaultExpandIcon={<PlusSquare/>}
