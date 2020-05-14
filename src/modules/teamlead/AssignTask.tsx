@@ -19,10 +19,9 @@ import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
 import {ICreateTeamleadDto} from "./types";
 import {isoDateString} from "../../utils/dateHelpers";
-
-import Layout from "../../components/layout/Layout";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Header from "./Header";
+import { owners } from '../../data/teamlead/tasks';
 
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -44,7 +43,8 @@ const schema = yup.object().shape(
       startdate: reqDate,
       enddate: reqDate,
       taskinfo: reqString,
-      volunteers: reqString
+      volunteers: reqString,
+      
      
   }
 )
@@ -55,7 +55,8 @@ const initialValues = {
   startdate: '',
   enddate: '',
   taskinfo: '',
-  volunteers: ''
+  volunteers: '',
+  
 }
 
 const RightPadded = ({children,...props}: any) => <Grid item xs={6}>
@@ -106,6 +107,7 @@ const AssignTask = ({done}: IProps) => {
       enddate: values.enddate,
       taskinfo: values.taskinfo,
       volunteers: values.volunteers,
+     
 
         }
 
@@ -128,25 +130,9 @@ const AssignTask = ({done}: IProps) => {
         )
     }
 
-    // const [personName, setPersonName] = React.useState<string[]>([]);
-
-    // const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    //   setPersonName(event.target.value as string[]);
-    // };
-  
-    // const handleChangeMultiple = (event: React.ChangeEvent<{ value: unknown }>) => {
-    //   const { options } = event.target as HTMLSelectElement;
-    //   const value: string[] = [];
-    //   for (let i = 0, l = options.length; i < l; i += 1) {
-    //     if (options[i].selected) {
-    //       value.push(options[i].value);
-    //     }
-    //   }
-    //   setPersonName(value);
-    // };
 
     return (
-      <Layout>
+     
         <Box p={1} className={classes.root}>
             <Header title="Assign Volunteers Task" />
 
@@ -195,32 +181,13 @@ const AssignTask = ({done}: IProps) => {
                                 type="text"
                                 variant='outlined'
                             />
-                            {/* <FormControl className={classes.formControl}>
-        <InputLabel id="demo-mutiple-checkbox-label">Tag</InputLabel>
-        <Select
-          labelId="demo-mutiple-checkbox-label"
-          id="demo-mutiple-checkbox"
-          multiple
-          value={personName}
-          onChange={handleChange}
-          input={<Input />}
-          renderValue={(selected) => (selected as string[]).join(', ')}
-        //   MenuProps={MenuProps}
-        >
-          {names.map((name) => (
-            <MenuItem key={name} value={name}>
-              <Checkbox checked={personName.indexOf(name) > -1} />
-              <ListItemText primary={name} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl> */}
+           
                         </Grid>
                     </Grid>
                 </XForm>
             </Grid>
         </Box>
-      </Layout>
+ 
     );
 }
 
