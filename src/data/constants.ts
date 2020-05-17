@@ -38,6 +38,8 @@ export const localRoutes = {
     tags: '/admin/tags',
     settings: '/admin/settings',
     teamleadcalendar: '/teamleadcalendar',
+    assignedtasks: '/assignedtasks',
+    assigntask: '/assigntask',
  
     help: '/help',
     volcalendar: '/volcalendar',
@@ -84,6 +86,7 @@ export const remoteRoutes = {
     contactsAvatar: url + '/api/crm/contact/avatar',
 
     volunteers: url + '/api/services/volunteers',
+    teamlead: url + '/api/services/teamlead',
 }
 
 

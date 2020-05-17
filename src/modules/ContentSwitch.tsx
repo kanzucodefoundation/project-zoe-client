@@ -12,6 +12,8 @@ import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
 import teamleadcalendar from "./teamlead/TeamLeadCalendar"
+import assignedtasks from "./teamlead/AssignedTasks"
+import assigntask from "./teamlead/AssignTask"
 
 
 
@@ -35,6 +37,8 @@ const ContentSwitch = () => {
         <Route path={localRoutes.voldashboard} component={VolDashboard}/>
         <Route path={localRoutes.volblockdate} component={VolBlockDate}/>
         <Route path={localRoutes.volviewteam} component={VolViewTeam}/> */}
+        <Route path={localRoutes.assignedtasks} component={assignedtasks}/>
+        <Route path={localRoutes.assigntask} component={assigntask}/>
         <Route component={NoMatch}/>
     </Switch>
 }

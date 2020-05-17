@@ -9,4 +9,5 @@ export const phoneCategories = ['Mobile', 'Office', 'Home', 'Fax', 'Other']
 export const addressCategories = ['Home', 'Work', 'Other']
 export const hobbyCategories = ['FootBall', 'Work', 'Other']
 
+
 export const ministryCategories = ['Music', 'Guest Experience', 'Media', 'Kids']
