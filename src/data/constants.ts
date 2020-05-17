@@ -39,7 +39,17 @@ export const localRoutes = {
     settings: '/admin/settings',
     teamleadcalendar: '/teamleadcalendar',
  
-    help: '/help'
+    help: '/help',
+    volcalendar: '/volcalendar',
+    voldashboard: '/voldashboard',
+    volblockdate: '/volblockdate',
+    volviewteam: '/volviewteam',
+
+    
+
+    // For Team Lead
+    viewVolunteers: '/volunteers/view-volunteers',
+    addVolunteers: '/volunteers/add-volunteers',
 }
 
 const debug = process.env.NODE_ENV !== 'production'
@@ -73,6 +83,7 @@ export const remoteRoutes = {
     contactsCompany: url + '/api/crm/contact/company',
     contactsAvatar: url + '/api/crm/contact/avatar',
 
+    volunteers: url + '/api/services/volunteers',
 }
 
 

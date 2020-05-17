@@ -6,6 +6,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AppsIcon from '@material-ui/icons/Apps';
 import PeopleIcon from '@material-ui/icons/People';
+import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HelpIcon from '@material-ui/icons/Help';
 import {useHistory, useLocation} from 'react-router-dom'
@@ -66,6 +67,23 @@ const routes = [
             },
         ]
     },
+    
+    // Beginning of Team Lead's menu items
+    {
+        name: "Volunteers",
+        icon: EmojiPeopleIcon,
+        items: [
+            {
+                name: "View volunteers",
+                route: localRoutes.viewVolunteers
+            },
+            {
+                name: "Add volunteers",
+                route: localRoutes.addVolunteers
+            }
+        ]
+    },
+    // End of Team Lead's menu items
 
     
     {
