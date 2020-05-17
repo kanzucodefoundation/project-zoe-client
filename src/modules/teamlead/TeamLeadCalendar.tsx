@@ -21,13 +21,17 @@ import WbSunny from '@material-ui/icons/WbSunny';
 import FilterDrama from '@material-ui/icons/FilterDrama';
 import Opacity from '@material-ui/icons/Opacity';
 import ColorLens from '@material-ui/icons/ColorLens';
-import { withStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { withStyles, createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import { owners } from '../../data/teamlead/tasks';
 import Layout from "../../components/layout/Layout";
 import {remoteRoutes} from "../../data/constants";
 import AssignTask from './AssignTask'
 
 
+import {Fragment, useEffect, useState} from "react";
+import EditDialog from "../../components/EditDialog";
+import AddIcon from "@material-ui/icons/Add";
+import Fab from "@material-ui/core/Fab";
 
 const resources = [{
   fieldName: 'ownerId',
@@ -44,6 +48,28 @@ const getBorder = (theme: any) => (`1px solid ${
 const DayScaleCell = (props: any) => (
   <MonthView.DayScaleCell {...props} style={{ textAlign: 'center', fontWeight: 'bold' }}  />
 );
+
+
+
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        root: {
+            flexGrow: 1,
+        },
+        filterPaper: {
+            borderRadius: 0,
+            padding: theme.spacing(2)
+        },
+        fab: {
+            position: 'absolute',
+            bottom: theme.spacing(2),
+            right: theme.spacing(2),
+        },
+    }),
+);
+
+
 
 
 
@@ -213,8 +239,23 @@ const CellBase = React.memo(({
   const formatOptions = isFirstMonthDay
     ? { day: 'numeric', month: 'long' }
     : { day: 'numeric' };
+
+
+    const [createDialog, setCreateDialog] = useState(false);
+
+    function handleNew() {
+      setCreateDialog(true)
+  }
+
+    function closeCreateDialog() {
+      setCreateDialog(false)
+  }
+
+    const createComponent = <AssignTask data={{}} done={closeCreateDialog}/>
+    const createTitle = "New Assignment"
   return (
     
+        
     <TableCell
       tabIndex={0}
       className={classNames({
@@ -232,10 +273,15 @@ const CellBase = React.memo(({
       <div className={classes.text}>
         {formatDate(startDate, formatOptions)}
       </div>
-      <div className={classes.text} >
-        <h1>Testing</h1>
-      </div>
+      
+      <EditDialog title={createTitle} open={createDialog} onClose={closeCreateDialog}>
+                {createComponent}
+                </EditDialog>
+                <Fab aria-label='add-new' className={classes.fab} color='primary' onClick={handleNew}>
+                        <AddIcon/>
+                    </Fab>
     </TableCell>
+    
   );
 });
 
@@ -257,7 +303,7 @@ const FlexibleSpace: any = withStyles(styles, { name: 'ToolbarRoot' })(({ classe
   <Toolbar.FlexibleSpace {...restProps} className={classes.flexibleSpace}>
     <div className={classes.flexContainer}>
       <ColorLens fontSize="large" htmlColor="#FF7043" />
-      <Typography variant="h5" style={{ marginLeft: '10px' }}>Team Guest Experience</Typography>
+      <Typography variant="h5" style={{ marginLeft: '10px' }}>Team Lead Calendar</Typography>
     </div>
   </Toolbar.FlexibleSpace>
 ));
@@ -327,7 +373,7 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
 
   render() {
     const { data, defaultCurrentDate } = this.state;
-
+    
     
     return (
       <Layout>
@@ -336,7 +382,7 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
         <Scheduler
           data={data}
         >
-          <AssignTask {...data}/>
+          
           <EditingState
             onCommitChanges={this.commitChanges}
           />
