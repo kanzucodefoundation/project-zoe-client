@@ -22,6 +22,7 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import EventNoteIcon from '@material-ui/icons/EventNote';
 
 
 interface IProps {
@@ -101,6 +102,11 @@ const routes = [
         name: "View Team",
         route: localRoutes.volviewteam,
         icon: PeopleIcon
+    },
+    {
+        name: "Volunteer Calendar",
+        route: localRoutes.volcalendar,
+        icon: EventNoteIcon
     },
 
     {
