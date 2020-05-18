@@ -85,24 +85,39 @@ const routes = [
     },
     // End of Team Lead's menu items
 
+    {
+        name: "Teamlead",
+        icon: AssignmentIcon,
+        items: [
+            {
+                name: "Teamlead Calendar",
+                route: localRoutes.teamleadcalendar
+            },
+            {
+                name: "View Assigned Tasks",
+                route: localRoutes.assignedtasks
+            }
+        ]
+    },
+
     
-    {
-        name: "Assign Task",
-        route: localRoutes.assigntask,
-        icon: AssignmentIcon
-    },
+    // {
+    //     name: "Assign Task",
+    //     route: localRoutes.assigntask,
+    //     icon: AssignmentIcon
+    // },
 
-    {
-        name: "View Assigned Tasks",
-        route: localRoutes.assignedtasks,
-        icon: AssignmentIcon
-    },
+    // {
+    //     name: "View Assigned Tasks",
+    //     route: localRoutes.assignedtasks,
+    //     icon: AssignmentIcon
+    // },
 
-    {
-        name: "Teamlead Calendar",
-        route: localRoutes.teamleadcalendar,
-        icon: AssignmentIcon
-    },
+    // {
+    //     name: "Teamlead Calendar",
+    //     route: localRoutes.teamleadcalendar,
+    //     icon: AssignmentIcon
+    // },
    
     {
         name: "Help",

@@ -26,6 +26,7 @@ import { owners } from '../../data/teamlead/tasks';
 import Layout from "../../components/layout/Layout";
 import {remoteRoutes} from "../../data/constants";
 import AssignTask from './AssignTask'
+// import Calendar from './AppointmentForm'
 
 
 import {Fragment, useEffect, useState} from "react";
@@ -35,7 +36,7 @@ import Fab from "@material-ui/core/Fab";
 
 const resources = [{
   fieldName: 'ownerId',
-  title: 'Owners',
+  title: 'Volunteers',
   instances: owners,
 }];
 
@@ -265,7 +266,7 @@ const CellBase = React.memo(({
         [classes.cloudBack]: iconId === 2,
         [classes.opacity]: otherMonth,
       })}
-      onClick={() => {return(<AppointmentForm/>)}}
+    
     >
       <div className={classes.content}>
         <WeatherIcon classes={classes} id={iconId} />
@@ -277,7 +278,7 @@ const CellBase = React.memo(({
       <EditDialog title={createTitle} open={createDialog} onClose={closeCreateDialog}>
                 {createComponent}
                 </EditDialog>
-                <Fab aria-label='add-new' className={classes.fab} color='primary' onClick={handleNew}>
+                <Fab aria-label='add-new' className={classes.fab} color='primary' size='small' onClick={handleNew}>
                         <AddIcon/>
                     </Fab>
     </TableCell>
@@ -334,11 +335,12 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
   const appoints: any = [];
   json.map((item: any, index: any)=>{
     appoints.push({
-      id:item["id"],
+      ownerId:item["id"],
       title:item["taskname"],
       startDate:new Date(item["startdate"]),
       endDate:new Date(item["enddate"]),
-      ownerId:3
+      // ownerId:item["volunteers"],
+      
     })
     return ""
   });

@@ -6,7 +6,7 @@ import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
-import XDateInput from "../../components/inputs/XDateInput";
+import XDateInput from "../../components/inputs/XTimeInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
 
@@ -31,7 +31,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
-
 
 
 
@@ -159,14 +158,14 @@ const AssignTask = ({done}: IProps) => {
                         <XDateInput
                                 name="startdate"
                                 label="Start Date"
-                                variant='outlined'
+                                // variant='outlined'
                             />
                         </RightPadded>
                         <LeftPadded>
                         <XDateInput
                                 name="enddate"
                                 label="End Date"
-                                variant='outlined'
+                                // variant='outlined'
                             />
                         </LeftPadded>
                         <Grid item xs={12}>
