@@ -43,7 +43,7 @@ export const localRoutes = {
 
 const debug = process.env.NODE_ENV !== 'production'
 export const url = debug ? 'http://localhost:4002' :
-    'http://www.hgjyuk.com/server'
+    'https://www.hgjyuk.com/server'
 
 export const remoteRoutes = {
     authServer: url,

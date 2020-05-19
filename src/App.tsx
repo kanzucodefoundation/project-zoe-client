@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
+import {HashRouter as Router, Route, Switch} from 'react-router-dom'
 import {ToastContainer} from "react-toastify";
 import ContentSwitch from "./modules/ContentSwitch";
 import Login from "./modules/login/Login";
