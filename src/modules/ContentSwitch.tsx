@@ -11,10 +11,10 @@ import Layout from "../components/layout/Layout";
 import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
-import volcalendar from "./volcalendar/VolCalendar"
-import VolDashboard from "./voldashboard/Dashboard";
-import VolBlockDate from "./volblockdate/VolCalendar";
-import VolViewTeam from "./volviewteam/ViewTeam";
+import teamleadcalendar from "./teamlead/TeamLeadCalendar"
+import assignedtasks from "./teamlead/AssignedTasks"
+import assigntask from "./teamlead/AssignTask"
+
 
 
 const ContentSwitch = () => {
@@ -27,15 +27,18 @@ const ContentSwitch = () => {
         <Route path={localRoutes.usersGroups} component={UserGroups}/>
         <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
+        <Route path={localRoutes.teamleadcalendar} component={teamleadcalendar}/>
         
         {/* For Team Lead */}
         <Route path={localRoutes.viewVolunteers} component={ViewVolunteers}/>
         <Route path={localRoutes.addVolunteers} component={AddVolunteers}/>
         
-        <Route path={localRoutes.volcalendar} component={volcalendar}/>
+        {/* <Route path={localRoutes.volcalendar} component={volcalendar}/>
         <Route path={localRoutes.voldashboard} component={VolDashboard}/>
         <Route path={localRoutes.volblockdate} component={VolBlockDate}/>
-        <Route path={localRoutes.volviewteam} component={VolViewTeam}/>
+        <Route path={localRoutes.volviewteam} component={VolViewTeam}/> */}
+        <Route path={localRoutes.assignedtasks} component={assignedtasks}/>
+        <Route path={localRoutes.assigntask} component={assigntask}/>
         <Route component={NoMatch}/>
     </Switch>
 }
