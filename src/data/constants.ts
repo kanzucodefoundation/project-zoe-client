@@ -38,7 +38,8 @@ export const localRoutes = {
     settings: '/admin/settings',
     test: '/test',
 
-    help: '/help'
+    help: '/help',
+    login: '/login'
 }
 
 const debug = process.env.NODE_ENV !== 'production'

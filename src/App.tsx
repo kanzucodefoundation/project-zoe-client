@@ -6,10 +6,12 @@ import Login from "./modules/login/Login";
 import Splash from "./modules/login/Splash";
 import {useSelector} from 'react-redux'
 import LoaderDialog from "./components/LoaderDialog";
+import {localRoutes} from "./data/constants";
+import Dashboard from "./modules/dashboard/Dashboard";
+import Register from "./modules/login/Register";
 
 const App: React.FC = () => {
     const coreState: any = useSelector((state: any) => state.core)
-
     const {isLoadingUser, user, globalLoader} = coreState
     if (isLoadingUser) {
         return <Splash/>
@@ -21,7 +23,8 @@ const App: React.FC = () => {
                 {user ?
                     <ContentSwitch/> :
                     <Switch>
-                        <Route exact component={Login}/>
+                        <Route exact={true} path="/" component={Register}/>
+                        <Route path={localRoutes.login} component={Login}/>
                     </Switch>
                 }
             </>

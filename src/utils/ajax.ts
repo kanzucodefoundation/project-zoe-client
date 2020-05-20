@@ -1,6 +1,7 @@
 import * as superagent from 'superagent'
 import Toast from './Toast'
 import {AUTH_TOKEN_KEY} from "../data/constants";
+import {hasValue} from "../components/inputs/inputHelpers";
 
 export const getToken = (): string | null => {
     return localStorage.getItem(AUTH_TOKEN_KEY)
@@ -17,9 +18,8 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
     } else if (res && res.badRequest) {
         const {message, errors} = res.body
         let msg = message + '\n'
-        for (const err of errors) {
-            const error = Object.values(err)[0]
-            msg += (error + '\n')
+        if(hasValue(errors)){
+            msg = errors[0]
         }
         Toast.error(msg || defaultMessage)
     } else if ((res && res.clientError) || (res && res.notAcceptable) || (res && res.error)) {
