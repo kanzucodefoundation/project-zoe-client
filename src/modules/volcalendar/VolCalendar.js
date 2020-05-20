@@ -14,6 +14,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import Layout from "../../components/layout/Layout";
 
+
+
+
+const views = ['day', 'week', 'workWeek', 'month'];
 const appointments = [{
   title: 'Choir Rehearsals',
   startDate: new Date(2018, 5, 25, 12, 35),
@@ -139,6 +143,7 @@ export default class Volunteer extends React.PureComponent {
         <Paper>
           <Scheduler
             data={data}
+            views={views}
           >
             <ViewState
               defaultCurrentDate="2018-06-27"
