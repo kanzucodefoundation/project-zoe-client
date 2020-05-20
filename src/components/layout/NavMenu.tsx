@@ -82,26 +82,19 @@ const routes = [
     },
     // End of Team Lead's menu items
 
-    
     {
-        name: "Volunteer Dashboard",
-        route: localRoutes.voldashboard,
-        icon: AppsIcon
-    },
-    {
-        name: "View Assigned Tasks",
-        route: localRoutes.volcalendar,
-        icon: AssignmentIcon
-    },
-    {
-        name: "Block Dates",
-        route: localRoutes.volblockdate,
-        icon: AssignmentIcon
-    },
-    {
-        name: "View Team",
-        route: localRoutes.volviewteam,
-        icon: PeopleIcon
+        name: "Teamlead",
+        icon: AssignmentIcon,
+        items: [
+            {
+                name: "Teamlead Calendar",
+                route: localRoutes.teamleadcalendar
+            },
+            {
+                name: "View Assigned Tasks",
+                route: localRoutes.assignedtasks
+            }
+        ]
     },
     {
         name: "Volunteer Calendar",
@@ -109,6 +102,25 @@ const routes = [
         icon: EventNoteIcon
     },
 
+    
+    // {
+    //     name: "Assign Task",
+    //     route: localRoutes.assigntask,
+    //     icon: AssignmentIcon
+    // },
+
+    // {
+    //     name: "View Assigned Tasks",
+    //     route: localRoutes.assignedtasks,
+    //     icon: AssignmentIcon
+    // },
+
+    // {
+    //     name: "Teamlead Calendar",
+    //     route: localRoutes.teamleadcalendar,
+    //     icon: AssignmentIcon
+    // },
+   
     {
         name: "Help",
         route: localRoutes.help,

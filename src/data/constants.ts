@@ -37,13 +37,17 @@ export const localRoutes = {
     usersGroups: '/admin/user-groups',
     tags: '/admin/tags',
     settings: '/admin/settings',
+    teamleadcalendar: '/teamleadcalendar',
+    assignedtasks: '/assignedtasks',
+    assigntask: '/assigntask',
+ 
+    help: '/help',
     volcalendar: '/volcalendar',
     voldashboard: '/voldashboard',
     volblockdate: '/volblockdate',
     volviewteam: '/volviewteam',
 
-    help: '/help',
-
+    
 
     // For Team Lead
     viewVolunteers: '/volunteers/view-volunteers',
@@ -82,6 +86,7 @@ export const remoteRoutes = {
     contactsAvatar: url + '/api/crm/contact/avatar',
 
     volunteers: url + '/api/services/volunteers',
+    teamlead: url + '/api/services/teamlead',
 }
 
 
