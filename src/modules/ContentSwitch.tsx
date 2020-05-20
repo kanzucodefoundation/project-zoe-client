@@ -11,6 +11,25 @@ import Layout from "../components/layout/Layout";
 import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
+import ViewTasks from "./tasks/ViewTasks";
+import AddTasks from "./tasks/AddTasks";
+
+const ContentSwitch = () => {
+    return (
+      <Switch>
+        <Route exact={true} path="/" component={Dashboard} />
+        <Route path={localRoutes.dashboard} component={Dashboard} />
+        <Route path={localRoutes.contactsDetails} component={ContactDetails} />
+        <Route path={localRoutes.contacts} component={Contacts} />
+        <Route path={localRoutes.users} component={Users} />
+        <Route path={localRoutes.usersGroups} component={UserGroups} />
+        <Route path={localRoutes.groups} component={Groups} />
+        <Route path={localRoutes.settings} component={Settings} />
+        <Route path={localRoutes.addTasks} component={AddTasks} />
+        <Route path={localRoutes.viewTasks} component={ViewTasks} />
+        <Route component={NoMatch} />
+      </Switch>
+    );
 import teamleadcalendar from "./teamlead/TeamLeadCalendar"
 import assignedtasks from "./teamlead/AssignedTasks"
 import assigntask from "./teamlead/AssignTask"
