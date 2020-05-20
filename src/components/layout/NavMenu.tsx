@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, {Fragment} from 'react';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -22,8 +22,7 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
 import AssignmentIcon from '@material-ui/icons/Assignment';
-
-
+import EventNoteIcon from '@material-ui/icons/EventNote';
 interface IProps {
 }
 
@@ -33,7 +32,6 @@ const routes = [
         route: localRoutes.dashboard,
         icon: AppsIcon
     },
-
     {
         name: "People",
         icon: PeopleIcon,
@@ -58,16 +56,11 @@ const routes = [
                 route: localRoutes.users
             },
             {
-                name: "User Groups",
-                route: localRoutes.usersGroups
-            },
-            {
                 name: "Settings",
                 route: localRoutes.settings
             },
         ]
     },
-
     {
         name: "Tasks",
         icon: PeopleIcon,
@@ -82,7 +75,42 @@ const routes = [
             }
         ]
     },
-   
+    // Beginning of Team Lead's menu items
+    {
+        name: "Volunteers",
+        icon: EmojiPeopleIcon,
+        items: [
+            {
+                name: "View volunteers",
+                route: localRoutes.viewVolunteers
+            },
+            {
+                name: "Add volunteers",
+                route: localRoutes.addVolunteers
+            }
+        ]
+    },
+    // End of Team Lead's menu items
+
+    {
+        name: "Teamlead",
+        icon: AssignmentIcon,
+        items: [
+            {
+                name: "Teamlead Calendar",
+                route: localRoutes.teamleadcalendar
+            },
+            {
+                name: "View Assigned Tasks",
+                route: localRoutes.assignedtasks
+            }
+        ]
+    },
+    {
+        name: "Volunteer Calendar",
+        route: localRoutes.volcalendar,
+        icon: EventNoteIcon
+    },
     {
         name: "Help",
         route: localRoutes.help,
@@ -176,7 +204,8 @@ const NavMenu = (props: any) => {
                                     {open[it.name] ? <ExpandLess className={classes.whiteText} /> :
                                         <ExpandMore className={classes.whiteText} />}
                                 </StyledListItem>
-                                <Collapse in={open[it.name] || isSelected(it.name.toLocaleLowerCase())} timeout="auto" unmountOnExit>
+                                <Collapse in={open[it.name] || isSelected(it.name.toLocaleLowerCase())} timeout="auto"
+                                          unmountOnExit>
                                     <List component="div" disablePadding>
                                         {
                                             it.items.map(ch => <StyledListItem

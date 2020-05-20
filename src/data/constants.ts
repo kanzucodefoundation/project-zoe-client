@@ -47,7 +47,6 @@ export const localRoutes = {
   addTasks: "/tasks/add-tasks",
   viewTasks:"/tasks/view-tasks"
 };
-
 const debug = process.env.NODE_ENV !== "production";
 export const url = debug ? "http://localhost:4002" : "http://hgjyuk.com/server";
 
@@ -82,3 +81,63 @@ export const remoteRoutes = {
   tasks: url + "/api/tasks",
   //viewTasks: url + "/api/tasks / { id } / update",
 };
+    dashboard: '/dashboard',
+    contacts: '/people/contacts',
+    contactsDetails: '/people/contacts/:contactId',
+    groups: '/people/groups',
+
+    users: '/admin/users',
+    usersGroups: '/admin/user-groups',
+    tags: '/admin/tags',
+    settings: '/admin/settings',
+    teamleadcalendar: '/teamleadcalendar',
+    assignedtasks: '/assignedtasks',
+    assigntask: '/assigntask',
+ 
+    help: '/help',
+    volcalendar: '/volcalendar',
+    voldashboard: '/voldashboard',
+    volblockdate: '/volblockdate',
+    volviewteam: '/volviewteam',
+
+    
+
+    // For Team Lead
+    viewVolunteers: '/volunteers/view-volunteers',
+    addVolunteers: '/volunteers/add-volunteers',
+}
+
+const debug = process.env.NODE_ENV !== 'production'
+export const url = debug ? 'http://localhost:4002' :
+    'http://hgjyuk.com/server'
+
+export const remoteRoutes = {
+    authServer: url,
+    login: url + '/api/auth/login',
+    profile: url + '/api/auth/profile',
+    register: url + '/api/auth/register',
+    resetPass: url + '/reset',
+    contacts: url + '/api/crm/contacts',
+    contactSearch: url + '/api/crm/contact/search',
+    contactById: url + '/api/crm/contacts/id',
+    contactsPerson: url + '/api/crm/people',
+    contactsChc: url + '/api/crm/person/chc',
+    contactsEmail: url + '/api/crm/emails',
+    tags: url + '/api/tags',
+    users: url + '/api/users',
+    userGroups: url + '/api/user-groups',
+    contactsPhone: url + '/api/crm/phones',
+    contactsAddress: url + '/api/crm/addresses',
+    contactsIdentification: url + '/api/crm/identifications',
+    contactsRequests: url + '/api/crm/requests',
+
+    groups: url + '/api/groups/groups',
+    groupsCombo: url + '/api/groups/combo',
+    groupsCategories: url + '/api/groups/categories',
+
+    contactsCompany: url + '/api/crm/contact/company',
+    contactsAvatar: url + '/api/crm/contact/avatar',
+
+    volunteers: url + '/api/services/volunteers',
+    teamlead: url + '/api/services/teamlead',
+}
