@@ -13,7 +13,7 @@ import {toOptions} from "../../components/inputs/inputHelpers";
 import {remoteRoutes} from "../../data/constants";
 import {useDispatch} from 'react-redux';
 import {servicesConstants} from "../../data/teamlead/reducer";
-import {post} from "../../utils/ajax";
+import {post, put} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
@@ -31,13 +31,16 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
-
+import {enumToArray} from "../../utils/stringHelpers";
 
 
 
 interface IProps {
     data: any | null
     done?: () => any
+    isNew?: () => any
+    onAppointmentAdded?: () => any
+    onAppointmentEdited?: () => any
 }
 
 const schema = yup.object().shape(
@@ -97,14 +100,14 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const AssignTask = ({done}: IProps) => {
+const AssignTask = ({data, done, isNew, onAppointmentAdded, onAppointmentEdited}: IProps) => {
     const dispatch = useDispatch();
     const classes = useStyles();
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
 
         const toSave: ICreateTeamleadDto = {
-
+            ...data,
       taskname: values.taskname,
       startdate: values.startdate,
       enddate: values.enddate,
@@ -114,7 +117,29 @@ const AssignTask = ({done}: IProps) => {
 
         }
 
-        post(remoteRoutes.teamlead, toSave,
+    //     post(remoteRoutes.teamlead, toSave,
+    //         (data) => {
+    //             Toast.info('Operation successful')
+    //             actions.resetForm()
+    //             dispatch({
+    //                 type: servicesConstants.servicesAddTeamlead,
+    //                 payload: {...data},
+    //             })
+    //             if (done)
+    //                 done()
+    //         },
+    //         undefined,
+    //         () => {
+    //             actions.setSubmitting(false);
+
+    //         }
+    //     )
+    // }
+
+
+
+    if (isNew) {
+    post(remoteRoutes.teamlead, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
@@ -131,7 +156,28 @@ const AssignTask = ({done}: IProps) => {
 
             }
         )
+    } else {
+        put(remoteRoutes.teamlead, toSave,
+            (data) => {
+                Toast.info('Appointment updated')
+                actions.resetForm()
+                onAppointmentEdited && onAppointmentEdited()
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
+            }
+        )
     }
+}
+
+
+
+    enum TeamPrivacy {
+        Private = "Private",
+        Public = "Public"
+    }
+    
 
 
     return (
@@ -147,10 +193,10 @@ const AssignTask = ({done}: IProps) => {
                 >
                     <Grid spacing={0} container>
                         <Grid item xs={12}>
-                        <XTextInput
+                        <XSelectInput
                                 name="taskname"
                                 label="Task Name"
-                                type="text"
+                                options={toOptions(enumToArray(TeamPrivacy))}
                                 variant='outlined'
                             />
                         </Grid>
@@ -178,11 +224,13 @@ const AssignTask = ({done}: IProps) => {
                         </Grid>
                         
                         <Grid item xs={12}>
-                            <XTextInput
-                                name="volunteers"
-                                label="Volunteers"
-                                type="text"
-                                variant='outlined'
+                            <XRemoteSelect
+                            remote={remoteRoutes.contactsPerson}
+                            filter={{'members[]': ''}}
+                            parser={({name, id}: any) => ({label: name, value: id})}
+                            name="volunteers"
+                            label="Volunteers"
+                            variant='outlined'
                             />
            
                         </Grid>

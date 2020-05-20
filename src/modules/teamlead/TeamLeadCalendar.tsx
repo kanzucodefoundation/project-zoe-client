@@ -200,18 +200,6 @@ interface IProp {
 
 }
 
-const WeatherIcon = ({ classes, id }: IProp) => {
-  switch (id) {
-    case 0:
-      return <Opacity className={classes.rain} fontSize="large" />;
-    case 1:
-      return <WbSunny className={classes.sun} fontSize="large" />;
-    case 2:
-      return <FilterDrama className={classes.cloud} fontSize="large" />;
-    default:
-      return null;
-  }
-};
 
 interface IProps {
   classes: any;
@@ -219,11 +207,6 @@ interface IProps {
   formatDate: any;
   otherMonth: any;
  
-}
-
-
-interface Teamappointment {
-  appointments: [];
 }
 
 
@@ -261,26 +244,18 @@ const CellBase = React.memo(({
       tabIndex={0}
       className={classNames({
         [classes.cell]: true,
-        [classes.rainBack]: iconId === 0,
-        [classes.sunBack]: iconId === 1,
-        [classes.cloudBack]: iconId === 2,
         [classes.opacity]: otherMonth,
       })}
     
     >
-      <div className={classes.content}>
-        <WeatherIcon classes={classes} id={iconId} />
-      </div>
-      <div className={classes.text}>
+      <div className={classes.text} onClick={handleNew}>
         {formatDate(startDate, formatOptions)}
       </div>
       
       <EditDialog title={createTitle} open={createDialog} onClose={closeCreateDialog}>
                 {createComponent}
                 </EditDialog>
-                <Fab aria-label='add-new' className={classes.fab} color='primary' size='small' onClick={handleNew}>
-                        <AddIcon/>
-                    </Fab>
+              
     </TableCell>
     
   );
