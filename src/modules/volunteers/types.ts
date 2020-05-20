@@ -1,20 +1,16 @@
-export interface ICreateVolunteerDto {
+import { CivilStatus } from "../contacts/types";
+
+export interface ICreateAVolunteerDto {
+    category: string;
     ministry: string;
     firstName: string;
-    surname: string;
+    lastName: string;
+    gender: string,
+    civilStatus: CivilStatus;
+    phone: string,
+    email: string;
+    password: string;
     dateOfBirth: string;
     missionalCommunity: string;
     profession: string;
 }
-
-// export  interface IVolunteerListDto {
-//     id: number;
-//     name: string;
-//     cellGroup: any;
-// }
-
-// export interface IVolunteersFilter {
-//     query?: string
-//     skip?: string
-//     limit?: string
-// }

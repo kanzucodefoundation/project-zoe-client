@@ -1,4 +1,4 @@
-import {ICreateVolunteerDto} from "../../modules/volunteers/types";
+import {ICreateAVolunteerDto} from "../../modules/volunteers/types";
 
 export const servicesConstants = {
     servicesFetchAll: "servicesFetchAll",
@@ -10,8 +10,8 @@ export const servicesConstants = {
 }
 
 export interface IServicesState {
-    data: ICreateVolunteerDto[]
-    selected?: ICreateVolunteerDto
+    data: ICreateAVolunteerDto[]
+    selected?: ICreateAVolunteerDto
     loading: boolean
 }
 
@@ -24,7 +24,7 @@ const initialState: IServicesState = {
 export default function reducer(state = initialState, action: any) {
     switch (action.type) {
         case servicesConstants.servicesFetchAll: {
-            const data: ICreateVolunteerDto[] = action.payload
+            const data: ICreateAVolunteerDto[] = action.payload
             return {...state, data, loading: false,}
         }
 
@@ -33,7 +33,7 @@ export default function reducer(state = initialState, action: any) {
         }
 
         case servicesConstants.servicesAddVolunteer: {
-            const newVolunteer: ICreateVolunteerDto[] = action.payload
+            const newVolunteer: ICreateAVolunteerDto[] = action.payload
             return {...state, data: [...state.data, newVolunteer]}
         }
 

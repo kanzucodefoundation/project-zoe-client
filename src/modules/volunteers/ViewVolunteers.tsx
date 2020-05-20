@@ -15,7 +15,7 @@ interface IProps {
 
 interface Row {
     firstName: string;
-    surname: string;
+    lastName: string;
     ministry: string;
     profession: string;
 }
@@ -50,7 +50,7 @@ const ListOfVolunteers = ({done}: IProps) => {
     const [state, setData] = React.useState<TableState>({
         columns: [
           { title: 'First name', field: 'firstName' },
-          { title: 'Surname', field: 'surname' },
+          { title: 'Last name', field: 'lastName' },
           { title: 'Ministry', field: 'ministry' },
           { title: 'Profession', field: 'profession' },
         ],
@@ -62,7 +62,6 @@ const ListOfVolunteers = ({done}: IProps) => {
         async function fetchVolunteers() {
             const res = await fetch(remoteRoutes.volunteers);
             const json = await res.json();
-            console.log(json);
             setData({
                 ...state,
                 data:json
