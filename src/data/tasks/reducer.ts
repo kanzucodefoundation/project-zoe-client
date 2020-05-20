@@ -1,4 +1,4 @@
-import { ICreateTaskDto } from "../../modules/tasks/types";
+import { ICreateTaskDto } from "../../modules/tasks/Types";
 
 export const servicesConstants = {
   servicesFetchAll: "servicesFetchAll",

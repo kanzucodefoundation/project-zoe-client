@@ -1,6 +1,6 @@
 import React from "react";
 import * as yup from "yup";
-import { reqDate, reqObject, reqString } from "../../data/validations";
+import { reqDate, reqObject, reqString, reqPositiveInteger } from "../../data/validations";
 import { ministryCategories } from "../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
@@ -17,7 +17,7 @@ import { post } from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import { XRemoteSelect } from "../../components/inputs/XRemoteSelect";
 import { Box } from "@material-ui/core";
-import { ICreateTaskDto } from "./types";
+import { ICreateTaskDto } from "./Types";
 import { isoDateString } from "../../utils/dateHelpers";
 
 import Navigation from "../../components/layout/Layout";

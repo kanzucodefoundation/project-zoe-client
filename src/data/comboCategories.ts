@@ -28,7 +28,7 @@ export const hobbyCategories = ["FootBall", "Work", "Other"];
 
 export const ministryCategories = [
   "Music",
-  "Guest Experience",
-  "Media",
-  "Kids",
+  "Marrieds",
+  "Outreach",
+  "Children",
 ];
