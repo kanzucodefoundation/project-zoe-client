@@ -1,7 +1,7 @@
 import React from 'react';
 import * as yup from "yup";
 import {reqDate, reqObject, reqString} from "../../data/validations";
-import {ministryCategories} from "../../data/comboCategories";
+// import {ministryCategories} from "../../data/comboCategories";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
@@ -17,7 +17,7 @@ import {post, put} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
-import {ICreateTeamleadDto} from "./types";
+import {ICreateDayDto} from "./types";
 import {isoDateString} from "../../utils/dateHelpers";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Header from "./Header";
@@ -33,23 +33,21 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import {enumToArray} from "../../utils/stringHelpers";
 
-
+import {ministryCategories} from "../../data/comboCategories";
 
 interface IProps {
     data: any | null
     done?: () => any
-    isNew?: () => any
-    onAppointmentAdded?: () => any
-    onAppointmentEdited?: () => any
+   
 }
 
 const schema = yup.object().shape(
   {
-      taskname: reqString,
-      startdate: reqDate,
-      enddate: reqDate,
-      taskinfo: reqString,
-      volunteers: reqString,
+      taskId: reqString,
+      start_date: reqDate,
+      end_date: reqDate,
+      task_info: reqString,
+      assigned_to: reqObject,
       
      
   }
@@ -57,11 +55,11 @@ const schema = yup.object().shape(
 
 const initialValues = {
 
-  taskname: '',
-  startdate: '',
-  enddate: '',
-  taskinfo: '',
-  volunteers: '',
+  taskId: '',
+  start_date: '',
+  end_date: '',
+  task_info: '',
+  assigned_to: null,
   
 }
 
@@ -100,51 +98,28 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const AssignTask = ({data, done, isNew, onAppointmentAdded, onAppointmentEdited}: IProps) => {
+const AssignTask = ({ done}: IProps) => {
     const dispatch = useDispatch();
     const classes = useStyles();
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
 
-        const toSave: ICreateTeamleadDto = {
-            ...data,
-      taskname: values.taskname,
-      startdate: values.startdate,
-      enddate: values.enddate,
-      taskinfo: values.taskinfo,
-      volunteers: values.volunteers,
+        const toSave: ICreateDayDto = {
+      taskId: values.taskId,
+      start_date: values.start_date,
+      end_date: values.end_date,
+      task_info: values.task_info,
+      assigned_to: values.assigned_to.value,
      
 
         }
 
-    //     post(remoteRoutes.teamlead, toSave,
-    //         (data) => {
-    //             Toast.info('Operation successful')
-    //             actions.resetForm()
-    //             dispatch({
-    //                 type: servicesConstants.servicesAddTeamlead,
-    //                 payload: {...data},
-    //             })
-    //             if (done)
-    //                 done()
-    //         },
-    //         undefined,
-    //         () => {
-    //             actions.setSubmitting(false);
-
-    //         }
-    //     )
-    // }
-
-
-
-    if (isNew) {
-    post(remoteRoutes.teamlead, toSave,
+        post(remoteRoutes.day, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
                 dispatch({
-                    type: servicesConstants.servicesAddTeamlead,
+                    type: servicesConstants.servicesAddDay,
                     payload: {...data},
                 })
                 if (done)
@@ -156,26 +131,15 @@ const AssignTask = ({data, done, isNew, onAppointmentAdded, onAppointmentEdited}
 
             }
         )
-    } else {
-        put(remoteRoutes.teamlead, toSave,
-            (data) => {
-                Toast.info('Appointment updated')
-                actions.resetForm()
-                onAppointmentEdited && onAppointmentEdited()
-            },
-            undefined,
-            () => {
-                actions.setSubmitting(false);
-            }
-        )
     }
-}
+
+
 
 
 
     enum TeamPrivacy {
-        Private = "Private",
-        Public = "Public"
+        Sweeping = "sweeping",
+        Mopping = "mopping"
     }
     
 
@@ -194,29 +158,30 @@ const AssignTask = ({data, done, isNew, onAppointmentAdded, onAppointmentEdited}
                     <Grid spacing={0} container>
                         <Grid item xs={12}>
                         <XSelectInput
-                                name="taskname"
+                                name="taskId"
                                 label="Task Name"
-                                options={toOptions(enumToArray(TeamPrivacy))}
+                                // options={toOptions(enumToArray(TeamPrivacy))}
+                                options={toOptions(ministryCategories)}
                                 variant='outlined'
                             />
                         </Grid>
                         <RightPadded>
                         <XDateInput
-                                name="startdate"
+                                name="start_date"
                                 label="Start Date"
-                                // variant='outlined'
+                                
                             />
                         </RightPadded>
                         <LeftPadded>
                         <XDateInput
-                                name="enddate"
+                                name="end_date"
                                 label="End Date"
-                                // variant='outlined'
+                                
                             />
                         </LeftPadded>
                         <Grid item xs={12}>
                         <XTextInput
-                                name="taskinfo"
+                                name="task_info"
                                 label="Task Details"
                                 type="text"
                                 variant='outlined'
@@ -226,9 +191,9 @@ const AssignTask = ({data, done, isNew, onAppointmentAdded, onAppointmentEdited}
                         <Grid item xs={12}>
                             <XRemoteSelect
                             remote={remoteRoutes.contactsPerson}
-                            filter={{'members[]': ''}}
-                            parser={({name, id}: any) => ({label: name, value: id})}
-                            name="volunteers"
+                            filter={{'firstName[]': ''}}
+                            parser={({firstName, id}: any) => ({label: firstName, value: id})}
+                            name="assigned_to"
                             label="Volunteers"
                             variant='outlined'
                             />

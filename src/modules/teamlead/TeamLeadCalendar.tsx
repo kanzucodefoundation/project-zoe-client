@@ -299,7 +299,7 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
 
   async componentDidMount() {
   
-    const res = await fetch(remoteRoutes.teamlead);
+    const res = await fetch(remoteRoutes.day);
     const json = await res.json();
     console.log(json);
    
@@ -310,11 +310,11 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
   const appoints: any = [];
   json.map((item: any, index: any)=>{
     appoints.push({
-      ownerId:item["id"],
-      title:item["taskname"],
-      startDate:new Date(item["startdate"]),
-      endDate:new Date(item["enddate"]),
-      // ownerId:item["volunteers"],
+      ownerId:item["assigned_to"],
+      title:item["taskId"],
+      startDate:new Date(item["start_date"]),
+      endDate:new Date(item["end_date"]),
+     
       
     })
     return ""

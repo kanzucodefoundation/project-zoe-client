@@ -1,14 +1,14 @@
-import {ICreateTeamleadDto} from "../../modules/teamlead/types";
+import {ICreateDayDto} from "../../modules/teamlead/types";
 
 export const servicesConstants = {
-    servicesAddTeamlead: "servicesAddTeamlead",
+    servicesAddDay: "servicesAddDay",
 
     coreLogout: "CORE_LOGOUT"
 }
 
 export interface IServicesState {
-    data: ICreateTeamleadDto[]
-    selected?: ICreateTeamleadDto
+    data: ICreateDayDto[]
+    selected?: ICreateDayDto
     loading: boolean
 }
 
@@ -21,9 +21,9 @@ const initialState: IServicesState = {
 export default function reducer(state = initialState, action: any) {
     switch (action.type) {
 
-        case servicesConstants.servicesAddTeamlead: {
-            const newTeamlead: ICreateTeamleadDto[] = action.payload
-            return {...state, data: [...state.data, newTeamlead]}
+        case servicesConstants.servicesAddDay: {
+            const newDay: ICreateDayDto[] = action.payload
+            return {...state, data: [...state.data, newDay]}
         }
 
         default: {

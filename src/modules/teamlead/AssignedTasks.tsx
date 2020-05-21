@@ -14,11 +14,11 @@ interface IProps {
 }
 
 interface Row {
-    taskname: string;
-    startdate: Date;
-    enddate: Date;
-    taskinfo: string;
-    volunteers: string;
+    taskId: string;
+    start_date: Date;
+    end_date: Date;
+    task_info: string;
+    assigned_to: string;
 }
   
 interface TableState {
@@ -50,11 +50,11 @@ const AssignedTasks = ({done}: IProps) => {
     // For displaying the table data
     const [state, setData] = React.useState<TableState>({
         columns: [
-          { title: 'Task Nmae', field: 'taskname' },
-          { title: 'Start Date', field: 'startdate' },
-          { title: 'End Date', field: 'enddate' },
-          { title: 'Task Details', field: 'taskinfo' },
-          { title: 'Volunteers', field: 'volunteers' },
+          { title: 'Task Nmae', field: 'taskId' },
+          { title: 'Start Date', field: 'start_date' },
+          { title: 'End Date', field: 'end_date' },
+          { title: 'Task Details', field: 'task_info' },
+          { title: 'Volunteers', field: 'assigned_to' },
         ],
         data: [
         ],
@@ -62,7 +62,7 @@ const AssignedTasks = ({done}: IProps) => {
 
     React.useEffect(() => {
         async function fetchTeamlead() {
-            const res = await fetch(remoteRoutes.teamlead);
+            const res = await fetch(remoteRoutes.day);
             const json = await res.json();
             console.log(json);
             setData({
