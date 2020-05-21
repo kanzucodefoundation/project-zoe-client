@@ -39,9 +39,12 @@ export const localRoutes = {
     test: '/test',
 
     help: '/help',
-    login: '/login'
+    login: '/login',
+    home: '/'
 }
 
+
+export const isDebug = process.env.NODE_ENV !== 'production';
 const debug = process.env.NODE_ENV !== 'production'
 export const url = debug ? 'http://localhost:4002' :
     'https://www.hgjyuk.com/server'

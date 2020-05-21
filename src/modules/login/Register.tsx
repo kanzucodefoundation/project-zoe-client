@@ -1,8 +1,6 @@
-import React, {useState} from 'react';
+import React, {SyntheticEvent, useState} from 'react';
 import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -80,7 +78,8 @@ export default function Register() {
         setDone(true)
     }
 
-    function handleLogin() {
+    function handleLogin(e: SyntheticEvent<any>) {
+        e.preventDefault()
         history.push(localRoutes.login)
     }
 

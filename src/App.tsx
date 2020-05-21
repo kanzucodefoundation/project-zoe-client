@@ -23,7 +23,7 @@ const App: React.FC = () => {
                 {user ?
                     <ContentSwitch/> :
                     <Switch>
-                        <Route exact={true} path="/" component={Register}/>
+                        <Route exact path="/" component={Register}/>
                         <Route path={localRoutes.login} component={Login}/>
                     </Switch>
                 }
