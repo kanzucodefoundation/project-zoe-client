@@ -7,7 +7,7 @@ interface IProps {
     name: string
 }
 
-const XTextAreaInput = ({name, ...props}: TextFieldProps & IProps) => {
+const XTextAreaInput = ({name,margin = 'normal', ...props}: TextFieldProps & IProps) => {
     const [field, meta] = useField({name});
     const error = hasValue(meta.error) ? meta.error : undefined
     const showError = Boolean(error && meta.touched)
@@ -19,7 +19,7 @@ const XTextAreaInput = ({name, ...props}: TextFieldProps & IProps) => {
             error={showError}
             helperText={showError && error}
             value={field.value || ""}
-            margin='normal'
+            margin={margin}
             multiline
             rowsMax="4"
             rows={4}

@@ -28,11 +28,31 @@ const labelParser = (option: IOption) => {
     return ''
 }
 
+const dataCache: any = {}
+
+function hashCode(str: string) {
+    return str.split('').reduce((prevHash, currVal) =>
+        (((prevHash << 5) - prevHash) + currVal.charCodeAt(0)) | 0, 0);
+}
+
+const isInCache = (filter: any) => {
+    const key = hashCode(JSON.stringify(filter))
+    if (dataCache[key]) {
+        return dataCache[key]
+    }
+}
+
+const addToCache = (filter: any, resp: any) => {
+    const key = hashCode(JSON.stringify(filter))
+    dataCache[key] = resp
+}
+
 
 export function PRemoteSelect(props: IProps) {
     const [loading, setLoading] = React.useState(false);
     const [options, setOptions] = React.useState<IOption[]>(props.defaultOptions || []);
     const [query, setQuery] = React.useState<string>('');
+
 
     function handleInputChange(event: React.ChangeEvent<any>, value: string) {
         if (!event)
@@ -44,24 +64,29 @@ export function PRemoteSelect(props: IProps) {
         if (hasNoValue(props.remote)) {
             return
         }
-        const filter = {...props.filter, query, limit: 50}
+        const newFilter = {...props.filter, query, limit: 50}
+
+        const cached = isInCache(newFilter);
+        if (cached) {
+            setOptions(cached)
+            return;
+        }
         setLoading(true)
-        search(props.remote, filter,
+        search(props.remote, newFilter,
             resp => {
                 const data = resp.map(props.parser)
                 setOptions(data)
+                addToCache(newFilter, data)
             },
             undefined,
             () => {
                 setLoading(false)
             })
-    }, [props.filter, props.parser, props.remote]);
+    }, [props.parser, props.filter, props.remote]);
 
     useEffect(() => {
-        if (hasValue(props.remote)) {
-            fetch(query)
-        }
-    }, [fetch, props.remote, query])
+        fetch(query)
+    }, [fetch, query])
 
     function handleChange(
         event: React.ChangeEvent<{}>,
@@ -69,6 +94,7 @@ export function PRemoteSelect(props: IProps) {
         _: AutocompleteChangeReason,
         __?: AutocompleteChangeDetails<any>,
     ) {
+        console.log("On change>>>>>")
         props.onChange && props.onChange(value)
     }
 
@@ -81,7 +107,8 @@ export function PRemoteSelect(props: IProps) {
             fetch("")
         }
     }
-    const {error, helperText, parser, defaultOptions, ...autoProps} = {...props}
+
+    const {error, helperText, parser: i, defaultOptions, searchOnline,margin = 'normal', ...autoProps} = {...props}
 
     const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(event.target.value);
@@ -90,6 +117,7 @@ export function PRemoteSelect(props: IProps) {
     return (
         <Autocomplete
             {...autoProps}
+
             getOptionLabel={labelParser}
             filterOptions={x => x}
             options={options}
@@ -105,11 +133,11 @@ export function PRemoteSelect(props: IProps) {
                 return <TextField
                     {...params}
                     {...props.textFieldProps}
+                    margin={margin}
                     label={props.label}
-                    margin='normal'
                     fullWidth
-                    onBlur={handleTouched}
                     onChange={props.searchOnline ? handleQueryChange : undefined}
+                    onBlur={handleTouched}
                     error={props.error}
                     helperText={props.helperText}
                     variant={props.variant}

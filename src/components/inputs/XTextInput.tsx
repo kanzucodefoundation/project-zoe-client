@@ -7,7 +7,7 @@ interface IProps {
     name: string
 }
 
-const XTextInput = ({name, ...props}: TextFieldProps & IProps) => {
+const XTextInput = ({name, margin = 'normal', ...props}: TextFieldProps & IProps) => {
     const [field, meta] = useField({name});
     const error = hasValue(meta.error) ? meta.error : undefined
     const showError = Boolean(error && meta.touched)
@@ -15,7 +15,7 @@ const XTextInput = ({name, ...props}: TextFieldProps & IProps) => {
         <TextField
             {...field}
             {...props}
-            margin='normal'
+            margin={margin}
             fullWidth
             error={showError}
             helperText={showError && error}

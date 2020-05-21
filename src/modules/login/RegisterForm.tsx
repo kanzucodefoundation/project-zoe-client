@@ -68,13 +68,13 @@ const initialValues = {
 
 }
 
-const RightPadded = ({children,...props}: any) => <Grid item xs={6}>
+const RightPadded = ({children,...props}: any) => <Grid item xs={12} lg={6}>
     <Box pr={1} {...props}>
         {children}
     </Box>
 </Grid>
 
-const LeftPadded = ({children,...props}: any) => <Grid item xs={6}>
+const LeftPadded = ({children,...props}: any) => <Grid item xs={12} lg={6}>
     <Box pl={1} {...props}>
         {children}
     </Box>
@@ -131,7 +131,7 @@ const RegisterForm = ({done}: IProps) => {
             schema={schema}
             initialValues={initialValues}
         >
-            <Grid spacing={0} container>
+            <Grid spacing={2} container>
 
                 <Grid item xs={12} >
                     <Box pt={2}>
@@ -139,93 +139,106 @@ const RegisterForm = ({done}: IProps) => {
                     </Box>
                     <Divider/>
                 </Grid>
-                <RightPadded>
+                <Grid item xs={12} md={6}>
                     <XTextInput
                         name="firstName"
                         label="First Name"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
-                </RightPadded>
-                <LeftPadded>
+                </Grid>
+                <Grid item xs={12} md={6}>
                     <XTextInput
                         name="lastName"
                         label="Last Name"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
-                </LeftPadded>
+                </Grid>
                 <Grid item xs={12}>
                     <XTextInput
                         name="middleName"
                         label="Other Names"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
-                <RightPadded >
+                <Grid item  xs={12} md={6}>
                     <XSelectInput
                         name="civilStatus"
                         label="Civil Status"
                         options={toOptions(civilStatusCategories)}
                         variant='outlined'
+                        margin='none'
                     />
-                </RightPadded>
-                <LeftPadded pt={3}>
-                    <XRadioInput
-                        name="gender"
-                        label=''
-                        options={toOptions(genderCategories)}
-                    />
-                </LeftPadded>
-                <RightPadded >
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <Box pt={1} pl={1}>
+                        <XRadioInput
+                            name="gender"
+                            label=''
+                            options={toOptions(genderCategories)}
+                        />
+                    </Box>
+                </Grid>
+                <Grid item xs={12} md={6} >
                     <XDateInput
                         name="dateOfBirth"
                         label="Date of Birth"
                         variant='outlined'
+                        margin='none'
                     />
-                </RightPadded>
-                <LeftPadded >
+                </Grid>
+                <Grid item xs={12} md={6}>
                     <XSelectInput
                         name="ageGroup"
                         label="Age"
                         options={toOptions(ageCategories)}
                         variant='outlined'
+                        margin='none'
                     />
-                </LeftPadded>
+                </Grid>
                 <Grid item xs={12} >
                     <Box pt={2}>
                         <Typography variant='caption'>Address details</Typography>
                     </Box>
                     <Divider/>
                 </Grid>
-                <Grid item xs={12} lg={6}>
+
+                <Grid item xs={12} md={6}>
                     <XTextInput
                         name="phone"
                         label="Phone"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
-                <Grid item xs={12}  lg={6}>
+                <Grid item xs={12} md={6}>
                     <XTextInput
                         name="email"
                         label="Email"
                         type="email"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
-                <RightPadded >
+                <Grid item xs={12} md={6}>
                     <XRemoteSelect
+                        searchOnline={true}
                         remote={remoteRoutes.groupsCombo}
                         filter={{'categories[]': 'Location'}}
                         parser={({name, id}: any) => ({name: name, id: id})}
                         name="churchLocation"
                         label="Church Location"
                         variant='outlined'
+                        margin='none'
                     />
-                </RightPadded>
-                <LeftPadded >
+                </Grid>
+                <Grid item xs={12} md={6}>
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCombo}
                         filter={{'categories[]': 'MC'}}
@@ -233,22 +246,25 @@ const RegisterForm = ({done}: IProps) => {
                         name="cellGroup"
                         label="Missional Community"
                         variant='outlined'
-                    />
-                </LeftPadded>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="placeOfWork"
-                        label="Place of work"
-                        type="text"
-                        variant='outlined'
+                        margin='none'
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} md={6}>
                     <XTextInput
                         name="residence"
                         label="Residence"
                         type="text"
                         variant='outlined'
+                        margin='none'
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <XTextInput
+                        name="placeOfWork"
+                        label="Place of work"
+                        type="text"
+                        variant='outlined'
+                        margin='none'
                     />
                 </Grid>
             </Grid>

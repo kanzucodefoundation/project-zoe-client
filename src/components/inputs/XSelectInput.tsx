@@ -14,10 +14,11 @@ interface IProps {
     multiple?: boolean
     variant?: 'standard' | 'outlined' | 'filled'
     size?: 'small' | 'medium'
+    margin?: 'none' | 'dense' | 'normal'
 }
 
 const XSelectInput = (props: IProps) => {
-    const {name, options,variant, ...rest} = props
+    const {name, options,variant,margin = 'normal', ...rest} = props
     const [field, meta] = useField({name});
     const error = hasValue(meta.error) ? meta.error : undefined
     const showError = Boolean(error && meta.touched)
@@ -27,7 +28,7 @@ const XSelectInput = (props: IProps) => {
         setLabelWidth(inputLabel.current!.offsetWidth);
     }, []);
 
-    return <FormControl error={showError} fullWidth variant={variant} margin='normal' size={props.size}>
+    return <FormControl error={showError} fullWidth variant={variant} margin={margin} size={props.size}>
         <InputLabel htmlFor={name} ref={inputLabel}>{rest.label}</InputLabel>
         <Select
             {...rest}

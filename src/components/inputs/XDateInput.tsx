@@ -18,7 +18,7 @@ interface IProps {
 type PickerProps = Omit<KeyboardDatePickerProps, 'variant' | 'inputVariant'>;
 
 const XDateInput = (props: IProps & Partial<PickerProps>) => {
-    const {variant, pickerVariant, ...rest} = props
+    const {variant, pickerVariant,margin = 'normal', ...rest} = props
     const [field, meta, helpers] = useField({name: props.name});
     const error = hasValue(meta.error) ? meta.error : undefined
     const showError = Boolean(error && meta.touched)
@@ -34,9 +34,9 @@ const XDateInput = (props: IProps & Partial<PickerProps>) => {
     return <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardDatePicker
             {...rest}
+            margin={margin}
             fullWidth
             variant={pickerVariant}
-            margin="normal"
             format={dateFormat}
             autoOk
             name={field.name}

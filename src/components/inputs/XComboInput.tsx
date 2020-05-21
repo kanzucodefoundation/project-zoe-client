@@ -13,6 +13,7 @@ interface IProps {
     variant?: "outlined" | "filled" | 'standard'
     multiple?: any;
     size?: 'medium' | 'small'
+    margin?: 'none' | 'dense' | 'normal'
 }
 type AutoProps = Omit<Partial<AutocompleteProps<any>>, 'variant'|'multiple'|'renderInput'>;
 const XComboInput = (props: IProps & AutoProps) => {
