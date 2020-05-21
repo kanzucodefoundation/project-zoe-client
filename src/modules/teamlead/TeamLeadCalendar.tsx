@@ -310,7 +310,7 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
   const appoints: any = [];
   json.map((item: any, index: any)=>{
     appoints.push({
-      ownerId:item["assigned_to"],
+      ownerId:item["id"],
       title:item["taskId"],
       startDate:new Date(item["start_date"]),
       endDate:new Date(item["end_date"]),
