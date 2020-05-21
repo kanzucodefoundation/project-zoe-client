@@ -11,36 +11,39 @@ import Layout from "../components/layout/Layout";
 import Groups from "./groups/GroupsList";
 import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
-import teamleadcalendar from "./teamlead/TeamLeadCalendar"
-import assignedtasks from "./teamlead/AssignedTasks"
-import assigntask from "./teamlead/AssignTask"
-
-
+import ViewTasks from "./tasks/ViewTasks";
+import AddTasks from "./tasks/AddTasks";
+import teamleadcalendar from "./teamlead/TeamLeadCalendar";
+import assignedtasks from "./teamlead/AssignedTasks";
+import assigntask from "./teamlead/AssignTask";
+import volcalendar from "./volcalendar/VolCalendar"
 
 const ContentSwitch = () => {
-    return <Switch>
-        <Route exact={true} path="/" component={Dashboard}/>
-        <Route path={localRoutes.dashboard} component={Dashboard}/>
-        <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
-        <Route path={localRoutes.contacts} component={Contacts}/>
-        <Route path={localRoutes.users} component={Users}/>
-        <Route path={localRoutes.usersGroups} component={UserGroups}/>
-        <Route path={localRoutes.groups} component={Groups}/>
-        <Route path={localRoutes.settings} component={Settings}/>
-        <Route path={localRoutes.teamleadcalendar} component={teamleadcalendar}/>
-        
-        {/* For Team Lead */}
+    return (
+      <Switch>
+        <Route exact={true} path="/" component={Dashboard} />
+        <Route path={localRoutes.dashboard} component={Dashboard} />
+        <Route path={localRoutes.contactsDetails} component={ContactDetails} />
+        <Route path={localRoutes.contacts} component={Contacts} />
+        <Route path={localRoutes.users} component={Users} />
+        <Route path={localRoutes.usersGroups} component={UserGroups} />
+        <Route path={localRoutes.groups} component={Groups} />
+        <Route path={localRoutes.settings} component={Settings} />
+        <Route path={localRoutes.teamleadcalendar} component={teamleadcalendar}/>        
         <Route path={localRoutes.viewVolunteers} component={ViewVolunteers}/>
         <Route path={localRoutes.addVolunteers} component={AddVolunteers}/>
-        
+        <Route path={localRoutes.volcalendar} component={volcalendar} />        
         {/* <Route path={localRoutes.volcalendar} component={volcalendar}/>
         <Route path={localRoutes.voldashboard} component={VolDashboard}/>
         <Route path={localRoutes.volblockdate} component={VolBlockDate}/>
         <Route path={localRoutes.volviewteam} component={VolViewTeam}/> */}
+        <Route path={localRoutes.addTasks} component={AddTasks} />
+        <Route path={localRoutes.viewTasks} component={ViewTasks} />
         <Route path={localRoutes.assignedtasks} component={assignedtasks}/>
         <Route path={localRoutes.assigntask} component={assigntask}/>
         <Route component={NoMatch}/>
-    </Switch>
+      </Switch>
+    )
 }
 
 const NoMatch = () => (

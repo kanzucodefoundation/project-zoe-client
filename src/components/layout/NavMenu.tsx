@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, {Fragment} from 'react';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -9,11 +9,11 @@ import PeopleIcon from '@material-ui/icons/People';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HelpIcon from '@material-ui/icons/Help';
-import {useHistory, useLocation} from 'react-router-dom'
-import {localRoutes} from "../../data/constants";
+import { useHistory, useLocation } from 'react-router-dom'
+import { localRoutes } from "../../data/constants";
 import appLogo from "../../assets/cool.png";
-import {navBackgroundColor} from "./styles";
-import {createStyles, makeStyles, Theme, withStyles} from "@material-ui/core";
+import { navBackgroundColor } from "./styles";
+import { createStyles, makeStyles, Theme, withStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import grey from '@material-ui/core/colors/grey';
 
@@ -22,8 +22,7 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
 import AssignmentIcon from '@material-ui/icons/Assignment';
-
-
+import EventNoteIcon from '@material-ui/icons/EventNote';
 interface IProps {
 }
 
@@ -33,7 +32,6 @@ const routes = [
         route: localRoutes.dashboard,
         icon: AppsIcon
     },
-    
     {
         name: "People",
         icon: PeopleIcon,
@@ -58,16 +56,25 @@ const routes = [
                 route: localRoutes.users
             },
             {
-                name: "User Groups",
-                route: localRoutes.usersGroups
-            },
-            {
                 name: "Settings",
                 route: localRoutes.settings
             },
         ]
     },
-    
+    {
+        name: "Tasks",
+        icon: PeopleIcon,
+        items: [
+            {
+                name: "Add tasks",
+                route: localRoutes.addTasks
+            },
+            {
+                name: "View tasks",
+                route: localRoutes.viewTasks
+            }
+        ]
+    },
     // Beginning of Team Lead's menu items
     {
         name: "Volunteers",
@@ -99,26 +106,11 @@ const routes = [
             }
         ]
     },
-
-    
-    // {
-    //     name: "Assign Task",
-    //     route: localRoutes.assigntask,
-    //     icon: AssignmentIcon
-    // },
-
-    // {
-    //     name: "View Assigned Tasks",
-    //     route: localRoutes.assignedtasks,
-    //     icon: AssignmentIcon
-    // },
-
-    // {
-    //     name: "Teamlead Calendar",
-    //     route: localRoutes.teamleadcalendar,
-    //     icon: AssignmentIcon
-    // },
-   
+    {
+        name: "Volunteer Calendar",
+        route: localRoutes.volcalendar,
+        icon: EventNoteIcon
+    },
     {
         name: "Help",
         route: localRoutes.help,
@@ -171,12 +163,12 @@ const NavMenu = (props: any) => {
     const [open, setOpen] = React.useState<any>({});
 
     const handleMenuClick = (name: string) => () => {
-        const menuData = {...open, [name]: !open[name]}
+        const menuData = { ...open, [name]: !open[name] }
         setOpen(menuData);
     };
 
     const onClick = (path: string) => () => {
-        const {onClose} = props
+        const { onClose } = props
         history.push(path)
         if (onClose)
             onClose()
@@ -184,21 +176,21 @@ const NavMenu = (props: any) => {
     const pathMatches = (path: string, str: string) => path.indexOf(str) > -1
 
     const isSelected = (pathStr: string): boolean => {
-        const {pathname} = location
+        const { pathname } = location
         return pathMatches(pathname, pathStr)
     }
 
     return (
-        <div style={{backgroundColor: navBackgroundColor}}>
+        <div style={{ backgroundColor: navBackgroundColor }}>
             <Grid className={classes.logoHolder}
-                  container
-                  spacing={0}
-                  alignContent='center'
-                  justify='center'>
-                <img src={appLogo} alt="logo" className={classes.logo}/>
+                container
+                spacing={0}
+                alignContent='center'
+                justify='center'>
+                <img src={appLogo} alt="logo" className={classes.logo} />
             </Grid>
-            <Divider/>
-            <List style={{paddingTop: 0}}>
+            <Divider />
+            <List style={{ paddingTop: 0 }}>
                 {
                     routes.map(it => {
                         const Icon = it.icon
@@ -206,13 +198,14 @@ const NavMenu = (props: any) => {
                             return <Fragment key={it.name}>
                                 <StyledListItem button onClick={handleMenuClick(it.name)}>
                                     <ListItemIcon>
-                                        <Icon className={classes.whiteText}/>
+                                        <Icon className={classes.whiteText} />
                                     </ListItemIcon>
-                                    <ListItemText primary={it.name} className={classes.whiteText}/>
-                                    {open[it.name] ? <ExpandLess className={classes.whiteText}/> :
-                                        <ExpandMore className={classes.whiteText}/>}
+                                    <ListItemText primary={it.name} className={classes.whiteText} />
+                                    {open[it.name] ? <ExpandLess className={classes.whiteText} /> :
+                                        <ExpandMore className={classes.whiteText} />}
                                 </StyledListItem>
-                                <Collapse in={open[it.name] || isSelected(it.name.toLocaleLowerCase())} timeout="auto" unmountOnExit>
+                                <Collapse in={open[it.name] || isSelected(it.name.toLocaleLowerCase())} timeout="auto"
+                                          unmountOnExit>
                                     <List component="div" disablePadding>
                                         {
                                             it.items.map(ch => <StyledListItem
@@ -225,7 +218,7 @@ const NavMenu = (props: any) => {
                                                     selected: classes.menuItem
                                                 }}
                                             >
-                                                <ListItemText inset primary={ch.name} className={classes.whiteText}/>
+                                                <ListItemText inset primary={ch.name} className={classes.whiteText} />
                                             </StyledListItem>)
                                         }
                                     </List>
@@ -243,9 +236,9 @@ const NavMenu = (props: any) => {
                             }}
                         >
                             <ListItemIcon>
-                                <Icon className={classes.whiteText}/>
+                                <Icon className={classes.whiteText} />
                             </ListItemIcon>
-                            <ListItemText primary={it.name} className={classes.whiteText}/>
+                            <ListItemText primary={it.name} className={classes.whiteText} />
                         </StyledListItem>
                     })
                 }

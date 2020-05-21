@@ -1,13 +1,14 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqDate, reqObject, reqString} from "../../data/validations";
-import {ministryCategories} from "../../data/comboCategories";
+import {reqDate, reqObject, reqString, reqEmail} from "../../data/validations";
+import {ministryCategories, civilStatusCategories, genderCategories} from "../../data/comboCategories";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
 import XDateInput from "../../components/inputs/XDateInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
+import XRadioInput from "../../components/inputs/XRadioInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
 
 import {remoteRoutes} from "../../data/constants";
@@ -17,12 +18,14 @@ import {post} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
-import {ICreateVolunteerDto} from "./types";
+import {ICreateAVolunteerDto} from "./types";
 import {isoDateString} from "../../utils/dateHelpers";
 
 import Navigation from "../../components/layout/Layout";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Header from "./Header";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 
 interface IProps {
     data: any | null
@@ -33,22 +36,28 @@ const schema = yup.object().shape(
     {
         ministry: reqString,
         firstName: reqString,
-        surname: reqString,
+        lastName: reqString,
+        email: reqEmail,
+        phone: reqString,
         dateOfBirth: reqDate,
+        gender: reqString,
+        civilStatus: reqString,
         missionalCommunity: reqObject,
         profession: reqString
     }
 )
 
 const initialValues = {
-
     ministry: '',
     firstName: '',
-    surname: '',
+    lastName: '',
+    email: '',
+    phone: '',
     dateOfBirth: '',
+    gender: '',
+    civilStatus: '',
     missionalCommunity: null,
     profession: '',
-
 }
 
 const RightPadded = ({children,...props}: any) => <Grid item xs={6}>
@@ -86,19 +95,23 @@ const AddVolunteersForm = ({done}: IProps) => {
     const classes = useStyles();
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
-
-        const toSave: ICreateVolunteerDto = {
-
-            ministry: values.ministry,
+        const toSave: ICreateAVolunteerDto = {
+            category: 'Volunteer',
+            ministry: values.ministry,            
             firstName: values.firstName,
-            surname: values.surname,
-            dateOfBirth: isoDateString(values.dateOfBirth),
-            missionalCommunity: values.missionalCommunity.value,
+            lastName: values.lastName,
+            civilStatus: values.civilStatus,
+            phone: values.phone,
+            email: values.email,
+            password: 'new_volunteer', // The default password for each new volunteer
+            dateOfBirth: values.dateOfBirth,
+            gender: values.gender,
+            missionalCommunity: values.missionalCommunity,
             profession: values.profession,
-
         }
 
-        post(remoteRoutes.volunteers, toSave,
+        // contact
+        post(remoteRoutes.contactsPerson, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
@@ -112,7 +125,6 @@ const AddVolunteersForm = ({done}: IProps) => {
             undefined,
             () => {
                 actions.setSubmitting(false);
-
             }
         )
     }
@@ -124,64 +136,101 @@ const AddVolunteersForm = ({done}: IProps) => {
             <Header title="Add volunteers" />
 
             <Grid item xs={6}>
-                <XForm
-                    onSubmit={handleSubmit}
-                    schema={schema}
-                    initialValues={initialValues}
-                >
-                    <Grid spacing={0} container>
-                        <Grid item xs={12}>
-                            <XSelectInput
-                                name="ministry"
-                                label="Ministry"
-                                options={toOptions(ministryCategories)}
-                                variant='outlined'
-                            />
-                        </Grid>
-                        <RightPadded>
-                            <XTextInput
-                                name="firstName"
-                                label="First Name"
-                                type="text"
-                                variant='outlined'
-                            />
-                        </RightPadded>
-                        <LeftPadded>
-                            <XTextInput
-                                name="surname"
-                                label="Surname"
-                                type="text"
-                                variant='outlined'
-                            />
-                        </LeftPadded>
-                        <Grid item xs={12}>
-                            <XDateInput
-                                name="dateOfBirth"
-                                label="Date of Birth"
-                                variant='outlined'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <XRemoteSelect
-                                remote={remoteRoutes.groupsCombo}
-                                filter={{'categories[]': 'MC'}}
-                                parser={({name, id}: any) => ({label: name, value: id})}
-                                name="missionalCommunity"
-                                label="Missional Community"
-                                variant='outlined'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <XTextInput
-                                name="profession"
-                                label="Profession"
-                                type="text"
-                                variant='outlined'
-                            />
-                        </Grid>
-                    </Grid>
-                </XForm>
+                <Card className={classes.root}>
+                    <CardContent>
+                        <XForm
+                            onSubmit={handleSubmit}
+                            schema={schema}
+                            initialValues={initialValues}
+                        >
+                            <Grid spacing={0} container>
+                                <Grid item xs={12}>
+                                    <XSelectInput
+                                        name="ministry"
+                                        label="Ministry"
+                                        options={toOptions(ministryCategories)}
+                                        variant='outlined'
+                                    />
+                                </Grid>
+                                <RightPadded>
+                                    <XTextInput
+                                        name="firstName"
+                                        label="First Name"
+                                        type="text"
+                                        variant='outlined'
+                                    />
+                                </RightPadded>
+                                <LeftPadded>
+                                    <XTextInput
+                                        name="lastName"
+                                        label="Last name"
+                                        type="text"
+                                        variant='outlined'
+                                    />
+                                </LeftPadded>
+                                <RightPadded>
+                                    <XTextInput
+                                        name="email"
+                                        label="Email"
+                                        type="email"
+                                        variant='outlined'
+                                    />
+                                </RightPadded>
+                                <LeftPadded>
+                                    <XTextInput
+                                        name="phone"
+                                        label="Phone"
+                                        type="text"
+                                        variant='outlined'
+                                    />
+                                </LeftPadded>
+                                <RightPadded>
+                                    <XDateInput
+                                        name="dateOfBirth"
+                                        label="Date of Birth"
+                                        variant='outlined'
+                                    />
+                                </RightPadded>
+                                <LeftPadded pt={3}>
+                                    <XRadioInput
+                                        name="gender"
+                                        label=''
+                                        options={toOptions(genderCategories)}
+                                    />
+                                </LeftPadded>
+                                <Grid item xs={12}>
+                                    <XSelectInput
+                                        name="civilStatus"
+                                        label="Civil Status"
+                                        options={toOptions(civilStatusCategories)}
+                                        variant='outlined'
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <XRemoteSelect
+                                        remote={remoteRoutes.groupsCombo}
+                                        filter={{'categories[]': 'MC'}}
+                                        parser={({name, id}: any) => ({label: name, value: id})}
+                                        name="missionalCommunity"
+                                        label="Missional Community"
+                                        variant='outlined'
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <XTextInput
+                                        name="profession"
+                                        label="Profession"
+                                        type="text"
+                                        variant='outlined'
+                                    />
+                                </Grid>
+                            </Grid>
+                        </XForm>
+                    </CardContent>
+                </Card>
             </Grid>
+
+            <br />
         </Box>
       </Navigation>
     );
