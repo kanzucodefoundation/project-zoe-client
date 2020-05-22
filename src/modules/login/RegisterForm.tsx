@@ -107,7 +107,6 @@ const RegisterForm = ({done}: IProps) => {
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={initialValues}
-            debug
         >
             <Grid spacing={2} container>
                 <Grid item xs={12} >
