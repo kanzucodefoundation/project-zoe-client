@@ -160,21 +160,21 @@ const AssignTask = ({ done}: IProps) => {
                 >
                     <Grid spacing={0} container>
                         <Grid item xs={12}>
-                        {/* <XSelectInput
+                        <XSelectInput
                                 name="taskId"
                                 label="Task Name"
                                 // options={toOptions(enumToArray(TeamPrivacy))}
                                 options={toOptions(ministryCategories)}
                                 variant='outlined'
-                            /> */}
-                             <XRemoteSelect
+                            />
+                            {/* <XRemoteSelect
                             remote={remoteRoutes.tasks}
                             filter={{'taskName[]': ''}}
                             parser={({taskName, id}: any) => ({label: taskName, value: id})}
                             name="taskId"
                             label="Task Name"
                             variant='outlined'
-                            />
+                            /> */}
                         </Grid>
                         <RightPadded>
                         <XDateInput
