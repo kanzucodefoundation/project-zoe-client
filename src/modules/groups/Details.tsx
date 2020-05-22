@@ -102,7 +102,7 @@ export default function Details() {
                                     <Avatar className={classes.largeIcon}><PeopleIcon/></Avatar>
                                 </Box>
                                 <Box flexGrow={1}>
-                                    <Typography variant='h6'>{data.name}</Typography>
+                                    <Typography variant='h6' >{data.name}</Typography>
                                     <Typography variant='body2'>{`${data.privacy}, ${data.category.name}`}</Typography>
                                 </Box>
                             </Box>

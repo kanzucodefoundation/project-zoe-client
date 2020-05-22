@@ -71,12 +71,22 @@ const toMobile = (data: any): IMobileRow => {
         avatar: hasAvatar ?
             <Avatar
                 alt="Avatar"
-                src={data.person.avatar}
+                src={data.avatar}
             /> : <Avatar><PersonIcon/></Avatar>,
         primary: data.fullName,
         secondary: <>
-            <Typography variant='caption' color='textSecondary' display='block'>{data.roles}</Typography>
             <Typography variant='caption' color='textSecondary'>{data.username}</Typography>
+            <div>{data.roles?.map((it:any) => (
+                <Chip
+                    color='primary'
+                    variant='outlined'
+                    key={it}
+                    style={{margin: 5, marginLeft: 0, marginTop: 0}}
+                    size='small'
+                    label={it}
+                />
+            ))}</div>
+
         </>,
     }
 }

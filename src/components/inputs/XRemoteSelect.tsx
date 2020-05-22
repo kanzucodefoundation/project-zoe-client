@@ -15,6 +15,7 @@ export interface IXRemoteProps {
     searchOnline?: boolean
     defaultOptions?: IOption[]
     margin?: 'none' | 'dense' | 'normal'
+    freeSolo?: boolean
 }
 
 export const XRemoteSelect = (props: IXRemoteProps) => {

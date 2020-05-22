@@ -5,7 +5,6 @@ import arrayToTree from 'array-to-tree'
 import {IGroup} from "./types";
 import {search} from "../../utils/ajax";
 import {localRoutes, remoteRoutes} from "../../data/constants";
-import {Grid} from "@material-ui/core";
 import InfoMessage from "../../components/messages/InfoMessage";
 import Box from "@material-ui/core/Box";
 import Header from "../contacts/Header";
@@ -13,9 +12,23 @@ import EditDialog from "../../components/EditDialog";
 import GroupEditor from "./editors/GroupEditor";
 import Loading from "../../components/Loading";
 import {useHistory} from "react-router";
+import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
 
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        groupsHolder: {
+            width: 500,
+            maxWidth: '100%',
+            // [theme.breakpoints.down('sm')]: {
+            //     paddingRight:theme.spacing(1)
+            // },
+        }
+    }),
+);
 
 const GroupsList = () => {
+
+    const classes = useStyles();
     const history = useHistory()
     const [loading, setLoading] = useState<boolean>(true);
     const [dialog, setDialog] = useState<boolean>(false);
@@ -28,6 +41,7 @@ const GroupsList = () => {
         setLoading(true);
         search(remoteRoutes.groups, filter, data => {
             setData(data)
+            console.log("Got Data",data)
         }, undefined, () => {
             setLoading(false)
         })
@@ -64,10 +78,12 @@ const GroupsList = () => {
 
     const openRecords = data.map(it => it.id);
 
+    console.log("Converting to tree")
     const treeData: any = arrayToTree(data, {
         parentProperty: 'parentId',
         customID: 'id'
     });
+    console.log("Done converting to tree")
     const starterData = selected ? {
         parent: {
             id: selected.id, name: selected.name
@@ -85,12 +101,15 @@ const GroupsList = () => {
                     {
                         loading ? <Loading/> :
                             data.length > 0 ?
-                                <XTreeData
-                                    data={treeData}
-                                    open={openRecords}
-                                    onAddUnder={handleAddUnder}
-                                    onDetails={handleDetails}
-                                /> :
+                                <div className={classes.groupsHolder}>
+                                    <XTreeData
+                                        data={treeData}
+                                        open={openRecords}
+                                        onAddUnder={handleAddUnder}
+                                        onDetails={handleDetails}
+                                    />
+                                </div>
+                                :
                                 <InfoMessage text='No records found'/>
                     }
                 </Box>

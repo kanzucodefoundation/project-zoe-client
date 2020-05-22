@@ -81,13 +81,16 @@ const UserEditor = ({data, isNew, done, onDeleted, onCancel}: IProps) => {
         >
             <Grid spacing={1} container>
                 <Grid item xs={12}>
-                    <XRemoteSelect
-                        name="contact"
-                        label="Person"
-                        remote={remoteRoutes.contactsPeopleCombo}
-                        parser={comboParser}
-                        variant='outlined'
-                    />
+                    {
+                        isNew &&
+                        <XRemoteSelect
+                            name="contact"
+                            label="Person"
+                            remote={remoteRoutes.contactsPeopleCombo}
+                            parser={comboParser}
+                            variant='outlined'
+                        />
+                    }
                 </Grid>
                 <Grid item xs={12}>
                     <XRemoteSelect

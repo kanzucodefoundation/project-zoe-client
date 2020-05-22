@@ -1,15 +1,15 @@
 import React, {useCallback, useEffect} from "react";
 import {search} from "../../utils/ajax";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import Autocomplete, {createFilterOptions} from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
 import {hasNoValue, hasValue, IOption} from "../inputs/inputHelpers";
 import {TextFieldProps} from "@material-ui/core/TextField/TextField";
-import {AutocompleteChangeDetails, AutocompleteChangeReason} from "@material-ui/lab/useAutocomplete/useAutocomplete";
 import {IXRemoteProps} from "../inputs/XRemoteSelect";
 
-export interface IProps extends IXRemoteProps {
+const filter = createFilterOptions<IOption>();
+
+export interface IPRemoteSelectProps extends IXRemoteProps {
     value?: any
     onChange?: (d: any) => any
     onBlur?: () => any
@@ -47,25 +47,29 @@ const addToCache = (filter: any, resp: any) => {
     dataCache[key] = resp
 }
 
+const filterOptions = (options: IOption[], params: any) => {
+    const filtered = filter(options, params) as IOption[];
+    // Suggest the creation of a new value
+    if (params.inputValue !== '') {
+        filtered.push({
+            id: params.inputValue,
+            name: `Add "${params.inputValue}"`,
+        });
+    }
+    return filtered;
+}
 
-export function PRemoteSelect(props: IProps) {
+export function PRemoteSelect(props: IPRemoteSelectProps) {
     const [loading, setLoading] = React.useState(false);
     const [options, setOptions] = React.useState<IOption[]>(props.defaultOptions || []);
     const [query, setQuery] = React.useState<string>('');
-
-
-    function handleInputChange(event: React.ChangeEvent<any>, value: string) {
-        if (!event)
-            return
-        fetch(value)
-    }
+    const [inputValue, setInputValue] = React.useState('');
 
     const fetch = useCallback((query: string) => {
         if (hasNoValue(props.remote)) {
             return
         }
         const newFilter = {...props.filter, query, limit: 50}
-
         const cached = isInCache(newFilter);
         if (cached) {
             setOptions(cached)
@@ -85,50 +89,46 @@ export function PRemoteSelect(props: IProps) {
     }, [props.parser, props.filter, props.remote]);
 
     useEffect(() => {
-        fetch(query)
-    }, [fetch, query])
-
-    function handleChange(
-        event: React.ChangeEvent<{}>,
-        value: IOption | null,
-        _: AutocompleteChangeReason,
-        __?: AutocompleteChangeDetails<any>,
-    ) {
-        console.log("On change>>>>>")
-        props.onChange && props.onChange(value)
-    }
+        if (!loading)
+            fetch(query)
+    }, [fetch, loading, query])
 
     const handleTouched = () => {
         props.onBlur && props.onBlur()
     }
 
-    const handleMouseEnter = () => {
-        if (hasNoValue(options)) {
-            fetch("")
-        }
-    }
+    const {
+        error,
+        helperText,
+        parser: i,
+        defaultOptions,
+        searchOnline,
+        margin = 'normal',
+        freeSolo,
+        ...autoProps
+    } = props
 
-    const {error, helperText, parser: i, defaultOptions, searchOnline,margin = 'normal', ...autoProps} = {...props}
-
-    const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setQuery(event.target.value);
-    };
 
     return (
         <Autocomplete
             {...autoProps}
-
-            getOptionLabel={labelParser}
-            filterOptions={x => x}
-            options={options}
-            onChange={handleChange}
-            autoComplete
-            includeInputInList
-            freeSolo
             value={props.value}
+            onChange={(_: any, newValue: IOption | null) => {
+                props.onChange && props.onChange(newValue)
+            }}
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue) => {
+                setInputValue(newInputValue);
+                if (props.searchOnline) {
+                    setQuery(newInputValue)
+                }
+            }}
+            getOptionLabel={labelParser}
+            filterOptions={props.searchOnline ? x => x : freeSolo ? filterOptions : undefined}
+            options={options}
+            autoComplete
+            freeSolo
             loading={loading}
-            onInputChange={handleInputChange}
-            onMouseEnter={handleMouseEnter}
             renderInput={params => {
                 return <TextField
                     {...params}
@@ -136,7 +136,6 @@ export function PRemoteSelect(props: IProps) {
                     margin={margin}
                     label={props.label}
                     fullWidth
-                    onChange={props.searchOnline ? handleQueryChange : undefined}
                     onBlur={handleTouched}
                     error={props.error}
                     helperText={props.helperText}

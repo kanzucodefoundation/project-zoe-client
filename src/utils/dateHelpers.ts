@@ -4,6 +4,24 @@ export const dateFormat = 'dd.MM.yyyy'
 export const dateTimeFormat = 'dd.MM.yyyy HH:mm'
 export const standardDateTimeFormat = 'dd-MM-yyyy HH:mm'
 export const standardDateFormat = 'dd-MM-yyyy'
+
+
+export const getMonthsList = () => {
+    const monthsList = []
+    for (let i = 1; i <= 12; i++) {
+        monthsList.push(`${i}`.padStart(2,'0'))
+    }
+    return monthsList
+}
+
+export const getDayList = () => {
+    const monthsList = []
+    for (let i = 1; i <= 31; i++) {
+        monthsList.push(`${i}`.padStart(2,'0'))
+    }
+    return monthsList
+}
+
 export const printDateTime = (value: any): string => {
     if (typeof value === 'string') {
         return printDateTime(strToDate(value))
@@ -16,7 +34,7 @@ export const printDateTime = (value: any): string => {
 
 export const isoDateString = (value: any): string => {
     if (typeof value === 'string') {
-        return strToDate(value)?.toISOString()||""
+        return strToDate(value)?.toISOString() || ""
     }
     if (isValid(value))
         return value?.toISOString()

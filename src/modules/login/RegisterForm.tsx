@@ -1,12 +1,11 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqDate, reqEmail, reqObject, reqString} from "../../data/validations";
+import {reqEmail, reqObject, reqString} from "../../data/validations";
 import {ageCategories, civilStatusCategories, genderCategories} from "../../data/comboCategories";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
-import XDateInput from "../../components/inputs/XDateInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
 
@@ -19,7 +18,7 @@ import XRadioInput from "../../components/inputs/XRadioInput";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
 
-import {isoDateString} from "../../utils/dateHelpers";
+import {getDayList, getMonthsList, isoDateString} from "../../utils/dateHelpers";
 import {ICreatePersonDto} from "../contacts/types";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
@@ -35,14 +34,15 @@ const schema = yup.object().shape(
         lastName: reqString,
         // middleName: reqString,
         gender: reqString,
-        dateOfBirth: reqDate,
+        birthDay: reqString,
+        birthMonth: reqString,
         civilStatus: reqString,
 
         ageGroup: reqString,
         placeOfWork: reqString,
         residence: reqString,
 
-        cellGroup: reqObject,
+        //cellGroup: reqObject,
         churchLocation: reqObject,
 
         email: reqEmail,
@@ -55,7 +55,8 @@ const initialValues = {
     firstName: '',
     middleName: '',
     lastName: '',
-    dateOfBirth: '',
+    birthDay: '',
+    birthMonth: '',
     gender: '',
     civilStatus: '',
     ageGroup: '',
@@ -68,58 +69,34 @@ const initialValues = {
 
 }
 
-const RightPadded = ({children,...props}: any) => <Grid item xs={12} lg={6}>
-    <Box pr={1} {...props}>
-        {children}
-    </Box>
-</Grid>
-
-const LeftPadded = ({children,...props}: any) => <Grid item xs={12} lg={6}>
-    <Box pl={1} {...props}>
-        {children}
-    </Box>
-</Grid>
-
 const RegisterForm = ({done}: IProps) => {
-    const dispatch = useDispatch();
-
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
-
         const toSave: ICreatePersonDto = {
             firstName: values.firstName,
             middleName: values.middleName,
             lastName: values.lastName,
-            dateOfBirth: isoDateString(values.dateOfBirth),
+            dateOfBirth: `1800-${values.birthMonth}-${values.birthDay}T00:00:00.000Z`,
             gender: values.gender,
             civilStatus: values.civilStatus,
-
             ageGroup: values.ageGroup,
             placeOfWork: values.placeOfWork,
             residence: values.residence,
-
             cellGroupId: values.cellGroup.id,
             churchLocationId: values.churchLocation.id,
-
             email: values.email,
-            phone: values.phone,
-
+            phone: values.phone
         }
 
         post(remoteRoutes.contactsPeople, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
-                dispatch({
-                    type: crmConstants.crmAddContact,
-                    payload: {...data},
-                })
                 if (done)
                     done()
             },
             undefined,
             () => {
                 actions.setSubmitting(false);
-
             }
         )
     }
@@ -130,9 +107,9 @@ const RegisterForm = ({done}: IProps) => {
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={initialValues}
+            debug
         >
             <Grid spacing={2} container>
-
                 <Grid item xs={12} >
                     <Box pt={2}>
                         <Typography variant='caption'>Basic Data</Typography>
@@ -185,17 +162,31 @@ const RegisterForm = ({done}: IProps) => {
                     </Box>
                 </Grid>
                 <Grid item xs={12} md={6} >
-                    <XDateInput
-                        name="dateOfBirth"
-                        label="Date of Birth"
-                        variant='outlined'
-                        margin='none'
-                    />
+                    <Box width='100%' display='flex'>
+                        <Box width='50%'>
+                            <XSelectInput
+                                name="birthMonth"
+                                label="Birth Month"
+                                options={toOptions(getMonthsList())}
+                                variant='outlined'
+                                margin='none'
+                            />
+                        </Box>
+                        <Box width='50%'>
+                            <XSelectInput
+                                name="birthDay"
+                                label="Birth Day"
+                                options={toOptions(getDayList())}
+                                variant='outlined'
+                                margin='none'
+                            />
+                        </Box>
+                    </Box>
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <XSelectInput
                         name="ageGroup"
-                        label="Age"
+                        label="Age Group"
                         options={toOptions(ageCategories)}
                         variant='outlined'
                         margin='none'
@@ -228,7 +219,6 @@ const RegisterForm = ({done}: IProps) => {
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <XRemoteSelect
-                        searchOnline={true}
                         remote={remoteRoutes.groupsCombo}
                         filter={{'categories[]': 'Location'}}
                         parser={({name, id}: any) => ({name: name, id: id})}
@@ -247,6 +237,7 @@ const RegisterForm = ({done}: IProps) => {
                         label="Missional Community"
                         variant='outlined'
                         margin='none'
+                        freeSolo
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>

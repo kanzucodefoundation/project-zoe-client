@@ -12,25 +12,27 @@ type ErrorCallback = (err: any, res: superagent.Response) => void;
 type EndCallback = (data?: any) => void;
 
 export const handleError = (err: any = {}, res: superagent.Response) => {
+    const authError = 22000987
+    const ajaxError = 22000987
     const defaultMessage = "Invalid request, please contact admin";
     if ((res && res.forbidden) || (res && res.unauthorized)) {
-        Toast.error("Authentication Error")
+        Toast.error("Authentication Error",authError)
     } else if (res && res.badRequest) {
         const {message, errors} = res.body
         let msg = message + '\n'
         if(hasValue(errors)){
             msg = errors[0]
         }
-        Toast.error(msg || defaultMessage)
+        Toast.error(msg || defaultMessage,ajaxError)
     } else if ((res && res.clientError) || (res && res.notAcceptable) || (res && res.error)) {
         const {message} = res.body || {}
-        Toast.error(message || defaultMessage)
+        Toast.error(message || defaultMessage,ajaxError)
     } else {
         const message = err.message || 'Unknown error, contact admin'
         const finalMessage = message.indexOf("offline") !== -1
             ? "Can't reach server, Check connectivity"
             : message
-        Toast.error(finalMessage)
+        Toast.error(finalMessage,ajaxError)
     }
 }
 
