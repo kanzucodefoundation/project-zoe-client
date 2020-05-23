@@ -132,7 +132,7 @@ export default function Register() {
                 <div className={classes.cardGrid}>
                     <div className={classes.titleContent}>
                         <Typography variant="h5" component="h2">
-                            Help us serve you better
+                            SUB Card
                         </Typography>
 
                         {
