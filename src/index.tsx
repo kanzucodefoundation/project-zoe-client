@@ -10,7 +10,6 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import theme from "./theme";
-import Toast from "./utils/Toast";
 
 ReactDOM.render(
     <Provider store={store}>

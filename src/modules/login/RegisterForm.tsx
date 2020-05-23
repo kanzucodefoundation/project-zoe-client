@@ -10,15 +10,13 @@ import XSelectInput from "../../components/inputs/XSelectInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
 
 import {remoteRoutes} from "../../data/constants";
-import {useDispatch} from 'react-redux'
-import {crmConstants} from "../../data/contacts/reducer";
 import {post} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import XRadioInput from "../../components/inputs/XRadioInput";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
 
-import {getDayList, getMonthsList, isoDateString} from "../../utils/dateHelpers";
+import {getDayList, getMonthsList} from "../../utils/dateHelpers";
 import {ICreatePersonDto} from "../contacts/types";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
@@ -107,156 +105,158 @@ const RegisterForm = ({done}: IProps) => {
             schema={schema}
             initialValues={initialValues}
         >
-            <Grid spacing={2} container>
-                <Grid item xs={12} >
-                    <Box pt={2}>
-                        <Typography variant='caption'>Basic DataXYX</Typography>
-                    </Box>
-                    <Divider/>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <XTextInput
-                        name="firstName"
-                        label="First Name"
-                        type="text"
-                        variant='outlined'
-                        margin='none'
-                    />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <XTextInput
-                        name="lastName"
-                        label="Last Name"
-                        type="text"
-                        variant='outlined'
-                        margin='none'
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="middleName"
-                        label="Other Names"
-                        type="text"
-                        variant='outlined'
-                        margin='none'
-                    />
-                </Grid>
-                <Grid item  xs={12} md={6}>
-                    <XSelectInput
-                        name="civilStatus"
-                        label="Civil Status"
-                        options={toOptions(civilStatusCategories)}
-                        variant='outlined'
-                        margin='none'
-                    />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Box pt={1} pl={1}>
-                        <XRadioInput
-                            name="gender"
-                            label=''
-                            options={toOptions(genderCategories)}
+            <div style={{padding: 8}}>
+                <Grid spacing={2} container className='min-width-100'>
+                    <Grid item xs={12}>
+                        <Box pt={2}>
+                            <Typography variant='caption'>Basic Data</Typography>
+                        </Box>
+                        <Divider/>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <XTextInput
+                            name="firstName"
+                            label="First Name"
+                            type="text"
+                            variant='outlined'
+                            margin='none'
                         />
-                    </Box>
-                </Grid>
-                <Grid item xs={12} md={6} >
-                    <Box width='100%' display='flex'>
-                        <Box width='50%'>
-                            <XSelectInput
-                                name="birthMonth"
-                                label="Birth Month"
-                                options={toOptions(getMonthsList())}
-                                variant='outlined'
-                                margin='none'
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <XTextInput
+                            name="lastName"
+                            label="Last Name"
+                            type="text"
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <XTextInput
+                            name="middleName"
+                            label="Other Names"
+                            type="text"
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <XSelectInput
+                            name="civilStatus"
+                            label="Civil Status"
+                            options={toOptions(civilStatusCategories)}
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Box pt={1} pl={1}>
+                            <XRadioInput
+                                name="gender"
+                                label=''
+                                options={toOptions(genderCategories)}
                             />
                         </Box>
-                        <Box width='50%'>
-                            <XSelectInput
-                                name="birthDay"
-                                label="Birth Day"
-                                options={toOptions(getDayList())}
-                                variant='outlined'
-                                margin='none'
-                            />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Box width='100%' display='flex'>
+                            <Box width='50%'>
+                                <XSelectInput
+                                    name="birthMonth"
+                                    label="Birth Month"
+                                    options={toOptions(getMonthsList())}
+                                    variant='outlined'
+                                    margin='none'
+                                />
+                            </Box>
+                            <Box width='50%'>
+                                <XSelectInput
+                                    name="birthDay"
+                                    label="Birth Day"
+                                    options={toOptions(getDayList())}
+                                    variant='outlined'
+                                    margin='none'
+                                />
+                            </Box>
                         </Box>
-                    </Box>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <XSelectInput
-                        name="ageGroup"
-                        label="Age Group"
-                        options={toOptions(ageCategories)}
-                        variant='outlined'
-                        margin='none'
-                    />
-                </Grid>
-                <Grid item xs={12} >
-                    <Box pt={2}>
-                        <Typography variant='caption'>Address details</Typography>
-                    </Box>
-                    <Divider/>
-                </Grid>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <XSelectInput
+                            name="ageGroup"
+                            label="Age Group"
+                            options={toOptions(ageCategories)}
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box pt={2}>
+                            <Typography variant='caption'>Address details</Typography>
+                        </Box>
+                        <Divider/>
+                    </Grid>
 
-                <Grid item xs={12} md={6}>
-                    <XTextInput
-                        name="phone"
-                        label="Phone"
-                        type="text"
-                        variant='outlined'
-                        margin='none'
-                    />
+                    <Grid item xs={12} md={6}>
+                        <XTextInput
+                            name="phone"
+                            label="Phone"
+                            type="text"
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <XTextInput
+                            name="email"
+                            label="Email"
+                            type="email"
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <XRemoteSelect
+                            remote={remoteRoutes.groupsCombo}
+                            filter={{'categories[]': 'Location'}}
+                            parser={({name, id}: any) => ({name: name, id: id})}
+                            name="churchLocation"
+                            label="Church Location"
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <XRemoteSelect
+                            remote={remoteRoutes.groupsCombo}
+                            filter={{'categories[]': 'MC'}}
+                            parser={({name, id}: any) => ({name: name, id: id})}
+                            name="cellGroup"
+                            label="Missional Community"
+                            variant='outlined'
+                            margin='none'
+                            freeSolo
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <XTextInput
+                            name="residence"
+                            label="Residence"
+                            type="text"
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <XTextInput
+                            name="placeOfWork"
+                            label="Place of work"
+                            type="text"
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} md={6}>
-                    <XTextInput
-                        name="email"
-                        label="Email"
-                        type="email"
-                        variant='outlined'
-                        margin='none'
-                    />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <XRemoteSelect
-                        remote={remoteRoutes.groupsCombo}
-                        filter={{'categories[]': 'Location'}}
-                        parser={({name, id}: any) => ({name: name, id: id})}
-                        name="churchLocation"
-                        label="Church Location"
-                        variant='outlined'
-                        margin='none'
-                    />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <XRemoteSelect
-                        remote={remoteRoutes.groupsCombo}
-                        filter={{'categories[]': 'MC'}}
-                        parser={({name, id}: any) => ({name: name, id: id})}
-                        name="cellGroup"
-                        label="Missional Community"
-                        variant='outlined'
-                        margin='none'
-                        freeSolo
-                    />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <XTextInput
-                        name="residence"
-                        label="Residence"
-                        type="text"
-                        variant='outlined'
-                        margin='none'
-                    />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <XTextInput
-                        name="placeOfWork"
-                        label="Place of work"
-                        type="text"
-                        variant='outlined'
-                        margin='none'
-                    />
-                </Grid>
-            </Grid>
+            </div>
         </XForm>
     );
 }

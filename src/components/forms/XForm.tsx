@@ -6,6 +6,7 @@ import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import {Alert} from "@material-ui/lab";
 import {hasValue} from "../inputs/inputHelpers";
+import {makeStyles} from "@material-ui/core/styles";
 
 interface IProps {
     schema?: any
@@ -17,10 +18,18 @@ interface IProps {
     children?: React.ReactNode
     initialValues?: any
 }
+const useStyles = makeStyles((theme) => ({
+    root: {
+        minWidth:350,
+        [theme.breakpoints.down('sm')]: {
+            minWidth:"100%",
+        }
+    }
+}));
 
 const XForm = (props: IProps) => {
     const [count, setCount] = useState<number>(0)
-
+    const classes = useStyles()
     function handleDelete() {
         if (count === 1) {
             setCount(0)
@@ -39,7 +48,7 @@ const XForm = (props: IProps) => {
 
     >{({submitForm, isSubmitting, values, errors, touched}) => (
         <Form>
-            <Grid container spacing={0} style={{minWidth: 350}}>
+            <Grid container spacing={0} className={classes.root}>
                 {
                     hasValue(errors) &&
                     <Grid item xs={12}>
@@ -49,7 +58,7 @@ const XForm = (props: IProps) => {
                     </Grid>
                 }
                 <Grid item xs={12}>
-                    <Box >
+                    <Box>
                         {props.children}
                     </Box>
                 </Grid>

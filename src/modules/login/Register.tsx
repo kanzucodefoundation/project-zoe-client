@@ -32,7 +32,9 @@ function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        color: 'white'
+        color: 'white',
+        width: '100%',
+        height: '100%',
     },
     icon: {
         marginRight: theme.spacing(2),
@@ -45,19 +47,35 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(4),
     },
     cardGrid: {
-        paddingTop: theme.spacing(8),
-        paddingBottom: theme.spacing(8),
+        color: 'black',
+        backgroundColor: theme.palette.background.paper,
+        borderRadius: 8,
+        marginTop: theme.spacing(8),
+        marginBottom: theme.spacing(8),
+        padding: theme.spacing(2),
+        width: 700,
+        maxWidth: '100%',
+        margin: '0 auto',
+        [theme.breakpoints.down('sm')]: {
+            marginTop: theme.spacing(2),
+            marginBottom: theme.spacing(2),
+            padding: theme.spacing(1),
+        },
     },
-    card: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
+
+    content: {
+        padding: theme.spacing(1),
+        paddingTop: 0,
+        [theme.breakpoints.down('sm')]: {
+            padding: 0,
+        },
     },
-    cardMedia: {
-        paddingTop: '56.25%', // 16:9
-    },
-    cardContent: {
-        flexGrow: 1,
+    titleContent: {
+        padding: theme.spacing(1),
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing(1),
+            paddingBottom:0
+        },
     },
     footer: {
         backgroundColor: theme.palette.background.paper,
@@ -110,39 +128,36 @@ export default function Register() {
                     </nav>
                 </Toolbar>
             </AppBar>
-            <main>
-                <Container className={classes.cardGrid} maxWidth="md">
-                    <Box display='flex' justifyContent='center'>
-                        <Card className={classes.card}>
-                            <CardContent className={classes.cardContent}>
-                                <Box p={3} pb={0}>
-                                    <Typography variant="h5" component="h2">
-                                        Help us serve you better
-                                    </Typography>
+            <Box px={2}>
+                <div className={classes.cardGrid}>
+                    <div className={classes.titleContent}>
+                        <Typography variant="h5" component="h2">
+                            Help us serve you better
+                        </Typography>
 
-                                    {
-                                        done &&
-                                        <Box pt={2}>
-                                            <Alert>We have received your data, Thank you</Alert>
-                                        </Box>
-                                    }
-                                </Box>
-                                <Box p={3} pt={2}>
-                                    <RegisterForm data={startData} done={handleDone}/>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </Box>
-                </Container>
-            </main>
+                        {
+                            done &&
+                            <Box pt={2}>
+                                <Alert>We have received your data, Thank you</Alert>
+                            </Box>
+                        }
+                    </div>
+                    <div className={classes.content}>
+                        <RegisterForm data={startData} done={handleDone}/>
+                    </div>
+                </div>
+            </Box>
+
             <footer className={classes.footer}>
                 <Typography variant="h6" align="center" gutterBottom color='primary'>
                     Worship Harvest is a Movement of
                     the Gospel, Discipleship and Mission.
                 </Typography>
                 <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-                    We exist to catalyze Spiritual, Social and Economic Renewal in our immediate communities and as a
-                    result, the world.
+                    <b>
+                        We exist to catalyze Spiritual, Social and Economic Renewal in our immediate communities and as a
+                        result, the world.
+                    </b>
                 </Typography>
                 <Copyright/>
             </footer>
