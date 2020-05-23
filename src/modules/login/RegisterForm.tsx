@@ -101,7 +101,6 @@ const RegisterForm = ({done}: IProps) => {
         )
     }
 
-
     return (
         <XForm
             onSubmit={handleSubmit}
@@ -111,7 +110,7 @@ const RegisterForm = ({done}: IProps) => {
             <Grid spacing={2} container>
                 <Grid item xs={12} >
                     <Box pt={2}>
-                        <Typography variant='caption'>Basic Data</Typography>
+                        <Typography variant='caption'>Basic DataXYX</Typography>
                     </Box>
                     <Divider/>
                 </Grid>

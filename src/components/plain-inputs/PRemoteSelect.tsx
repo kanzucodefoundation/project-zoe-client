@@ -89,9 +89,8 @@ export function PRemoteSelect(props: IPRemoteSelectProps) {
     }, [props.parser, props.filter, props.remote]);
 
     useEffect(() => {
-        if (!loading)
-            fetch(query)
-    }, [fetch, loading, query])
+        fetch(query)
+    }, [fetch, query])
 
     const handleTouched = () => {
         props.onBlur && props.onBlur()

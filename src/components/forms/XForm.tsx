@@ -44,7 +44,7 @@ const XForm = (props: IProps) => {
                     hasValue(errors) &&
                     <Grid item xs={12}>
                         <Box display='flex' justifyContent='center'>
-                            <Alert severity="warning">Please provide all required fields(s)</Alert>
+                            <Alert severity="warning">Please provide all required fields.</Alert>
                         </Box>
                     </Grid>
                 }

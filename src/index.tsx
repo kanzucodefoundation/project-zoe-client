@@ -10,6 +10,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import theme from "./theme";
+import Toast from "./utils/Toast";
 
 ReactDOM.render(
     <Provider store={store}>
@@ -21,4 +22,11 @@ ReactDOM.render(
         </ThemeProvider>
     </Provider>, document.getElementById('root'));
 
-serviceWorker.register();
+serviceWorker.register({
+    onUpdate: registration => {
+        if (window.confirm("New content available, update now?")) {
+            window.location.reload()
+            registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
+        }
+    }
+});

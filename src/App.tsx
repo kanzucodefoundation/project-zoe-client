@@ -1,15 +1,15 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import {HashRouter as Router, Route, Switch} from 'react-router-dom'
 import {ToastContainer} from "react-toastify";
-import ContentSwitch from "./modules/ContentSwitch";
 import Login from "./modules/login/Login";
 import Splash from "./modules/login/Splash";
 import {useSelector} from 'react-redux'
 import LoaderDialog from "./components/LoaderDialog";
 import {localRoutes} from "./data/constants";
-import Dashboard from "./modules/dashboard/Dashboard";
 import Register from "./modules/login/Register";
+import Loading from "./components/Loading";
 
+const ContentSwitch = React.lazy(() => import("./modules/ContentSwitch"));
 const App: React.FC = () => {
     const coreState: any = useSelector((state: any) => state.core)
     const {isLoadingUser, user, globalLoader} = coreState
@@ -21,7 +21,10 @@ const App: React.FC = () => {
             <>
                 <LoaderDialog open={globalLoader}/>
                 {user ?
-                    <ContentSwitch/> :
+                    <Suspense fallback={<Loading/>}>
+                        <ContentSwitch/>
+                    </Suspense>
+                    :
                     <Switch>
                         <Route path={localRoutes.login} component={Login}/>
                         <Route component={Register}/>

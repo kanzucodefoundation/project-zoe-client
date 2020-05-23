@@ -86,6 +86,9 @@ const UserEditor = ({data, isNew, done, onDeleted, onCancel}: IProps) => {
                         <XRemoteSelect
                             name="contact"
                             label="Person"
+                            filter={{
+                                skipUsers: true
+                            }}
                             remote={remoteRoutes.contactsPeopleCombo}
                             parser={comboParser}
                             variant='outlined'
