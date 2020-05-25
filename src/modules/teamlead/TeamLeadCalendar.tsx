@@ -26,6 +26,7 @@ import { owners } from '../../data/teamlead/tasks';
 import Layout from "../../components/layout/Layout";
 import {remoteRoutes} from "../../data/constants";
 import AssignTask from './AssignTask'
+// import Calendar from './AppointmentForm'
 
 
 import {Fragment, useEffect, useState} from "react";
@@ -35,7 +36,7 @@ import Fab from "@material-ui/core/Fab";
 
 const resources = [{
   fieldName: 'ownerId',
-  title: 'Owners',
+  title: 'Volunteers',
   instances: owners,
 }];
 
@@ -199,18 +200,6 @@ interface IProp {
 
 }
 
-const WeatherIcon = ({ classes, id }: IProp) => {
-  switch (id) {
-    case 0:
-      return <Opacity className={classes.rain} fontSize="large" />;
-    case 1:
-      return <WbSunny className={classes.sun} fontSize="large" />;
-    case 2:
-      return <FilterDrama className={classes.cloud} fontSize="large" />;
-    default:
-      return null;
-  }
-};
 
 interface IProps {
   classes: any;
@@ -218,11 +207,6 @@ interface IProps {
   formatDate: any;
   otherMonth: any;
  
-}
-
-
-interface Teamappointment {
-  appointments: [];
 }
 
 
@@ -260,26 +244,18 @@ const CellBase = React.memo(({
       tabIndex={0}
       className={classNames({
         [classes.cell]: true,
-        [classes.rainBack]: iconId === 0,
-        [classes.sunBack]: iconId === 1,
-        [classes.cloudBack]: iconId === 2,
         [classes.opacity]: otherMonth,
       })}
-      onClick={() => {return(<AppointmentForm/>)}}
+    
     >
-      <div className={classes.content}>
-        <WeatherIcon classes={classes} id={iconId} />
-      </div>
-      <div className={classes.text}>
+      <div className={classes.text} onClick={handleNew}>
         {formatDate(startDate, formatOptions)}
       </div>
       
       <EditDialog title={createTitle} open={createDialog} onClose={closeCreateDialog}>
                 {createComponent}
                 </EditDialog>
-                <Fab aria-label='add-new' className={classes.fab} color='primary' onClick={handleNew}>
-                        <AddIcon/>
-                    </Fab>
+              
     </TableCell>
     
   );
@@ -323,7 +299,7 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
 
   async componentDidMount() {
   
-    const res = await fetch(remoteRoutes.teamlead);
+    const res = await fetch(remoteRoutes.day);
     const json = await res.json();
     console.log(json);
    
@@ -334,11 +310,12 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
   const appoints: any = [];
   json.map((item: any, index: any)=>{
     appoints.push({
-      id:item["id"],
-      title:item["taskname"],
-      startDate:new Date(item["startdate"]),
-      endDate:new Date(item["enddate"]),
-      ownerId:3
+      ownerId:item["id"],
+      title:item["taskId"],
+      startDate:new Date(item["start_date"]),
+      endDate:new Date(item["end_date"]),
+     
+      
     })
     return ""
   });

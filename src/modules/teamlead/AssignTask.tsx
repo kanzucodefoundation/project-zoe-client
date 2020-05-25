@@ -1,23 +1,23 @@
 import React from 'react';
 import * as yup from "yup";
 import {reqDate, reqObject, reqString} from "../../data/validations";
-import {ministryCategories} from "../../data/comboCategories";
+// import {ministryCategories} from "../../data/comboCategories";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
-import XDateInput from "../../components/inputs/XDateInput";
+import XDateInput from "../../components/inputs/XTimeInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
 
 import {remoteRoutes} from "../../data/constants";
 import {useDispatch} from 'react-redux';
 import {servicesConstants} from "../../data/teamlead/reducer";
-import {post} from "../../utils/ajax";
+import {post, put} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
-import {ICreateTeamleadDto} from "./types";
+import {ICreateDayDto} from "./types";
 import {isoDateString} from "../../utils/dateHelpers";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Header from "./Header";
@@ -31,23 +31,23 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
+import {enumToArray} from "../../utils/stringHelpers";
 
-
-
-
+import {ministryCategories} from "../../data/comboCategories";
 
 interface IProps {
     data: any | null
     done?: () => any
+   
 }
 
 const schema = yup.object().shape(
   {
-      taskname: reqString,
-      startdate: reqDate,
-      enddate: reqDate,
-      taskinfo: reqString,
-      volunteers: reqString,
+      taskId: reqString,
+      start_date: reqDate,
+      end_date: reqDate,
+      task_info: reqString,
+      assigned_to: reqObject,
       
      
   }
@@ -55,11 +55,11 @@ const schema = yup.object().shape(
 
 const initialValues = {
 
-  taskname: '',
-  startdate: '',
-  enddate: '',
-  taskinfo: '',
-  volunteers: '',
+  taskId: '',
+  start_date: '',
+  end_date: '',
+  task_info: '',
+  assigned_to: null,
   
 }
 
@@ -98,29 +98,28 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const AssignTask = ({done}: IProps) => {
+const AssignTask = ({ done}: IProps) => {
     const dispatch = useDispatch();
     const classes = useStyles();
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
 
-        const toSave: ICreateTeamleadDto = {
-
-      taskname: values.taskname,
-      startdate: values.startdate,
-      enddate: values.enddate,
-      taskinfo: values.taskinfo,
-      volunteers: values.volunteers,
+        const toSave: ICreateDayDto = {
+      taskId: values.taskId,
+      start_date: values.start_date,
+      end_date: values.end_date,
+      task_info: values.task_info,
+      assigned_to: values.assigned_to.value,
      
 
         }
 
-        post(remoteRoutes.teamlead, toSave,
+        post(remoteRoutes.day, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
                 dispatch({
-                    type: servicesConstants.servicesAddTeamlead,
+                    type: servicesConstants.servicesAddDay,
                     payload: {...data},
                 })
                 if (done)
@@ -133,6 +132,19 @@ const AssignTask = ({done}: IProps) => {
             }
         )
     }
+
+
+
+
+
+    // enum TeamPrivacy {
+    //     Sweeping = "sweeping",
+    //     Mopping = "mopping",
+    //     Coaching = "coaching",
+    //     Arranging = "Arranging church",
+
+    // }
+    
 
 
     return (
@@ -148,30 +160,39 @@ const AssignTask = ({done}: IProps) => {
                 >
                     <Grid spacing={0} container>
                         <Grid item xs={12}>
-                        <XTextInput
-                                name="taskname"
+                        <XSelectInput
+                                name="taskId"
                                 label="Task Name"
-                                type="text"
+                                // options={toOptions(enumToArray(TeamPrivacy))}
+                                options={toOptions(ministryCategories)}
                                 variant='outlined'
                             />
+                            {/* <XRemoteSelect
+                            remote={remoteRoutes.tasks}
+                            filter={{'taskName[]': ''}}
+                            parser={({taskName, id}: any) => ({label: taskName, value: id})}
+                            name="taskId"
+                            label="Task Name"
+                            variant='outlined'
+                            /> */}
                         </Grid>
                         <RightPadded>
                         <XDateInput
-                                name="startdate"
+                                name="start_date"
                                 label="Start Date"
-                                variant='outlined'
+                                
                             />
                         </RightPadded>
                         <LeftPadded>
                         <XDateInput
-                                name="enddate"
+                                name="end_date"
                                 label="End Date"
-                                variant='outlined'
+                                
                             />
                         </LeftPadded>
                         <Grid item xs={12}>
                         <XTextInput
-                                name="taskinfo"
+                                name="task_info"
                                 label="Task Details"
                                 type="text"
                                 variant='outlined'
@@ -179,11 +200,13 @@ const AssignTask = ({done}: IProps) => {
                         </Grid>
                         
                         <Grid item xs={12}>
-                            <XTextInput
-                                name="volunteers"
-                                label="Volunteers"
-                                type="text"
-                                variant='outlined'
+                            <XRemoteSelect
+                            remote={remoteRoutes.contactsPerson}
+                            filter={{'firstName[]': ''}}
+                            parser={({firstName, id}: any) => ({label: firstName, value: id})}
+                            name="assigned_to"
+                            label="Volunteers"
+                            variant='outlined'
                             />
            
                         </Grid>

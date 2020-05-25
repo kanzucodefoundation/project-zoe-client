@@ -1,8 +1,8 @@
-export interface ICreateTeamleadDto {
-    taskname: string;
-    startdate: Date;
-    enddate: Date;
-    taskinfo: string;
-    volunteers: string;
+export interface ICreateDayDto {
+    taskId: string;
+    start_date: Date;
+    end_date: Date;
+    task_info: string;
+    assigned_to: string;
 
 }
