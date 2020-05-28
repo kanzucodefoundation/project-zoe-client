@@ -81,12 +81,12 @@ const routes = [
         icon: EmojiPeopleIcon,
         items: [
             {
-                name: "View volunteers",
-                route: localRoutes.viewVolunteers
-            },
-            {
                 name: "Add volunteers",
                 route: localRoutes.addVolunteers
+            },
+            {
+                name: "View volunteers",
+                route: localRoutes.viewVolunteers
             }
         ]
     },
