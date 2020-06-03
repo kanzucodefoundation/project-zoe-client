@@ -32,3 +32,7 @@ export const ministryCategories = [
   "Media",
   "Kids" 
 ];
+export const statusCategories = [
+  "Active",
+  "Deactivated",
+];

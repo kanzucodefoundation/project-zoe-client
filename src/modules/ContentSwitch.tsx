@@ -13,11 +13,6 @@ import Users from "./admin/users/Users";
 import UserGroups from "./admin/usergroups/UserGroups";
 import ViewTasks from "./tasks/ViewTasks";
 import AddTasks from "./tasks/AddTasks";
-//import teamleadcalendar from "./teamlead/TeamLeadCalendar";
-import assignedtasks from "./teamlead/AssignedTasks";
-import assigntask from "./teamlead/AssignTask";
-//import volcalendar from "./volcalendar/VolCalendar"
-
 const ContentSwitch = () => {
     return (
       <Switch>
@@ -39,8 +34,6 @@ const ContentSwitch = () => {
         <Route path={localRoutes.volviewteam} component={VolViewTeam}/> */}
         <Route path={localRoutes.addTasks} component={AddTasks} />
         <Route path={localRoutes.viewTasks} component={ViewTasks} />
-        <Route path={localRoutes.assignedtasks} component={assignedtasks}/>
-        <Route path={localRoutes.assigntask} component={assigntask}/>
         <Route component={NoMatch}/>
       </Switch>
     )
