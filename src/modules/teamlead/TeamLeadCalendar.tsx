@@ -299,7 +299,7 @@ export default class TeamLeadCalendar extends React.PureComponent<{},any> {
 
   async componentDidMount() {
   
-    const res = await fetch(remoteRoutes.day);
+    const res = await fetch(remoteRoutes.appointments);
     const json = await res.json();
     console.log(json);
    

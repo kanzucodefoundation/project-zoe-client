@@ -114,7 +114,7 @@ const AssignTask = ({ done}: IProps) => {
 
         }
 
-        post(remoteRoutes.day, toSave,
+        post(remoteRoutes.appointments, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()

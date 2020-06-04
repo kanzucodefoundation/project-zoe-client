@@ -62,7 +62,7 @@ const AssignedTasks = ({done}: IProps) => {
 
     React.useEffect(() => {
         async function fetchTeamlead() {
-            const res = await fetch(remoteRoutes.day);
+            const res = await fetch(remoteRoutes.appointments);
             const json = await res.json();
             console.log(json);
             setData({
