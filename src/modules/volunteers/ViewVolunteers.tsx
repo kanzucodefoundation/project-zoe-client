@@ -17,7 +17,6 @@ interface Row {
     firstName: string;
     lastName: string;
     ministry: string;
-    profession: string;
 }
   
 interface TableState {
@@ -52,7 +51,6 @@ const ListOfVolunteers = ({done}: IProps) => {
           { title: 'First name', field: 'firstName' },
           { title: 'Last name', field: 'lastName' },
           { title: 'Ministry', field: 'ministry' },
-          { title: 'Profession', field: 'profession' },
         ],
         data: [
         ],
