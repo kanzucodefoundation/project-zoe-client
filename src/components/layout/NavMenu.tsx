@@ -90,15 +90,29 @@ const routes = [
             }
         ]
     },
-    // End of Team Lead's menu items
-
-    
-        
+    {
+        name: "Teamlead",
+        icon: AssignmentIcon,
+        items: [
+            {
+                name: "Teamlead Calendar",
+                route: localRoutes.teamleadcalendar
+            },
+            {
+                name: "View Assigned Tasks",
+                route: localRoutes.assignedtasks
+            }
+        ]
+    },
     {
         name: "Volunteer Calendar",
         route: localRoutes.volcalendar,
         icon: EventNoteIcon
     },
+
+    
+        
+    
     {
         name: "Help",
         route: localRoutes.help,
