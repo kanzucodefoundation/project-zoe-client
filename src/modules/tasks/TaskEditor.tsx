@@ -9,6 +9,7 @@ import XSelectInput from "../../components/inputs/XSelectInput";
 import { toOptions } from "../../components/inputs/inputHelpers";
 import { remoteRoutes } from "../../data/constants";
 import { ministryCategories } from "../../data/comboCategories";
+import { statusCategories } from "../../data/comboCategories";
 import { handleSubmission, ISubmission } from "../../utils/formHelpers";
 import { IOption } from "../../components/inputs/inputHelpers";
 import { useDispatch } from "react-redux";
@@ -25,7 +26,8 @@ const schema = yup.object().shape(
     {
         ministry: reqString,
         taskName: reqString,
-        taskDescription: reqString
+        taskDescription: reqString,
+        status: reqString
     }
 )
 
@@ -33,7 +35,8 @@ const schemaNew = yup.object().shape(
     {
         ministry: reqString,
         taskName: reqString,
-        taskDescription: reqString  
+        taskDescription: reqString,  
+        status: reqString
     }
 )
 
@@ -45,6 +48,7 @@ const TaskEditor = ({ data, isNew, done }: IProps) => {
             ministry: values.ministry,
             taskName: values.taskName,
             taskDescription: values.taskDescription,
+            status: values.status,
         }
     post(
         remoteRoutes.tasks,
@@ -93,6 +97,14 @@ const TaskEditor = ({ data, isNew, done }: IProps) => {
                         label="taskDescription"
                         type="text"
                         variant='outlined'
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <XSelectInput
+                        name="status"
+                        label="Status"
+                        options={toOptions(statusCategories)}
+                        variant="outlined"
                     />
                 </Grid>
             </Grid>
