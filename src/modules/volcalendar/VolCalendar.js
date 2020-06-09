@@ -77,7 +77,7 @@ export default class Volunteer extends React.PureComponent {
         super(props);
         this.state = {
             data: [],
-            mainResourceName: 'appointments',
+            mainResourceName: 'Volunteers',
             resources: [{
                     fieldName: 'priority',
                     title: 'Priority',

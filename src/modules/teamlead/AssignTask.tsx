@@ -17,7 +17,7 @@ import {post, put} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
-import {ICreateDayDto} from "./types";
+import {ICreateDayDto, ISaveToATT} from "./types";
 import {isoDateString} from "../../utils/dateHelpers";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Header from "./Header";
@@ -44,10 +44,10 @@ interface IProps {
 const schema = yup.object().shape(
   {
       taskId: reqString,
-      start_date: reqDate,
-      end_date: reqDate,
-      task_info: reqString,
-      assigned_to: reqObject,
+      startDate: reqDate,
+      endDate: reqDate,
+      taskInfo: reqString,
+      userId: reqObject,
       
      
   }
@@ -56,10 +56,10 @@ const schema = yup.object().shape(
 const initialValues = {
 
   taskId: '',
-  start_date: '',
-  end_date: '',
-  task_info: '',
-  assigned_to: null,
+  startDate: '',
+  endDate: '',
+  taskInfo: '',
+  userId: null,
   
 }
 
@@ -104,14 +104,17 @@ const AssignTask = ({ done}: IProps) => {
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
 
-        const toSave: ICreateDayDto = {
-      taskId: values.taskId,
-      start_date: values.start_date,
-      end_date: values.end_date,
-      task_info: values.task_info,
-      assigned_to: values.assigned_to.value,
-     
+        const toSave: ICreateDayDto = {      
+          startDate: values.startDate,
+          endDate: values.endDate,
+          taskInfo: values.taskInfo,
+          userId: values.userId
 
+          }
+
+        const toSaveAppointmentTaskTable: ISaveToATT = {
+            appointmentId: 80,
+            taskId: values.taskId,
         }
 
         post(remoteRoutes.appointments, toSave,
@@ -131,6 +134,26 @@ const AssignTask = ({ done}: IProps) => {
 
             }
         )
+
+         post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
+            (data) => {
+                Toast.info('Operation successful')
+                actions.resetForm()
+                dispatch({
+                    type: servicesConstants.servicesAddDay,
+                    payload: {...data},
+                })
+                if (done)
+                    done()
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
+
+            }
+        )
+
+
     }
 
 
@@ -178,21 +201,21 @@ const AssignTask = ({ done}: IProps) => {
                         </Grid>
                         <RightPadded>
                         <XDateInput
-                                name="start_date"
+                                name="startDate"
                                 label="Start Date"
                                 
                             />
                         </RightPadded>
                         <LeftPadded>
                         <XDateInput
-                                name="end_date"
+                                name="endDate"
                                 label="End Date"
                                 
                             />
                         </LeftPadded>
                         <Grid item xs={12}>
                         <XTextInput
-                                name="task_info"
+                                name="taskInfo"
                                 label="Task Details"
                                 type="text"
                                 variant='outlined'
@@ -204,7 +227,7 @@ const AssignTask = ({ done}: IProps) => {
                             remote={remoteRoutes.contactsPerson}
                             filter={{'firstName[]': ''}}
                             parser={({firstName, id}: any) => ({label: firstName, value: id})}
-                            name="assigned_to"
+                            name="userId"
                             label="Volunteers"
                             variant='outlined'
                             />

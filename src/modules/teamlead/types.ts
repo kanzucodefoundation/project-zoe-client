@@ -1,8 +1,14 @@
-export interface ICreateDayDto {
-    taskId: string;
-    start_date: Date;
-    end_date: Date;
-    task_info: string;
-    assigned_to: string;
+export interface ICreateDayDto {    
+    startDate: Date;
+    endDate: Date;
+    taskInfo: string;
+    userId: number;
 
 }
+
+export interface ISaveToATT {
+    appointmentId: number;
+    taskId: number;
+
+}
+
