@@ -29,7 +29,6 @@ export const localRoutes = {
   contacts: "/people/contacts",
   contactsDetails: "/people/contacts/:contactId",
   groups: "/people/groups",
-
   users: "/admin/users",
   usersGroups: "/admin/user-groups",
   tags: "/admin/tags",
@@ -41,12 +40,10 @@ export const localRoutes = {
   teamleadcalendar: '/teamleadcalendar',
   assignedtasks: '/assignedtasks',
   assigntask: '/assigntask',
-   // For Team Lead
   viewVolunteers: "/volunteers/view-volunteers",
   addVolunteers: "/volunteers/add-volunteers",
   addTasks: "/tasks/add-tasks",
   viewTasks:"/tasks/view-tasks",
-
   help: "/help", 
 };
 
@@ -74,16 +71,14 @@ export const remoteRoutes = {
   contactsAddress: url + "/api/crm/addresses",
   contactsIdentification: url + "/api/crm/identifications",
   contactsRequests: url + "/api/crm/requests",
-
   groups: url + "/api/groups/groups",
   groupsCombo: url + "/api/groups/combo",
   groupsCategories: url + "/api/groups/categories",
-
   contactsCompany: url + "/api/crm/contact/company",
   contactsAvatar: url + "/api/crm/contact/avatar",
-
   volunteers: url + "/api/services/volunteers",
   appointments: url + "/api/appointment/appointments",
+  assignedTasks: url + "/api/appointment/appointments/assignedTasks",
   appointmentTask: url + "/api/appointment-task",
   userTask: url + "/api/user-task",
   tasks: url + "/api/tasks",
