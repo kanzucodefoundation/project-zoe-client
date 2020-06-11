@@ -7,6 +7,7 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Header from "./Header";
 
 import MaterialTable, { Column } from 'material-table';
+import Toast from '../../utils/Toast';
 
 interface IProps {
     data: any | null
@@ -16,7 +17,7 @@ interface IProps {
 interface Row {
     firstName: string;
     lastName: string;
-    ministry: string;
+    ministry: [];
 }
   
 interface TableState {
@@ -58,12 +59,23 @@ const ListOfVolunteers = ({done}: IProps) => {
 
     React.useEffect(() => {
         async function fetchVolunteers() {
-            const res = await fetch(remoteRoutes.volunteers);
-            const json = await res.json();
-            setData({
-                ...state,
-                data:json
-            })
+            const res = await fetch(remoteRoutes.contactsPersonVolunteer);
+            if (res.status >= 200 && res.status <= 299) {
+                const json = await res.json();
+                setData({
+                    ...state,
+                    data:json.map((volunteer: any) => {
+                        return {
+                            firstName: volunteer.firstName,
+                            lastName: volunteer.lastName,
+                            ministry: volunteer.group.map((ministryName: any) => { return ministryName.name }).join(", "),
+                        }
+                    })
+                })
+            } else {
+                Toast.error('Unable to retrieve the list of volunteers.')
+                console.log(res.status, res.statusText);
+            }
         }
         fetchVolunteers();
     }, []);

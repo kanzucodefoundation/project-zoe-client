@@ -14,7 +14,7 @@ interface IProps {
     multiple?: any;
     size?: 'medium' | 'small'
 }
-type AutoProps = Omit<Partial<AutocompleteProps<any>>, 'variant'|'multiple'|'renderInput'>;
+type AutoProps = Omit<Partial<AutocompleteProps<any, true, true, true>>, 'variant'|'multiple'|'renderInput'>;
 const XComboInput = (props: IProps & AutoProps) => {
     const [field, meta, helpers] = useField({name: props.name});
     const error = hasValue(meta.error) ? meta.error : undefined

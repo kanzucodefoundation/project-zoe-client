@@ -155,6 +155,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
             ...appointmentChanges,
         };
 
+
         const isNewAppointment = appointmentData.id === undefined;
         const applyChanges = isNewAppointment
             ? () => this.commitAppointment('added')
@@ -229,6 +230,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
         );
     }
 }
+
 
 const AppointmentFormContainer = withStyles(containerStyles, { name: 'AppointmentFormContainer' })(AppointmentFormContainerBasic);
 
@@ -334,6 +336,7 @@ class TeamLeadCalendar extends React.PureComponent {
         this.appointmentForm.update();
     }
 
+
     onEditingAppointmentChange(editingAppointment: any) {
         this.setState({ editingAppointment });
     }
@@ -370,6 +373,9 @@ class TeamLeadCalendar extends React.PureComponent {
             const { data, deletedAppointmentId }: any = state;
             const nextData = data.filter((appointment: { id: any; }) => appointment.id !== deletedAppointmentId);
 
+
+
+    
             return { data: nextData, deletedAppointmentId: null };
         });
         this.toggleConfirmationVisible();
@@ -485,4 +491,6 @@ class TeamLeadCalendar extends React.PureComponent {
     }
 }
 
+
 export default withStyles(styles, { name: 'EditingDemo' })(TeamLeadCalendar);
+
