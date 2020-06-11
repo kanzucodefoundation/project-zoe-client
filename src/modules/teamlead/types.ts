@@ -2,7 +2,7 @@ export interface ICreateDayDto {
     startDate: Date;
     endDate: Date;
     taskInfo: string;
-    userId: number;
+    
 
 }
 
@@ -12,3 +12,8 @@ export interface ISaveToATT {
 
 }
 
+export interface ISaveToUTT {
+    appointmentTaskId: number;
+    userId: number;
+
+}

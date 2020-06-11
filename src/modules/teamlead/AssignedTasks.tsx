@@ -14,11 +14,11 @@ interface IProps {
 }
 
 interface Row {
-    taskId: string;
-    start_date: Date;
-    end_date: Date;
-    task_info: string;
-    assigned_to: string;
+    taskId: number;
+    startDate: Date;
+    endDate: Date;
+    taskInfo: string;
+    userId: number;
 }
 
 interface TableState {
@@ -51,10 +51,10 @@ const AssignedTasks = ({ done }: IProps) => {
     const [state, setData] = React.useState<TableState>({
         columns: [
             { title: 'Task Nmae', field: 'taskId' },
-            { title: 'Start Date', field: 'start_date' },
-            { title: 'End Date', field: 'end_date' },
-            { title: 'Task Details', field: 'task_info' },
-            { title: 'Volunteers', field: 'assigned_to' },
+            { title: 'Start Date', field: 'startDate' },
+            { title: 'End Date', field: 'endDate' },
+            { title: 'Task Details', field: 'taskInfo' },
+            { title: 'Volunteers', field: 'userId' },
         ],
         data: [
         ],

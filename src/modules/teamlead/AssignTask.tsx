@@ -1,27 +1,25 @@
 import React from 'react';
 import * as yup from "yup";
-import { reqDate, reqObject, reqString } from "../../data/validations";
+import {reqDate, reqObject, reqString} from "../../data/validations";
 // import {ministryCategories} from "../../data/comboCategories";
-import { FormikHelpers } from "formik";
+import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
 import XDateInput from "../../components/inputs/XTimeInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
-import { toOptions } from "../../components/inputs/inputHelpers";
+import {toOptions} from "../../components/inputs/inputHelpers";
 
-import { remoteRoutes } from "../../data/constants";
-import { useDispatch } from 'react-redux';
-import { servicesConstants } from "../../data/teamlead/reducer";
-import { post, put } from "../../utils/ajax";
+import {remoteRoutes} from "../../data/constants";
+import {useDispatch} from 'react-redux';
+import {servicesConstants} from "../../data/teamlead/reducer";
+import {post, put} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
-
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
-import {ICreateDayDto, ISaveToATT} from "./types";
+import {ICreateDayDto, ISaveToATT, ISaveToUTT} from "./types";
 import {isoDateString} from "../../utils/dateHelpers";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
-
 import Header from "./Header";
 import { owners } from '../../data/teamlead/tasks';
 
@@ -33,20 +31,19 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
-import { enumToArray } from "../../utils/stringHelpers";
+import {enumToArray} from "../../utils/stringHelpers";
 
-import { ministryCategories } from "../../data/comboCategories";
+import {ministryCategories} from "../../data/comboCategories";
 
 interface IProps {
     data: any | null
     done?: () => any
-
+   
 }
 
 const schema = yup.object().shape(
-
   {
-      taskId: reqString,
+      taskId: reqObject,
       startDate: reqDate,
       endDate: reqDate,
       taskInfo: reqString,
@@ -54,11 +51,9 @@ const schema = yup.object().shape(
       
      
   }
-
 )
 
 const initialValues = {
-
 
   taskId: '',
   startDate: '',
@@ -66,17 +61,15 @@ const initialValues = {
   taskInfo: '',
   userId: null,
   
-
-
 }
 
-const RightPadded = ({ children, ...props }: any) => <Grid item xs={6}>
+const RightPadded = ({children,...props}: any) => <Grid item xs={6}>
     <Box pr={1} {...props}>
         {children}
     </Box>
 </Grid>
 
-const LeftPadded = ({ children, ...props }: any) => <Grid item xs={6}>
+const LeftPadded = ({children,...props}: any) => <Grid item xs={6}>
     <Box pl={1} {...props}>
         {children}
     </Box>
@@ -89,7 +82,7 @@ const useStyles = makeStyles((theme: Theme) =>
             margin: theme.spacing(1),
             minWidth: 120,
             maxWidth: 300,
-        },
+          },
         root: {
             flexGrow: 1,
         },
@@ -105,37 +98,20 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const AssignTask = ({ done }: IProps) => {
+const AssignTask = ({ done}: IProps) => {
     const dispatch = useDispatch();
     const classes = useStyles();
-
-    function handleSubmit(values: any, actions: FormikHelpers<any>) {
-
-
-        const toSave: ICreateDayDto = {      
-          startDate: values.startDate,
-          endDate: values.endDate,
-          taskInfo: values.taskInfo,
-          userId: values.userId
-
-          }
-
-
+    
+     function appointmentTasks(values: any, actions: any, id:any){
         const toSaveAppointmentTaskTable: ISaveToATT = {
-            appointmentId: 80,
-            taskId: values.taskId,
+            appointmentId: id,
+            taskId: values.taskId.value,
         }
 
-        post(remoteRoutes.appointments, toSave,
+        post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
             (data) => {
-                Toast.info('Operation successful')
-                actions.resetForm()
-                dispatch({
-                    type: servicesConstants.servicesAddDay,
-                    payload: { ...data },
-                })
-                if (done)
-                    done()
+
+                userTask(values, actions, data.id)
             },
             undefined,
             () => {
@@ -143,8 +119,15 @@ const AssignTask = ({ done }: IProps) => {
 
             }
         )
+     }
 
-         post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
+     function userTask(values:any, actions:any, id:any){
+        const toSaveUserTaskTable: ISaveToUTT = {
+            appointmentTaskId: id,
+            userId: values.userId.value,
+        }
+
+        post(remoteRoutes.userTask, toSaveUserTaskTable,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
@@ -162,6 +145,33 @@ const AssignTask = ({ done }: IProps) => {
             }
         )
 
+     }
+
+    function handleSubmit(values: any, actions: FormikHelpers<any>) {
+
+        const toSave: ICreateDayDto = {      
+          startDate: values.startDate,
+          endDate: values.endDate,
+          taskInfo: values.taskInfo,
+
+          }
+        post(remoteRoutes.appointments, toSave,
+            (data) => {
+                     console.log(data, data.id)
+                appointmentTasks(values, actions, data.id);
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
+
+            }
+
+        )
+
+
+        
+
+
 
     }
 
@@ -176,7 +186,7 @@ const AssignTask = ({ done }: IProps) => {
     //     Arranging = "Arranging church",
 
     // }
-
+    
 
 
     return (
@@ -192,73 +202,65 @@ const AssignTask = ({ done }: IProps) => {
                 >
                     <Grid spacing={0} container>
                         <Grid item xs={12}>
-                            <XSelectInput
+                        {/* <XSelectInput
                                 name="taskId"
                                 label="Task Name"
                                 // options={toOptions(enumToArray(TeamPrivacy))}
                                 options={toOptions(ministryCategories)}
                                 variant='outlined'
-                            />
-                            {/* <XRemoteSelect
+                            /> */}
+                            <XRemoteSelect
                             remote={remoteRoutes.tasks}
                             filter={{'taskName[]': ''}}
                             parser={({taskName, id}: any) => ({label: taskName, value: id})}
                             name="taskId"
                             label="Task Name"
                             variant='outlined'
-                            /> */}
+                            />
                         </Grid>
                         <RightPadded>
-
                         <XDateInput
                                 name="startDate"
-
                                 label="Start Date"
-
+                                
                             />
                         </RightPadded>
                         <LeftPadded>
-
                         <XDateInput
                                 name="endDate"
-
                                 label="End Date"
-
+                                
                             />
                         </LeftPadded>
                         <Grid item xs={12}>
-
                         <XTextInput
                                 name="taskInfo"
-
                                 label="Task Details"
                                 type="text"
                                 variant='outlined'
                             />
                         </Grid>
-
+                        
                         <Grid item xs={12}>
                             <XRemoteSelect
-
                             remote={remoteRoutes.contactsPerson}
                             filter={{'firstName[]': ''}}
                             parser={({firstName, id}: any) => ({label: firstName, value: id})}
                             name="userId"
                             label="Volunteers"
                             variant='outlined'
-
                             />
-
+           
                         </Grid>
                     </Grid>
-
+                   
                 </XForm>
             </Grid>
         </Box>
+   
 
 
-
-
+ 
     );
 }
 
