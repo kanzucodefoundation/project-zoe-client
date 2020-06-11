@@ -2,6 +2,7 @@ import React from "react";
 import * as yup from "yup";
 import { reqDate, reqObject, reqString, reqPositiveInteger } from "../../data/validations";
 import { ministryCategories } from "../../data/comboCategories";
+import { statusCategories } from "../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
@@ -33,12 +34,14 @@ const schema = yup.object().shape({
   ministry: reqString,
   taskName: reqString,
   taskDescription: reqString,
+  status: reqString,
 });
 
 const initialValues = {
   ministry: "",
   taskName: "",
   taskDescription: "",
+  status: "",
 };
 
 const RightPadded = ({ children, ...props }: any) => (
@@ -83,6 +86,7 @@ const AddTasks = ({ done }: IProps) => {
       ministry: values.ministry,
       taskName: values.taskName,
       taskDescription: values.taskDescription,
+      status: values.status,
     };
 
     post(
@@ -140,6 +144,15 @@ const AddTasks = ({ done }: IProps) => {
                   variant="outlined"
                 />
               </LeftPadded>
+                <Grid item xs={12}>
+                  <XSelectInput
+                    name="status"
+                    label="Status"
+                    options={toOptions(statusCategories)}
+                    variant="outlined"
+                  />
+                </Grid>
+              
             </Grid>
           </XForm>
         </Grid>

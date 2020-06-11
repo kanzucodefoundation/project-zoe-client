@@ -1,9 +1,9 @@
 import React from 'react';
-import {Box} from "@material-ui/core";
-import {remoteRoutes} from "../../data/constants";
+import { Box } from "@material-ui/core";
+import { remoteRoutes } from "../../data/constants";
 
 import Layout from "../../components/layout/Layout";
-import {createStyles, makeStyles, Theme} from "@material-ui/core";
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import Header from "./Header";
 
 import MaterialTable, { Column } from 'material-table';
@@ -20,7 +20,7 @@ interface Row {
     task_info: string;
     assigned_to: string;
 }
-  
+
 interface TableState {
     columns: Array<Column<Row>>;
     data: Row[];
@@ -44,17 +44,17 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const AssignedTasks = ({done}: IProps) => {
+const AssignedTasks = ({ done }: IProps) => {
     const classes = useStyles();
 
     // For displaying the table data
     const [state, setData] = React.useState<TableState>({
         columns: [
-          { title: 'Task Nmae', field: 'taskId' },
-          { title: 'Start Date', field: 'start_date' },
-          { title: 'End Date', field: 'end_date' },
-          { title: 'Task Details', field: 'task_info' },
-          { title: 'Volunteers', field: 'assigned_to' },
+            { title: 'Task Nmae', field: 'taskId' },
+            { title: 'Start Date', field: 'start_date' },
+            { title: 'End Date', field: 'end_date' },
+            { title: 'Task Details', field: 'task_info' },
+            { title: 'Volunteers', field: 'assigned_to' },
         ],
         data: [
         ],
@@ -67,14 +67,14 @@ const AssignedTasks = ({done}: IProps) => {
             console.log(json);
             setData({
                 ...state,
-                data:json
+                data: json
             })
         }
         fetchTeamlead();
     }, []);
 
 
-    return(
+    return (
         <Layout>
             <Box p={1} className={classes.root}>
                 <Header title="Assigned Tasks" />
