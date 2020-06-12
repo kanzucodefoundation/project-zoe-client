@@ -65,6 +65,7 @@ export const remoteRoutes = {
   contactSearch: url + "/api/crm/contact/search",
   contactById: url + "/api/crm/contacts/id",
   contactsPerson: url + "/api/crm/people",
+  contactsPersonVolunteer: url + "/api/crm/people/volunteers", // Added by Daniel
   contactsChc: url + "/api/crm/person/chc",
   contactsEmail: url + "/api/crm/emails",
   tags: url + "/api/tags",
@@ -79,15 +80,17 @@ export const remoteRoutes = {
   groupsCombo: url + "/api/groups/combo",
   groupsCategories: url + "/api/groups/categories",
 
+  groupsCategoriesById: url + "/api/groups/category/{id}", // Added by Daniel
+  groupsMemberships: url + "/api/groups/member", // Added by Daniel
+
   contactsCompany: url + "/api/crm/contact/company",
   contactsAvatar: url + "/api/crm/contact/avatar",
 
   volunteers: url + "/api/services/volunteers",
-  day: url + '/api/appointment/day',
+  appointments: url + "/api/appointment/appointments",
+  appointmentTask: url + "/api/appointment-task",
+  userTask: url + "/api/user-task",
   tasks: url + "/api/tasks",
   //viewTasks: url + "/api/tasks / { id } / update",
 };
     
-
-
-

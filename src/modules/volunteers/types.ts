@@ -1,7 +1,12 @@
 export interface ICreateAVolunteerDto {
-    category: string;
-    ministry: string;
-    firstName: string;
-    lastName: string;
+    username: string;
     password: string;
+    contactId: number;
+    roles: [string];
+}
+
+export interface ICreateAMembershipDto {
+    groupId: number;
+    contactId: number;
+    role: string;
 }
