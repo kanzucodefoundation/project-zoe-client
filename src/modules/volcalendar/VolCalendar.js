@@ -1,4 +1,5 @@
 import * as React from 'react';
+/*
 import Paper from '@material-ui/core/Paper';
 import { ViewState } from '@devexpress/dx-react-scheduler';
 import {
@@ -165,3 +166,4 @@ export default class Volunteer extends React.PureComponent {
     );
   }
 }
+*/

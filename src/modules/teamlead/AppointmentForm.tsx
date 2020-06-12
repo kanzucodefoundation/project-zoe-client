@@ -1,4 +1,5 @@
 import * as React from 'react';
+/*
 import Paper from '@material-ui/core/Paper';
 
 import {
@@ -50,3 +51,4 @@ export default class Calendar extends React.PureComponent<{}, any> {
         );
     }
 }
+*/
