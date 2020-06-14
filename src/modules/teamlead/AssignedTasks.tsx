@@ -53,27 +53,14 @@ const AssignedTasks = ({ done }: IProps) => {
             { title: 'Task Name', field: 'taskName' },
             { title: 'Start Date', field: 'startDate' },
             { title: 'End Date', field: 'endDate' },
-            { title: 'Task Details', field: 'taskInfo' },
+            { title: 'Task Details', field: 'taskDescription' },
             { title: 'Volunteers', field: 'firstName' },
         ],
         data: [
         ],
     });
 
-    // React.useEffect(() => {
-    //     async function fetchTeamlead() {
-    //         const res = await fetch(remoteRoutes.appointments);
-    //         const json = await res.json();
-    //         console.log(json);
-    //         setData({
-    //             ...state,
-    //             data: json
-    //         })
-    //     }
-    //     fetchTeamlead();
-    // }, []);
-
-
+   
 
     React.useEffect(() => {
         async function fetchAppointments() {
@@ -86,10 +73,11 @@ const AssignedTasks = ({ done }: IProps) => {
                         return {
                             taskName: anAssignedTask.taskName,
                             // taskId: appointment.taskId,
-                            // startDate: appointment.startDate,
-                            // endDate: appointment.endDate,
-                            // taskInfo: appointment.taskInfo,
+                            startDate: anAssignedTask.app[0].startDate,
+                            endDate: anAssignedTask.endDate,
+                            taskDescription: anAssignedTask.taskDescription,
                             //taskName: appointment.task.map((task: any) => { return task.taskName }).join(", "),
+                        
                         }
                     })
                 })
