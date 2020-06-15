@@ -54,7 +54,7 @@ const AssignedTasks = ({ done }: IProps) => {
             { title: 'Start Date', field: 'startDate' },
             { title: 'End Date', field: 'endDate' },
             { title: 'Task Details', field: 'taskDescription' },
-            { title: 'Volunteers', field: 'firstName' },
+            { title: 'Volunteers', field: 'userId' },
         ],
         data: [
         ],
@@ -71,11 +71,11 @@ const AssignedTasks = ({ done }: IProps) => {
                     ...state,
                     data:json.map((anAssignedTask: any) => {
                         return {
-                            taskName: anAssignedTask.taskName,
+                            taskName: anAssignedTask.task[0].taskName,
                             // taskId: appointment.taskId,
                             startDate: anAssignedTask.app[0].startDate,
-                            endDate: anAssignedTask.endDate,
-                            taskDescription: anAssignedTask.taskDescription,
+                            endDate: anAssignedTask.app[0].endDate,
+                            taskDescription: anAssignedTask.task[0].taskDescription,
                             //taskName: appointment.task.map((task: any) => { return task.taskName }).join(", "),
                         
                         }
@@ -88,6 +88,36 @@ const AssignedTasks = ({ done }: IProps) => {
         }
         fetchAppointments();
     }, []);
+
+
+
+    // React.useEffect(() => {
+    //     async function fetchAppointments() {
+    //         const res = await fetch(remoteRoutes.userTask);
+    //         if (res.status >= 200 && res.status <= 299) {
+    //             const json = await res.json();
+    //             setData({
+    //                 ...state,
+    //                 data:json.map((aUserTask: any) => {
+    //                     return {
+    //                         // UserId: aUserTask.user[0].UserId,
+    //                         // taskId: appointment.taskId,
+    //                         // startDate: anAssignedTask.app[0].startDate,
+    //                         // endDate: anAssignedTask.app[0].endDate,
+    //                         // taskDescription: anAssignedTask.task[0].taskDescription,
+    //                         //taskName: appointment.task.map((task: any) => { return task.taskName }).join(", "),
+                        
+    //                     }
+    //                 })
+    //             })
+    //         } else {
+    //             Toast.error('Unable to retrieve the list of appointments.')
+    //             console.log(res.status, res.statusText);
+    //         }
+    //     }
+    //     fetchAppointments();
+    // }, []);
+
 
 
     return (
