@@ -119,7 +119,8 @@ export function PRemoteSelect(props: IProps) {
 
     return (
         <Autocomplete
-            {...autoProps}
+      
+            {...autoProps}           
             getOptionLabel={labelParser}
             filterOptions={x => x}
             options={options}

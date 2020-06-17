@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import Paper from '@material-ui/core/Paper';
 import { ViewState, EditingState } from '@devexpress/dx-react-scheduler';
@@ -7,6 +6,7 @@ import {
     Toolbar,
     MonthView,
     WeekView,
+    DayView,
     ViewSwitcher,
     Appointments,
     AppointmentTooltip,
@@ -14,6 +14,7 @@ import {
     DragDropProvider,
     EditRecurrenceMenu,
     AllDayPanel,
+    DateNavigator,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { connectProps } from '@devexpress/dx-react-core';
 import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -155,7 +156,6 @@ class AppointmentFormContainerBasic extends React.PureComponent {
             ...appointmentChanges,
         };
 
-
         const isNewAppointment = appointmentData.id === undefined;
         const applyChanges = isNewAppointment
             ? () => this.commitAppointment('added')
@@ -193,44 +193,26 @@ class AppointmentFormContainerBasic extends React.PureComponent {
         };
 
         return (
-            <div className={classes.content}>
             <AppointmentForm.Overlay
                 visible={visible}
                 target={target}
                 fullSize
                 onHide={onHide}
             >
-                
-                    <div className={classes.header}>
-                        <IconButton
-                            className={classes.closeButton}
-                            onClick={cancelChanges}
-                        >
-                            <Close color="action" />
-                        </IconButton>
-                    </div>
-                    <AssignTask data={{}} />
-                    <div className={classes.buttonGroup}>
-                        {!isNewAppointment && (
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                className={classes.button}
-                                onClick={() => {
-                                    visibleChange();
-                                    this.commitAppointment('deleted');
-                                }}
-                            >
-                                Delete
-                            </Button>
-                        )}
-                    </div>
+                <div className={classes.header}>
+                    <IconButton
+                        className={classes.closeButton}
+                        onClick={cancelChanges}
+                    >
+                        <Close color="action" />
+                    </IconButton>
+                </div>
+                <AssignTask data={{}} />
             </AppointmentForm.Overlay>
-            </div>
+
         );
     }
 }
-
 
 const AppointmentFormContainer = withStyles(containerStyles, { name: 'AppointmentFormContainer' })(AppointmentFormContainerBasic);
 
@@ -316,9 +298,11 @@ class TeamLeadCalendar extends React.PureComponent {
         json.map((item: any, index: any) => {
             appoints.push({
                 id: item["id"],
-                title: item["taskId"],
+                taskId: item["taskId"],
                 startDate: new Date(item["startDate"]),
                 endDate: new Date(item["endDate"]),
+                title: item["taskInfo"],
+                userId: item["userId"],
 
 
             })
@@ -335,7 +319,6 @@ class TeamLeadCalendar extends React.PureComponent {
     componentDidUpdate() {
         this.appointmentForm.update();
     }
-
 
     onEditingAppointmentChange(editingAppointment: any) {
         this.setState({ editingAppointment });
@@ -373,9 +356,6 @@ class TeamLeadCalendar extends React.PureComponent {
             const { data, deletedAppointmentId }: any = state;
             const nextData = data.filter((appointment: { id: any; }) => appointment.id !== deletedAppointmentId);
 
-
-
-    
             return { data: nextData, deletedAppointmentId: null };
         });
         this.toggleConfirmationVisible();
@@ -418,28 +398,41 @@ class TeamLeadCalendar extends React.PureComponent {
                         data={data}
                         height={660}
                     >
-                        <ViewState
-                            currentDate={currentDate}
-                        />
+                        
                         <EditingState
                             onCommitChanges={this.commitChanges}
                             onEditingAppointmentChange={this.onEditingAppointmentChange}
                             onAddedAppointmentChange={this.onAddedAppointmentChange}
                         />
+                        <ViewState
+                            currentDate={currentDate}
+                        />
+                        <MonthView />
+
                         <WeekView
                             startDayHour={startDayHour}
                             endDayHour={endDayHour}
                         />
-                        <MonthView />
+                        <DayView
+                            startDayHour={0}
+                            endDayHour={24}
+                        />
+
                         <AllDayPanel />
-                        <EditRecurrenceMenu />
                         <Appointments />
+                       
+                        <Toolbar />
+                        <DateNavigator />
+
+                        <EditRecurrenceMenu />
+                      
                         <AppointmentTooltip
                             showOpenButton
                             showCloseButton
                             showDeleteButton
                         />
-                        <Toolbar />
+                        
+                       
                         <ViewSwitcher />
                         <AppointmentForm
                             overlayComponent={this.appointmentForm}
@@ -491,6 +484,4 @@ class TeamLeadCalendar extends React.PureComponent {
     }
 }
 
-
-export default withStyles(styles, { name: 'EditingDemo' })(TeamLeadCalendar);
-
+export default withStyles(styles, { name: 'EditingCalendar' })(TeamLeadCalendar);
