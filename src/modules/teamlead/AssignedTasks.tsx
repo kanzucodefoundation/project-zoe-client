@@ -71,11 +71,11 @@ const AssignedTasks = ({ done }: IProps) => {
                     ...state,
                     data:json.map((anAssignedTask: any) => {
                         return {
-                            taskName: anAssignedTask.task[0].taskName,
+                            taskName: anAssignedTask.task.taskName,
                             // taskId: appointment.taskId,
-                            startDate: anAssignedTask.app[0].startDate,
-                            endDate: anAssignedTask.app[0].endDate,
-                            taskDescription: anAssignedTask.task[0].taskDescription,
+                            startDate: anAssignedTask.app.startDate,
+                            endDate: anAssignedTask.app.endDate,
+                            taskDescription: anAssignedTask.task.taskDescription,
                             //taskName: appointment.task.map((task: any) => { return task.taskName }).join(", "),
                         
                         }
