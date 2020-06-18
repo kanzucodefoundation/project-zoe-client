@@ -7,6 +7,8 @@ import {
     Resources,
     WeekView,
     MonthView,
+    DayView,
+    ViewSwitcher,
     Toolbar,
     DateNavigator,
     Appointments,
@@ -105,7 +107,7 @@ export default class Volunteer extends React.PureComponent {
         this.setState({ mainResourceName });
     }
 
-    async componentDidMount() {
+   async componentDidMount() {
 
         const res = await fetch(remoteRoutes.appointments);
         const json = await res.json();
@@ -113,13 +115,17 @@ export default class Volunteer extends React.PureComponent {
 
 
 
+
+
         const appoints = [];
         json.map((item, index) => {
             appoints.push({
-
-                
+                id: item["id"],
+                taskId: item["taskId"],
                 startDate: new Date(item["startDate"]),
                 endDate: new Date(item["endDate"]),
+                title: item["taskInfo"],
+                userId: item["userId"],
 
 
             })
@@ -130,31 +136,6 @@ export default class Volunteer extends React.PureComponent {
         this.setState({
             data: appoints
         })
-    }
-
-    async componentDidMount() {
-
-        const res = await fetch(remoteRoutes.appointmentTask);
-        const json = await res.json();
-        console.log(json);
-
-        
-
-        const appoints = [];
-        json.map((item, index) => {
-            appoints.push({
-                ownerId: item["id"],
-                title: item["taskId"],
-                
-
-            })
-            return ""
-        });
-
-        console.log(appoints);
-        this.setState({
-            data: appoints
-        });
     }
 
     render() {
@@ -178,10 +159,15 @@ export default class Volunteer extends React.PureComponent {
               defaultCurrentDate={currentDate}
             />
             <WeekView
-              startDayHour={1}
+              startDayHour={9}
+              endDayHour={19}
+            />
+            <DayView
+              startDayHour={0}
               endDayHour={24}
             />
             <MonthView />
+
             <Appointments />
             <AppointmentTooltip />
             
@@ -192,6 +178,7 @@ export default class Volunteer extends React.PureComponent {
             <Toolbar
             flexibleSpaceComponent={FlexibleSpace}
             /> 
+            <ViewSwitcher />
             <DateNavigator / >
           </Scheduler>
         </Paper>
