@@ -414,7 +414,7 @@ class TeamLeadCalendar extends React.PureComponent {
                             endDayHour={endDayHour}
                         />
                         <DayView
-                            startDayHour={0}
+                            startDayHour={0}    
                             endDayHour={24}
                         />
 
@@ -448,20 +448,28 @@ class TeamLeadCalendar extends React.PureComponent {
                     >
                         <DialogTitle>
                             Delete Appointment
-          </DialogTitle>
+                        </DialogTitle>
+
                         <DialogContent>
+
                             <DialogContentText>
                                 Are you sure you want to delete this appointment?
-            </DialogContentText>
+                            </DialogContentText>
+
                         </DialogContent>
+
                         <DialogActions>
+                        
                             <Button onClick={this.toggleConfirmationVisible} color="primary" variant="outlined">
                                 Cancel
-            </Button>
+                            </Button>
+
                             <Button onClick={this.commitDeletedAppointment} color="secondary" variant="outlined">
                                 Delete
-            </Button>
+                            </Button>
+
                         </DialogActions>
+
                     </Dialog>
 
                     <Fab

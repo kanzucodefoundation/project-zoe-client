@@ -44,6 +44,7 @@ export const localRoutes = {
   addVolunteers: "/volunteers/add-volunteers",
   addTasks: "/tasks/add-tasks",
   viewTasks:"/tasks/view-tasks",
+  blockdate: "/blockdate",
   help: "/help", 
 };
 

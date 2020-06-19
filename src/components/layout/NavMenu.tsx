@@ -105,9 +105,18 @@ const routes = [
         ]
     },
     {
-        name: "Volunteer Calendar",
-        route: localRoutes.volcalendar,
-        icon: EventNoteIcon
+        name: "Volunteer",        
+        icon: EventNoteIcon,
+        items: [
+            {
+                name: "Volunteer Calendar",
+                route: localRoutes.volcalendar
+            },
+            { 
+                name: "Block Date",
+                route: localRoutes.blockdate
+            }
+        ]
     },
 
     

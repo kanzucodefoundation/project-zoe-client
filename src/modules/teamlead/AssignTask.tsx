@@ -260,7 +260,7 @@ const AssignTask = ({ done }: IProps) => {
                                 label="End Date"
 
                             />
-                        </LeftPadded>
+                        </LeftPadded>    
                         <Grid item xs={12}>
                             <XTextInput
                                 name="taskInfo"
@@ -271,16 +271,16 @@ const AssignTask = ({ done }: IProps) => {
                         </Grid>
 
                         <Grid item xs={12}>
-                            { <XRemoteSelect
+                            {/* <XRemoteSelect
                             remote={remoteRoutes.contactsPerson}
                             filter={{'firstName[]': 'Volunteer'}}
                             parser={({firstName, id}: any) => ({label: firstName, value: id})}
                             name="userId"
                             label="Volunteers"
                             variant='outlined'
-                            /> }
+                            /> */}
 
-                            {/*<Autocomplete
+                            <Autocomplete
                                 multiple
                                 id="free-solo-demo"
                                 freeSolo
@@ -290,7 +290,7 @@ const AssignTask = ({ done }: IProps) => {
                                 renderInput={(params) => (
                                 <TextField {...params} label="Search for person to add as Volunteer" margin="normal" variant="outlined" />
                                 )}
-                            /> */}
+                            /> 
 
                             {/*<Autocomplete
 
