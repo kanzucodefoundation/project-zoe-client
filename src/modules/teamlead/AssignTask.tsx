@@ -35,6 +35,7 @@ import { enumToArray } from "../../utils/stringHelpers";
 
 import { ministryCategories } from "../../data/comboCategories";
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { id } from 'date-fns/locale';
 
 interface IProps {
     data: any | null
@@ -126,7 +127,9 @@ const AssignTask = ({ done }: IProps) => {
         const toSaveUserTaskTable: ISaveToUTT = {
             appointmentTaskId: id,
             userId: values.userId.value,
+
         }
+        
 
         post(remoteRoutes.userTask, toSaveUserTaskTable,
             (data) => {
@@ -150,29 +153,31 @@ const AssignTask = ({ done }: IProps) => {
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
 
-        const toSave: ICreateDayDto = {
-            startDate: values.startDate,
-            endDate: values.endDate,
-            taskInfo: values.taskInfo,
+        // const toSave: ICreateDayDto = {
+        //     startDate: values.startDate,
+        //     endDate: values.endDate,
+        //     taskInfo: values.taskInfo,
 
-        }
-        post(remoteRoutes.appointments, toSave,
-            (data) => {
-                console.log(data, data.id)
-                appointmentTasks(values, actions, data.id);
-            },
-            undefined,
-            () => {
-                actions.setSubmitting(false);
+        // }
+console.log(persons)
+console.log("fffff")
+        // post(remoteRoutes.appointments, toSave,
+        //     (data) => {
+        //         console.log(data, data.id)
+        //         appointmentTasks(values, actions, data.id);
+        //     },
+        //     undefined,
+        //     () => {
+        //         actions.setSubmitting(false);
 
-            }
+        //     }
 
-        )
+        // )
 
     }
 
 
-    const [persons, setPersons] = useState<any>({ id: 0, contactId: 0, listOfPersons: [] });
+    const [persons, setPersons] = useState<any>({ id: 0, contacts: [], listOfPersons: [] });
     useEffect(() => {
         const fetchPersons = async () => {
             const result = await fetch(remoteRoutes.contactsPerson).then(
@@ -186,21 +191,18 @@ const AssignTask = ({ done }: IProps) => {
         fetchPersons();
     }, []);
 
-    const handleChange = (value: any) => {
-        const fetchEmail = async () => {
-            const fetchedEmail = await fetch(remoteRoutes.contactsPerson + "/" + value.id).then(
-                response => response.json()
-            )
 
-            setPersons({
-                ...persons,
-                id: value.id,
-                firstName: fetchedEmail.value,
-                lastName: fetchedEmail.value,
-                contactId: fetchedEmail.userId,
-            });
+    const handleChange = (value: any) => {
+        let contacts: number[] = [];
+
+        for (let index = 0; index < value.length; index++) {
+            const user = value[index];
+            contacts.push(user.contactId)       
         }
-        fetchEmail();
+        setPersons({
+            ...persons,
+            contacts: contacts,
+        });    
     }
 
 
@@ -253,18 +255,19 @@ const AssignTask = ({ done }: IProps) => {
                         </Grid>
 
                         <Grid item xs={12}>
-                            {/* <XRemoteSelect
+                            <XRemoteSelect
+                            multiple
+                            options={persons.listOfPersons}
                             remote={remoteRoutes.contactsPerson}
                             filter={{'firstName[]': 'Volunteer'}}
                             parser={({firstName, id}: any) => ({label: firstName, value: id})}
                             name="userId"
                             label="Volunteers"
                             variant='outlined'
-                            /> */}
+                            />
 
-                            <Autocomplete
+                            {/* <Autocomplete
                                 multiple
-                                id="userId"
                                 freeSolo
                                 options={persons.listOfPersons}
                                 getOptionLabel={(option) => option.firstName + " " + option.lastName}
@@ -272,7 +275,7 @@ const AssignTask = ({ done }: IProps) => {
                                 renderInput={(params) => (
                                     <TextField {...params} label="Search for person to add as Volunteer" margin="normal" variant="outlined" name="userId" />
                                 )}
-                            />	                            
+                            />	                             */}
                         </Grid>
                     </Grid>
 
