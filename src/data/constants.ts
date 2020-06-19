@@ -65,6 +65,8 @@ export const remoteRoutes = {
   contactSearch: url + "/api/crm/contact/search",
   contactById: url + "/api/crm/contacts/id",
   contactsPerson: url + "/api/crm/people",
+  contactsOnePerson: url + "/api/crm/people", // Added by Daniel
+  contactsPersonVolunteer: url + "/api/crm/people/volunteers", // Added by Daniel
   contactsChc: url + "/api/crm/person/chc",
   contactsEmail: url + "/api/crm/emails",
   tags: url + "/api/tags",
