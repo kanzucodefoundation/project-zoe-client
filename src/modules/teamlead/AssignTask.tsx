@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as yup from "yup";
-import { reqDate, reqObject, reqString } from "../../data/validations";
+import { reqDate, reqObject, reqString, reqArray } from "../../data/validations";
 // import {ministryCategories} from "../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
@@ -49,9 +49,7 @@ const schema = yup.object().shape(
         startDate: reqDate,
         endDate: reqDate,
         taskInfo: reqString,
-        userId: reqObject,
-
-
+        userId: reqArray,
     }
 )
 
@@ -61,7 +59,7 @@ const initialValues = {
     startDate: '',
     endDate: '',
     taskInfo: '',
-    userId: null,
+    userId: [],
 
 }
 
@@ -153,26 +151,26 @@ const AssignTask = ({ done }: IProps) => {
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
 
-        // const toSave: ICreateDayDto = {
-        //     startDate: values.startDate,
-        //     endDate: values.endDate,
-        //     taskInfo: values.taskInfo,
+        const toSave: ICreateDayDto = {
+            startDate: values.startDate,
+            endDate: values.endDate,
+            taskInfo: values.taskInfo,
 
-        // }
-console.log(persons)
-console.log("fffff")
-        // post(remoteRoutes.appointments, toSave,
-        //     (data) => {
-        //         console.log(data, data.id)
-        //         appointmentTasks(values, actions, data.id);
-        //     },
-        //     undefined,
-        //     () => {
-        //         actions.setSubmitting(false);
+        }
+// console.log(persons)
+// console.log("fffff")
+        post(remoteRoutes.appointments, toSave,
+            (data) => {
+                console.log(data, data.id)
+                appointmentTasks(values, actions, data.id);
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
 
-        //     }
+            }
 
-        // )
+        )
 
     }
 
@@ -257,7 +255,6 @@ console.log("fffff")
                         <Grid item xs={12}>
                             <XRemoteSelect
                             multiple
-                            options={persons.listOfPersons}
                             remote={remoteRoutes.contactsPerson}
                             filter={{'firstName[]': 'Volunteer'}}
                             parser={({firstName, id}: any) => ({label: firstName, value: id})}
