@@ -1,17 +1,15 @@
-import React, {useEffect} from "react";
+import React, {useCallback, useEffect} from "react";
 import {search} from "../../utils/ajax";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import Autocomplete, {createFilterOptions} from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
-import {hasValue, IOption} from "../inputs/inputHelpers";
+import {hasNoValue, hasValue, IOption} from "../inputs/inputHelpers";
 import {TextFieldProps} from "@material-ui/core/TextField/TextField";
-import {AutocompleteChangeDetails, AutocompleteChangeReason} from "@material-ui/lab/useAutocomplete/useAutocomplete";
 import {IXRemoteProps} from "../inputs/XRemoteSelect";
 
+const filter = createFilterOptions<IOption>();
 
-export interface IProps extends IXRemoteProps {
-
+export interface IPRemoteSelectProps extends IXRemoteProps {
     value?: any
     onChange?: (d: any) => any
     onBlur?: () => any
@@ -19,129 +17,129 @@ export interface IProps extends IXRemoteProps {
     fullWidth?: boolean;
     helperText?: React.ReactNode;
     textFieldProps?: TextFieldProps
+
 }
 
 const FakeProgress = () => <div style={{height: 20, width: 20}}>&nbsp;</div>
-const labelParser = (option: any) => {
+const labelParser = (option: IOption) => {
     if (hasValue(option)) {
         return option.label
     }
     return ''
 }
 
-const cacheData = (query: any, data: any) => {
-    try {
-        const key = JSON.stringify(query).replace(/\s+/g, '-').toLowerCase()
-        const value = JSON.stringify(data)
-        localStorage.setItem(key, value)
-    } catch (e) {
-        console.error(e)
-    }
+const dataCache: any = {}
 
+function hashCode(str: string) {
+    return str.split('').reduce((prevHash, currVal) =>
+        (((prevHash << 5) - prevHash) + currVal.charCodeAt(0)) | 0, 0);
 }
 
-const getCacheData = (query: any,) => {
-    try {
-        const key = JSON.stringify(query).replace(/\s+/g, '-').toLowerCase()
-        const value = localStorage.getItem(key)
-        if (value && hasValue(value)) {
-            return JSON.parse(value)
-        }
-    } catch (e) {
-        console.error(e)
+const isInCache = (filter: any) => {
+    const key = hashCode(JSON.stringify(filter))
+    if (dataCache[key]) {
+        return dataCache[key]
     }
 }
 
-export function PRemoteSelect(props: IProps) {
+const addToCache = (filter: any, resp: any) => {
+    const key = hashCode(JSON.stringify(filter))
+    dataCache[key] = resp
+}
+
+const filterOptions = (options: IOption[], params: any) => {
+    const filtered = filter(options, params) as IOption[];
+    // Suggest the creation of a new value
+    if (params.inputValue !== '') {
+        filtered.push({
+            value: params.inputValue,
+            label: `Add "${params.inputValue}"`,
+        });
+    }
+    return filtered;
+}
+
+export function PRemoteSelect(props: IPRemoteSelectProps) {
     const [loading, setLoading] = React.useState(false);
-    const [options, setOptions] = React.useState<IOption[]>([]);
+    const [options, setOptions] = React.useState<IOption[]>(props.defaultOptions || []);
+    const [query, setQuery] = React.useState<string>('');
+    const [inputValue, setInputValue] = React.useState('');
 
-    function handleInputChange(event: React.ChangeEvent<any>, value: string) {
-        if (!event)
+    const fetch = useCallback((query: string) => {
+        if (hasNoValue(props.remote)) {
             return
-        loadData(value)
-    }
+        }
+        const newFilter = {...props.filter, query, limit: 50}
+        const cached = isInCache(newFilter);
+        if (cached) {
+            setOptions(cached)
+            return;
+        }
+        setLoading(true)
+        search(props.remote, newFilter,
+            resp => {
+                const data = resp.map(props.parser)
+                setOptions(data)
+                addToCache(newFilter, data)
+            },
+            undefined,
+            () => {
+                setLoading(false)
+            })
+    }, [props.parser, props.filter, props.remote]);
 
     useEffect(() => {
-        const filter = {...props.filter, query: "", limit: 50}
-        const cached = getCacheData(filter)
-        if (cached) {
-            setOptions(cached)
-            return;
-        }
-        setLoading(true)
-        search(props.remote, filter,
-            resp => {
-                const data = resp.map(props.parser)
-                cacheData(filter, data)
-                setOptions(data)
-            },
-            undefined,
-            () => {
-                setLoading(false)
-            })
-    }, [props.filter, props.remote, props.parser])
-
-    function loadData(query: string) {
-
-        const filter = {...props.filter, query, limit: 50}
-        const cached = getCacheData(filter)
-        if (cached) {
-            setOptions(cached)
-            return;
-        }
-        setLoading(true)
-        search(props.remote, filter,
-            resp => {
-                const data = resp.map(props.parser)
-                cacheData(filter, data)
-                setOptions(data)
-            },
-            undefined,
-            () => {
-                setLoading(false)
-            })
-    }
-
-    function handleChange(
-        event: React.ChangeEvent<{}>,
-        value: IOption | null,
-        _: AutocompleteChangeReason,
-        __?: AutocompleteChangeDetails<any>,
-    ) {
-        props.onChange && props.onChange(value)
-    }
+        fetch(query)
+    }, [fetch, query])
 
     const handleTouched = () => {
         props.onBlur && props.onBlur()
     }
-    const {error, helperText, parser, ...autoProps} = {...props}
+
+    const {
+        error,
+        helperText,
+        parser: i,
+        defaultOptions,
+        searchOnline,
+        margin = 'normal',
+        freeSolo,
+        ...autoProps
+    } = props
+
 
     return (
         <Autocomplete
-      
-            {...autoProps}           
-            getOptionLabel={labelParser}
-            filterOptions={x => x}
-            options={options}
-            onChange={handleChange}
-            autoComplete
-            includeInputInList
-            freeSolo
+            {...autoProps}
             value={props.value}
+            onChange={(_: any, newValue: any) => {
+                props.onChange && props.onChange(newValue)
+            }}
+            inputValue={inputValue}
+            onInputChange={(event, newInputValue) => {
+                setInputValue(newInputValue);
+                if (props.searchOnline) {
+                    setQuery(newInputValue)
+                }
+            }}
+            getOptionLabel={labelParser}
+            filterOptions={props.searchOnline ? x => x : freeSolo ? filterOptions : undefined}
+            options={options}
+            autoComplete
+            freeSolo
             loading={loading}
-            onInputChange={handleInputChange}
             renderInput={params => {
                 return <TextField
                     {...params}
                     {...props.textFieldProps}
+                    margin={margin}
                     label={props.label}
-                    margin='normal'
                     fullWidth
                     onBlur={handleTouched}
                     error={props.error}
                     helperText={props.helperText}
                     variant={props.variant}
+                    autoComplete="off"
                     InputProps={{
                         ...params.InputProps,
                         endAdornment: (

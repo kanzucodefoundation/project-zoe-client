@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as yup from "yup";
-import { reqDate, reqObject, reqString } from "../../data/validations";
+import { reqDate, reqObject, reqString, reqArray } from "../../data/validations";
 // import {ministryCategories} from "../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
@@ -35,6 +35,7 @@ import { enumToArray } from "../../utils/stringHelpers";
 
 import { ministryCategories } from "../../data/comboCategories";
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { id } from 'date-fns/locale';
 
 interface IProps {
     data: any | null
@@ -48,9 +49,7 @@ const schema = yup.object().shape(
         startDate: reqDate,
         endDate: reqDate,
         taskInfo: reqString,
-        userId: reqObject,
-
-
+        userId: reqArray,
     }
 )
 
@@ -60,7 +59,7 @@ const initialValues = {
     startDate: '',
     endDate: '',
     taskInfo: '',
-    userId: null,
+    userId: [],
 
 }
 
@@ -126,7 +125,9 @@ const AssignTask = ({ done }: IProps) => {
         const toSaveUserTaskTable: ISaveToUTT = {
             appointmentTaskId: id,
             userId: values.userId.value,
+
         }
+        
 
         post(remoteRoutes.userTask, toSaveUserTaskTable,
             (data) => {
@@ -156,6 +157,8 @@ const AssignTask = ({ done }: IProps) => {
             taskInfo: values.taskInfo,
 
         }
+// console.log(persons)
+// console.log("fffff")
         post(remoteRoutes.appointments, toSave,
             (data) => {
                 console.log(data, data.id)
@@ -169,26 +172,10 @@ const AssignTask = ({ done }: IProps) => {
 
         )
 
-
-
-
-
-
     }
 
 
-
-
-
-    // enum TeamPrivacy {
-    //     Sweeping = "sweeping",
-    //     Mopping = "mopping",
-    //     Coaching = "coaching",
-    //     Arranging = "Arranging church",
-
-    // }
-
-    const [persons, setPersons] = useState<any>({id: 0, contactId: 0, listOfPersons: []});
+    const [persons, setPersons] = useState<any>({ id: 0, contacts: [], listOfPersons: [] });
     useEffect(() => {
         const fetchPersons = async () => {
             const result = await fetch(remoteRoutes.contactsPerson).then(
@@ -202,21 +189,23 @@ const AssignTask = ({ done }: IProps) => {
         fetchPersons();
     }, []);
 
-    const handleChange = (value: any) => {
-        const fetchEmail = async () => {
-            const fetchedEmail = await fetch(remoteRoutes.contactsEmail + "/" + value.id).then(
-                response => response.json()
-            )
 
-            setPersons({
-                ...persons,
-                id: value.id,
-                email: fetchedEmail.value,
-                contactId: fetchedEmail.contactId,
-            });
+    const handleChange = (value: any) => {
+        let contacts: number[] = [];
+
+        for (let index = 0; index < value.length; index++) {
+            const user = value[index];
+            contacts.push(user.contactId)       
         }
-        fetchEmail();
+        setPersons({
+            ...persons,
+            contacts: contacts,
+        });    
     }
+
+
+
+
 
     return (
 
@@ -231,13 +220,6 @@ const AssignTask = ({ done }: IProps) => {
                 >
                     <Grid spacing={0} container>
                         <Grid item xs={12}>
-                            {/* <XSelectInput
-                                name="taskId"
-                                label="Task Name"
-                                // options={toOptions(enumToArray(TeamPrivacy))}
-                                options={toOptions(ministryCategories)}
-                                variant='outlined'
-                            /> */}
                             <XRemoteSelect
                                 remote={remoteRoutes.tasks}
                                 filter={{ 'taskName[]': '' }}
@@ -260,7 +242,7 @@ const AssignTask = ({ done }: IProps) => {
                                 label="End Date"
 
                             />
-                        </LeftPadded>    
+                        </LeftPadded>
                         <Grid item xs={12}>
                             <XTextInput
                                 name="taskInfo"
@@ -271,53 +253,34 @@ const AssignTask = ({ done }: IProps) => {
                         </Grid>
 
                         <Grid item xs={12}>
-                            {/* <XRemoteSelect
+                            <XRemoteSelect
+                            multiple
                             remote={remoteRoutes.contactsPerson}
                             filter={{'firstName[]': 'Volunteer'}}
                             parser={({firstName, id}: any) => ({label: firstName, value: id})}
                             name="userId"
                             label="Volunteers"
                             variant='outlined'
-                            /> */}
+                            />
 
-                            <Autocomplete
+                            {/* <Autocomplete
                                 multiple
-                                id="free-solo-demo"
                                 freeSolo
                                 options={persons.listOfPersons}
                                 getOptionLabel={(option) => option.firstName + " " + option.lastName}
                                 onChange={(event: any, value: any) => handleChange(value)} // prints the selected value
                                 renderInput={(params) => (
-                                <TextField {...params} label="Search for person to add as Volunteer" margin="normal" variant="outlined" />
+                                    <TextField {...params} label="Search for person to add as Volunteer" margin="normal" variant="outlined" name="userId" />
                                 )}
-                            /> 
-
-                            {/*<Autocomplete
-
-                                multiple
-                                // limitTags={2}
-                                id="multiple-limit-tags"
-                                options={top100Films}
-                                getOptionLabel={(option) => option.title}
-                                defaultValue={[top100Films[13], top100Films[12], top100Films[11]]}
-                                renderInput={(params) => (
-                                    <TextField {...params} variant="outlined" label="limitTags" placeholder="Favorites" />
-                                )}
-                            /> */}
+                            />                                 */}
                         </Grid>
                     </Grid>
 
                 </XForm>
             </Grid>
         </Box>
-
-
-
-
     );
 }
-
-
 
 
 export default AssignTask;
