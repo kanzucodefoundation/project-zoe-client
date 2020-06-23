@@ -87,7 +87,8 @@ export const remoteRoutes = {
   contactsCompany: url + "/api/crm/contact/company",
   contactsAvatar: url + "/api/crm/contact/avatar",
 
-  volunteers: url + "/api/services/volunteers",
+  volunteers: url + "/api/services/volunteering/persons",
+  ministries: url + "/api/services/volunteering/ministries",
   day: url + '/api/appointment/day',
   tasks: url + "/api/tasks",
   //viewTasks: url + "/api/tasks / { id } / update",

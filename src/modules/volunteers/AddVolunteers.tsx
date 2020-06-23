@@ -194,7 +194,20 @@ const AddVolunteersForm = ({done}: IProps) => {
                                     />
                                 </Grid>
                             </Grid>
+
+                            <Autocomplete
+                                id="tags-outlined"
+                                multiple
+                                options={persons.listOfPersons}
+                                getOptionLabel={(option) => option.firstName + " " + option.lastName}
+                                filterSelectedOptions
+                                onChange={(event: any, value: any) => handleChange(value)} // prints the selected value
+                                renderInput={(params) => (
+                                <TextField {...params} label="Ministries" margin="normal" variant="outlined" />
+                                )}
+                            />
                         </XForm>
+                        <p>* To add a volunteer to another ministry group, go to View volunteers and click their name to edit their details.</p>
                     </CardContent>
                 </Card>
             </Grid>
