@@ -55,7 +55,7 @@ const initialValues = {
     startDate: '',
     endDate: '',
     taskInfo: '',
-    userId: null,
+    userId: [],
 
 }
 

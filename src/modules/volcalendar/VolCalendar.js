@@ -113,10 +113,6 @@ export default class Volunteer extends React.PureComponent {
         const json = await res.json();
         console.log(json);
 
-
-
-
-
         const appoints = [];
         json.map((item, index) => {
             appoints.push({
@@ -125,7 +121,29 @@ export default class Volunteer extends React.PureComponent {
                 startDate: new Date(item["startDate"]),
                 endDate: new Date(item["endDate"]),
                 title: item["taskInfo"],
-                userId: item["userId"],
+                
+
+
+            })
+            return ""
+        });
+
+        console.log(appoints);
+        this.setState({
+            data: appoints
+        })
+    }
+
+    async componentDidMount() {
+
+        const res = await fetch(remoteRoutes.userTask);
+        const json = await res.json();
+        console.log(json);
+        
+        const appoints = [];
+        json.map((item, index) => {
+            appoints.push({
+               userId: item["userId"],               
 
 
             })
