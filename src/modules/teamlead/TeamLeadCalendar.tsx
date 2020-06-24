@@ -290,10 +290,6 @@ class TeamLeadCalendar extends React.PureComponent {
         const json = await res.json();
         console.log(json);
 
-
-
-
-
         const appoints: any = [];
         json.map((item: any, index: any) => {
             appoints.push({
@@ -303,8 +299,6 @@ class TeamLeadCalendar extends React.PureComponent {
                 endDate: new Date(item["endDate"]),
                 title: item["taskInfo"],
                 userId: item["userId"],
-
-
             })
             return ""
         });

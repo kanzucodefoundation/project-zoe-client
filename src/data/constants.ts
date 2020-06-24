@@ -86,6 +86,7 @@ export const remoteRoutes = {
   assignedTasks: url + "/api/appointment-task/assignedTasks",
   appointmentTask: url + "/api/appointment-task",
   userTask: url + "/api/user-task",
+  userTasks: url + "/api/user-task/userTasks",
   tasks: url + "/api/tasks",
   //viewTasks: url + "/api/tasks / { id } / update",
 };

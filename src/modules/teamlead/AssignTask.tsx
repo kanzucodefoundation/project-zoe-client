@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as yup from "yup";
 import { reqDate, reqObject, reqString, reqArray } from "../../data/validations";
-// import {ministryCategories} from "../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
@@ -9,7 +8,6 @@ import XTextInput from "../../components/inputs/XTextInput";
 import XDateInput from "../../components/inputs/XTimeInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
 import { toOptions } from "../../components/inputs/inputHelpers";
-
 import { remoteRoutes } from "../../data/constants";
 import { useDispatch } from 'react-redux';
 import { servicesConstants } from "../../data/teamlead/reducer";
@@ -22,7 +20,6 @@ import { isoDateString } from "../../utils/dateHelpers";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import Header from "./Header";
 import { owners } from '../../data/teamlead/tasks';
-
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -32,7 +29,6 @@ import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import { enumToArray } from "../../utils/stringHelpers";
-
 import { ministryCategories } from "../../data/comboCategories";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { id } from 'date-fns/locale';
@@ -40,7 +36,6 @@ import { id } from 'date-fns/locale';
 interface IProps {
     data: any | null
     done?: () => any
-
 }
 
 const schema = yup.object().shape(
@@ -48,19 +43,15 @@ const schema = yup.object().shape(
         taskId: reqObject,
         startDate: reqDate,
         endDate: reqDate,
-        // taskInfo: reqString,
         userId: reqArray,
     }
 )
 
 const initialValues = {
-
     taskId: '',
     startDate: '',
     endDate: '',
-    // taskInfo: '',
     userId: [],
-
 }
 
 const RightPadded = ({ children, ...props }: any) => <Grid item xs={6}>
@@ -74,7 +65,6 @@ const LeftPadded = ({ children, ...props }: any) => <Grid item xs={6}>
         {children}
     </Box>
 </Grid>
-
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -101,13 +91,12 @@ const useStyles = makeStyles((theme: Theme) =>
 const AssignTask = ({ done }: IProps) => {
     const dispatch = useDispatch();
     const classes = useStyles();
-
     function appointmentTasks(values: any, actions: any, id: any) {
         const toSaveAppointmentTaskTable: ISaveToATT = {
             appointmentId: id,
             taskId: values.taskId.value,
         }
-        
+
         post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
             (data) => {
                 console.log("appointment")
@@ -116,19 +105,15 @@ const AssignTask = ({ done }: IProps) => {
             undefined,
             () => {
                 actions.setSubmitting(false);
-
             }
         )
-
     }
 
     function userTask(values: any, actions: any, id: any) {
         console.log("tasksffff")
         console.log(values)
         console.log(values.userId)
-
-        values.userId.map((item: any,index: any)=>{
-
+        values.userId.map((item: any, index: any) => {
             const toSaveUserTaskTable: ISaveToUTT = {
                 appointmentTaskId: id,
                 userId: item.value,
@@ -136,8 +121,7 @@ const AssignTask = ({ done }: IProps) => {
             post(remoteRoutes.userTask, toSaveUserTaskTable,
                 (data) => {
                     console.log("usertask")
-
-                    if (index===values.userId.length-1){
+                    if (index === values.userId.length - 1) {
                         Toast.info('Operation successful')
                         actions.resetForm()
                         dispatch({
@@ -146,7 +130,7 @@ const AssignTask = ({ done }: IProps) => {
                         })
                         if (done)
                             done()
-                    }    
+                    }
                 },
                 undefined,
                 () => {
@@ -155,18 +139,15 @@ const AssignTask = ({ done }: IProps) => {
                 }
 
             )
-    })     
+        })
     }
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
-
         const toSave: ICreateDayDto = {
             startDate: values.startDate,
             endDate: values.endDate,
-            // taskInfo: values.taskInfo,
-
         }
-console.log(values)
+        console.log(values)
 
         post(remoteRoutes.appointments, toSave,
             (data) => {
@@ -176,13 +157,9 @@ console.log(values)
             undefined,
             () => {
                 actions.setSubmitting(false);
-
             }
-
         )
-
     }
-
 
     const [persons, setPersons] = useState<any>({ id: 0, contacts: [], listOfPersons: [] });
     useEffect(() => {
@@ -198,29 +175,21 @@ console.log(values)
         fetchPersons();
     }, []);
 
-
     const handleChange = (value: any) => {
         let contacts: number[] = [];
-
         for (let index = 0; index < value.length; index++) {
             const user = value[index];
-            contacts.push(user.contactId)       
+            contacts.push(user.contactId)
         }
         setPersons({
             ...persons,
             contacts: contacts,
-        });    
+        });
     }
 
-
-
-
-
     return (
-
         <Box p={1} className={classes.root}>
             <Header title="Assign Volunteers Task" />
-
             <Grid item xs={6}>
                 <XForm
                     onSubmit={handleSubmit}
@@ -242,54 +211,30 @@ console.log(values)
                             <XDateInput
                                 name="startDate"
                                 label="Start Date"
-
                             />
                         </RightPadded>
                         <LeftPadded>
                             <XDateInput
                                 name="endDate"
                                 label="End Date"
-
                             />
                         </LeftPadded>
-                        {/* <Grid item xs={12}>
-                            <XTextInput
-                                name="taskInfo"
-                                label="Task Details"
-                                type="text"
-                                variant='outlined'
-                            />
-                        </Grid> */}
-
                         <Grid item xs={12}>
                             <XRemoteSelect
-                            multiple
-                            remote={remoteRoutes.contactsPerson}
-                            filter={{'firstName[]+" "+lastName[]': 'Volunteer'}}
-                            parser={({firstName,lastName, id}: any) => ({label: firstName +" "+ lastName, value: id})}
-                            name="userId"
-                            label="Volunteers"
-                            variant='outlined'
-                            />
-
-                            {/* <Autocomplete
                                 multiple
-                                freeSolo
-                                options={persons.listOfPersons}
-                                getOptionLabel={(option) => option.firstName + " " + option.lastName}
-                                onChange={(event: any, value: any) => handleChange(value)} // prints the selected value
-                                renderInput={(params) => (
-                                    <TextField {...params} label="Search for person to add as Volunteer" margin="normal" variant="outlined" name="userId" />
-                                )}
-                            />	                             */}
+                                remote={remoteRoutes.contactsPerson}
+                                filter={{ 'firstName[]+" "+lastName[]': 'Volunteer' }}
+                                parser={({ firstName, lastName, id }: any) => ({ label: firstName + " " + lastName, value: id })}
+                                name="userId"
+                                label="Volunteers"
+                                variant='outlined'
+                            />
                         </Grid>
                     </Grid>
-
                 </XForm>
             </Grid>
         </Box>
     );
 }
-
 
 export default AssignTask;
