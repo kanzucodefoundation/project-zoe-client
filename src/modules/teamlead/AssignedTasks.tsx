@@ -66,11 +66,11 @@ const AssignedTasks = ({ done }: IProps) => {
                     ...state,
                     data: json.map((anAssignedTask: any) => {
                         return {
-                            taskName: anAssignedTask.appTask.taskId,
-                            startDate: anAssignedTask.appTask.appointmentId,
-                            endDate: anAssignedTask.appTask.appointmentId,
-                            taskDescription: anAssignedTask.appTask.taskId,
-                            userId: anAssignedTask.userId,
+                            taskName: anAssignedTask.appTask.task.taskName,
+                            startDate: anAssignedTask.appTask.app.startDate,
+                            endDate: anAssignedTask.appTask.app.endDate,
+                            taskDescription: anAssignedTask.appTask.task.taskDescription,
+                            userId: anAssignedTask.user.firstName,
                         }
                     })
                 })
