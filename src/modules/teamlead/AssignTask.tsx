@@ -48,7 +48,7 @@ const schema = yup.object().shape(
         taskId: reqObject,
         startDate: reqDate,
         endDate: reqDate,
-        taskInfo: reqString,
+        // taskInfo: reqString,
         userId: reqArray,
     }
 )
@@ -58,7 +58,7 @@ const initialValues = {
     taskId: '',
     startDate: '',
     endDate: '',
-    taskInfo: '',
+    // taskInfo: '',
     userId: [],
 
 }
@@ -107,10 +107,10 @@ const AssignTask = ({ done }: IProps) => {
             appointmentId: id,
             taskId: values.taskId.value,
         }
-
+        
         post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
             (data) => {
-
+                console.log("appointment")
                 userTask(values, actions, data.id)
             },
             undefined,
@@ -119,34 +119,43 @@ const AssignTask = ({ done }: IProps) => {
 
             }
         )
+
     }
 
     function userTask(values: any, actions: any, id: any) {
-        const toSaveUserTaskTable: ISaveToUTT = {
-            appointmentTaskId: id,
-            userId: values.userId.value,
+        console.log("tasksffff")
+        console.log(values)
+        console.log(values.userId)
 
-        }
-        
+        values.userId.map((item: any,index: any)=>{
 
-        post(remoteRoutes.userTask, toSaveUserTaskTable,
-            (data) => {
-                Toast.info('Operation successful')
-                actions.resetForm()
-                dispatch({
-                    type: servicesConstants.servicesAddDay,
-                    payload: { ...data },
-                })
-                if (done)
-                    done()
-            },
-            undefined,
-            () => {
-                actions.setSubmitting(false);
-
+            const toSaveUserTaskTable: ISaveToUTT = {
+                appointmentTaskId: id,
+                userId: item.value,
             }
-        )
+            post(remoteRoutes.userTask, toSaveUserTaskTable,
+                (data) => {
+                    console.log("usertask")
 
+                    if (index===values.userId.length-1){
+                        Toast.info('Operation successful')
+                        actions.resetForm()
+                        dispatch({
+                            type: servicesConstants.servicesAddDay,
+                            payload: { ...data },
+                        })
+                        if (done)
+                            done()
+                    }    
+                },
+                undefined,
+                () => {
+                    actions.setSubmitting(false);
+                    console.log("data")
+                }
+
+            )
+    })     
     }
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
@@ -154,11 +163,11 @@ const AssignTask = ({ done }: IProps) => {
         const toSave: ICreateDayDto = {
             startDate: values.startDate,
             endDate: values.endDate,
-            taskInfo: values.taskInfo,
+            // taskInfo: values.taskInfo,
 
         }
-// console.log(persons)
-// console.log("fffff")
+console.log(values)
+
         post(remoteRoutes.appointments, toSave,
             (data) => {
                 console.log(data, data.id)
@@ -243,21 +252,21 @@ const AssignTask = ({ done }: IProps) => {
 
                             />
                         </LeftPadded>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <XTextInput
                                 name="taskInfo"
                                 label="Task Details"
                                 type="text"
                                 variant='outlined'
                             />
-                        </Grid>
+                        </Grid> */}
 
                         <Grid item xs={12}>
                             <XRemoteSelect
                             multiple
                             remote={remoteRoutes.contactsPerson}
-                            filter={{'firstName[]': 'Volunteer'}}
-                            parser={({firstName, id}: any) => ({label: firstName, value: id})}
+                            filter={{'firstName[]+" "+lastName[]': 'Volunteer'}}
+                            parser={({firstName,lastName, id}: any) => ({label: firstName +" "+ lastName, value: id})}
                             name="userId"
                             label="Volunteers"
                             variant='outlined'

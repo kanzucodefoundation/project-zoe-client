@@ -1,7 +1,7 @@
 export interface ICreateDayDto {    
     startDate: Date;
     endDate: Date;
-    taskInfo: string;
+    // taskInfo: string;
     
 
 }
