@@ -45,47 +45,45 @@ const containerStyles = (theme: Theme) => createStyles({
         width: theme.spacing(68),
         padding: 0,
         paddingBottom: theme.spacing(2),
-    },
-    content: {
+      },
+      content: {
         padding: theme.spacing(2),
         paddingTop: 0,
-        minWidth: 150,
-        maxWidth: 200,
-    },
-    header: {
+      },
+      header: {
         overflow: 'hidden',
         paddingTop: theme.spacing(0.5),
-    },
-    closeButton: {
+      },
+      closeButton: {
         float: 'left',
-    },
-    buttonGroup: {
+      },
+      buttonGroup: {
         display: 'flex',
-        justifyContent: 'flex-end',
+        justifyContent: 'flex-left',
         padding: theme.spacing(0, 2),
-    },
-    button: {
+      },
+      button: {
         marginLeft: theme.spacing(2),
-    },
-    picker: {
+      },
+      picker: {
         marginRight: theme.spacing(2),
         '&:last-child': {
-            marginRight: 0,
+          marginRight: 0,
         },
         width: '50%',
-    },
-    wrapper: {
+      },
+      wrapper: {
         display: 'flex',
         justifyContent: 'space-between',
         padding: theme.spacing(1, 0),
-    },
-    icon: {
+      },
+      icon: {
         margin: theme.spacing(2, 0),
         marginRight: theme.spacing(2),
-    },
-    textField: {
+      },
+      textField: {
         width: '100%',
-    },
+      },
 });
 
 class AppointmentFormContainerBasic extends React.PureComponent {
@@ -199,15 +197,71 @@ class AppointmentFormContainerBasic extends React.PureComponent {
                 fullSize
                 onHide={onHide}
             >
-                <div className={classes.header}>
-                    <IconButton
-                        className={classes.closeButton}
-                        onClick={cancelChanges}
-                    >
-                        <Close color="action" />
-                    </IconButton>
-                </div>
-                <AssignTask data={{}} />
+                <div> 
+          <div className={classes.header}>
+            <IconButton
+              className={classes.closeButton}
+              onClick={cancelChanges}
+            >
+              <Close color="action" />
+            </IconButton>
+          </div>
+          <AssignTask data={{}}  />
+
+          {/* <div className={classes.content}>
+            <div className={classes.wrapper}>
+              <Create className={classes.icon} color="action" />
+              <AssignTask data={{}}
+                {...textEditorProps('title')}
+              />
+            </div>
+            {/* <div className={classes.wrapper}>
+              <CalendarToday className={classes.icon} color="action" />
+              <MuiPickersUtilsProvider utils={MomentUtils}>
+                <AssignTask data={{}}
+                //   label="Start Date"
+                  {...pickerEditorProps('startDate')}
+                />
+                <AssignTask data={{}}
+                //   label="End Date"
+                  {...pickerEditorProps('endDate')}
+                />
+              </MuiPickersUtilsProvider>
+            </div>
+            <div className={classes.wrapper}>
+              <LocationOn className={classes.icon} color="action" />
+              <AssignTask data={{}}
+                {...textEditorProps('location')}
+              />
+            </div>
+          </div> */}
+          <div className={classes.buttonGroup}>
+            {!isNewAppointment && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                className={classes.button}
+                onClick={() => {
+                  visibleChange();
+                  this.commitAppointment('deleted');
+                }}
+              >
+                Delete
+              </Button>
+            )}
+            <Button
+              variant="outlined"
+              color="primary"
+              className={classes.button}
+              onClick={() => {
+                visibleChange();
+                applyChanges();
+              }}
+            >
+              {isNewAppointment ? 'Create' : 'Save'}
+            </Button>
+          </div> 
+        </div>
             </AppointmentForm.Overlay>
 
         );
@@ -286,7 +340,7 @@ class TeamLeadCalendar extends React.PureComponent {
 
     async componentDidMount() {
 
-        const res = await fetch(remoteRoutes.appointments);
+        const res = await fetch(remoteRoutes.userTasks);
         const json = await res.json();
         console.log(json);
 
@@ -294,11 +348,11 @@ class TeamLeadCalendar extends React.PureComponent {
         json.map((item: any, index: any) => {
             appoints.push({
                 id: item["id"],
-                taskId: item["taskId"],
-                startDate: new Date(item["startDate"]),
-                endDate: new Date(item["endDate"]),
-                title: item["taskInfo"],
-                userId: item["userId"],
+                title: item.appTask.task["taskName"],
+                startDate: new Date(item.appTask.app["startDate"]),
+                endDate: new Date(item.appTask.app["endDate"]),
+                // title: item["taskInfo "],
+                location: item.user["firstName "],
             })
             return ""
         });
