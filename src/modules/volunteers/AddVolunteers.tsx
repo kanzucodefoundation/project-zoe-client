@@ -60,7 +60,7 @@ const AddVolunteersForm = ({done}: IProps) => {
     const classes = useStyles();
 
     // Retrieve all persons so that the volunteer may be selected
-    const [persons, setPersons] = useState<any>({id: 0, contactId: 0, email: "", listOfPersons: []});
+    const [persons, setPersons] = useState<any>({id: 0, contactId: 0, firstName: "", email: "", listOfPersons: []});
     useEffect(() => {
         const fetchPersons = async () => {
             const result = await fetch(remoteRoutes.contactsPerson).then(
@@ -77,7 +77,9 @@ const AddVolunteersForm = ({done}: IProps) => {
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const toSave: ICreateAVolunteerDto = {         
             username: persons.email,
-            password: 'new_volunteer', // The default password for each new volunteer
+            password: Math.random().toString(36).slice(2) +  
+            Math.random().toString(36) 
+                .toUpperCase().slice(2), // Each volunteer has a random password stored in the database
             contactId: persons.contactId,
             roles: ["VOLUNTEER"]
         }
@@ -91,6 +93,25 @@ const AddVolunteersForm = ({done}: IProps) => {
         // Add person to user table
         post(remoteRoutes.users, toSave,
             () => {
+                // Then send email to new volunteer
+                // get a instance of sendgrid and set the API key
+                const sendgrid = require('@sendgrid/mail');
+                sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
+                const email = {
+                to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
+                from: process.env.REACT_APP_FROM, // must include email address of the sender
+                subject: 'You have been added as a Volunteer',
+                html: 'Hello ' + persons.firstName + ', <br>You have been added as a new volunteer at Worship Harvest Ministries serving in the ' + values.ministry.label + ' ministry. <br><br>Please use these details to log into your account on our platform; <br> Link to the platform: https://app.worshipharvest.org/ <br>Your email address: ' + persons.email + '<br>Your password: ' + toSave.password + '<br><br>You are most welcome!',
+                };// send the email via sendgrid
+                sendgrid.send(email)
+                .then(() => { Toast.info("A welcome email has been sent to the new volunteer") }, (error: { response: { body: any; }; }) => {
+                    console.error(error);
+                 
+                    if (error.response) {
+                      console.error(error.response.body)
+                    }
+                  });
+
                 // Add person to group_membership table
                 post(remoteRoutes.groupsMemberships, toSaveToGroupMemberships,
                     (data) => {
@@ -115,16 +136,23 @@ const AddVolunteersForm = ({done}: IProps) => {
 
     const handleChange = (value: any) => {
         const fetchEmail = async () => {
-            const fetchedEmail = await fetch(remoteRoutes.contactsEmail + "/" + value.id).then(
-                response => response.json()
-            )
+            const getEmail = fetch(remoteRoutes.contactsEmail + "/" + value.id)
+            const getPerson = fetch(remoteRoutes.contactsOnePerson + "/" + value.id)
 
-            setPersons({
-                ...persons,
-                id: value.id,
-                email: fetchedEmail.value,
-                contactId: fetchedEmail.contactId,
-            });
+            Promise.all([getEmail, getPerson]).then(async ([email, person]) => {
+                const fetchedEmail = await email.json()
+                const pickedPerson = await person.json()
+                
+                setPersons({
+                    ...persons,
+                    id: value.id,
+                    email: fetchedEmail.value,
+                    contactId: fetchedEmail.contactId,
+                    firstName: pickedPerson[0].firstName
+                })
+            }).catch(e => {
+                console.log(e)
+            })
         }
         fetchEmail();
     }
