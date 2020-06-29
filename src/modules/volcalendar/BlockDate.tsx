@@ -7,12 +7,13 @@ import XForm from "../../components/forms/XForm";
 
 import {remoteRoutes} from "../../data/constants";
 import {useDispatch} from 'react-redux';
-import {servicesConstants} from "../../data/volunteers/reducer";
+import {servicesConstants} from "../../data/blockedDates/reducer";
 import {post} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import {Box} from "@material-ui/core";
 import {ICreateABlockDateDto} from "./types";
 import XDateInput from "../../components/inputs/XTimeInput";
+import XTextInput from "../../components/inputs/XTextInput";
 
 import Navigation from "../../components/layout/Layout";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
@@ -39,22 +40,20 @@ interface IProps {
 // }
 
 const schema = yup.object().shape(
-    {
-        taskId: reqObject,
+    {        
         startDate: reqDate,
         endDate: reqDate,
-        taskInfo: reqString,
+        reason: reqString,
         userId: reqObject,
 
     }
 )
 
 const initialValues = {
-
-    taskId: '',
+    
     startDate: '',
     endDate: '',
-    taskInfo: '',
+    reason: '',
     userId: [],
 
 }
@@ -109,45 +108,36 @@ const BlockDateForm = ({done}: IProps) => {
     }, []);
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
-        const toSave: ICreateABlockDateDto = {         
+        const toSaveBlockedDateTable: ICreateABlockDateDto = {         
             username: persons.email,
             password: 'new_volunteer', // The default password for each new volunteer
             contactId: persons.contactId,
             roles: ["VOLUNTEER"],
-            taskInfo: values.taskInfo, 
+            reason: values.reason, 
             startDate: values.startDate,
             endDate: values.endDate
         }
         
-        // const toSaveToGroupMemberships: ICreateAMembershipDto = {
-        //     groupId: values.ministry.value,
-        //     contactId: persons.contactId,
-        //     role: "Volunteer",
-        // }
+        
 
-        // Add person to user table
-        // post(remoteRoutes.users, toSave,
-        //     () => {
-        //         // Add person to group_membership table
-        //         post(remoteRoutes.groupsMemberships, toSaveToGroupMemberships,
-        //             (data) => {
-        //                 Toast.info('Operation successful')
-        //                 actions.resetForm()
-        //                 dispatch({
-        //                     type: servicesConstants.servicesAddVolunteer,
-        //                     payload: {...data},
-        //                 })
-        //             }
-        //         )
-        //         if (done) {
-        //             done()
-        //         }
-        //     },
-        //     undefined,
-        //     () => {
-        //         actions.setSubmitting(false);
-        //     }
-        // )
+        // Add to blocked_date table
+        post(remoteRoutes.blockedDate, toSaveBlockedDateTable,
+            (data) => {
+            	Toast.info('Operation successful')
+                actions.resetForm()
+                dispatch({
+                    type: servicesConstants.servicesAddBlockedDate,
+                    payload: { ...data },
+                })
+                if (done)
+                    done()
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
+
+            }
+        )
     }
 
     const handleChange = (value: any) => {
@@ -187,16 +177,14 @@ const BlockDateForm = ({done}: IProps) => {
                                 getOptionLabel={(option) => option.firstName + " " + option.lastName}
                                 onChange={(event: any, value: any) => handleChange(value)} // prints the selected value
                                 renderInput={(params) => (
-                                <TextField {...params} label="Enter Volunteer Name" margin="normal" variant="outlined" />
+                                <TextField {...params} label="Enter Your Name" margin="normal" variant="outlined" />
                                 )}
                             />
 
-                            <XRemoteSelect
-                                remote={remoteRoutes.tasks}
-                                filter={{ 'taskName[]': '' }}
-                                parser={({ taskName, id }: any) => ({ label: taskName, value: id })}
-                                name="taskId"
-                                label="Task Name"
+                            <XTextInput
+                                name="reason"
+                                label="reason"
+                                type="text"
                                 variant='outlined'
                             />
 

@@ -17,8 +17,7 @@ import {
     DateNavigator,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { connectProps } from '@devexpress/dx-react-core';
-import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
+
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -29,49 +28,18 @@ import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
-import LocationOn from '@material-ui/icons/LocationOn';
-import Notes from '@material-ui/icons/Notes';
+
+
 import Close from '@material-ui/icons/Close';
-import CalendarToday from '@material-ui/icons/CalendarToday';
-import Create from '@material-ui/icons/Create';
 import Layout from "../../components/layout/Layout";
+import BlockDate from './BlockDate'
 import { remoteRoutes } from "../../data/constants";
-
-import { useState, useEffect } from 'react';
-import * as yup from "yup";
-import { reqDate, reqObject, reqString, reqArray } from "../../data/validations";
-import { FormikHelpers, Formik } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../components/forms/XForm";
-import XTextInput from "../../components/inputs/XTextInput";
-import XDateInput from "../../components/inputs/XTimeInput";
-import XSelectInput from "../../components/inputs/XSelectInput";
-import { toOptions } from "../../components/inputs/inputHelpers";
-import { useDispatch } from 'react-redux';
-import { servicesConstants } from "../../data/teamlead/reducer";
-import { post, put } from "../../utils/ajax";
-import Toast from "../../utils/Toast";
-import { XRemoteSelect } from "../../components/inputs/XRemoteSelect";
-import { Box, TextField } from "@material-ui/core";
-import { ICreateDayDto, ISaveToATT, ISaveToUTT } from "./types";
-import { isoDateString } from "../../utils/dateHelpers";
-import { makeStyles } from "@material-ui/core";
-import Header from "./Header";
-import { owners } from '../../data/teamlead/tasks';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
-import { enumToArray } from "../../utils/stringHelpers";
-import { ministryCategories } from "../../data/comboCategories";
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { id } from 'date-fns/locale';
-import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
-
+import { data, holidays } from './data';
+import Utils from './utils.js';
+import DataCell from './DataCell.js';
+import DateCell from './DateCell.js';
+import TimeCell from './TimeCell.js';
+import notify from 'devextreme/ui/notify';
 
 
 const containerStyles = (theme: Theme) => createStyles({
@@ -83,17 +51,19 @@ const containerStyles = (theme: Theme) => createStyles({
     content: {
         padding: theme.spacing(2),
         paddingTop: 0,
+        minWidth: 150,
+        maxWidth: 200,
     },
     header: {
         overflow: 'hidden',
         paddingTop: theme.spacing(0.5),
     },
     closeButton: {
-        float: 'right',
+        float: 'left',
     },
     buttonGroup: {
         display: 'flex',
-        justifyContent: 'flex-left',
+        justifyContent: 'flex-end',
         padding: theme.spacing(0, 2),
     },
     button: {
@@ -119,29 +89,6 @@ const containerStyles = (theme: Theme) => createStyles({
         width: '100%',
     },
 });
-
-
-// const data = [
-//     {
-//       taskId: 'Website Re-Design Plan',
-//       startDate: new Date(2020, 6, 28, 9, 35),
-//       endDate: new Date(2020, 6, 28, 11, 30),
-//       id: 0,
-//       userId: 'Room 1',
-//     }
-//   ];
-
-
-const data = [
-    {
-      taskId: 'Website Re-Design Plan',
-      startDate: new Date(2020, 6, 28, 9, 35),
-      endDate: new Date(2020, 6, 28, 11, 30),
-      id: 0,
-      userId: 'Room 1',
-    }
-  ];
-
 
 class AppointmentFormContainerBasic extends React.PureComponent {
     getAppointmentData: () => any;
@@ -212,32 +159,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
         };
 
         const isNewAppointment = appointmentData.id === undefined;
-        const applyChanges = isNewAppointment
-            ? () => this.commitAppointment('added')
-            : () => this.commitAppointment('changed');
-
-        const textEditorProps = (field: string) => ({
-            // variant: 'outlined |filled | standard| undefined',
-            onChange: ({ target: change }: any) => this.changeAppointment({
-                field: [field], changes: change.value,
-            }),
-            value: displayAppointmentData[field] || '',
-            label: field[0].toUpperCase() + field.slice(1),
-            className: classes.textField,
-        });
-
-        const pickerEditorProps = (field: string) => ({
-            className: classes.picker,
-            keyboard: true,
-            ampm: false,
-            value: displayAppointmentData[field],
-            onChange: (date: { toDate: () => any; }) => this.changeAppointment({
-                field: [field], changes: date ? date.toDate() : new Date(displayAppointmentData[field]),
-            }),
-            inputVariant: 'outlined',
-            format: 'DD/MM/YYYY HH:mm',
-            onError: () => null,
-        });
+        
 
         const cancelChanges = () => {
             this.setState({
@@ -247,202 +169,25 @@ class AppointmentFormContainerBasic extends React.PureComponent {
             cancelAppointment();
         };
 
-        interface IProps {
-            data: any | null
-            done?: () => any
-        }
-
-
-        const schema = yup.object().shape(
-            {
-                taskId: reqObject,
-                startDate: reqDate,
-                endDate: reqDate,
-                userId: reqArray,
-            }
-        )
-
-        const initialValues = {
-            taskId: '',
-            startDate: '',
-            endDate: '',
-            userId: [],
-        }
-
-        const AssignTask = ({ done }: IProps) => {
-            const dispatch = useDispatch();
-            function appointmentTasks(values: any, actions: any, id: any) {
-                const toSaveAppointmentTaskTable: ISaveToATT = {
-                    appointmentId: id,
-                    taskId: values.taskId.value,
-                }
-
-                post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
-                    (data) => {
-                        // console.log("appointment")
-                        userTask(values, actions, data.id)
-                    },
-                    undefined,
-                    () => {
-                        actions.setSubmitting(false);
-                    }
-                )
-            }
-
-            function userTask(values: any, actions: any, id: any) {
-                // console.log("tasksffff")
-                // console.log(values)
-                // console.log(values.userId)
-                values.userId.map((item: any, index: any) => {
-                    const toSaveUserTaskTable: ISaveToUTT = {
-                        appointmentTaskId: id,
-                        userId: item.value,
-                    }
-                    post(remoteRoutes.userTask, toSaveUserTaskTable,
-                        (data) => {
-                            // console.log("usertask")
-                            if (index === values.userId.length - 1) {
-                                Toast.info('Operation successful')
-                                actions.resetForm()
-                                dispatch({
-                                    type: servicesConstants.servicesAddDay,
-                                    payload: { ...data },
-                                })
-                                if (done)
-                                    done()
-                            }
-                        },
-                        undefined,
-                        () => {
-                            actions.setSubmitting(false);
-                            // console.log("data")
-                        }
-
-                    )
-                })
-            }
-
-            function handleSubmit(values: any, actions: FormikHelpers<any>) {
-                const toSave: ICreateDayDto = {
-                    startDate: values.startDate,
-                    endDate: values.endDate,
-                }
-                // console.log(values)
-
-                post(remoteRoutes.appointments, toSave,
-                    (data) => {
-                        // console.log(data, data.id)
-                        appointmentTasks(values, actions, data.id);
-                    },
-                    undefined,
-                    () => {
-                        actions.setSubmitting(false);
-                    }
-                )
-            }
-            // handleSubmit(values, actions)
-        }
-
-console.log(appointmentData)
-
         return (
             <AppointmentForm.Overlay
                 visible={visible}
                 target={target}
-                fullSize={false}
+                fullSize
                 onHide={onHide}
             >
-
-
-                <div>
-                    <div className={classes.header}>
-                        <IconButton
-                            className={classes.closeButton}
-                            onClick={cancelChanges}
-                        >
-                            <Close color="action" />
-                        </IconButton>
-                    </div>
-                    <XForm
-                        onSubmit={AssignTask}
-                        schema={schema}
-                        initialValues={initialValues}
+                <div className={classes.header}>
+                    <IconButton
+                        className={classes.closeButton}
+                        onClick={cancelChanges}
                     >
-                        <div className={classes.content}>
-                            <div className={classes.wrapper}>
-                                <Create className={classes.icon} color="action" />
-                                <XRemoteSelect
-                                    remote={remoteRoutes.tasks}
-                                    filter={{ 'taskName[]': '' }}
-                                    parser={({ taskName, id }: any) => ({ label: taskName, value: id })}
-                                    name="taskId"
-                                    variant='outlined'
-                                    {...textEditorProps('Task Name')}
-                                />
-                            </div>
-                            <div className={classes.wrapper}>
-                                <CalendarToday className={classes.icon} color="action" />
-                                <MuiPickersUtilsProvider utils={MomentUtils}>
-                                    <XDateInput
-                                        {...pickerEditorProps('startDate')}
-                                        name="startDate"
-                                        label="Start Date"
-                                    />
-                                    <XDateInput
-                                        {...pickerEditorProps('endDate')}
-                                        name="endDate"
-                                        label="End Date"
-                                    />
-                                </MuiPickersUtilsProvider>
-                            </div>
-                            <div className={classes.wrapper}>
-                                <EmojiPeopleIcon className={classes.icon} color="action" />
-                                <XRemoteSelect
-                                    multiple
-                                    remote={remoteRoutes.contactsPerson}
-                                    filter={{ 'firstName[]+" "+lastName[]': 'Volunteer' }}
-                                    parser={({ firstName, lastName, id }: any) => ({ label: firstName + " " + lastName, value: id })}
-                                    name="userId"
-                                    variant='outlined'
-                                    {...textEditorProps('Volunteers')}
-                                />
-                            </div>
-                        </div>
-                    </XForm>
-                    <div className={classes.buttonGroup}>
-                        {!isNewAppointment && (
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                className={classes.button}
-                                onClick={() => {
-                                    visibleChange();
-                                    this.commitAppointment('deleted');
-                                }}
-                            >
-                                Delete
-                            </Button>
-                        )}
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            className={classes.button}
-                            onClick={() => {
-                                visibleChange();
-                                applyChanges();
-                            }}
-                        //   onSubmit={AssignTask}
-                        >
-                            {isNewAppointment ? 'Create' : 'Save'}
-                        </Button>
-                    </div>
+                        <Close color="action" />
+                    </IconButton>
                 </div>
-
-
+                <BlockDate data={{}} />
             </AppointmentForm.Overlay>
 
         );
-
     }
 }
 
@@ -457,11 +202,11 @@ const styles = (theme: Theme) => createStyles({
 });
 
 /* eslint-disable-next-line react/no-multi-comp */
-class TeamLeadCalendar extends React.PureComponent {
+class VolunteerCalendar extends React.PureComponent {
     appointmentForm: (React.ComponentClass<any, any> & { update(): void; }) | (React.FunctionComponent<any> & { update(): void; });
     cancelDelete: ((event: {}, reason: "backdropClick" | "escapeKeyDown") => void) | undefined;
     constructor(props: any) {
-        super(props);
+        super(props);        
         this.state = {
             data: data,
             currentDate: new Date(),
@@ -474,6 +219,16 @@ class TeamLeadCalendar extends React.PureComponent {
             startDayHour: 9,
             endDayHour: 19,
             isNewAppointment: false,
+            views: [{
+            type: "week",
+            dataCellTemplate: function(data: any, index: any, element: any){
+               console.log(data);
+              if(data.startDate.getDay() < 3 || data.endDate.getDay()< 3)
+                 element.css("backgroundColor", "gray")
+                return element;
+                
+            }
+        }],
         };
 
         this.toggleConfirmationVisible = this.toggleConfirmationVisible.bind(this);
@@ -514,27 +269,86 @@ class TeamLeadCalendar extends React.PureComponent {
                 cancelAppointment,
             };
         });
+
+        this.onAppointmentFormOpening = this.onAppointmentFormOpening.bind(this);
+        this.onAppointmentAdding = this.onAppointmentAdding.bind(this);
+        this.onAppointmentUpdating = this.onAppointmentUpdating.bind(this);
     }
+
+    onAppointmentFormOpening(e: any) {
+        const startDate = new Date(e.appointmentDate.startDate);
+        if(!Utils.isValidAppointmentDate(startDate)) {
+            e.cancel = true;
+            this.notifyDisableDate();
+        }
+        this.applyDisableDatesToDateEditors(e.form);
+    }
+
+    onAppointmentAdding(e: any) {
+        const isValidAppointment = Utils.isValidAppointment(e.component, e.appointmentData);
+        if(!isValidAppointment) {
+            e.cancel = true;
+            this.notifyDisableDate();
+        }
+    }
+    
+    onAppointmentUpdating(e: any) {
+        const isValidAppointment = Utils.isValidAppointment(e.component, e.newData);
+        if(!isValidAppointment) {
+            e.cancel = true;
+            this.notifyDisableDate();
+        }
+    }
+    
+    notifyDisableDate() {
+        notify('Cannot create or move an appointment/event to disabled time/date regions.', 'warning', 1000);
+    }
+    
+    applyDisableDatesToDateEditors(form: any) {
+        const startDateEditor = form.getEditor('startDate');
+        startDateEditor.option('disabledDates', holidays);
+
+        const endDateEditor = form.getEditor('endDate');
+        endDateEditor.option('disabledDates', holidays);
+    }
+    
+    renderDataCell(itemData: any) {
+        return <DataCell itemData={itemData} />;
+    } 
+    
+    renderDateCell(itemData: any) {
+        return <DateCell itemData={itemData} />;
+    }
+
+    renderTimeCell(itemData: any) {
+        return <TimeCell itemData={itemData} />;
+    }  
+
+  
 
     async componentDidMount() {
 
-        const res = await fetch(remoteRoutes.userTasks);
+        const res = await fetch(remoteRoutes.appointments);
         const json = await res.json();
-        // console.log(json);
+        console.log(json);
+
 
         const appoints: any = [];
         json.map((item: any, index: any) => {
             appoints.push({
                 id: item["id"],
-                title: item.appTask.task["taskName"],
-                startDate: new Date(item.appTask.app["startDate"]),
-                endDate: new Date(item.appTask.app["endDate"]),
-                location: item.user["firstName "],
+                taskId: item["taskId"],
+                startDate: new Date(item["startDate"]),
+                endDate: new Date(item["endDate"]),
+                title: item["taskInfo"],
+                userId: item["userId"],
+
+
             })
             return ""
         });
 
-        // console.log(appoints);
+        console.log(appoints);
         this.setState({
             data: appoints
         })
@@ -623,7 +437,7 @@ class TeamLeadCalendar extends React.PureComponent {
                         data={data}
                         height={660}
                     >
-
+                        
                         <EditingState
                             onCommitChanges={this.commitChanges}
                             onEditingAppointmentChange={this.onEditingAppointmentChange}
@@ -639,25 +453,25 @@ class TeamLeadCalendar extends React.PureComponent {
                             endDayHour={endDayHour}
                         />
                         <DayView
-                            startDayHour={0}
+                            startDayHour={0}    
                             endDayHour={24}
                         />
 
                         <AllDayPanel />
                         <Appointments />
-
+                       
                         <Toolbar />
                         <DateNavigator />
 
                         <EditRecurrenceMenu />
-
+                      
                         <AppointmentTooltip
                             showOpenButton
                             showCloseButton
                             showDeleteButton
                         />
-
-
+                        
+                       
                         <ViewSwitcher />
                         <AppointmentForm
                             overlayComponent={this.appointmentForm}
@@ -673,20 +487,28 @@ class TeamLeadCalendar extends React.PureComponent {
                     >
                         <DialogTitle>
                             Delete Appointment
-          </DialogTitle>
+                        </DialogTitle>
+
                         <DialogContent>
+
                             <DialogContentText>
                                 Are you sure you want to delete this appointment?
-            </DialogContentText>
+                            </DialogContentText>
+
                         </DialogContent>
+
                         <DialogActions>
+                        
                             <Button onClick={this.toggleConfirmationVisible} color="primary" variant="outlined">
                                 Cancel
-            </Button>
+                            </Button>
+
                             <Button onClick={this.commitDeletedAppointment} color="secondary" variant="outlined">
                                 Delete
-            </Button>
+                            </Button>
+
                         </DialogActions>
+
                     </Dialog>
 
                     <Fab
@@ -709,4 +531,4 @@ class TeamLeadCalendar extends React.PureComponent {
     }
 }
 
-export default withStyles(styles, { name: 'EditingCalendar' })(TeamLeadCalendar);
+export default withStyles(styles, { name: 'EditingCalendar' })(VolunteerCalendar);

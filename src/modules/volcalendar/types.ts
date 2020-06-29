@@ -3,7 +3,7 @@ export interface ICreateABlockDateDto {
     password: string;
     contactId: number;
     roles: [string];
-    taskInfo: string;
+    reason: string;
     startDate: Date;
     endDate: Date;
 }

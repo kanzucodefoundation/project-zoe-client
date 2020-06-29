@@ -44,6 +44,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.volviewteam} component={VolViewTeam}/> */}
         <Route path={localRoutes.addTasks} component={AddTasks} />
         <Route path={localRoutes.viewTasks} component={ViewTasks} />
+        <Route path={localRoutes.assignedtasks} component={assignedtasks} />
         <Route component={NoMatch}/>
       </Switch>
     )
