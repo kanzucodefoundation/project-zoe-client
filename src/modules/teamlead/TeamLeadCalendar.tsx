@@ -143,6 +143,269 @@ const data = [
   ];
 
 
+
+
+
+  interface IProps {
+    data: any | null
+    done?: () => any
+}
+
+const schema = yup.object().shape(
+    {
+        taskId: reqObject,
+        startDate: reqDate,
+        endDate: reqDate,
+        userId: reqArray,
+    }
+)
+
+const initialValues = {
+    taskId: '',
+    startDate: '',
+    endDate: '',
+    userId: [],
+}
+
+const RightPadded = ({ children, ...props }: any) => <Grid item xs={6}>
+    <Box pr={1} {...props}>
+        {children}
+    </Box>
+</Grid>
+
+const LeftPadded = ({ children, ...props }: any) => <Grid item xs={6}>
+    <Box pl={1} {...props}>
+        {children}
+    </Box>
+</Grid>
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        formControl: {
+            margin: theme.spacing(1),
+            minWidth: 120,
+            maxWidth: 300,
+        },
+        root: {
+            flexGrow: 1,
+        },
+        filterPaper: {
+            borderRadius: 0,
+            padding: theme.spacing(2)
+        },
+        fab: {
+            position: 'absolute',
+            bottom: theme.spacing(2),
+            right: theme.spacing(2),
+        },
+        icon: {
+            margin: theme.spacing(2, 0),
+            marginRight: theme.spacing(2),
+        },
+        wrapper: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: theme.spacing(1, 0),
+        },
+        content: {
+            padding: theme.spacing(2),
+            paddingTop: 0,
+        },
+        textField: {
+            width: '100%',
+        },
+    }),
+);
+
+const AssignTask = ({ done }: IProps) => {
+    
+    const dispatch = useDispatch();
+    const classes = useStyles();
+    function appointmentTasks(values: any, actions: any, id: any) {
+        const toSaveAppointmentTaskTable: ISaveToATT = {
+            appointmentId: id,
+            taskId: values.taskId.value,
+        }
+
+        post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
+            (data) => {
+                console.log("appointment")
+                userTask(values, actions, data.id)
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
+            }
+        )
+    }
+
+    function userTask(values: any, actions: any, id: any) {
+        console.log("tasksffff")
+        console.log(values)
+        console.log(values.userId)
+        values.userId.map((item: any, index: any) => {
+            const toSaveUserTaskTable: ISaveToUTT = {
+                appointmentTaskId: id,
+                userId: item.value,
+            }
+            post(remoteRoutes.userTask, toSaveUserTaskTable,
+                (data) => {
+                    console.log("usertask")
+                    if (index === values.userId.length - 1) {
+                        Toast.info('Operation successful')
+                        actions.resetForm()
+                        dispatch({
+                            type: servicesConstants.servicesAddDay,
+                            payload: { ...data },
+                        })
+                        if (done)
+                            done()
+                    }
+                },
+                undefined,
+                () => {
+                    actions.setSubmitting(false);
+                    console.log("data")
+                }
+
+            )
+        })
+    }
+
+    function handleSubmit(values: any, actions: FormikHelpers<any>) {
+        const toSave: ICreateDayDto = {
+            startDate: values.startDate,
+            endDate: values.endDate,
+        }
+        console.log(values)
+
+        post(remoteRoutes.appointments, toSave,
+            (data) => {
+                console.log(data, data.id)
+                appointmentTasks(values, actions, data.id);
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
+            }
+        )
+    }
+
+    const [persons, setPersons] = useState<any>({ id: 0, contacts: [], listOfPersons: [] });
+    useEffect(() => {
+        const fetchPersons = async () => {
+            const result = await fetch(remoteRoutes.contactsPerson).then(
+                response => response.json()
+            )
+            setPersons({
+                ...persons,
+                listOfPersons: result
+            });
+        }
+        fetchPersons();
+    }, []);
+
+    const handleChange = (value: any) => {
+        let contacts: number[] = [];
+        for (let index = 0; index < value.length; index++) {
+            const user = value[index];
+            contacts.push(user.contactId)
+        }
+        setPersons({
+            ...persons,
+            contacts: contacts,
+        });
+    }
+
+
+    // changeAppointment({ field, changes }: any) {
+    //     const nextChanges = {
+    //         ...this.getAppointmentChanges(),
+    //         [field]: changes,
+    //     };
+    //     this.setState({
+    //         appointmentChanges: nextChanges,
+    //     });
+    // }
+
+    // const displayAppointmentData = {
+    //     ...appointmentData,
+    //     ...appointmentChanges,
+    // };
+
+
+    // const textEditorProps = (field: string) => ({
+    //     // variant: 'outlined |filled | standard| undefined',
+    //     onChange: ({ target: change }: any) => this.changeAppointment({
+    //         field: [field], changes: change.value,
+    //     }),
+    //     value: displayAppointmentData[field] || '',
+    //     label: field[0].toUpperCase() + field.slice(1),
+    //     className: classes.textField,
+    // });
+
+    return (
+        <Box p={1} className={classes.root}>
+            <Header title="Assign Volunteers Task" />
+            {/* <Grid item xs={12}> */}
+                <XForm
+                    onSubmit={handleSubmit}
+                    schema={schema}
+                    initialValues={initialValues}
+                >
+                    <div className={classes.content}>
+                        <div className={classes.wrapper}>
+                                <Create className={classes.icon} color="action" />
+                            <XRemoteSelect
+                                remote={remoteRoutes.tasks}
+                                filter={{ 'taskName[]': '' }}
+                                parser={({ taskName, id }: any) => ({ label: taskName, value: id })}
+                                name="taskId"
+                                label="Task Name"
+                                variant='outlined'
+                                // {...textEditorProps('Task Name')}
+                            />
+                            </div>
+                        <div className={classes.wrapper}>
+                                <CalendarToday className={classes.icon} color="action" />
+                        <RightPadded>
+                            <XDateInput
+                                name="startDate"
+                                label="Start Date"
+                            />
+                        </RightPadded>
+                        <LeftPadded>
+                            <XDateInput
+                                name="endDate"
+                                label="End Date"
+                            />
+                        </LeftPadded>
+                        </div>
+                        <div className={classes.wrapper}>
+                        <EmojiPeopleIcon className={classes.icon} color="action" />
+                            <XRemoteSelect
+                                multiple
+                                remote={remoteRoutes.contactsPerson}
+                                filter={{ 'firstName[]+" "+lastName[]': 'Volunteer' }}
+                                parser={({ firstName, lastName, id }: any) => ({ label: firstName + " " + lastName, value: id })}
+                                name="userId"
+                                label="Volunteers"
+                                variant='outlined'
+                            />
+                             </div>
+                    </div>
+                </XForm>
+            {/* </Grid> */}
+        </Box>
+    );
+}
+
+
+
+
+
+
+
 class AppointmentFormContainerBasic extends React.PureComponent {
     getAppointmentData: () => any;
     getAppointmentChanges: () => any;
@@ -247,103 +510,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
             cancelAppointment();
         };
 
-        interface IProps {
-            data: any | null
-            done?: () => any
-        }
-
-
-        const schema = yup.object().shape(
-            {
-                taskId: reqObject,
-                startDate: reqDate,
-                endDate: reqDate,
-                userId: reqArray,
-            }
-        )
-
-        const initialValues = {
-            taskId: '',
-            startDate: '',
-            endDate: '',
-            userId: [],
-        }
-
-        const AssignTask = ({ done }: IProps) => {
-            const dispatch = useDispatch();
-            function appointmentTasks(values: any, actions: any, id: any) {
-                const toSaveAppointmentTaskTable: ISaveToATT = {
-                    appointmentId: id,
-                    taskId: values.taskId.value,
-                }
-
-                post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
-                    (data) => {
-                        // console.log("appointment")
-                        userTask(values, actions, data.id)
-                    },
-                    undefined,
-                    () => {
-                        actions.setSubmitting(false);
-                    }
-                )
-            }
-
-            function userTask(values: any, actions: any, id: any) {
-                // console.log("tasksffff")
-                // console.log(values)
-                // console.log(values.userId)
-                values.userId.map((item: any, index: any) => {
-                    const toSaveUserTaskTable: ISaveToUTT = {
-                        appointmentTaskId: id,
-                        userId: item.value,
-                    }
-                    post(remoteRoutes.userTask, toSaveUserTaskTable,
-                        (data) => {
-                            // console.log("usertask")
-                            if (index === values.userId.length - 1) {
-                                Toast.info('Operation successful')
-                                actions.resetForm()
-                                dispatch({
-                                    type: servicesConstants.servicesAddDay,
-                                    payload: { ...data },
-                                })
-                                if (done)
-                                    done()
-                            }
-                        },
-                        undefined,
-                        () => {
-                            actions.setSubmitting(false);
-                            // console.log("data")
-                        }
-
-                    )
-                })
-            }
-
-            function handleSubmit(values: any, actions: FormikHelpers<any>) {
-                const toSave: ICreateDayDto = {
-                    startDate: values.startDate,
-                    endDate: values.endDate,
-                }
-                // console.log(values)
-
-                post(remoteRoutes.appointments, toSave,
-                    (data) => {
-                        // console.log(data, data.id)
-                        appointmentTasks(values, actions, data.id);
-                    },
-                    undefined,
-                    () => {
-                        actions.setSubmitting(false);
-                    }
-                )
-            }
-            // handleSubmit(values, actions)
-        }
-
-console.log(appointmentData)
+       
 
         return (
             <AppointmentForm.Overlay
@@ -352,18 +519,44 @@ console.log(appointmentData)
                 fullSize={false}
                 onHide={onHide}
             >
-
-
                 <div>
-                    <div className={classes.header}>
-                        <IconButton
-                            className={classes.closeButton}
-                            onClick={cancelChanges}
+                <div className={classes.header}>
+            <IconButton
+              className={classes.closeButton}
+              onClick={cancelChanges}
+            >
+              <Close color="action" />
+            </IconButton>
+          </div>
+          <AssignTask data={{}}  />
+          <div className={classes.buttonGroup}>
+                        {!isNewAppointment && (
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                className={classes.button}
+                                onClick={() => {
+                                    visibleChange();
+                                    this.commitAppointment('deleted');
+                                }}
+                            >
+                                Delete
+                            </Button>
+                        )}
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            className={classes.button}
+                            onClick={() => {
+                                visibleChange();
+                                applyChanges();
+                            }}
                         >
-                            <Close color="action" />
-                        </IconButton>
+                            {isNewAppointment ? 'Create' : 'Save'}
+                        </Button>
                     </div>
-                    <XForm
+                    
+                    {/* <XForm
                         onSubmit={AssignTask}
                         schema={schema}
                         initialValues={initialValues}
@@ -436,9 +629,9 @@ console.log(appointmentData)
                             {isNewAppointment ? 'Create' : 'Save'}
                         </Button>
                     </div>
-                </div>
+               */}
 
-
+</div>
             </AppointmentForm.Overlay>
 
         );
