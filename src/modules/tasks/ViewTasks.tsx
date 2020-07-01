@@ -1,54 +1,44 @@
 import React, { useEffect, useState } from "react";
-import Layout from "../../../components/layout/Layout";
-import { XHeadCell } from "../../../components/table/XTableHead";
+import Layout from "../../components/layout/Layout";
+import { XHeadCell } from "../../components/table/XTableHead";
 import { Avatar } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import Header from "../../contacts/Header";
-import DataList from "../../../components/DataList";
-import { AddFabButton } from "../../../components/EditIconButton";
-import { search } from "../../../utils/ajax";
-import { remoteRoutes } from "../../../data/constants";
-import { hasValue } from "../../../components/inputs/inputHelpers";
-import PersonIcon from "@material-ui/icons/Person";
+import Header from "./Header";
+import DataList from "../../components/DataList";
+import { AddFabButton } from "../../components/EditIconButton";
+import { search } from "../../utils/ajax";
+import { remoteRoutes } from "../../data/constants";
+import { hasValue } from "../../components/inputs/inputHelpers";
+import PeopleIcon from "@material-ui/icons/People";
 import Hidden from "@material-ui/core/Hidden";
-import EditDialog from "../../../components/EditDialog";
-import UserEditor from "./UserEditor";
-import Loading from "../../../components/Loading";
-
+import EditDialog from "../../components/EditDialog";
+import TaskEditor from "./TaskEditor";
+import { ICreateTaskDto } from "./Types";
+import Loading from "../../components/Loading";
+import { FormikHelpers } from "formik"
 const columns: XHeadCell[] = [
+  
   {
-    name: "avatar",
-    label: "Avatar",
-    render: (data) => {
-      const hasAvatar = hasValue(data);
-      return hasAvatar ? (
-        <Avatar alt="Avatar" src={data} />
-      ) : (
-        <Avatar>
-          <PersonIcon />
-        </Avatar>
-      );
-    },
-    cellProps: {
-      width: 50,
-    },
+    name: "id",
+    label: "ID",
   },
   {
-    name: "username",
-    label: "Username",
+    name: "ministry",
+    label: "Ministry",
   },
   {
-    name: "fullName",
-    label: "Full Name",
-    cellProps: {
-      component: "th",
-      scope: "row",
-    },
+    name: "taskName",
+    label: "Task Name",
+  },
+
+  {
+    name: "taskDescription",
+    label: "Task Description",
   },
   {
-    name: "group",
-    label: "Group",
+    name: "status",
+    label: "Status",
   },
 ];
 
@@ -64,25 +54,28 @@ const toMobile = (data: any): IMobileRow => {
     avatar: hasAvatar ? (
       <Avatar alt="Avatar" src={data.person.avatar} />
     ) : (
-      <Avatar>
-        <PersonIcon />
-      </Avatar>
-    ),
-    primary: data.fullName,
+        <Avatar>
+          <PeopleIcon />
+        </Avatar>
+      ),
+    primary: data.ministry,
     secondary: (
       <>
         <Typography variant="caption" color="textSecondary" display="block">
-          {data.email}
+          {data.taskName}
         </Typography>
         <Typography variant="caption" color="textSecondary">
-          {data.username}
+          {data.taskDescription}
+        </Typography>
+        <Typography variant="caption" color="textSecondary">
+          {data.status}
         </Typography>
       </>
     ),
   };
 };
 
-const Users = () => {
+const Tasks = () => {
   const [filter, setFilter] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<any[]>([]);
@@ -91,7 +84,7 @@ const Users = () => {
   useEffect(() => {
     setLoading(true);
     search(
-      remoteRoutes.users,
+      remoteRoutes.tasks,
       filter,
       (resp) => {
         setData(resp);
@@ -111,12 +104,13 @@ const Users = () => {
   }
 
   const handleEdit = (dt: any) => {
-    const { id, username, contactId, fullName, groupId, group } = dt;
+    const { id, ministry, taskName, taskDescription, status } = dt;
     const toEdit = {
       id,
-      username,
-      group: { id: groupId, label: group },
-      contact: { id: contactId, label: fullName },
+      ministry,
+      taskName,
+      taskDescription,
+      status
     };
     setSelected(toEdit);
     setDialog(true);
@@ -139,35 +133,35 @@ const Users = () => {
     setSelected(null);
     setDialog(false);
   };
-
+  
   return (
     <Layout>
       <Box p={2}>
-        <Header title="Users" onAddNew={handleNew} onChange={handleFilter} />
+        
         {loading ? (
           <Loading />
         ) : (
-          <DataList
-            data={data}
-            toMobileRow={toMobile}
-            columns={columns}
-            onEditClick={handleEdit}
-          />
-        )}
+          
+            <DataList
+              data={data}
+              toMobileRow={toMobile}
+              columns={columns}
+              onEditClick={handleEdit}
+            />
+          )}
       </Box>
       <Hidden mdUp>
         <AddFabButton onClick={handleNew} />
       </Hidden>
       <EditDialog
-        title={selected ? "Edit User" : "Create User"}
+        title={selected ? "Edit Task" : "Create Task"}
         open={dialog}
         onClose={handleClose}
       >
-        <UserEditor data={selected} isNew={!selected} done={handleComplete} />
+        <TaskEditor data={selected} isNew={!selected} done={handleComplete} />
       </EditDialog>
     </Layout>
   );
 };
 
-export default Users;
-
+export default Tasks;

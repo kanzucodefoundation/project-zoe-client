@@ -1,0 +1,16 @@
+.name {
+  display: inline-block;
+  font-size: 1.4em;
+  background: #4169e1;
+  color: #fff;
+  border-radius: 4px;
+  padding: 4px 10px;
+}
+
+.highlight {
+  background: #dc143c;
+}
+
+.disabled {
+  background: #999;
+}

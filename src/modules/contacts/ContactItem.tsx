@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         avatar: {
             width: 40,
-            height: 40,
+            height: 40
         },
         header: {
             paddingBottom: theme.spacing(1),

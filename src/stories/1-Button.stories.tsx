@@ -16,3 +16,6 @@ export const Emoji = () => (
     </span>
   </Button>
 );
+export const BlueButton = () => (
+  <Button onClick={action("clicked")}>HelloBlue</Button>   
+);

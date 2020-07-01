@@ -1,28 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import * as yup from "yup";
-import {reqDate, reqObject, reqString} from "../../data/validations";
-import {ministryCategories} from "../../data/comboCategories";
+import {reqString} from "../../data/validations";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
-import XTextInput from "../../components/inputs/XTextInput";
-import XDateInput from "../../components/inputs/XDateInput";
-import XSelectInput from "../../components/inputs/XSelectInput";
-import {toOptions} from "../../components/inputs/inputHelpers";
 
 import {remoteRoutes} from "../../data/constants";
 import {useDispatch} from 'react-redux';
 import {servicesConstants} from "../../data/volunteers/reducer";
 import {post} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
-import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
-import {ICreateVolunteerDto} from "./types";
-import {isoDateString} from "../../utils/dateHelpers";
+import {ICreateAVolunteerDto, ICreateAMembershipDto} from "./types";
 
 import Navigation from "../../components/layout/Layout";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Header from "./Header";
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 
 interface IProps {
     data: any | null
@@ -32,36 +30,12 @@ interface IProps {
 const schema = yup.object().shape(
     {
         ministry: reqString,
-        firstName: reqString,
-        surname: reqString,
-        dateOfBirth: reqDate,
-        missionalCommunity: reqObject,
-        profession: reqString
     }
 )
 
 const initialValues = {
-
     ministry: '',
-    firstName: '',
-    surname: '',
-    dateOfBirth: '',
-    missionalCommunity: null,
-    profession: '',
-
 }
-
-const RightPadded = ({children,...props}: any) => <Grid item xs={6}>
-    <Box pr={1} {...props}>
-        {children}
-    </Box>
-</Grid>
-
-const LeftPadded = ({children,...props}: any) => <Grid item xs={6}>
-    <Box pl={1} {...props}>
-        {children}
-    </Box>
-</Grid>
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -85,38 +59,103 @@ const AddVolunteersForm = ({done}: IProps) => {
     const dispatch = useDispatch();
     const classes = useStyles();
 
+    // Retrieve all persons so that the volunteer may be selected
+    const [persons, setPersons] = useState<any>({id: 0, contactId: 0, firstName: "", email: "", listOfPersons: []});
+    useEffect(() => {
+        const fetchPersons = async () => {
+            const result = await fetch(remoteRoutes.contactsPerson).then(
+                response => response.json()
+            )
+            setPersons({
+                ...persons,
+                listOfPersons: result
+            });
+        }
+        fetchPersons();
+    }, []);
+
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
-
-        const toSave: ICreateVolunteerDto = {
-
-            ministry: values.ministry,
-            firstName: values.firstName,
-            surname: values.surname,
-            dateOfBirth: isoDateString(values.dateOfBirth),
-            missionalCommunity: values.missionalCommunity.value,
-            profession: values.profession,
-
+        const toSave: ICreateAVolunteerDto = {         
+            username: persons.email,
+            password: Math.random().toString(36).slice(2) +  
+            Math.random().toString(36) 
+                .toUpperCase().slice(2), // Each volunteer has a random password stored in the database
+            contactId: persons.contactId,
+            roles: ["VOLUNTEER"]
+        }
+        
+        const toSaveToGroupMemberships: ICreateAMembershipDto = {
+            groupId: values.ministry.value,
+            contactId: persons.contactId,
+            role: "Volunteer",
         }
 
-        post(remoteRoutes.volunteers, toSave,
-            (data) => {
-                Toast.info('Operation successful')
-                actions.resetForm()
-                dispatch({
-                    type: servicesConstants.servicesAddVolunteer,
-                    payload: {...data},
-                })
-                if (done)
+        // Add person to user table
+        post(remoteRoutes.users, toSave,
+            () => {
+                // Then send email to new volunteer
+                // get a instance of sendgrid and set the API key
+                const sendgrid = require('@sendgrid/mail');
+                sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
+                const email = {
+                to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
+                from: process.env.REACT_APP_FROM, // must include email address of the sender
+                subject: 'You have been added as a Volunteer',
+                html: 'Hello ' + persons.firstName + ', <br>You have been added as a new volunteer at Worship Harvest Ministries serving in the ' + values.ministry.label + ' ministry. <br><br>Please use these details to log into your account on our platform; <br> Link to the platform: https://app.worshipharvest.org/ <br>Your email address: ' + persons.email + '<br>Your password: ' + toSave.password + '<br><br>You are most welcome!',
+                };// send the email via sendgrid
+                sendgrid.send(email)
+                .then(() => { Toast.info("A welcome email has been sent to the new volunteer") }, (error: { response: { body: any; }; }) => {
+                    console.error(error);
+                 
+                    if (error.response) {
+                      console.error(error.response.body)
+                    }
+                  });
+
+                // Add person to group_membership table
+                post(remoteRoutes.groupsMemberships, toSaveToGroupMemberships,
+                    (data) => {
+                        Toast.info('Operation successful')
+                        actions.resetForm()
+                        dispatch({
+                            type: servicesConstants.servicesAddVolunteer,
+                            payload: {...data},
+                        })
+                    }
+                )
+                if (done) {
                     done()
+                }
             },
             undefined,
             () => {
                 actions.setSubmitting(false);
-
             }
         )
     }
 
+    const handleChange = (value: any) => {
+        const fetchEmail = async () => {
+            const getEmail = fetch(remoteRoutes.contactsEmail + "/" + value.id)
+            const getPerson = fetch(remoteRoutes.contactsOnePerson + "/" + value.id)
+
+            Promise.all([getEmail, getPerson]).then(async ([email, person]) => {
+                const fetchedEmail = await email.json()
+                const pickedPerson = await person.json()
+                
+                setPersons({
+                    ...persons,
+                    id: value.id,
+                    email: fetchedEmail.value,
+                    contactId: fetchedEmail.contactId,
+                    firstName: pickedPerson[0].firstName
+                })
+            }).catch(e => {
+                console.log(e)
+            })
+        }
+        fetchEmail();
+    }
 
     return (
       <Navigation>
@@ -124,64 +163,43 @@ const AddVolunteersForm = ({done}: IProps) => {
             <Header title="Add volunteers" />
 
             <Grid item xs={6}>
-                <XForm
-                    onSubmit={handleSubmit}
-                    schema={schema}
-                    initialValues={initialValues}
-                >
-                    <Grid spacing={0} container>
-                        <Grid item xs={12}>
-                            <XSelectInput
-                                name="ministry"
-                                label="Ministry"
-                                options={toOptions(ministryCategories)}
-                                variant='outlined'
+                <Card className={classes.root}>
+                    <CardContent>
+                        <XForm
+                            onSubmit={handleSubmit}
+                            schema={schema}
+                            initialValues={initialValues}
+                        >
+
+                            <Autocomplete
+                                id="free-solo-demo"
+                                freeSolo
+                                options={persons.listOfPersons}
+                                getOptionLabel={(option) => option.firstName + " " + option.lastName}
+                                onChange={(event: any, value: any) => handleChange(value)} // prints the selected value
+                                renderInput={(params) => (
+                                <TextField {...params} label="Search for person to add as Volunteer" margin="normal" variant="outlined" />
+                                )}
                             />
-                        </Grid>
-                        <RightPadded>
-                            <XTextInput
-                                name="firstName"
-                                label="First Name"
-                                type="text"
-                                variant='outlined'
-                            />
-                        </RightPadded>
-                        <LeftPadded>
-                            <XTextInput
-                                name="surname"
-                                label="Surname"
-                                type="text"
-                                variant='outlined'
-                            />
-                        </LeftPadded>
-                        <Grid item xs={12}>
-                            <XDateInput
-                                name="dateOfBirth"
-                                label="Date of Birth"
-                                variant='outlined'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <XRemoteSelect
-                                remote={remoteRoutes.groupsCombo}
-                                filter={{'categories[]': 'MC'}}
-                                parser={({name, id}: any) => ({label: name, value: id})}
-                                name="missionalCommunity"
-                                label="Missional Community"
-                                variant='outlined'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <XTextInput
-                                name="profession"
-                                label="Profession"
-                                type="text"
-                                variant='outlined'
-                            />
-                        </Grid>
-                    </Grid>
-                </XForm>
+
+                            <Grid spacing={0} container>
+                                <Grid item xs={12}>
+                                    <XRemoteSelect
+                                        remote={remoteRoutes.groupsCombo}
+                                        filter={{'categories[]': 'M'}}
+                                        parser={({name, id}: any) => ({label: name, value: id})}
+                                        name="ministry"
+                                        label="Ministry"
+                                        variant='outlined'
+                                    />
+                                </Grid>
+                            </Grid>
+                        </XForm>
+                    </CardContent>
+                </Card>
             </Grid>
+
+            <br />
         </Box>
       </Navigation>
     );
