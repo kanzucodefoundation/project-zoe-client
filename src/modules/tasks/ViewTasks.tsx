@@ -36,6 +36,10 @@ const columns: XHeadCell[] = [
     name: "taskDescription",
     label: "Task Description",
   },
+  {
+    name: "status",
+    label: "Status",
+  },
 ];
 
 interface IMobileRow {
@@ -62,6 +66,9 @@ const toMobile = (data: any): IMobileRow => {
         </Typography>
         <Typography variant="caption" color="textSecondary">
           {data.taskDescription}
+        </Typography>
+        <Typography variant="caption" color="textSecondary">
+          {data.status}
         </Typography>
       </>
     ),
@@ -97,12 +104,13 @@ const Tasks = () => {
   }
 
   const handleEdit = (dt: any) => {
-    const { id, ministry, taskName, taskDescription } = dt;
+    const { id, ministry, taskName, taskDescription, status } = dt;
     const toEdit = {
       id,
       ministry,
       taskName,
-      taskDescription
+      taskDescription,
+      status
     };
     setSelected(toEdit);
     setDialog(true);

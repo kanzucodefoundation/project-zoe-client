@@ -17,7 +17,7 @@ import {post, put} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
-import {ICreateDayDto} from "./types";
+import {ICreateDayDto, ISaveToATT, ISaveToUTT} from "./types";
 import {isoDateString} from "../../utils/dateHelpers";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import Header from "./Header";
@@ -43,11 +43,11 @@ interface IProps {
 
 const schema = yup.object().shape(
   {
-      taskId: reqString,
-      start_date: reqDate,
-      end_date: reqDate,
-      task_info: reqString,
-      assigned_to: reqObject,
+      taskId: reqObject,
+      startDate: reqDate,
+      endDate: reqDate,
+      taskInfo: reqString,
+      userId: reqObject,
       
      
   }
@@ -56,10 +56,10 @@ const schema = yup.object().shape(
 const initialValues = {
 
   taskId: '',
-  start_date: '',
-  end_date: '',
-  task_info: '',
-  assigned_to: null,
+  startDate: '',
+  endDate: '',
+  taskInfo: '',
+  userId: null,
   
 }
 
@@ -101,20 +101,33 @@ const useStyles = makeStyles((theme: Theme) =>
 const AssignTask = ({ done}: IProps) => {
     const dispatch = useDispatch();
     const classes = useStyles();
-
-    function handleSubmit(values: any, actions: FormikHelpers<any>) {
-
-        const toSave: ICreateDayDto = {
-      taskId: values.taskId,
-      start_date: values.start_date,
-      end_date: values.end_date,
-      task_info: values.task_info,
-      assigned_to: values.assigned_to.value,
-     
-
+    
+     function appointmentTasks(values: any, actions: any, id:any){
+        const toSaveAppointmentTaskTable: ISaveToATT = {
+            appointmentId: id,
+            taskId: values.taskId.value,
         }
 
-        post(remoteRoutes.day, toSave,
+        post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
+            (data) => {
+
+                userTask(values, actions, data.id)
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
+
+            }
+        )
+     }
+
+     function userTask(values:any, actions:any, id:any){
+        const toSaveUserTaskTable: ISaveToUTT = {
+            appointmentTaskId: id,
+            userId: values.userId.value,
+        }
+
+        post(remoteRoutes.userTask, toSaveUserTaskTable,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
@@ -131,6 +144,35 @@ const AssignTask = ({ done}: IProps) => {
 
             }
         )
+
+     }
+
+    function handleSubmit(values: any, actions: FormikHelpers<any>) {
+
+        const toSave: ICreateDayDto = {      
+          startDate: values.startDate,
+          endDate: values.endDate,
+          taskInfo: values.taskInfo,
+
+          }
+        post(remoteRoutes.appointments, toSave,
+            (data) => {
+                     console.log(data, data.id)
+                appointmentTasks(values, actions, data.id);
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
+
+            }
+
+        )
+
+
+        
+
+
+
     }
 
 
@@ -160,39 +202,39 @@ const AssignTask = ({ done}: IProps) => {
                 >
                     <Grid spacing={0} container>
                         <Grid item xs={12}>
-                        <XSelectInput
+                        {/* <XSelectInput
                                 name="taskId"
                                 label="Task Name"
                                 // options={toOptions(enumToArray(TeamPrivacy))}
                                 options={toOptions(ministryCategories)}
                                 variant='outlined'
-                            />
-                            {/* <XRemoteSelect
+                            /> */}
+                            <XRemoteSelect
                             remote={remoteRoutes.tasks}
                             filter={{'taskName[]': ''}}
                             parser={({taskName, id}: any) => ({label: taskName, value: id})}
                             name="taskId"
                             label="Task Name"
                             variant='outlined'
-                            /> */}
+                            />
                         </Grid>
                         <RightPadded>
                         <XDateInput
-                                name="start_date"
+                                name="startDate"
                                 label="Start Date"
                                 
                             />
                         </RightPadded>
                         <LeftPadded>
                         <XDateInput
-                                name="end_date"
+                                name="endDate"
                                 label="End Date"
                                 
                             />
                         </LeftPadded>
                         <Grid item xs={12}>
                         <XTextInput
-                                name="task_info"
+                                name="taskInfo"
                                 label="Task Details"
                                 type="text"
                                 variant='outlined'
@@ -204,7 +246,7 @@ const AssignTask = ({ done}: IProps) => {
                             remote={remoteRoutes.contactsPerson}
                             filter={{'firstName[]': ''}}
                             parser={({firstName, id}: any) => ({label: firstName, value: id})}
-                            name="assigned_to"
+                            name="userId"
                             label="Volunteers"
                             variant='outlined'
                             />

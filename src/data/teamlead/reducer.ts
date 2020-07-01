@@ -1,4 +1,4 @@
-import {ICreateDayDto} from "../../modules/teamlead/types";
+import { ICreateDayDto } from "../../modules/teamlead/types";
 
 export const servicesConstants = {
     servicesAddDay: "servicesAddDay",
@@ -23,7 +23,7 @@ export default function reducer(state = initialState, action: any) {
 
         case servicesConstants.servicesAddDay: {
             const newDay: ICreateDayDto[] = action.payload
-            return {...state, data: [...state.data, newDay]}
+            return { ...state, data: [...state.data, newDay] }
         }
 
         default: {

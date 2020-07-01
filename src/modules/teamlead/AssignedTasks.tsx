@@ -1,9 +1,9 @@
 import React from 'react';
-import {Box} from "@material-ui/core";
-import {remoteRoutes} from "../../data/constants";
+import { Box } from "@material-ui/core";
+import { remoteRoutes } from "../../data/constants";
 
 import Layout from "../../components/layout/Layout";
-import {createStyles, makeStyles, Theme} from "@material-ui/core";
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import Header from "./Header";
 
 import MaterialTable, { Column } from 'material-table';
@@ -14,13 +14,13 @@ interface IProps {
 }
 
 interface Row {
-    taskId: string;
-    start_date: Date;
-    end_date: Date;
-    task_info: string;
-    assigned_to: string;
+    taskId: number;
+    startDate: Date;
+    endDate: Date;
+    taskInfo: string;
+    userId: number;
 }
-  
+
 interface TableState {
     columns: Array<Column<Row>>;
     data: Row[];
@@ -44,17 +44,17 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const AssignedTasks = ({done}: IProps) => {
+const AssignedTasks = ({ done }: IProps) => {
     const classes = useStyles();
 
     // For displaying the table data
     const [state, setData] = React.useState<TableState>({
         columns: [
-          { title: 'Task Nmae', field: 'taskId' },
-          { title: 'Start Date', field: 'start_date' },
-          { title: 'End Date', field: 'end_date' },
-          { title: 'Task Details', field: 'task_info' },
-          { title: 'Volunteers', field: 'assigned_to' },
+            { title: 'Task Nmae', field: 'taskId' },
+            { title: 'Start Date', field: 'startDate' },
+            { title: 'End Date', field: 'endDate' },
+            { title: 'Task Details', field: 'taskInfo' },
+            { title: 'Volunteers', field: 'userId' },
         ],
         data: [
         ],
@@ -62,19 +62,19 @@ const AssignedTasks = ({done}: IProps) => {
 
     React.useEffect(() => {
         async function fetchTeamlead() {
-            const res = await fetch(remoteRoutes.day);
+            const res = await fetch(remoteRoutes.appointments);
             const json = await res.json();
             console.log(json);
             setData({
                 ...state,
-                data:json
+                data: json
             })
         }
         fetchTeamlead();
     }, []);
 
 
-    return(
+    return (
         <Layout>
             <Box p={1} className={classes.root}>
                 <Header title="Assigned Tasks" />
