@@ -29,22 +29,13 @@ interface IProps {
     done?: () => any
 }
 
-// const schema = yup.object().shape(
-//     {
-//         ministry: reqString,
-//     }
-// )
-
-// const initialValues = {
-//     ministry: '',
-// }
 
 const schema = yup.object().shape(
     {        
         startDate: reqDate,
         endDate: reqDate,
         reason: reqString,
-        userId: reqObject,
+        
 
     }
 )
@@ -54,7 +45,7 @@ const initialValues = {
     startDate: '',
     endDate: '',
     reason: '',
-    userId: [],
+    
 
 }
 
@@ -108,21 +99,24 @@ const BlockDateForm = ({done}: IProps) => {
     }, []);
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
+        console.log(values)
+        
         const toSaveBlockedDateTable: ICreateABlockDateDto = {         
-            username: persons.email,
-            password: 'new_volunteer', // The default password for each new volunteer
-            contactId: persons.contactId,
-            roles: ["VOLUNTEER"],
+            // username: persons.email,
+            // password: 'new_volunteer', // The default password for each new volunteer
+            // contactId: persons.contactId,
+            // roles: ["VOLUNTEER"],
             reason: values.reason, 
             startDate: values.startDate,
             endDate: values.endDate
         }
-        
-        
+        console.log('xxxxxxxxxxxxxxxxxxxxxxxxxx', values.reason)
+        console.log(toSaveBlockedDateTable)
 
         // Add to blocked_date table
         post(remoteRoutes.blockedDate, toSaveBlockedDateTable,
             (data) => {
+            	console.log(data)
             	Toast.info('Operation successful')
                 actions.resetForm()
                 dispatch({
@@ -140,21 +134,29 @@ const BlockDateForm = ({done}: IProps) => {
         )
     }
 
-    const handleChange = (value: any) => {
-        const fetchEmail = async () => {
-            const fetchedEmail = await fetch(remoteRoutes.contactsEmail + "/" + value.id).then(
-                response => response.json()
-            )
+    // const handleChange = (value: any) => {
+    //     const fetchEmail = async () => {
+    //         const getEmail = fetch(remoteRoutes.contactsEmail + "/" + value.id)
 
-            setPersons({
-                ...persons,
-                id: value.id,
-                email: fetchedEmail.value,
-                contactId: fetchedEmail.contactId,
-            });
-        }
-        fetchEmail();
-    }
+    //         const getPerson = fetch(remoteRoutes.contactsOnePerson + "/" + value.id)
+
+    //         Promise.all([getEmail, getPerson]).then(async ([email, person]) => {
+    //             const fetchedEmail = await email.json()
+    //             const pickedPerson = await person.json()
+                
+    //             setPersons({
+    //                 ...persons,
+    //                 id: value.id,
+    //                 email: fetchedEmail.value,
+    //                 contactId: fetchedEmail.contactId,
+    //                 firstName: pickedPerson[0].firstName
+    //             })
+    //         }).catch(e => {
+    //             console.log(e)
+    //         })
+    //     }
+    //     fetchEmail();
+    // }
 
     return (
       <Navigation>
@@ -168,18 +170,7 @@ const BlockDateForm = ({done}: IProps) => {
                             onSubmit={handleSubmit}
                             schema={schema}
                             initialValues={initialValues}
-                        >
-
-                            <Autocomplete
-                                id="free-solo-demo"
-                                freeSolo
-                                options={persons.listOfPersons}
-                                getOptionLabel={(option) => option.firstName + " " + option.lastName}
-                                onChange={(event: any, value: any) => handleChange(value)} // prints the selected value
-                                renderInput={(params) => (
-                                <TextField {...params} label="Enter Your Name" margin="normal" variant="outlined" />
-                                )}
-                            />
+                        >                           
 
                             <XTextInput
                                 name="reason"
@@ -192,7 +183,6 @@ const BlockDateForm = ({done}: IProps) => {
                             	<XDateInput
 	                                name="startDate"
 	                                label="Start Date"
-
                             />
                         	</RightPadded>
 

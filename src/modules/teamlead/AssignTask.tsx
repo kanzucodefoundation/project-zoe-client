@@ -207,13 +207,23 @@ const AssignTask = ({ done }: IProps) => {
                                 variant='outlined'
                             />
                         </Grid>
+                        <Grid item xs={12}>
+                            <XRemoteSelect
+                                remote={remoteRoutes.tasks}
+                                filter={{ 'taskDescription[]': '' }}
+                                parser={({ taskDescription, id }: any) => ({ label: taskDescription, value: id })}
+                                name="taskDescription"
+                                label="Task Description"
+                                variant='outlined'
+                            />
+                        </Grid>
                         <RightPadded>
                             <XDateInput
                                 name="startDate"
                                 label="Start Date"
                             />
                         </RightPadded>
-                        <LeftPadded>d
+                        <LeftPadded>
                             <XDateInput
                                 name="endDate"
                                 label="End Date"

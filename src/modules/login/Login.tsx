@@ -21,7 +21,8 @@ function Login() {
     const classes = useLoginStyles();
     const dispatch = useDispatch();
     const onSubmit = (data: any, actions: FormikHelpers<any>) => {
-        post(remoteRoutes.login, data, resp => {
+        post(remoteRoutes.login, data, resp => {           
+            sessionStorage.setItem("id", resp.user.id)            
             dispatch(handleLogin(resp))
         }, () => {
             Toast.error("Invalid username/password")

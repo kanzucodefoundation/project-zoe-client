@@ -105,7 +105,7 @@ const routes = [
         ]
     },
     {
-        name: "Volunteer",        
+        name: "Volunteer Schedules",        
         icon: EventNoteIcon,
         items: [
             {
@@ -113,8 +113,8 @@ const routes = [
                 route: localRoutes.volcalendar
             },
             { 
-                name: "Block Date",
-                route: localRoutes.blockdate
+                name: "Blocked Date",
+                route: localRoutes.volblockedDate
             }
         ]
     },

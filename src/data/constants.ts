@@ -35,7 +35,7 @@ export const localRoutes = {
   settings: "/admin/settings",
   volcalendar: "/volcalendar",
   voldashboard: "/voldashboard",
-  volblockdate: "/volblockdate",
+  volblockedDate: "/volblockedDate",
   volviewteam: "/volviewteam",
   teamleadcalendar: '/teamleadcalendar',
   assignedtasks: '/assignedtasks',
@@ -88,6 +88,8 @@ export const remoteRoutes = {
   appointmentTask: url + "/api/appointment-task",
   userTask: url + "/api/user-task",
   userTasks: url + "/api/user-task/userTasks",
+  userTaskOnePerson: url + "/api/user-task",
   tasks: url + "/api/tasks",
+  blockedDate: url + '/api/blocked-date',
   //viewTasks: url + "/api/tasks / { id } / update",
 };

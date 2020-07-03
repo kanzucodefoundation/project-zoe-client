@@ -35,11 +35,11 @@ import Layout from "../../components/layout/Layout";
 import BlockDate from './BlockDate'
 import { remoteRoutes } from "../../data/constants";
 import { data, holidays } from './data';
-import Utils from './utils.js';
-import DataCell from './DataCell.js';
-import DateCell from './DateCell.js';
-import TimeCell from './TimeCell.js';
-import notify from 'devextreme/ui/notify';
+// import Utils from './utils.js';
+// import DataCell from './DataCell.js';
+// import DateCell from './DateCell.js';
+// import TimeCell from './TimeCell.js';
+// import notify from 'devextreme/ui/notify';
 
 
 const containerStyles = (theme: Theme) => createStyles({
@@ -218,17 +218,7 @@ class VolunteerCalendar extends React.PureComponent {
             addedAppointment: {},
             startDayHour: 9,
             endDayHour: 19,
-            isNewAppointment: false,
-            views: [{
-            type: "week",
-            dataCellTemplate: function(data: any, index: any, element: any){
-               console.log(data);
-              if(data.startDate.getDay() < 3 || data.endDate.getDay()< 3)
-                 element.css("backgroundColor", "gray")
-                return element;
-                
-            }
-        }],
+            isNewAppointment: false,            
         };
 
         this.toggleConfirmationVisible = this.toggleConfirmationVisible.bind(this);
@@ -270,89 +260,89 @@ class VolunteerCalendar extends React.PureComponent {
             };
         });
 
-        this.onAppointmentFormOpening = this.onAppointmentFormOpening.bind(this);
-        this.onAppointmentAdding = this.onAppointmentAdding.bind(this);
-        this.onAppointmentUpdating = this.onAppointmentUpdating.bind(this);
+        // 
+        // this.onAppointmentAdding = this.onAppointmentAdding.bind(this);
+        // this.onAppointmentUpdating = this.onAppointmentUpdating.bind(this);
     }
 
-    onAppointmentFormOpening(e: any) {
-        const startDate = new Date(e.appointmentDate.startDate);
-        if(!Utils.isValidAppointmentDate(startDate)) {
-            e.cancel = true;
-            this.notifyDisableDate();
-        }
-        this.applyDisableDatesToDateEditors(e.form);
-    }
+    // onAppointmentFormOpening(e: any) {
+    //     const startDate = new Date(e.appointmentDate.startDate);
+    //     if(!Utils.isValidAppointmentDate(startDate)) {
+    //         e.cancel = true;
+    //         this.notifyDisableDate();
+    //     }
+    //     this.applyDisableDatesToDateEditors(e.form);
+    // }
 
-    onAppointmentAdding(e: any) {
-        const isValidAppointment = Utils.isValidAppointment(e.component, e.appointmentData);
-        if(!isValidAppointment) {
-            e.cancel = true;
-            this.notifyDisableDate();
-        }
-    }
+    // onAppointmentAdding(e: any) {
+    //     const isValidAppointment = Utils.isValidAppointment(e.component, e.appointmentData);
+    //     if(!isValidAppointment) {
+    //         e.cancel = true;
+    //         this.notifyDisableDate();
+    //     }
+    // }
     
-    onAppointmentUpdating(e: any) {
-        const isValidAppointment = Utils.isValidAppointment(e.component, e.newData);
-        if(!isValidAppointment) {
-            e.cancel = true;
-            this.notifyDisableDate();
-        }
-    }
+    // onAppointmentUpdating(e: any) {
+    //     const isValidAppointment = Utils.isValidAppointment(e.component, e.newData);
+    //     if(!isValidAppointment) {
+    //         e.cancel = true;
+    //         this.notifyDisableDate();
+    //     }
+    // }
     
-    notifyDisableDate() {
-        notify('Cannot create or move an appointment/event to disabled time/date regions.', 'warning', 1000);
-    }
+    // notifyDisableDate() {
+    //     notify('Cannot create or move an appointment/event to disabled time/date regions.', 'warning', 1000);
+    // }
     
-    applyDisableDatesToDateEditors(form: any) {
-        const startDateEditor = form.getEditor('startDate');
-        startDateEditor.option('disabledDates', holidays);
+    // applyDisableDatesToDateEditors(form: any) {
+    //     const startDateEditor = form.getEditor('startDate');
+    //     startDateEditor.option('disabledDates', holidays);
 
-        const endDateEditor = form.getEditor('endDate');
-        endDateEditor.option('disabledDates', holidays);
-    }
+    //     const endDateEditor = form.getEditor('endDate');
+    //     endDateEditor.option('disabledDates', holidays);
+    // }
     
-    renderDataCell(itemData: any) {
-        return <DataCell itemData={itemData} />;
-    } 
+    // renderDataCell(itemData: any) {
+    //     return <DataCell itemData={itemData} />;
+    // } 
     
-    renderDateCell(itemData: any) {
-        return <DateCell itemData={itemData} />;
-    }
+    // renderDateCell(itemData: any) {
+    //     return <DateCell itemData={itemData} />;
+    // }
 
-    renderTimeCell(itemData: any) {
-        return <TimeCell itemData={itemData} />;
-    }  
+    // renderTimeCell(itemData: any) {
+    //     return <TimeCell itemData={itemData} />;
+    // }  
 
-  
+    
+
 
     async componentDidMount() {
-
-        const res = await fetch(remoteRoutes.appointments);
+        // console.log('ffffffffff')
+        // console.log(sessionStorage.getItem('id'))
+        const res = await fetch(remoteRoutes.userTaskOnePerson + sessionStorage.getItem('id'));        
         const json = await res.json();
         console.log(json);
-
 
         const appoints: any = [];
         json.map((item: any, index: any) => {
             appoints.push({
                 id: item["id"],
-                taskId: item["taskId"],
-                startDate: new Date(item["startDate"]),
-                endDate: new Date(item["endDate"]),
-                title: item["taskInfo"],
-                userId: item["userId"],
-
-
+                title: item.taskId["taskName"],
+                startDate: new Date(item.startDate["startDate"]),
+                endDate: new Date(item.endDate["endDate"]),
+                userId: item.userId["userId"]
             })
             return ""
         });
 
         console.log(appoints);
+
         this.setState({
             data: appoints
         })
     }
+
 
 
     componentDidUpdate() {
@@ -465,10 +455,8 @@ class VolunteerCalendar extends React.PureComponent {
 
                         <EditRecurrenceMenu />
                       
-                        <AppointmentTooltip
-                            showOpenButton
-                            showCloseButton
-                            showDeleteButton
+                        <AppointmentTooltip                            
+                            showCloseButton                            
                         />
                         
                        

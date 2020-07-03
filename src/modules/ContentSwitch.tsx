@@ -17,7 +17,7 @@ import teamleadcalendar from "./teamlead/TeamLeadCalendar";
 import assignedtasks from "./teamlead/AssignedTasks";
 import assigntask from "./teamlead/AssignTask";
 import volcalendar from "./volcalendar/VolCalendar";
-import blockdate from "./volcalendar/BlockDate";
+import BlockedDate from "./volcalendar/BlockedDates";
 const ContentSwitch = () => {
     return (
       <Switch>
@@ -37,7 +37,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.viewVolunteers} component={ViewVolunteers} />
         <Route path={localRoutes.addVolunteers} component={AddVolunteers} />
         <Route path={localRoutes.volcalendar} component={volcalendar} />
-        <Route path={localRoutes.blockdate} component={blockdate} />
+        <Route path={localRoutes.volblockedDate} component={BlockedDate} />
         {/* <Route path={localRoutes.volcalendar} component={volcalendar}/>
         <Route path={localRoutes.voldashboard} component={VolDashboard}/>
         <Route path={localRoutes.volblockdate} component={VolBlockDate}/>
