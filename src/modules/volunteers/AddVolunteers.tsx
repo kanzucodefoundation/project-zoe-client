@@ -217,23 +217,6 @@ const AddVolunteersForm = ({done}: IProps) => {
                                         label="Ministry"
                                         variant='outlined'
                                     />
-
-                                    {/* <Autocomplete
-                                        multiple
-                                        id="tags-outlined"
-                                        options={persons.ministriesNotIn}
-                                        getOptionLabel={(ministry: string) => ministry}
-                                        filterSelectedOptions
-                                        renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            name="ministry"
-                                            label="Ministry"
-                                            placeholder="Ministry"
-                                        />
-                                        )}
-                                    /> */}
                                 </Grid>
                             </Grid>
                         </XForm>

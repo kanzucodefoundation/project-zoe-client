@@ -10,3 +10,10 @@ export interface ICreateAMembershipDto {
     contactId: number;
     role: string;
 }
+
+export interface IUpdateAMembershipDto {
+    id: number;
+    groupId: number;
+    contactId: number;
+    role: string;
+}
