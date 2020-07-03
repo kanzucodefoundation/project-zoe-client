@@ -6,7 +6,9 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import {hasNoValue, hasValue, IOption} from "../inputs/inputHelpers";
 import {TextFieldProps} from "@material-ui/core/TextField/TextField";
 import {IXRemoteProps} from "../inputs/XRemoteSelect";
+
 const filter = createFilterOptions<IOption>();
+
 export interface IPRemoteSelectProps extends IXRemoteProps {
     value?: any
     onChange?: (d: any) => any
@@ -15,6 +17,7 @@ export interface IPRemoteSelectProps extends IXRemoteProps {
     fullWidth?: boolean;
     helperText?: React.ReactNode;
     textFieldProps?: TextFieldProps
+
 }
 const FakeProgress = () => <div style={{height: 20, width: 20}}>&nbsp;</div>
 const labelParser = (option: IOption) => {
@@ -23,7 +26,9 @@ const labelParser = (option: IOption) => {
     }
     return ''
 }
+
 const dataCache: any = {}
+
 function hashCode(str: string) {
     return str.split('').reduce((prevHash, currVal) =>
         (((prevHash << 5) - prevHash) + currVal.charCodeAt(0)) | 0, 0);
@@ -34,10 +39,12 @@ const isInCache = (filter: any) => {
         return dataCache[key]
     }
 }
+
 const addToCache = (filter: any, resp: any) => {
     const key = hashCode(JSON.stringify(filter))
     dataCache[key] = resp
 }
+
 const filterOptions = (options: IOption[], params: any) => {
     const filtered = filter(options, params) as IOption[];
     // Suggest the creation of a new value
@@ -76,12 +83,15 @@ export function PRemoteSelect(props: IPRemoteSelectProps) {
                 setLoading(false)
             })
     }, [props.parser, props.filter, props.remote]);
+
     useEffect(() => {
         fetch(query)
     }, [fetch, query])
+
     const handleTouched = () => {
         props.onBlur && props.onBlur()
     }
+
     const {
         error,
         helperText,
@@ -92,6 +102,8 @@ export function PRemoteSelect(props: IPRemoteSelectProps) {
         freeSolo,
         ...autoProps
     } = props
+
+
     return (
         <Autocomplete
             {...autoProps}

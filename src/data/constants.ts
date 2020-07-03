@@ -29,7 +29,6 @@ export const localRoutes = {
   contacts: "/people/contacts",
   contactsDetails: "/people/contacts/:contactId",
   groups: "/people/groups",
-
   users: "/admin/users",
   usersGroups: "/admin/user-groups",
   tags: "/admin/tags",
@@ -41,12 +40,10 @@ export const localRoutes = {
   teamleadcalendar: '/teamleadcalendar',
   assignedtasks: '/assignedtasks',
   assigntask: '/assigntask',
-   // For Team Lead
   viewVolunteers: "/volunteers/view-volunteers",
   addVolunteers: "/volunteers/add-volunteers",
   addTasks: "/tasks/add-tasks",
   viewTasks:"/tasks/view-tasks",
-
   help: "/help", 
 
   ministries: "/ministries" // Added by Daniel - to be placed in the XRemoteSelect component in AddVolunteer. It contains the ministry names
@@ -80,7 +77,6 @@ export const remoteRoutes = {
   contactsAddress: url + "/api/crm/addresses",
   contactsIdentification: url + "/api/crm/identifications",
   contactsRequests: url + "/api/crm/requests",
-
   groups: url + "/api/groups/groups",
   groupsCombo: url + "/api/groups/combo",
   groupsCategories: url + "/api/groups/categories",
@@ -95,8 +91,10 @@ export const remoteRoutes = {
   ministries: url + "/api/services/volunteering/ministries", // Added by Daniel
   day: url + '/api/appointment/day',
   appointments: url + "/api/appointment/appointments",
+  assignedTasks: url + "/api/appointment-task/assignedTasks",
   appointmentTask: url + "/api/appointment-task",
   userTask: url + "/api/user-task",
+  userTasks: url + "/api/user-task/userTasks",
   tasks: url + "/api/tasks",
   //viewTasks: url + "/api/tasks / { id } / update",
 };
