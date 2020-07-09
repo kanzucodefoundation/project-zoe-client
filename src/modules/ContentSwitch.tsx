@@ -1,6 +1,6 @@
-import React from "react"
+import React, {useState} from "react"
 import {Link, Route, Switch} from 'react-router-dom'
-import {localRoutes} from "../data/constants";
+import {localRoutes, appRoles} from "../data/constants";
 import Dashboard from "./dashboard/Dashboard";
 import ViewVolunteers from "./volunteers/ViewVolunteers";
 import AddVolunteers from "./volunteers/AddVolunteers";
@@ -14,10 +14,15 @@ import UserGroups from "./admin/usergroups/UserGroups";
 import ViewTasks from "./tasks/ViewTasks";
 import AddTasks from "./tasks/AddTasks";
 //import teamleadcalendar from "./teamlead/TeamLeadCalendar";
-import assignedtasks from "./teamlead/AssignedTasks";
-import assigntask from "./teamlead/AssignTask";
+
 //import volcalendar from "./volcalendar/VolCalendar"
+
+import { useSelector } from "react-redux";
+import { IState } from "../data/types";
+
 const ContentSwitch = () => {
+  const user = useSelector((state: IState) => state.core.user)
+ console.log(user)
     return (
       <Switch>
         <Route exact={true} path="/" component={Dashboard} />

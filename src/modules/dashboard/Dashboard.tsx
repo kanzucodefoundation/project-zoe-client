@@ -13,7 +13,26 @@ import People from '@material-ui/icons/People';
 import {printMoney,printInteger} from "../../utils/numberHelpers";
 import UsersByDevice from "./UsersByDevice";
 
-const data = [
+let data: any[] = []
+0 ?
+    data = [
+        {
+            title: "Giving",
+            value: printMoney(20088766),
+            percentage: -6,
+            icon: Money
+        },
+    ]
+    :
+    data = [
+        {
+            title: "No Giving",
+            value: printMoney(20088766),
+            percentage: -6,
+            icon: Money
+        },
+    ]   
+/*const data = [
     {
         title: "Giving",
         value: printMoney(20088766),
@@ -69,12 +88,23 @@ const data = [
         icon: People
     }             
 ]
-
+*/
 export default function SimpleSelect() {
-    const profile = useSelector((state: IState) => state.core.user)
+    //const profile = useSelector((state: IState) => state.core.user)
+    const user = useSelector((state: IState) => state.core.user)
 
-    return (
+    return (         
         <Layout>
+            <div>
+                {
+                    1 == 1 ?
+                        <Typography>User Roles</Typography> :
+                        <Typography>Normal User</Typography>
+                        
+                }
+                {user?.roles} 
+                {console.log(user)}
+            </div>
             <Box p={2}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>

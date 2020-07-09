@@ -1,7 +1,7 @@
 export const AUTH_TOKEN_KEY = "__demo__eva__token";
 export const AUTH_USER_KEY = "__demo__eva__user";
 
-export const appRoles = {
+export const appRoles:any = {
   roleCrmView: "CRM_VIEW",
   roleCrmEdit: "CRM_EDIT",
 
@@ -16,6 +16,8 @@ export const appRoles = {
 
   roleGroupView: "GROUP_VIEW",
   roleGroupEdit: "GROUP_EDIT",
+
+  roleVolunteer: "VOLUNTEER",
 };
 
 export const redux = {

@@ -1,27 +1,30 @@
 import React from 'react';
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
-import {ToastContainer} from "react-toastify";
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { ToastContainer } from "react-toastify";
 import ContentSwitch from "./modules/ContentSwitch";
 import Login from "./modules/login/Login";
 import Splash from "./modules/login/Splash";
-import {useSelector} from 'react-redux'
+import { useSelector } from 'react-redux'
 import LoaderDialog from "./components/LoaderDialog";
+import { IState } from './data/types';
 
 const App: React.FC = () => {
     const coreState: any = useSelector((state: any) => state.core)
-
-    const {isLoadingUser, user, globalLoader} = coreState
+    const ken = useSelector((state: IState) => state.core.user)
+    
+    const { isLoadingUser, user, globalLoader } = coreState
     if (isLoadingUser) {
-        return <Splash/>
+        return <Splash />
     } else {
         return <Router>
-            <ToastContainer/>
+            <ToastContainer />
             <>
-                <LoaderDialog open={globalLoader}/>
+                <LoaderDialog open={globalLoader} />
                 {user ?
-                    <ContentSwitch/> :
+                    <ContentSwitch /> :
                     <Switch>
-                        <Route exact component={Login}/>
+                        
+                        <Route exact component={Login} />
                     </Switch>
                 }
             </>

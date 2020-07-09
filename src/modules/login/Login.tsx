@@ -8,20 +8,21 @@ import Typography from '@material-ui/core/Typography';
 import {Form, Formik, FormikHelpers} from 'formik';
 import {useDispatch} from 'react-redux'
 import {handleLogin} from "../../data/coreActions";
-
 import * as yup from "yup";
 import {post} from "../../utils/ajax";
 import {remoteRoutes} from "../../data/constants";
 import Toast from "../../utils/Toast";
 import XTextInput from "../../components/inputs/XTextInput";
 import {useLoginStyles} from "./loginStyles";
-
+//import { receivedRoles} from "../../utils/userHelpers";
 
 function Login() {
     const classes = useLoginStyles();
     const dispatch = useDispatch();
     const onSubmit = (data: any, actions: FormikHelpers<any>) => {
-        post(remoteRoutes.login, data, resp => {
+        post(remoteRoutes.login, data, resp => 
+            {
+            //receivedRoles(resp)
             dispatch(handleLogin(resp))
         }, () => {
             Toast.error("Invalid username/password")
@@ -43,7 +44,7 @@ function Login() {
                 <Formik
                     initialValues={{
                         "username": "ekastimo@gmail.com",
-                        "password": "Xpass@123"
+                        "password": "Xpass@123",
                     }}
                     
                     validationSchema={schema}
@@ -67,6 +68,7 @@ function Login() {
                                 autoComplete="off"
                                 margin="normal"
                             />
+                            
                             <Button
                                 type="submit"
                                 fullWidth
@@ -89,7 +91,7 @@ function Login() {
 export const schema = yup.object().shape(
     {
         username: yup.string().email('Invalid email').required("Email is required"),
-        password: yup.string().required("Password is required")
+        password: yup.string().required("Password is required"),
     }
 );
 
