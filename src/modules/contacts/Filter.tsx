@@ -10,6 +10,7 @@ import {ageCategories} from "../../data/comboCategories";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {remoteRoutes} from "../../data/constants";
 import {ISearch} from "../../data/types";
+import {cleanComboValue} from "../../utils/dataHelpers";
 
 interface IProps {
     onFilter: (data: any) => any
@@ -38,8 +39,8 @@ const Filter = ({onFilter, loading}: IProps) => {
     function handleSubmission(values: any) {
         const filter: IContactSearchDto = {
             ageGroups: values.ageGroups,
-            cellGroups: values.cellGroups?.map((it: any) => it.id),
-            churchLocations: values.churchLocations?.map((it: any) => it.id),
+            cellGroups: cleanComboValue(values.cellGroups),
+            churchLocations: cleanComboValue(values.churchLocations),
             query: values.query,
             email: values.email,
             phone: values.phone,

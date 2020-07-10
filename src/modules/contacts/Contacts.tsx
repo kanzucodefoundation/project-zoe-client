@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect, useState} from "react";
 import Navigation from "../../components/layout/Layout";
 import Paper from '@material-ui/core/Paper';
-import {Avatar, createStyles, makeStyles, Theme, useTheme} from "@material-ui/core";
+import {createStyles, makeStyles, Theme, useTheme} from "@material-ui/core";
 import {IContactListDto, IContactsFilter} from "./types";
 import XTable from "../../components/table/XTable";
 import {XHeadCell} from "../../components/table/XTableHead";
@@ -55,7 +55,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const headCells: XHeadCell[] = [
     {name: 'id', label: 'Name', render: (value, rec) => <ContactLink id={value} name={rec.name}/>},
-    {name: 'email', label: 'Email', render: (value) => <EmailLink value={value}/>},
     {name: 'phone', label: 'Phone'},
     {name: 'dateOfBirth', label: 'D.O.B', render: printBirthday},
     {

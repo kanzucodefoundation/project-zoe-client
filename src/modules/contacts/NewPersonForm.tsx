@@ -19,7 +19,7 @@ import XRadioInput from "../../components/inputs/XRadioInput";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
 import {ICreatePersonDto} from "./types";
-import {isoDateString} from "../../utils/dateHelpers";
+import {getDayList, getMonthsList, isoDateString} from "../../utils/dateHelpers";
 
 interface IProps {
     data: any | null
@@ -32,7 +32,8 @@ const schema = yup.object().shape(
         lastName: reqString,
         // middleName: reqString,
         gender: reqString,
-        dateOfBirth: reqDate,
+        birthDay: reqString,
+        birthMonth: reqString,
         civilStatus: reqString,
 
         ageGroup: reqString,
@@ -52,7 +53,8 @@ const initialValues = {
     firstName: '',
     middleName: '',
     lastName: '',
-    dateOfBirth: '',
+    birthDay: '',
+    birthMonth: '',
     gender: '',
     civilStatus: '',
     ageGroup: '',
@@ -87,7 +89,7 @@ const NewPersonForm = ({done}: IProps) => {
             firstName: values.firstName,
             middleName: values.middleName,
             lastName: values.lastName,
-            dateOfBirth: isoDateString(values.dateOfBirth),
+            dateOfBirth: `1800-${values.birthMonth}-${values.birthDay}T00:00:00.000Z`,
             gender: values.gender,
             civilStatus: values.civilStatus,
 
@@ -129,23 +131,25 @@ const NewPersonForm = ({done}: IProps) => {
             schema={schema}
             initialValues={initialValues}
         >
-            <Grid spacing={0} container>
-                <RightPadded>
+            <Grid spacing={2} container className='min-width-100'>
+                <Grid item xs={6}>
                     <XTextInput
                         name="firstName"
                         label="First Name"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
-                </RightPadded>
-                <LeftPadded>
+                </Grid>
+                <Grid item xs={6}>
                     <XTextInput
                         name="lastName"
                         label="Last Name"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
-                </LeftPadded>
+                </Grid>
                 <Grid item xs={12}>
                     <XTextInput
                         name="middleName"
@@ -154,53 +158,72 @@ const NewPersonForm = ({done}: IProps) => {
                         variant='outlined'
                     />
                 </Grid>
-                <RightPadded >
+                <Grid item xs={6}>
                     <XSelectInput
                         name="civilStatus"
                         label="Civil Status"
                         options={toOptions(civilStatusCategories)}
                         variant='outlined'
+                        margin='none'
                     />
-                </RightPadded>
-                <LeftPadded pt={3}>
+                </Grid>
+                <Grid item xs={6}>
                     <XRadioInput
                         name="gender"
                         label=''
                         options={toOptions(genderCategories)}
                     />
-                </LeftPadded>
-                <RightPadded >
-                    <XDateInput
-                        name="dateOfBirth"
-                        label="Date of Birth"
-                        variant='outlined'
-                    />
-                </RightPadded>
-                <LeftPadded >
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <Box width='100%' display='flex'>
+                        <Box width='50%'>
+                            <XSelectInput
+                                name="birthMonth"
+                                label="Birth Month"
+                                options={toOptions(getMonthsList())}
+                                variant='outlined'
+                                margin='none'
+                            />
+                        </Box>
+                        <Box width='50%'>
+                            <XSelectInput
+                                name="birthDay"
+                                label="Birth Day"
+                                options={toOptions(getDayList())}
+                                variant='outlined'
+                                margin='none'
+                            />
+                        </Box>
+                    </Box>
+                </Grid>
+                <Grid item xs={12} md={6}>
                     <XSelectInput
                         name="ageGroup"
-                        label="Age"
+                        label="Age Group"
                         options={toOptions(ageCategories)}
                         variant='outlined'
+                        margin='none'
                     />
-                </LeftPadded>
-                <Grid item xs={12}>
+                </Grid>
+                <Grid item xs={12} md={6}>
                     <XTextInput
                         name="phone"
                         label="Phone"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} md={6}>
                     <XTextInput
                         name="email"
                         label="Email"
                         type="email"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
-                <RightPadded >
+                <Grid item xs={12} md={6} >
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCombo}
                         filter={{'categories[]': 'Location'}}
@@ -208,9 +231,10 @@ const NewPersonForm = ({done}: IProps) => {
                         name="churchLocation"
                         label="Church Location"
                         variant='outlined'
+                        margin='none'
                     />
-                </RightPadded>
-                <LeftPadded >
+                </Grid>
+                <Grid item xs={12} md={6} >
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCombo}
                         filter={{'categories[]': 'MC'}}
@@ -218,22 +242,25 @@ const NewPersonForm = ({done}: IProps) => {
                         name="cellGroup"
                         label="Missional Community"
                         variant='outlined'
+                        margin='none'
                     />
-                </LeftPadded>
-                <Grid item xs={12}>
+                </Grid>
+                <Grid item xs={12} md={6}>
                     <XTextInput
                         name="placeOfWork"
                         label="Place of work"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} md={6}>
                     <XTextInput
                         name="residence"
                         label="Residence"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
             </Grid>

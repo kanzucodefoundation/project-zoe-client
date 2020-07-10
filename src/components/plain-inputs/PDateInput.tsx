@@ -23,7 +23,6 @@ export default function PDateInput({value=null,onChange,variant,label,inputVaria
                 size='small'
                 variant={variant}
                 format={dateFormat}
-                id="date-picker-inline"
                 label={label}
                 value={value}
                 onChange={onChange}

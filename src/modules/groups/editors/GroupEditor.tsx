@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import * as yup from "yup";
 import {reqObject, reqString} from "../../../data/validations";
 import {FormikHelpers} from "formik";
@@ -12,12 +12,19 @@ import {toOptions} from "../../../components/inputs/inputHelpers";
 import {enumToArray} from "../../../utils/stringHelpers";
 import {XRemoteSelect} from "../../../components/inputs/XRemoteSelect";
 import {handleSubmission, ISubmission} from "../../../utils/formHelpers";
+import {del} from "../../../utils/ajax";
+import Toast from "../../../utils/Toast";
+import {cleanComboValue} from "../../../utils/dataHelpers";
+import {parseGooglePlace} from "../../../components/plain-inputs/PMapsInput";
+import {XMapsInput} from "../../../components/inputs/XMapsInput";
 
 interface IProps {
     data?: Partial<IGroup>
     isNew: boolean
-    onGroupAdded?: (g: any) => any
-    onGroupEdited?: (g: any) => any
+    onCreated?: (g: any) => any
+    onUpdated?: (g: any) => any
+    onDeleted?: (g: any) => any
+    onCancel?: () => any
 }
 
 const schema = yup.object().shape(
@@ -25,6 +32,7 @@ const schema = yup.object().shape(
         name: reqString,
         privacy: reqString,
         details: reqString,
+        location: reqObject,
         category: reqObject
     }
 )
@@ -33,20 +41,25 @@ const initialData = {
     name: '',
     privacy: '',
     details: '',
+    location: null,
     category: null,
     parent: null
 }
 
 
-const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
+const GroupEditor = ({data, isNew, onCreated, onUpdated, onDeleted, onCancel}: IProps) => {
+    const [loading, setLoading] = useState<boolean>(false)
+
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const toSave: any = {
             id: values.id,
             name: values.name,
             details: values.details,
             privacy: values.privacy,
-            categoryId: values.category.id,
-            parentId: values.parent?.id
+            categoryId: cleanComboValue(values.category),
+            parentId: cleanComboValue(values.parent),
+            placeId: parseGooglePlace(values.location)?.placeId,
+            freeForm: parseGooglePlace(values.location)?.description,
         }
 
         const submission: ISubmission = {
@@ -54,9 +67,9 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
             values: toSave, actions, isNew,
             onAjaxComplete: (data: any) => {
                 if (isNew) {
-                    onGroupAdded && onGroupAdded(data)
+                    onCreated && onCreated(data)
                 } else {
-                    onGroupEdited && onGroupEdited(data)
+                    onUpdated && onUpdated(data)
                 }
                 actions.resetForm()
                 actions.setSubmitting(false);
@@ -65,11 +78,28 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
         handleSubmission(submission)
     }
 
+    function handleDelete() {
+        setLoading(true)
+        del(
+            `${remoteRoutes.groups}/${data?.id}`,
+            () => {
+                Toast.success("Operation succeeded")
+                onDeleted && onDeleted(data?.id)
+            },
+            undefined,
+            () => {
+                setLoading(false)
+            })
+    }
+
     return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={{...initialData, ...data}}
+            onDelete={handleDelete}
+            loading={loading}
+            onCancel={onCancel}
         >
             <Grid spacing={1} container>
                 <Grid item xs={4}>
@@ -83,7 +113,6 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
                 <Grid item xs={8}>
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCategories}
-                        parser={({name, id}: any) => ({name, id})}
                         name="category"
                         label="category"
                         variant='outlined'
@@ -92,7 +121,6 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
                 <Grid item xs={12}>
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCombo}
-                        parser={({name, id}: any) => ({name, id})}
                         name="parent"
                         label="Parent Group"
                         variant='outlined'
@@ -103,6 +131,13 @@ const GroupEditor = ({data, isNew, onGroupAdded, onGroupEdited}: IProps) => {
                         name="name"
                         label="Name"
                         type="text"
+                        variant='outlined'
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <XMapsInput
+                        name="location"
+                        label="Location"
                         variant='outlined'
                     />
                 </Grid>

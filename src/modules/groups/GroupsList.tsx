@@ -115,7 +115,7 @@ const GroupsList = () => {
                 </Box>
             </Box>
             <EditDialog open={dialog} onClose={handleClose} title='Add new group'>
-                <GroupEditor data={starterData} isNew={true} onGroupAdded={handleAdded}/>
+                <GroupEditor data={starterData} isNew={true} onCreated={handleAdded}/>
             </EditDialog>
         </Layout>
     );

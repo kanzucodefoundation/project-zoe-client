@@ -9,7 +9,7 @@ import DataList from "../../../components/DataList";
 import {AddFabButton} from "../../../components/EditIconButton";
 import {search} from "../../../utils/ajax";
 import {remoteRoutes} from "../../../data/constants";
-import {hasValue, toOptions} from "../../../components/inputs/inputHelpers";
+import {hasValue} from "../../../components/inputs/inputHelpers";
 import PersonIcon from "@material-ui/icons/Person";
 import Hidden from "@material-ui/core/Hidden";
 import EditDialog from "../../../components/EditDialog";
@@ -76,7 +76,7 @@ const toMobile = (data: any): IMobileRow => {
         primary: data.fullName,
         secondary: <>
             <Typography variant='caption' color='textSecondary'>{data.username}</Typography>
-            <div>{data.roles?.map((it:any) => (
+            <div>{data.roles?.map((it: any) => (
                 <Chip
                     color='primary'
                     variant='outlined'
@@ -119,7 +119,7 @@ const Users = () => {
         const toEdit = {
             id,
             username,
-            roles: roles ? toOptions(roles) : [],
+            roles: [...roles],
             contact: {id: contactId, label: fullName}
         }
         setSelected(toEdit)
@@ -170,7 +170,8 @@ const Users = () => {
             </Hidden>
             <EditDialog title={selected ? `Edit ${selected.username}` : 'Create User'} open={dialog}
                         onClose={handleClose}>
-                <UserEditor data={selected} isNew={!selected} done={handleComplete} onDeleted={handleDeleted} onCancel={handleClose}/>
+                <UserEditor data={selected} isNew={!selected} done={handleComplete} onDeleted={handleDeleted}
+                            onCancel={handleClose}/>
             </EditDialog>
         </Layout>
     );

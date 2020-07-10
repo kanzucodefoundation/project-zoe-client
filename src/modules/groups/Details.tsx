@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import Button from '@material-ui/core/Button';
 import {IGroup} from "./types";
 import EditDialog from "../../components/EditDialog";
 import GroupEditor from "./editors/GroupEditor";
@@ -12,14 +11,16 @@ import {Theme} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
+import EditIcon from '@material-ui/icons/Edit';
 import MembersList from "./members/MembersList";
 import {grey} from "@material-ui/core/colors";
 import {get} from "../../utils/ajax";
-import {remoteRoutes} from "../../data/constants";
+import {localRoutes, remoteRoutes} from "../../data/constants";
 import Loading from "../../components/Loading";
 import {Alert} from "@material-ui/lab";
-import {useParams} from "react-router";
+import {useHistory, useParams} from "react-router";
 import Layout from "../../components/layout/Layout";
+import IconButton from "@material-ui/core/IconButton";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function Details() {
 
     let {groupId} = useParams();
-
+    const history = useHistory();
     const [dialog, setDialog] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true)
     const [data, setData] = useState<IGroup | null>(null)
@@ -77,7 +78,7 @@ export default function Details() {
 
     function handleEdited(dt: any) {
         setDialog(false)
-        //onEdited(dt)
+        setData(dt)
     }
 
     if (loading)
@@ -91,6 +92,12 @@ export default function Details() {
                 <Alert severity='error'>Failed to load group data</Alert>
             </Box>
         </Layout>
+
+
+    function handleDeleted() {
+        history.push(localRoutes.groups)
+    }
+
     return (
         <Layout>
             <Box p={2} className={classes.root}>
@@ -102,8 +109,13 @@ export default function Details() {
                                     <Avatar className={classes.largeIcon}><PeopleIcon/></Avatar>
                                 </Box>
                                 <Box flexGrow={1}>
-                                    <Typography variant='h6' >{data.name}</Typography>
+                                    <Typography variant='h6'>{data.name}</Typography>
                                     <Typography variant='body2'>{`${data.privacy}, ${data.category.name}`}</Typography>
+                                </Box>
+                                <Box pr={2}>
+                                    <IconButton aria-label="Edit" color='primary' title='Edit Group' onClick={handleEdit}>
+                                        <EditIcon/>
+                                    </IconButton>
                                 </Box>
                             </Box>
                             <Divider/>
@@ -125,23 +137,11 @@ export default function Details() {
                                 <MembersList groupId={Number(groupId)}/>
                             </Box>
                         </Grid>
-                        <Grid item xs={12}>
-                            <Box display='flex' justifyContent='flex-end' pt={2}>
-                                <Button variant="outlined" color="default" size='small' onClick={handleDelete}>
-                                    Delete
-                                </Button>
-                                <Box pl={1}>
-                                    <Button variant="outlined" color="primary" size='small' onClick={handleEdit}>
-                                        Edit
-                                    </Button>
-                                </Box>
-                            </Box>
-                        </Grid>
                     </Grid>
 
                 </Paper>
                 <EditDialog open={dialog} onClose={handleClose} title='Edit Group'>
-                    <GroupEditor data={data} isNew={false} onGroupEdited={handleEdited}/>
+                    <GroupEditor data={data} isNew={false} onUpdated={handleEdited} onDeleted={handleDeleted}/>
                 </EditDialog>
             </Box>
         </Layout>

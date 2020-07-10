@@ -1,6 +1,6 @@
 import React from "react"
 import {Link, Route, Switch} from 'react-router-dom'
-import {localRoutes} from "../data/constants";
+import {appRoles, localRoutes} from "../data/constants";
 import Dashboard from "./dashboard/Dashboard";
 import Contacts from "./contacts/Contacts";
 import ContactDetails from "./contacts/details/Details";
@@ -12,14 +12,21 @@ import Users from "./admin/users/Users";
 import {useSelector} from "react-redux";
 import {IState} from "../data/types";
 import MembersEditor from "./groups/members/MembersEditor";
+import {hasAnyRole} from "../data/appRoles";
+
 
 
 const ContentSwitch = () => {
     const user = useSelector((state: IState) => state.core.user)
 
+
     return <Switch>
         <Route exact={true} path="/" component={Dashboard}/>
         <Route path={localRoutes.dashboard} component={Dashboard}/>
+        {
+            hasAnyRole(user,[appRoles.roleCrmEdit,"CRM_EDIT"]) &&
+            <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
+        }
         <Route path={localRoutes.contactsDetails} component={ContactDetails}/>
         <Route path={localRoutes.contacts} component={Contacts}/>
         <Route path={localRoutes.users} component={Users}/>

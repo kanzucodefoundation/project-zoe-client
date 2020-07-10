@@ -1,12 +1,11 @@
 import React from 'react';
 import {useField} from "formik";
 import {hasValue} from "./inputHelpers";
-import {IPRemoteProps, PRemoteSelect} from "../plain-inputs/PRemoteSelect";
-import {ComboValue} from "../plain-inputs/PComboInput";
+import PMapsInput, {GooglePlace, PMapsProps} from "../plain-inputs/PMapsInput";
 
-type XRemoteProps = Omit<IPRemoteProps, 'onChange'|'value'|'onBlur'|'helperText'|'showError'>
+type XRemoteProps = Omit<PMapsProps, 'onChange'|'value'|'onBlur'|'helperText'|'showError'>
 
-export const XRemoteSelect = (props: XRemoteProps) => {
+export const XMapsInput = (props: XRemoteProps) => {
     const [field, meta, helpers] = useField({name: props.name});
     const error = hasValue(meta.error) ? meta.error : undefined
     const showError = Boolean(error && meta.touched)
@@ -15,11 +14,11 @@ export const XRemoteSelect = (props: XRemoteProps) => {
         helpers.setTouched(true)
     }
 
-    function handleChange(value: ComboValue) {
+    function handleChange(value: GooglePlace |  null) {
         helpers.setValue(value)
     }
 
-    return <PRemoteSelect
+    return <PMapsInput
         {...props}
         value={field.value}
         onChange={handleChange}

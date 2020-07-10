@@ -18,6 +18,7 @@ import {Alert} from "@material-ui/lab";
 import Loading from "../../../components/Loading";
 import EditDialog from "../../../components/EditDialog";
 import MembersEditor from "./MembersEditor";
+import MemberEditor from "./MemberEditor";
 
 interface IProps {
     groupId: number
@@ -68,6 +69,22 @@ const MembersList = ({groupId}: IProps) => {
         setSelected(mbr)
     }
 
+    const handleMemberEdited = (mbr: IGroupMembership) =>  {
+        setSelected(null)
+        const newData = data.map((it: any) => {
+            if (it.id === mbr.id)
+                return mbr
+            else return it
+        })
+        setData(newData)
+    }
+
+    const handleMemberDeleted = (mbr: IGroupMembership) => {
+        setSelected(null)
+        const newData = data.filter((it: any) => it.id !== mbr.id)
+        setData(newData)
+    }
+
     function handleDone() {
         fetchMembers()
         setAddingMembers(false)
@@ -91,7 +108,7 @@ const MembersList = ({groupId}: IProps) => {
                             onClick={handleAddNew}
                             size='small'
                         >
-                            Add New&nbsp;&nbsp;
+                            Add Member(s)&nbsp;&nbsp;
                         </Button>
                     </Box>
                 </Box>
@@ -106,7 +123,10 @@ const MembersList = ({groupId}: IProps) => {
                             </ListItem> :
                             data.map(mbr => {
                                 return (
-                                    <ListItem key={mbr.id} button onClick={handleSelected(mbr)}>
+                                    <ListItem key={mbr.id}
+                                              button
+                                              onClick={handleSelected(mbr)}
+                                    >
                                         <ListItemAvatar>
                                             <XAvatar data={mbr.contact}/>
                                         </ListItemAvatar>
@@ -124,9 +144,22 @@ const MembersList = ({groupId}: IProps) => {
                 open={addingMembers}
                 onClose={handleCloseDialog}
                 title="MembersEditor"
-                maxWidth="lg"
+                maxWidth="sm"
             >
                 <MembersEditor group={{id: groupId}} done={handleDone}/>
+            </EditDialog>
+
+            <EditDialog
+                open={Boolean(selected)}
+                onClose={() => setSelected(null)}
+                title={`Edit ${selected?.contact.name}`}
+                maxWidth="lg"
+            >
+                <MemberEditor
+                    data={selected}
+                    onDeleted={handleMemberDeleted}
+                    done={handleMemberEdited}
+                />
             </EditDialog>
         </Grid>
     );

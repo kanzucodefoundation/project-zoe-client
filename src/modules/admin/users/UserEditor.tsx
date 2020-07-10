@@ -9,9 +9,11 @@ import XTextInput from "../../../components/inputs/XTextInput";
 import {remoteRoutes, rolesList} from "../../../data/constants";
 import {XRemoteSelect} from "../../../components/inputs/XRemoteSelect";
 import {handleSubmission, ISubmission} from "../../../utils/formHelpers";
-import {comboParser, toOptions} from "../../../components/inputs/inputHelpers";
+import {comboParser} from "../../../components/inputs/inputHelpers";
 import {del} from "../../../utils/ajax";
 import Toast from "../../../utils/Toast";
+import XComboInput from "../../../components/inputs/XComboInput";
+import {cleanComboValue} from "../../../utils/dataHelpers";
 
 interface IProps {
     data: any
@@ -45,7 +47,7 @@ const UserEditor = ({data, isNew, done, onDeleted, onCancel}: IProps) => {
             ...values,
             contactId: values.contact.id,
             password: values.password,
-            roles: values.roles?.map((it: any) => it.id)
+            roles: cleanComboValue(values.roles)
         }
         const submission: ISubmission = {
             url: remoteRoutes.users,
@@ -96,12 +98,10 @@ const UserEditor = ({data, isNew, done, onDeleted, onCancel}: IProps) => {
                     }
                 </Grid>
                 <Grid item xs={12}>
-                    <XRemoteSelect
+                    <XComboInput
                         name="roles"
                         label="Roles"
-                        remote=''
-                        defaultOptions={toOptions(rolesList)}
-                        parser={comboParser}
+                        options={rolesList}
                         variant='outlined'
                         multiple
                     />
