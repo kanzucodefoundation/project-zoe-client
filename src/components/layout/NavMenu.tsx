@@ -16,18 +16,15 @@ import { navBackgroundColor } from "./styles";
 import { createStyles, makeStyles, Theme, withStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import grey from '@material-ui/core/colors/grey';
-
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import EventNoteIcon from '@material-ui/icons/EventNote';
 import { appRoles} from "../../data/constants";
 import { useSelector } from 'react-redux';
 import { IState } from '../../data/types';
 import { hasAnyRole } from '../../utils/userHelpers';
-
 
 interface IProps {
 }
@@ -50,10 +47,8 @@ const routes = [
             {
                 name: "Groups",
                 route: localRoutes.groups
-            },
-            
-        ]
-        
+            },  
+        ] 
     },
     {
         name: "Admin",
@@ -123,10 +118,6 @@ const routes = [
         route: localRoutes.volcalendar,
         icon: EventNoteIcon
     },
-
-    
-        
-    
     {
         name: "Help",
         requiredRoles: [appRoles.roleCrmView, appRoles.roleAuthUserView, appRoles.roleAuthUserEdit, appRoles.roleAuthGroupView, appRoles.roleAuthGroupEdit, appRoles.roleTagView, appRoles.roleTagEdit, appRoles.roleGroupView, appRoles.roleGroupEdit, appRoles.roleCrmEdit, appRoles.roleVolunteer],

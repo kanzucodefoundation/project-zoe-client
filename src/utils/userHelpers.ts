@@ -1,4 +1,4 @@
-import { IAuthUser, IState } from "../data/types"
+import { IAuthUser } from "../data/types"
 
 export const hasRole = (user: IAuthUser, role: string): boolean => {
     return user.roles.indexOf(role) > -1
