@@ -51,8 +51,7 @@ const BlockedDate = ({ done }: IProps) => {
         columns: [            
             { title: 'Start Date', field: 'startDate' },
             { title: 'End Date', field: 'endDate' },
-            { title: 'Reason', field: 'Reason for Blocking' },
-            // { title: 'Volunteers', field: 'userId' },
+            { title: 'Reason', field: 'reason' },            
         ],
         data: [
         ],
@@ -62,8 +61,7 @@ const BlockedDate = ({ done }: IProps) => {
 
     React.useEffect(() => {
         async function fetchBlockedDates() {
-            const res = await fetch(remoteRoutes.blockedDate);
-            console.log('gggggggg')
+            const res = await fetch(remoteRoutes.blockedDate);            
             console.log(res)
             if (res.status >= 200 && res.status <= 299) {
                 const json = await res.json();
@@ -84,6 +82,7 @@ const BlockedDate = ({ done }: IProps) => {
             }
         }
         fetchBlockedDates();
+        console.log(fetchBlockedDates());
     }, []);   
 
 

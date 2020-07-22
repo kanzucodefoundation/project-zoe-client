@@ -88,7 +88,7 @@ export const remoteRoutes = {
   appointmentTask: url + "/api/appointment-task",
   userTask: url + "/api/user-task",
   userTasks: url + "/api/user-task/userTasks",
-  userTaskOnePerson: url + "/api/user-task",
+  singleUserTask: url + "/api/user-task",
   tasks: url + "/api/tasks",
   blockedDate: url + '/api/blocked-date',
   //viewTasks: url + "/api/tasks / { id } / update",

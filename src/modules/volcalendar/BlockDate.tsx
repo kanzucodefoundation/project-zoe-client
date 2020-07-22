@@ -84,33 +84,30 @@ const BlockDateForm = ({done}: IProps) => {
     const classes = useStyles();
 
     // Retrieve all persons so that the volunteer may be selected
-    const [persons, setPersons] = useState<any>({id: 0, contactId: 0, email: "", listOfPersons: []});
-    useEffect(() => {
-        const fetchPersons = async () => {
-            const result = await fetch(remoteRoutes.contactsPerson).then(
-                response => response.json()
-            )
-            setPersons({
-                ...persons,
-                listOfPersons: result
-            });
-        }
-        fetchPersons();
-    }, []);
+    // const [persons, setPersons] = useState<any>({id: 0, contactId: 0, email: "", listOfPersons: []});
+    // useEffect(() => {
+    //     const fetchPersons = async () => {
+    //         const result = await fetch(remoteRoutes.contactsPerson).then(
+    //             response => response.json()
+    //         )
+    //         setPersons({
+    //             ...persons,
+    //             listOfPersons: result
+    //         });
+    //     }
+    //     fetchPersons();
+    // }, []);
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         console.log(values)
         
-        const toSaveBlockedDateTable: ICreateABlockDateDto = {         
-            // username: persons.email,
-            // password: 'new_volunteer', // The default password for each new volunteer
-            // contactId: persons.contactId,
-            // roles: ["VOLUNTEER"],
+        const toSaveBlockedDateTable: ICreateABlockDateDto = {
+
             reason: values.reason, 
             startDate: values.startDate,
             endDate: values.endDate
         }
-        console.log('xxxxxxxxxxxxxxxxxxxxxxxxxx', values.reason)
+                
         console.log(toSaveBlockedDateTable)
 
         // Add to blocked_date table
@@ -134,30 +131,7 @@ const BlockDateForm = ({done}: IProps) => {
         )
     }
 
-    // const handleChange = (value: any) => {
-    //     const fetchEmail = async () => {
-    //         const getEmail = fetch(remoteRoutes.contactsEmail + "/" + value.id)
-
-    //         const getPerson = fetch(remoteRoutes.contactsOnePerson + "/" + value.id)
-
-    //         Promise.all([getEmail, getPerson]).then(async ([email, person]) => {
-    //             const fetchedEmail = await email.json()
-    //             const pickedPerson = await person.json()
-                
-    //             setPersons({
-    //                 ...persons,
-    //                 id: value.id,
-    //                 email: fetchedEmail.value,
-    //                 contactId: fetchedEmail.contactId,
-    //                 firstName: pickedPerson[0].firstName
-    //             })
-    //         }).catch(e => {
-    //             console.log(e)
-    //         })
-    //     }
-    //     fetchEmail();
-    // }
-
+    
     return (
       <Navigation>
         <Box p={1} className={classes.root}>
