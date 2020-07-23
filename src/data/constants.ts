@@ -35,7 +35,7 @@ export const localRoutes = {
   settings: "/admin/settings",
   volcalendar: "/volcalendar",
   voldashboard: "/voldashboard",
-  volblockdate: "/volblockdate",
+  volblockedDate: "/volblockedDate",
   volviewteam: "/volviewteam",
   teamleadcalendar: '/teamleadcalendar',
   assignedtasks: '/assignedtasks',
@@ -67,7 +67,7 @@ export const remoteRoutes = {
   contactsOnePerson: url + "/api/crm/people", // Added by Daniel
   contactsPersonVolunteer: url + "/api/crm/people/volunteers", // Added by Daniel
   contactsPersonOneVolunteer: url + "/api/crm/people/volunteers", // Added by Daniel
-  contactsPersonsAndTheirGroups: url + "/api/crm/people/personsAndTheirGroups", // Added by Daniel
+  contactsPersonsAndTheirGroups: url + "/api/crm/people/personsAndTheirGroups", // Persons and all the groups they are part of and active in i.e. ministries and other community groups
   contactsChc: url + "/api/crm/person/chc",
   contactsEmail: url + "/api/crm/emails",
   tags: url + "/api/tags",
@@ -95,7 +95,8 @@ export const remoteRoutes = {
   appointmentTask: url + "/api/appointment-task",
   userTask: url + "/api/user-task",
   userTasks: url + "/api/user-task/userTasks",
+  userTaskOnePerson: url + "/api/user-task",
   tasks: url + "/api/tasks",
+  blockedDate: url + '/api/blocked-date',
   //viewTasks: url + "/api/tasks / { id } / update",
 };
-    

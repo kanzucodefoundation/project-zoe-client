@@ -20,6 +20,7 @@ import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
 import {ICreatePersonDto} from "./types";
 import {isoDateString} from "../../utils/dateHelpers";
+import { isEmpty } from 'lodash';
 
 interface IProps {
     data: any | null
@@ -32,7 +33,7 @@ const schema = yup.object().shape(
         lastName: reqString,
         // middleName: reqString,
         gender: reqString,
-        dateOfBirth: reqDate,
+        // dateOfBirth: reqDate, // WH does not want to force people to enter their Year of birth
         civilStatus: reqString,
 
         ageGroup: reqString,
@@ -87,7 +88,7 @@ const NewPersonForm = ({done}: IProps) => {
             firstName: values.firstName,
             middleName: values.middleName,
             lastName: values.lastName,
-            dateOfBirth: isoDateString(values.dateOfBirth),
+            dateOfBirth: !isEmpty(values.dateOfBirth) ? isoDateString(values.dateOfBirth) : null,
             gender: values.gender,
             civilStatus: values.civilStatus,
 

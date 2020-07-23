@@ -1,7 +1,7 @@
 import React from 'react';
 import {useDispatch} from 'react-redux';
 import {servicesConstants} from "../../data/volunteers/reducer";
-import {put} from "../../utils/ajax";
+import {post} from "../../utils/ajax";
 import XForm from "../../components/forms/XForm";
 import * as yup from "yup";
 import {reqString} from "../../data/validations";
@@ -15,14 +15,17 @@ import Header from "./Header";
 
 import MaterialTable, { Column } from 'material-table';
 import Toast from '../../utils/Toast';
-import EditIcon from '@material-ui/icons/Edit';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from "@material-ui/core/Grid";
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
-import { IUpdateAMembershipDto } from './types';
+import { ICreateAMembershipDto } from './types';
+import { exit } from 'process';
+import { indexOf } from 'lodash';
 
 interface IProps {
     data: any | null
@@ -79,99 +82,189 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
           { title: 'First name', field: 'firstName' },
           { title: 'Last name', field: 'lastName' },
           { title: 'Ministry', field: 'ministry' },
-          { title: 'Edit', field: 'edit' },
+          { title: 'Add to ministry', field: 'addToMinistry' },
+          { title: 'Remove', field: 'remove' },
         ],
         data: [
         ],
     });
 
     // For opening and closing the dialog
-    const [open, setOpen] = React.useState(false);
-    const [volunteer, setVolunteer] = React.useState({id:0, firstName: "", lastName: "", contactId: 0, groupMembership: {id: 0}, group: []});
+    const [openEdit, setOpenEdit] = React.useState(false);
+    const [openRemove, setOpenRemove] = React.useState(false);
+    const [volunteer, setVolunteer] = React.useState({id:0, firstName: "", lastName: "", contactId: 0, ageGroup: "", groupMembership: [], group: []});
   
-    const handleClickOpen = (volunteer: any) => {
-        setVolunteer(volunteer)
-        setOpen(true);
+    const handleClickOpenForEdit = (volunteer: any) => {
+        setVolunteer(volunteer);
+        setOpenEdit(true);
     };
   
-    const handleClose = () => {
-        setOpen(false);
+    const handleClickOpenForRemove = (volunteer: any) => {
+        setVolunteer(volunteer);
+        setOpenRemove(true);
+    };
+  
+    const handleCloseEdit = () => {
+        setOpenEdit(false);
+    };
+  
+    const handleCloseRemove = () => {
+        setOpenRemove(false);
     };
     // END
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
-        values.ministry.map((item: any, index: any) => {
-            const toSaveToGroupMemberships: IUpdateAMembershipDto = {
-                id: volunteer.groupMembership.id,
-                groupId: item.value,
-                contactId: volunteer.contactId,
-                role: "Volunteer",
-            }
-            // Add person to group_membership table
-            put(remoteRoutes.groupsMemberships, toSaveToGroupMemberships,
-                (data) => {
-                    if (index === values.groupId.length-1){
+        // Checking to see if any of the selected ministries are among the teams the volunteer belongs to
+        let ministryTeamsVolunteerIsIn = volunteer.groupMembership.map((ministry: any) => { return ministry.groupId });
+        let theSelectedTeams = values.ministry.map((ministry: any) => { return ministry.value }); // groupIds of ministries selected in the form
+        let namesOfTheSelectedTeams = values.ministry.map((ministry: any) => { return ministry.label }).join(" and "); // Names of ministries selected in the form
+        let counter = 1;
+        for (const thisMinistryTeam of theSelectedTeams) {
+            if (!ministryTeamsVolunteerIsIn.includes(thisMinistryTeam)) {
+                const toSaveToGroupMemberships: ICreateAMembershipDto = {
+                    groupId: thisMinistryTeam,
+                    contactId: volunteer.contactId,
+                    role: "Volunteer",
+                    isActive: true,
+                }
+                // Add person to group_membership table
+                post(remoteRoutes.groupsMemberships, toSaveToGroupMemberships,
+                    (data) => {
+                        if (counter === theSelectedTeams.length) {
+                            fetchVolunteers();
+                        }
+                        counter = counter + 1;
                         dispatch({
                             type: servicesConstants.servicesAddVolunteer,
                             payload: {...data},
                         })
                     }
-                    // Then send email to new volunteer
-                    // get a instance of sendgrid and set the API key
-                    const sendgrid = require('@sendgrid/mail');
-                    sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
-                    const email = {
-                    to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
-                    from: process.env.REACT_APP_FROM, // must include email address of the sender
-                    subject: 'Your ministry team has been changed',
-                    html: 'Hello ' + volunteer.firstName + ', <br>This is simply to notify you that your ministry team in which you\'re serving at Worship Harvest Ministries has been changed. You are now serving in ' + values.ministry.label,
-                    };// send the email via sendgrid
-                    sendgrid.send(email)
-                    .then(() => { Toast.info("An email notification has been sent to the volunteer") }, (error: { response: { body: any; }; }) => {
-                        console.error(error);
-                        
-                        if (error.response) {
-                            console.error(error.response.body)
-                        }
-                    });
-                },
-                undefined,
-                () => {
-                    actions.setSubmitting(false);
-                }
-            )
-            if (done) {
-                done()
+                );
             }
-        })
+        }
+        // Then send email to new volunteer
+        // get a instance of sendgrid and set the API key
+        const sendgrid = require('@sendgrid/mail');
+        sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
+        const email = {
+        to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
+        from: process.env.REACT_APP_FROM, // must include email address of the sender
+        subject: 'Your are now serving in a new ministry.',
+        html: 'Hello ' + volunteer.firstName + ', <br>We would like to update you about some changes to your ministry team(s) under which you are serving. <b>You have now been added to the ' + namesOfTheSelectedTeams + ' team</b>.<br><br>All our best regards and thank you for serving,<br>Worship Harvest Ministries.',
+        };// send the email via sendgrid
+        sendgrid.send(email)
+        .then(() => { Toast.info("An email notification has been sent to the volunteer") }, (error: { response: { body: any; }; }) => {
+            console.error(error);
+            
+            if (error.response) {
+                console.error(error.response.body)
+            }
+        });
+
+        actions.setSubmitting(false);
+        if (done) {
+            done()
+        }
+
         Toast.info('Operation successful')
+        handleCloseEdit()
+        handleCloseRemove()
         actions.resetForm()
     }
 
-    React.useEffect(() => {
-        async function fetchVolunteers() {
-            const res = await fetch(remoteRoutes.contactsPersonVolunteer);
-            if (res.status >= 200 && res.status <= 299) {
-                const json = await res.json();
-                setData({
-                    ...state,
-                    data:json.map((volunteer: any) => {
-                        return {
-                            firstName: volunteer.firstName,
-                            lastName: volunteer.lastName,
-                            ministry: volunteer.group.map((ministryName: any) => { return ministryName.name }).join(", "),
-                            edit: <span onClick={() => handleClickOpen(volunteer)}><EditIcon/></span>,
-                        }
+    function handleRemoveFromMinistry(values: any, actions: FormikHelpers<any>) {
+        // Checking to see if any of the selected ministries are among the teams the volunteer belongs to
+        let groupIdVolunteerIsIn = volunteer.groupMembership.map((ministry: any) => { return ministry.groupId });
+        let tableIdVolunteerIsIn = volunteer.groupMembership.map((ministry: any) => { return ministry.id });
+        let theSelectedTeams = values.ministry.map((ministry: any) => { return ministry.value }); // IDs of ministries selected in the form
+        let namesOfTheSelectedTeams = values.ministry.map((ministry: any) => { return ministry.label }).join(" and "); // Names of ministries selected in the form (used in email)
+        let counter = 1;
+        for (const thisMinistryTeam of theSelectedTeams) {
+            if (groupIdVolunteerIsIn.includes(thisMinistryTeam)) {
+                let tableIdOfMinistryToRemove = tableIdVolunteerIsIn[groupIdVolunteerIsIn.indexOf(thisMinistryTeam)];
+
+                const updateIsActive = async() => {
+                    let response = await fetch(remoteRoutes.groupsMemberships, {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                            id: tableIdOfMinistryToRemove,
+                            contactId: volunteer.contactId,
+                            role: "Volunteer",
+                            isActive: 0,
+                        }),
+                        headers: {
+                        "Accept": "application/JSON",
+                        "Content-Type": "application/json",
+                        },
                     })
-                })
-            } else {
-                Toast.error('Unable to retrieve the list of volunteers.')
-                console.log(res.status, res.statusText);
+                    if (response.status !== 200) {
+                        Toast.error("Couldn't remove the volunteer from this ministry.")
+                    } else if (response.status === 200) {
+                        if (counter === theSelectedTeams.length) {
+                            fetchVolunteers();
+                        }
+                        counter = counter + 1;
+                        Toast.info('Operation successful')
+                    }
+                }
+                updateIsActive();
             }
         }
+
+        // Then send email to new volunteer
+        // get a instance of sendgrid and set the API key
+        const sendgrid = require('@sendgrid/mail');
+        sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
+        const email = {
+        to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
+        from: process.env.REACT_APP_FROM, // must include email address of the sender
+        subject: 'You have been removed from a ministry.',
+        html: 'Hello ' + volunteer.firstName + ', <br>We would like to update you about some changes to your ministry team(s) under which you are serving. <b>You have been removed from the ' + namesOfTheSelectedTeams + ' team</b>.<br>If this appears to be an error, please reach out to any of our team leaders.<br><br>All our best regards and thank you for serving,<br>Worship Harvest Ministries.',
+        };// send the email via sendgrid
+        sendgrid.send(email)
+        .then(() => { Toast.info("An email notification has been sent to the volunteer") }, (error: { response: { body: any; }; }) => {
+            console.error(error);
+            
+            if (error.response) {
+                console.error(error.response.body)
+            }
+        });
+
+        actions.setSubmitting(false);
+        if (done) {
+            done()
+        }
+
+        handleCloseEdit()
+        handleCloseRemove()
+        actions.resetForm()
+    }
+
+    async function fetchVolunteers() {
+        const res = await fetch(remoteRoutes.contactsPersonVolunteer);
+        if (res.status >= 200 && res.status <= 299) {
+            const json = await res.json();
+            setData({
+                ...state,
+                data:json.map((volunteer: any) => {
+                    return {
+                        firstName: volunteer.firstName,
+                        lastName: volunteer.lastName,
+                        ministry: volunteer.group.map((ministryName: any) => { return ministryName.name }).sort().join(", "),
+                        addToMinistry: <span onClick={() => handleClickOpenForEdit(volunteer)}><AddCircleOutlineIcon /></span>,
+                        remove: <span onClick={() => handleClickOpenForRemove(volunteer)}><RemoveCircleOutlineIcon /></span>,
+                    }
+                })
+            })
+        } else {
+            Toast.error('Unable to retrieve the list of volunteers.')
+            console.log(res.status, res.statusText);
+        }
+    }
+
+    React.useEffect(() => {
         fetchVolunteers();
     }, []);
-
 
     return(
         <Navigation>
@@ -183,11 +276,12 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                     data={state.data}
                 />
 
-                <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-                    <DialogTitle id="form-dialog-title">Edit volunteer</DialogTitle>
+                <Dialog open={openEdit} onClose={handleCloseEdit} aria-labelledby="form-dialog-title">
+                    <DialogTitle id="form-dialog-title">Add volunteer to ministry</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            You are currently editing <b>{volunteer.firstName} {volunteer.lastName}'s</b> ministry details. They are currently in the following ministries:  <b>{volunteer.group.map((ministryName: any) => { return ministryName.name }).join(", ")}</b>.
+                            <b>{volunteer.firstName} {volunteer.lastName}</b> is currently a volunteer in the following ministries:  <b>{volunteer.group.map((ministryName: any) => { return ministryName.name }).join(", ")}</b>.
+                            Their age group: {volunteer.ageGroup} years.
                         </DialogContentText>
                         <XForm
                             onSubmit={handleSubmit}
@@ -202,7 +296,35 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                                         filter={{'categories[]': 'M'}}
                                         parser={({name, id}: any) => ({label: name, value: id})}
                                         name="ministry"
-                                        label="Ministry"
+                                        label="Select the ministries you'd like to add them to"
+                                        variant='outlined'
+                                    />
+                                </Grid>
+                            </Grid>
+                        </XForm>
+                    </DialogContent>
+                </Dialog>
+
+                <Dialog open={openRemove} onClose={handleCloseRemove} aria-labelledby="form-dialog-title">
+                    <DialogTitle id="form-dialog-title">Remove volunteer from ministry</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            <b>{volunteer.firstName} {volunteer.lastName}</b> is currently a volunteer in the following ministries:  <b>{volunteer.group.map((ministryName: any) => { return ministryName.name }).join(", ")}</b>.
+                        </DialogContentText>
+                        <XForm
+                            onSubmit={handleRemoveFromMinistry}
+                            schema={schema}
+                            initialValues={initialValues}
+                        >
+                            <Grid spacing={0} container>
+                                <Grid item xs={12}>
+                                    <XRemoteSelect
+                                        multiple
+                                        remote={remoteRoutes.groupsCombo}
+                                        filter={{'categories[]': 'M'}}
+                                        parser={({name, id}: any) => ({label: name, value: id})}
+                                        name="ministry"
+                                        label="Select the ministry you are removing them from"
                                         variant='outlined'
                                     />
                                 </Grid>

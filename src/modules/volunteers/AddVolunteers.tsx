@@ -60,7 +60,7 @@ const AddVolunteersForm = ({done}: IProps) => {
     const classes = useStyles();
 
     // Retrieve all persons so that the volunteer may be selected
-    const [persons, setPersons] = useState<any>({id: 0, contactId: 0, firstName: "", email: "", listOfPersons: [], ministriesNotIn: []});
+    const [persons, setPersons] = useState<any>({id: 0, contactId: 0, firstName: "", email: "", listOfPersons: [], ministriesIn: [], ministriesNotIn: []});
     useEffect(() => {
         const fetchPersons = async () => {
             const result = await fetch(remoteRoutes.contactsPersonsAndTheirGroups).then(
@@ -94,8 +94,8 @@ const AddVolunteersForm = ({done}: IProps) => {
                 const email = {
                 to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
                 from: process.env.REACT_APP_FROM, // must include email address of the sender
-                subject: 'You have been added as a Volunteer',
-                html: 'Hello ' + persons.firstName + ', <br>You have been added as a new volunteer at Worship Harvest Ministries serving in the ' + values.ministry.label + ' ministry. <br><br>Please use these details to log into your account on our platform; <br> Link to the platform: https://app.worshipharvest.org/ <br>Your email address: ' + persons.email + '<br>Your password: ' + toSave.password + '<br><br>You are most welcome!',
+                subject: 'You have been added as a Volunteer.',
+                html: 'Hello ' + persons.firstName + ', <br>You have been added as a new volunteer at Worship Harvest Ministries serving with the ' + values.ministry.map((ministryTeam: any) => { return ministryTeam.label }).join(", ") + ' team. <br><br>Please use these details to log into your account on our platform; <br> Link to the platform: https://app.worshipharvest.org/ <br>Your email address: ' + persons.email + '<br>Your password: ' + toSave.password + '<br><br>You are most welcome!<br>Worship Harvest Ministries.',
                 };// send the email via sendgrid
                 sendgrid.send(email)
                 .then(() => { Toast.info("A welcome email has been sent to the new volunteer") }, (error: { response: { body: any; }; }) => {
@@ -111,6 +111,7 @@ const AddVolunteersForm = ({done}: IProps) => {
                         groupId: item.value,
                         contactId: persons.contactId,
                         role: "Volunteer",
+                        isActive: true,
                     }
                     // Add person to group_membership table
                     post(remoteRoutes.groupsMemberships, toSaveToGroupMemberships,
@@ -156,8 +157,8 @@ const AddVolunteersForm = ({done}: IProps) => {
 
                 if (pickedVolunteer[0] === undefined) { // The picked person is not a volunteer attached to any ministry
                     notInTheseMinistries = [...ministryNames];
-                } else { // Otherwise, if they are
-                    var inTheseMinistries = pickedVolunteer[0].group.map((ministry: { name: any; }) => { return ministry.name })
+                } else { // Otherwise
+                    var inTheseMinistries = pickedVolunteer[0].group.map((ministry: { name: any; }) => { return ministry.name }) // They are volunteers in this ministries
 
                     for (const ministry of ministryNames) {
                         if (!inTheseMinistries.includes(ministry)) {
@@ -172,6 +173,7 @@ const AddVolunteersForm = ({done}: IProps) => {
                     email: fetchedEmail.value,
                     contactId: fetchedEmail.contactId,
                     firstName: pickedPerson[0].firstName,
+                    ministriesIn: inTheseMinistries,
                     ministriesNotIn: notInTheseMinistries
                 })
             }).catch(e => {
@@ -199,7 +201,7 @@ const AddVolunteersForm = ({done}: IProps) => {
                                 id="free-solo-demo"
                                 freeSolo
                                 options={persons.listOfPersons}
-                                getOptionLabel={(option) => option.firstName + " " + option.lastName + " - [" + option.group.map((group: any) => { if (group.name === 'Music' || group.name === 'Guest Experience' || group.name === 'Media' || group.name === 'Kids') { return group.name } }).filter(Boolean).join(", ") + "]"}
+                                getOptionLabel={(option) => option.firstName + " " + option.lastName + " - [" + option.group.map((group: any) => { if (group.name === 'Music' || group.name === 'Guest Experience' || group.name === 'Media' || group.name === 'Kids') { return group.name } }).filter(Boolean).sort().join(", ") + "]"}
                                 onChange={(event: any, value: any) => handleChange(value)} // prints the selected value
                                 renderInput={(params) => (
                                 <TextField {...params} label="Search for person to add as Volunteer" margin="normal" variant="outlined" />

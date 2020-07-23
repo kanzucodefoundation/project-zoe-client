@@ -15,7 +15,9 @@ import ViewTasks from "./tasks/ViewTasks";
 import AddTasks from "./tasks/AddTasks";
 import teamleadcalendar from "./teamlead/TeamLeadCalendar";
 import assignedtasks from "./teamlead/AssignedTasks";
-import volcalendar from "./volcalendar/VolCalendar"
+import assigntask from "./teamlead/AssignTask";
+import volcalendar from "./volcalendar/VolCalendar";
+import BlockedDate from "./volcalendar/BlockedDates";
 const ContentSwitch = () => {
     return (
       <Switch>
@@ -34,8 +36,14 @@ const ContentSwitch = () => {
         <Route path={localRoutes.viewVolunteers} component={ViewVolunteers} />
         <Route path={localRoutes.addVolunteers} component={AddVolunteers} />
         <Route path={localRoutes.volcalendar} component={volcalendar} />
+        <Route path={localRoutes.volblockedDate} component={BlockedDate} />
+        {/* <Route path={localRoutes.volcalendar} component={volcalendar}/>
+        <Route path={localRoutes.voldashboard} component={VolDashboard}/>
+        <Route path={localRoutes.volblockdate} component={VolBlockDate}/>
+        <Route path={localRoutes.volviewteam} component={VolViewTeam}/> */}
         <Route path={localRoutes.addTasks} component={AddTasks} />
         <Route path={localRoutes.viewTasks} component={ViewTasks} />
+        <Route path={localRoutes.assignedtasks} component={assignedtasks} />
         <Route component={NoMatch}/>
       </Switch>
     )

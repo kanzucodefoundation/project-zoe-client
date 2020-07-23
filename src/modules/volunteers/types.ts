@@ -9,11 +9,5 @@ export interface ICreateAMembershipDto {
     groupId: number;
     contactId: number;
     role: string;
-}
-
-export interface IUpdateAMembershipDto {
-    id: number;
-    groupId: number;
-    contactId: number;
-    role: string;
+    isActive: boolean;
 }
