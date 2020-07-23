@@ -16,13 +16,7 @@ import AddTasks from "./tasks/AddTasks";
 //import teamleadcalendar from "./teamlead/TeamLeadCalendar";
 
 //import volcalendar from "./volcalendar/VolCalendar"
-
-import { useSelector } from "react-redux";
-import { IState } from "../data/types";
-
 const ContentSwitch = () => {
-  const user = useSelector((state: IState) => state.core.user)
- console.log(user)
     return (
       <Switch>
         <Route exact={true} path="/" component={Dashboard} />
