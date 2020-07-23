@@ -34,13 +34,29 @@ import Close from '@material-ui/icons/Close';
 import Layout from "../../components/layout/Layout";
 import BlockDate from './BlockDate'
 import { remoteRoutes } from "../../data/constants";
-import { data, holidays } from './data';
+// import { data, holidays } from './data';
 // import Utils from './utils.js';
 // import DataCell from './DataCell.js';
 // import DateCell from './DateCell.js';
 // import TimeCell from './TimeCell.js';
 // import notify from 'devextreme/ui/notify';
 
+const data = [{
+    taskId: 'Website Re-Design Plan',
+    startDate: new Date(2020, 6, 28, 9, 35),
+    endDate: new Date(2020, 6, 28, 11, 30),
+    id: 0,
+    userId: 'Room 1',
+}];
+
+
+
+
+
+interface IProps {
+    data: any | null
+    done ? : () => any
+}
 
 const containerStyles = (theme: Theme) => createStyles({
     container: {
@@ -130,11 +146,15 @@ class AppointmentFormContainerBasic extends React.PureComponent {
             ...this.getAppointmentChanges(),
         };
         if (type === 'deleted') {
-            commitChanges({ [type]: appointment.id });
+            commitChanges({
+                [type]: appointment.id });
         } else if (type === 'changed') {
-            commitChanges({ [type]: { [appointment.id]: appointment } });
+            commitChanges({
+                [type]: {
+                    [appointment.id]: appointment } });
         } else {
-            commitChanges({ [type]: appointment });
+            commitChanges({
+                [type]: appointment });
         }
         this.setState({
             appointmentChanges: {},
@@ -159,7 +179,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
         };
 
         const isNewAppointment = appointmentData.id === undefined;
-        
+
 
         const cancelChanges = () => {
             this.setState({
@@ -203,10 +223,10 @@ const styles = (theme: Theme) => createStyles({
 
 /* eslint-disable-next-line react/no-multi-comp */
 class VolunteerCalendar extends React.PureComponent {
-    appointmentForm: (React.ComponentClass<any, any> & { update(): void; }) | (React.FunctionComponent<any> & { update(): void; });
+    appointmentForm: (React.ComponentClass < any, any > & { update(): void; }) | (React.FunctionComponent < any > & { update(): void; });
     cancelDelete: ((event: {}, reason: "backdropClick" | "escapeKeyDown") => void) | undefined;
     constructor(props: any) {
-        super(props);        
+        super(props);
         this.state = {
             data: data,
             currentDate: new Date(),
@@ -218,7 +238,7 @@ class VolunteerCalendar extends React.PureComponent {
             addedAppointment: {},
             startDayHour: 9,
             endDayHour: 19,
-            isNewAppointment: false,            
+            isNewAppointment: false,
         };
 
         this.toggleConfirmationVisible = this.toggleConfirmationVisible.bind(this);
@@ -239,8 +259,8 @@ class VolunteerCalendar extends React.PureComponent {
             }: any = this.state;
 
             const currentAppointment = data
-                .filter((appointment: { id: any; }) => editingAppointment && appointment.id === editingAppointment.id)[0]
-                || addedAppointment;
+                .filter((appointment: { id: any; }) => editingAppointment && appointment.id === editingAppointment.id)[0] ||
+                addedAppointment;
             const cancelAppointment = () => {
                 if (isNewAppointment) {
                     this.setState({
@@ -281,7 +301,7 @@ class VolunteerCalendar extends React.PureComponent {
     //         this.notifyDisableDate();
     //     }
     // }
-    
+
     // onAppointmentUpdating(e: any) {
     //     const isValidAppointment = Utils.isValidAppointment(e.component, e.newData);
     //     if(!isValidAppointment) {
@@ -289,11 +309,11 @@ class VolunteerCalendar extends React.PureComponent {
     //         this.notifyDisableDate();
     //     }
     // }
-    
+
     // notifyDisableDate() {
     //     notify('Cannot create or move an appointment/event to disabled time/date regions.', 'warning', 1000);
     // }
-    
+
     // applyDisableDatesToDateEditors(form: any) {
     //     const startDateEditor = form.getEditor('startDate');
     //     startDateEditor.option('disabledDates', holidays);
@@ -301,11 +321,11 @@ class VolunteerCalendar extends React.PureComponent {
     //     const endDateEditor = form.getEditor('endDate');
     //     endDateEditor.option('disabledDates', holidays);
     // }
-    
+
     // renderDataCell(itemData: any) {
     //     return <DataCell itemData={itemData} />;
     // } 
-    
+
     // renderDateCell(itemData: any) {
     //     return <DateCell itemData={itemData} />;
     // }
@@ -314,30 +334,28 @@ class VolunteerCalendar extends React.PureComponent {
     //     return <TimeCell itemData={itemData} />;
     // }  
 
-    
 
 
-    async componentDidMount() {
-        // console.log('ffffffffff')
-        // console.log(sessionStorage.getItem('id'))
-        const res = await fetch(remoteRoutes.singleUserTask + sessionStorage.getItem('id'));        
+
+    async componentDidMount() {        
+        const res = await fetch(remoteRoutes.singleUserTask + '/' + sessionStorage.getItem('id'));
         const json = await res.json();
+        console.log('zzzzzzzz')
         console.log(json);
 
         const appoints: any = [];
-        json.map((item: any, index: any) => {
-            appoints.push({
-                id: item["id"],
-                title: item.taskId["taskName"],
-                startDate: new Date(item.startDate["startDate"]),
-                endDate: new Date(item.endDate["endDate"]),
-                userId: item.userId["userId"]
-            })
-            return ""
-        });
+        
+        appoints.push({
+            id: json.appointmentTaskId,            
+            startDate: json.appTask.app.startDate,
+            endDate: json.appTask.app.endDate,
+            title: json.appTask.task.taskName,
+            userId: json.userId
+        })
+            
+       
 
-        console.log(appoints);
-
+        console.log('bbbccc', appoints);
         this.setState({
             data: appoints
         })

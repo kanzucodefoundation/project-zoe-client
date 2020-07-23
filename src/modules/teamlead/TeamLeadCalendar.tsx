@@ -556,80 +556,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
                         </Button>
                     </div>
                     
-                    {/* <XForm
-                        onSubmit={AssignTask}
-                        schema={schema}
-                        initialValues={initialValues}
-                    >
-                        <div className={classes.content}>
-                            <div className={classes.wrapper}>
-                                <Create className={classes.icon} color="action" />
-                                <XRemoteSelect
-                                    remote={remoteRoutes.tasks}
-                                    filter={{ 'taskName[]': '' }}
-                                    parser={({ taskName, id }: any) => ({ label: taskName, value: id })}
-                                    name="taskId"
-                                    variant='outlined'
-                                    {...textEditorProps('Task Name')}
-                                />
-                            </div>
-                            <div className={classes.wrapper}>
-                                <CalendarToday className={classes.icon} color="action" />
-                                <MuiPickersUtilsProvider utils={MomentUtils}>
-                                    <XDateInput
-                                        {...pickerEditorProps('startDate')}
-                                        name="startDate"
-                                        label="Start Date"
-                                    />
-                                    <XDateInput
-                                        {...pickerEditorProps('endDate')}
-                                        name="endDate"
-                                        label="End Date"
-                                    />
-                                </MuiPickersUtilsProvider>
-                            </div>
-                            <div className={classes.wrapper}>
-                                <EmojiPeopleIcon className={classes.icon} color="action" />
-                                <XRemoteSelect
-                                    multiple
-                                    remote={remoteRoutes.contactsPerson}
-                                    filter={{ 'firstName[]+" "+lastName[]': 'Volunteer' }}
-                                    parser={({ firstName, lastName, id }: any) => ({ label: firstName + " " + lastName, value: id })}
-                                    name="userId"
-                                    variant='outlined'
-                                    {...textEditorProps('Volunteers')}
-                                />
-                            </div>
-                        </div>
-                    </XForm>
-                    <div className={classes.buttonGroup}>
-                        {!isNewAppointment && (
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                className={classes.button}
-                                onClick={() => {
-                                    visibleChange();
-                                    this.commitAppointment('deleted');
-                                }}
-                            >
-                                Delete
-                            </Button>
-                        )}
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            className={classes.button}
-                            onClick={() => {
-                                visibleChange();
-                                applyChanges();
-                            }}
-                        //   onSubmit={AssignTask}
-                        >
-                            {isNewAppointment ? 'Create' : 'Save'}
-                        </Button>
-                    </div>
-               */}
+                    
 
 </div>
             </AppointmentForm.Overlay>
@@ -713,7 +640,7 @@ class TeamLeadCalendar extends React.PureComponent {
 
         const res = await fetch(remoteRoutes.userTasks);
         const json = await res.json();
-        // console.log(json);
+        console.log('xxxyyyy', json);
 
         const appoints: any = [];
         json.map((item: any, index: any) => {
