@@ -24,8 +24,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from "@material-ui/core/Grid";
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 import { ICreateAMembershipDto } from './types';
-import { exit } from 'process';
-import { indexOf } from 'lodash';
 
 interface IProps {
     data: any | null
@@ -92,7 +90,7 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
     // For opening and closing the dialog
     const [openEdit, setOpenEdit] = React.useState(false);
     const [openRemove, setOpenRemove] = React.useState(false);
-    const [volunteer, setVolunteer] = React.useState({id:0, firstName: "", lastName: "", contactId: 0, ageGroup: "", groupMembership: [], group: []});
+    const [volunteer, setVolunteer] = React.useState({id:0, firstName: "", lastName: "", email: {value: ""}, contactId: 0, ageGroup: "", groupMembership: [], group: []});
   
     const handleClickOpenForEdit = (volunteer: any) => {
         setVolunteer(volunteer);
@@ -147,7 +145,7 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
         const sendgrid = require('@sendgrid/mail');
         sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
         const email = {
-        to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
+        to: volunteer.email.value,
         from: process.env.REACT_APP_FROM, // must include email address of the sender
         subject: 'Your are now serving in a new ministry.',
         html: 'Hello ' + volunteer.firstName + ', <br>We would like to update you about some changes to your ministry team(s) under which you are serving. <b>You have now been added to the ' + namesOfTheSelectedTeams + ' team</b>.<br><br>All our best regards and thank you for serving,<br>Worship Harvest Ministries.',
@@ -216,7 +214,7 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
         const sendgrid = require('@sendgrid/mail');
         sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
         const email = {
-        to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
+        to: volunteer.email.value,
         from: process.env.REACT_APP_FROM, // must include email address of the sender
         subject: 'You have been removed from a ministry.',
         html: 'Hello ' + volunteer.firstName + ', <br>We would like to update you about some changes to your ministry team(s) under which you are serving. <b>You have been removed from the ' + namesOfTheSelectedTeams + ' team</b>.<br>If this appears to be an error, please reach out to any of our team leaders.<br><br>All our best regards and thank you for serving,<br>Worship Harvest Ministries.',

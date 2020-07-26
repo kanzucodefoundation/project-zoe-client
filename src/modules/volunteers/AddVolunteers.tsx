@@ -92,7 +92,7 @@ const AddVolunteersForm = ({done}: IProps) => {
                 const sendgrid = require('@sendgrid/mail');
                 sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
                 const email = {
-                to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
+                to: persons.email,
                 from: process.env.REACT_APP_FROM, // must include email address of the sender
                 subject: 'You have been added as a Volunteer.',
                 html: 'Hello ' + persons.firstName + ', <br>You have been added as a new volunteer at Worship Harvest Ministries serving with the ' + values.ministry.map((ministryTeam: any) => { return ministryTeam.label }).join(", ") + ' team. <br><br>Please use these details to log into your account on our platform; <br> Link to the platform: https://app.worshipharvest.org/ <br>Your email address: ' + persons.email + '<br>Your password: ' + toSave.password + '<br><br>You are most welcome!<br>Worship Harvest Ministries.',
