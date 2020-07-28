@@ -10,6 +10,7 @@ import {useDispatch} from 'react-redux';
 import {servicesConstants} from "../../data/volunteers/reducer";
 import {post} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
+import {sendEmail} from "../../utils/sendEmail";
 import {Box} from "@material-ui/core";
 import {ICreateAVolunteerDto, ICreateAMembershipDto} from "./types";
 
@@ -21,6 +22,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
+import XCheckBoxInput from '../../components/inputs/XCheckBoxInput';
 
 interface IProps {
     data: any | null
@@ -35,6 +37,7 @@ const schema = yup.object().shape(
 
 const initialValues = {
     ministry: [],
+    teamLead: ""
 }
 
 
@@ -87,30 +90,14 @@ const AddVolunteersForm = ({done}: IProps) => {
         // Add person to user table
         post(remoteRoutes.users, toSave,
             () => {
-                // Then send email to new volunteer
-                // get a instance of sendgrid and set the API key
-                const sendgrid = require('@sendgrid/mail');
-                sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
-                const email = {
-                to: persons.email,
-                from: process.env.REACT_APP_FROM, // must include email address of the sender
-                subject: 'You have been added as a Volunteer.',
-                html: 'Hello ' + persons.firstName + ', <br>You have been added as a new volunteer at Worship Harvest Ministries serving with the ' + values.ministry.map((ministryTeam: any) => { return ministryTeam.label }).join(", ") + ' team. <br><br>Please use these details to log into your account on our platform; <br> Link to the platform: https://app.worshipharvest.org/ <br>Your email address: ' + persons.email + '<br>Your password: ' + toSave.password + '<br><br>You are most welcome!<br>Worship Harvest Ministries.',
-                };// send the email via sendgrid
-                sendgrid.send(email)
-                .then(() => { Toast.info("A welcome email has been sent to the new volunteer") }, (error: { response: { body: any; }; }) => {
-                    console.error(error);
-                 
-                    if (error.response) {
-                      console.error(error.response.body)
-                    }
-                });
+                // Then send email to person on adding them as a new volunteer
+                sendEmail(persons.email, `You have been added as a ${values.teamLead === true ? "Team Lead" : "Volunteer"}.`, 'Hello ' + persons.firstName + `, <br>You have been added as a new Volunteer ${values.teamLead === true ? " and Team Lead" : ""} at Worship Harvest Ministries serving with the ` + values.ministry.map((ministryTeam: any) => { return ministryTeam.label }).join(", ") + ' team. <br><br>Please use these details to log into your account on our platform; <br> Link to the platform: https://app.worshipharvest.org/ <br>Your email address: ' + persons.email + '<br>Your password: ' + toSave.password + '<br><br>You are most welcome!<br>Worship Harvest Ministries.', 'A welcome email has been sent to the new volunteer');
 
                 values.ministry.map((item: any, index: any) => {
                     const toSaveToGroupMemberships: ICreateAMembershipDto = {
                         groupId: item.value,
                         contactId: persons.contactId,
-                        role: "Volunteer",
+                        role: values.teamLead === true ? "Team Lead" : "Volunteer",
                         isActive: true,
                     }
                     // Add person to group_membership table
@@ -201,10 +188,10 @@ const AddVolunteersForm = ({done}: IProps) => {
                                 id="free-solo-demo"
                                 freeSolo
                                 options={persons.listOfPersons}
-                                getOptionLabel={(option) => option.firstName + " " + option.lastName + " - [" + option.group.map((group: any) => { if (group.name === 'Music' || group.name === 'Guest Experience' || group.name === 'Media' || group.name === 'Kids') { return group.name } }).filter(Boolean).sort().join(", ") + "]"}
+                                getOptionLabel={(option) => option.firstName + " " + option.lastName + " - " + option.ageGroup + " yrs" + " - [" + option.group.map((group: any) => { if (group.name === 'Music' || group.name === 'Guest Experience' || group.name === 'Media' || group.name === 'Kids') { return group.name } }).filter(Boolean).sort().join(", ") + "]"}
                                 onChange={(event: any, value: any) => handleChange(value)} // prints the selected value
                                 renderInput={(params) => (
-                                <TextField {...params} label="Search for person to add as Volunteer" margin="normal" variant="outlined" />
+                                <TextField {...params} label="Search for person to add as new Volunteer" margin="normal" variant="outlined" />
                                 )}
                             />
 
@@ -218,6 +205,15 @@ const AddVolunteersForm = ({done}: IProps) => {
                                         name="ministry"
                                         label="Ministry"
                                         variant='outlined'
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            <Grid spacing={0} container>
+                                <Grid item xs={12}>
+                                    <XCheckBoxInput
+                                        name="teamLead"
+                                        label="Make volunteer the Team Lead of the selected ministry"
                                     />
                                 </Grid>
                             </Grid>

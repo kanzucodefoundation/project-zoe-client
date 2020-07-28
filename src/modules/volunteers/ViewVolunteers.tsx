@@ -15,6 +15,7 @@ import Header from "./Header";
 
 import MaterialTable, { Column } from 'material-table';
 import Toast from '../../utils/Toast';
+import { sendEmail } from '../../utils/sendEmail';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 import Dialog from '@material-ui/core/Dialog';
@@ -24,6 +25,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from "@material-ui/core/Grid";
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 import { ICreateAMembershipDto } from './types';
+import XCheckBoxInput from '../../components/inputs/XCheckBoxInput';
 
 interface IProps {
     data: any | null
@@ -51,6 +53,7 @@ const schema = yup.object().shape(
 
 const initialValues = {
     ministry: [],
+    teamLead: ""
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -122,7 +125,7 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                 const toSaveToGroupMemberships: ICreateAMembershipDto = {
                     groupId: thisMinistryTeam,
                     contactId: volunteer.contactId,
-                    role: "Volunteer",
+                    role: values.teamLead === true ? "Team Lead" : "Volunteer",
                     isActive: true,
                 }
                 // Add person to group_membership table
@@ -140,24 +143,8 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                 );
             }
         }
-        // Then send email to new volunteer
-        // get a instance of sendgrid and set the API key
-        const sendgrid = require('@sendgrid/mail');
-        sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
-        const email = {
-        to: volunteer.email.value,
-        from: process.env.REACT_APP_FROM, // must include email address of the sender
-        subject: 'Your are now serving in a new ministry.',
-        html: 'Hello ' + volunteer.firstName + ', <br>We would like to update you about some changes to your ministry team(s) under which you are serving. <b>You have now been added to the ' + namesOfTheSelectedTeams + ' team</b>.<br><br>All our best regards and thank you for serving,<br>Worship Harvest Ministries.',
-        };// send the email via sendgrid
-        sendgrid.send(email)
-        .then(() => { Toast.info("An email notification has been sent to the volunteer") }, (error: { response: { body: any; }; }) => {
-            console.error(error);
-            
-            if (error.response) {
-                console.error(error.response.body)
-            }
-        });
+        // Then send email to the volunteer on adding them to a ministry/ministries
+        sendEmail(volunteer.email.value, 'Your are now serving in a new ministry.', 'Hello ' + volunteer.firstName + ', <br>We would like to update you about some changes to your ministry team(s) under which you are serving. <b>You have now been added to the ' + namesOfTheSelectedTeams + ' team</b>.<br><br>All our best regards and thank you for serving,<br>Worship Harvest Ministries.', 'An email notification has been sent to the volunteer');
 
         actions.setSubmitting(false);
         if (done) {
@@ -209,24 +196,8 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
             }
         }
 
-        // Then send email to new volunteer
-        // get a instance of sendgrid and set the API key
-        const sendgrid = require('@sendgrid/mail');
-        sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
-        const email = {
-        to: volunteer.email.value,
-        from: process.env.REACT_APP_FROM, // must include email address of the sender
-        subject: 'You have been removed from a ministry.',
-        html: 'Hello ' + volunteer.firstName + ', <br>We would like to update you about some changes to your ministry team(s) under which you are serving. <b>You have been removed from the ' + namesOfTheSelectedTeams + ' team</b>.<br>If this appears to be an error, please reach out to any of our team leaders.<br><br>All our best regards and thank you for serving,<br>Worship Harvest Ministries.',
-        };// send the email via sendgrid
-        sendgrid.send(email)
-        .then(() => { Toast.info("An email notification has been sent to the volunteer") }, (error: { response: { body: any; }; }) => {
-            console.error(error);
-            
-            if (error.response) {
-                console.error(error.response.body)
-            }
-        });
+        // Then send email to the volunteer on removing them from a ministry/ministries
+        sendEmail(volunteer.email.value, 'You have been removed from a ministry.', 'Hello ' + volunteer.firstName + ', <br>We would like to update you about some changes to your ministry team(s) under which you are serving. <b>You have been removed from the ' + namesOfTheSelectedTeams + ' team</b>.<br>If this appears to be an error, please reach out to any of our team leaders.<br><br>All our best regards and thank you for serving,<br>Worship Harvest Ministries.', 'An email notification has been sent to the volunteer');
 
         actions.setSubmitting(false);
         if (done) {
@@ -248,7 +219,16 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                     return {
                         firstName: volunteer.firstName,
                         lastName: volunteer.lastName,
-                        ministry: volunteer.group.map((ministryName: any) => { return ministryName.name }).sort().join(", "),
+                        ministry: volunteer.group.map((ministryName: any) => {
+                            return ministryName.name +
+                            volunteer.groupMembership.map((ministry: any) => {
+                                if (ministryName.id === ministry.groupId && ministry.role === "Team Lead") {
+                                    return " (TL)"
+                                } else if (ministryName.id === ministry.groupId && ministry.role === "Volunteer") {
+                                    return ""
+                                }
+                            }).join("")
+                        }).join(", "),
                         addToMinistry: <span onClick={() => handleClickOpenForEdit(volunteer)}><AddCircleOutlineIcon /></span>,
                         remove: <span onClick={() => handleClickOpenForRemove(volunteer)}><RemoveCircleOutlineIcon /></span>,
                     }
@@ -268,6 +248,7 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
         <Navigation>
             <Box p={1} className={classes.root}>
                 <Header title="View volunteers" />
+                <p>TL - Volunteer is the Team Lead of the given ministry</p>
                 <MaterialTable
                     title="Volunteers"
                     columns={state.columns}
@@ -278,7 +259,7 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                     <DialogTitle id="form-dialog-title">Add volunteer to ministry</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            <b>{volunteer.firstName} {volunteer.lastName}</b> is currently a volunteer in the following ministries:  <b>{volunteer.group.map((ministryName: any) => { return ministryName.name }).join(", ")}</b>.
+                            <b>{volunteer.firstName} {volunteer.lastName}</b> is currently a volunteer in the following ministries:  <b>{volunteer.group.map((ministryName: any) => { return ministryName.name + volunteer.groupMembership.map((ministry: any) => { if (ministryName.id === ministry.groupId && ministry.role === "Team Lead") { return " (TL)" } else if (ministryName.id === ministry.groupId && ministry.role === "Volunteer") { return "" } }).join("") }).join(", ")}</b>.
                             Their age group: {volunteer.ageGroup} years.
                         </DialogContentText>
                         <XForm
@@ -294,8 +275,17 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                                         filter={{'categories[]': 'M'}}
                                         parser={({name, id}: any) => ({label: name, value: id})}
                                         name="ministry"
-                                        label="Select the ministries you'd like to add them to"
+                                        label="Select the ministry you'd like to add them to"
                                         variant='outlined'
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            <Grid spacing={0} container>
+                                <Grid item xs={12}>
+                                    <XCheckBoxInput
+                                        name="teamLead"
+                                        label="Make them the Team Lead of the selected ministry"
                                     />
                                 </Grid>
                             </Grid>
@@ -307,7 +297,7 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                     <DialogTitle id="form-dialog-title">Remove volunteer from ministry</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            <b>{volunteer.firstName} {volunteer.lastName}</b> is currently a volunteer in the following ministries:  <b>{volunteer.group.map((ministryName: any) => { return ministryName.name }).join(", ")}</b>.
+                            <b>{volunteer.firstName} {volunteer.lastName}</b> is currently a volunteer in the following ministries:  <b>{volunteer.group.map((ministryName: any) => { return ministryName.name + volunteer.groupMembership.map((ministry: any) => { if (ministryName.id === ministry.groupId && ministry.role === "Team Lead") { return " (TL)" } else if (ministryName.id === ministry.groupId && ministry.role === "Volunteer") { return "" } }).join("") }).join(", ")}</b>.
                         </DialogContentText>
                         <XForm
                             onSubmit={handleRemoveFromMinistry}
