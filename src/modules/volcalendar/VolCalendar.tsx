@@ -279,79 +279,29 @@ class VolunteerCalendar extends React.PureComponent {
                 cancelAppointment,
             };
         });
-
-        // 
-        // this.onAppointmentAdding = this.onAppointmentAdding.bind(this);
-        // this.onAppointmentUpdating = this.onAppointmentUpdating.bind(this);
+        
     }
-
-    // onAppointmentFormOpening(e: any) {
-    //     const startDate = new Date(e.appointmentDate.startDate);
-    //     if(!Utils.isValidAppointmentDate(startDate)) {
-    //         e.cancel = true;
-    //         this.notifyDisableDate();
-    //     }
-    //     this.applyDisableDatesToDateEditors(e.form);
-    // }
-
-    // onAppointmentAdding(e: any) {
-    //     const isValidAppointment = Utils.isValidAppointment(e.component, e.appointmentData);
-    //     if(!isValidAppointment) {
-    //         e.cancel = true;
-    //         this.notifyDisableDate();
-    //     }
-    // }
-
-    // onAppointmentUpdating(e: any) {
-    //     const isValidAppointment = Utils.isValidAppointment(e.component, e.newData);
-    //     if(!isValidAppointment) {
-    //         e.cancel = true;
-    //         this.notifyDisableDate();
-    //     }
-    // }
-
-    // notifyDisableDate() {
-    //     notify('Cannot create or move an appointment/event to disabled time/date regions.', 'warning', 1000);
-    // }
-
-    // applyDisableDatesToDateEditors(form: any) {
-    //     const startDateEditor = form.getEditor('startDate');
-    //     startDateEditor.option('disabledDates', holidays);
-
-    //     const endDateEditor = form.getEditor('endDate');
-    //     endDateEditor.option('disabledDates', holidays);
-    // }
-
-    // renderDataCell(itemData: any) {
-    //     return <DataCell itemData={itemData} />;
-    // } 
-
-    // renderDateCell(itemData: any) {
-    //     return <DateCell itemData={itemData} />;
-    // }
-
-    // renderTimeCell(itemData: any) {
-    //     return <TimeCell itemData={itemData} />;
-    // }  
-
-
-
+   
 
     async componentDidMount() {        
         const res = await fetch(remoteRoutes.singleUserTask + '/' + sessionStorage.getItem('id'));
+        // console.log('xxxxxxxzzzzzz', res);
         const json = await res.json();
         console.log('zzzzzzzz')
         console.log(json);
 
         const appoints: any = [];
-        
-        appoints.push({
-            id: json.appointmentTaskId,            
-            startDate: json.appTask.app.startDate,
-            endDate: json.appTask.app.endDate,
-            title: json.appTask.task.taskName,
-            userId: json.userId
-        })
+        json.map((item: any, index: any) => {
+            appoints.push({
+                id: item.id,
+                // title: item.appTask["task"],
+                // startDate: item.appTask.app.startDate,
+                // endDate: item.appTask.app.endDate,
+                owner: item.user.firstName,
+                })
+
+            return ""
+        });
             
        
 
