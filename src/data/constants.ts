@@ -18,6 +18,7 @@ export const appRoles:any = {
   roleGroupEdit: "GROUP_EDIT",
 
   roleVolunteer: "VOLUNTEER",
+  roleTeamLead: "TEAMLEAD",
 };
 
 export const redux = {

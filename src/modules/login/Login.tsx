@@ -14,15 +14,12 @@ import {remoteRoutes} from "../../data/constants";
 import Toast from "../../utils/Toast";
 import XTextInput from "../../components/inputs/XTextInput";
 import {useLoginStyles} from "./loginStyles";
-//import { receivedRoles} from "../../utils/userHelpers";
-
 function Login() {
     const classes = useLoginStyles();
     const dispatch = useDispatch();
     const onSubmit = (data: any, actions: FormikHelpers<any>) => {
         post(remoteRoutes.login, data, resp => 
             {
-            //receivedRoles(resp)
             dispatch(handleLogin(resp))
         }, () => {
             Toast.error("Invalid username/password")
