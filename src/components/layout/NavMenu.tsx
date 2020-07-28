@@ -16,24 +16,28 @@ import { navBackgroundColor } from "./styles";
 import { createStyles, makeStyles, Theme, withStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import grey from '@material-ui/core/colors/grey';
-
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import EventNoteIcon from '@material-ui/icons/EventNote';
+import { appRoles} from "../../data/constants";
+import { useSelector } from 'react-redux';
+import { IState } from '../../data/types';
+import { hasAnyRole } from '../../utils/userHelpers';
+
 interface IProps {
 }
-
 const routes = [
     {
         name: "Dashboard",
+        requiredRoles: [appRoles.roleCrmView, appRoles.roleAuthUserView, appRoles.roleAuthUserEdit, appRoles.roleAuthGroupView, appRoles.roleAuthGroupEdit, appRoles.roleTagView, appRoles.roleTagEdit, appRoles.roleGroupView, appRoles.roleGroupEdit, appRoles.roleCrmEdit, appRoles.roleVolunteer, appRoles.roleTeamLead],
         route: localRoutes.dashboard,
         icon: AppsIcon
     },
     {
         name: "People",
+        requiredRoles: [appRoles.roleCrmView, appRoles.roleAuthUserView, appRoles.roleAuthUserEdit, appRoles.roleAuthGroupView, appRoles.roleAuthGroupEdit, appRoles.roleTagView, appRoles.roleTagEdit, appRoles.roleGroupView, appRoles.roleGroupEdit, appRoles.roleCrmEdit],
         icon: PeopleIcon,
         items: [
             {
@@ -43,11 +47,12 @@ const routes = [
             {
                 name: "Groups",
                 route: localRoutes.groups
-            }
-        ]
+            },  
+        ] 
     },
     {
         name: "Admin",
+        requiredRoles: [appRoles.roleCrmView, appRoles.roleAuthUserView, appRoles.roleAuthUserEdit, appRoles.roleAuthGroupView, appRoles.roleAuthGroupEdit, appRoles.roleTagView, appRoles.roleTagEdit, appRoles.roleGroupView, appRoles.roleGroupEdit, appRoles.roleCrmEdit],
         route: localRoutes.settings,
         icon: SettingsIcon,
         items: [
@@ -63,6 +68,7 @@ const routes = [
     },
     {
         name: "Tasks",
+        requiredRoles: [appRoles.roleCrmView, appRoles.roleAuthUserView, appRoles.roleAuthUserEdit, appRoles.roleAuthGroupView, appRoles.roleAuthGroupEdit, appRoles.roleTagView, appRoles.roleTagEdit, appRoles.roleGroupView, appRoles.roleGroupEdit, appRoles.roleCrmEdit],
         icon: PeopleIcon,
         items: [
             {
@@ -78,6 +84,7 @@ const routes = [
     // Beginning of Team Lead's menu items
     {
         name: "Volunteers",
+        requiredRoles: [appRoles.roleCrmView, appRoles.roleAuthUserView, appRoles.roleAuthUserEdit, appRoles.roleAuthGroupView, appRoles.roleAuthGroupEdit, appRoles.roleTagView, appRoles.roleTagEdit, appRoles.roleGroupView, appRoles.roleGroupEdit, appRoles.roleCrmEdit, appRoles.roleTeamLead],
         icon: EmojiPeopleIcon,
         items: [
             {
@@ -92,6 +99,7 @@ const routes = [
     },
     {
         name: "Teamlead",
+        requiredRoles: [appRoles.roleCrmView, appRoles.roleAuthUserView, appRoles.roleAuthUserEdit, appRoles.roleAuthGroupView, appRoles.roleAuthGroupEdit, appRoles.roleTagView, appRoles.roleTagEdit, appRoles.roleGroupView, appRoles.roleGroupEdit, appRoles.roleCrmEdit, appRoles.roleTeamLead],
         icon: AssignmentIcon,
         items: [
             {
@@ -106,8 +114,10 @@ const routes = [
     },
     {
         name: "Volunteer Calendar",
-        route: localRoutes.volcalendar,        
-        icon: EventNoteIcon,
+        requiredRoles: [appRoles.roleVolunteer, appRoles.roleCrmView, appRoles.roleAuthUserView, appRoles.roleAuthUserEdit, appRoles.roleAuthGroupView, appRoles.roleAuthGroupEdit, appRoles.roleTagView, appRoles.roleTagEdit, appRoles.roleGroupView, appRoles.roleGroupEdit, appRoles.roleCrmEdit],
+        route: localRoutes.volcalendar,
+        icon: EventNoteIcon
+    },
         
     },
     {
@@ -116,8 +126,10 @@ const routes = [
         icon: AssignmentIcon
     },        
     
+
     {
         name: "Help",
+        requiredRoles: [appRoles.roleCrmView, appRoles.roleAuthUserView, appRoles.roleAuthUserEdit, appRoles.roleAuthGroupView, appRoles.roleAuthGroupEdit, appRoles.roleTagView, appRoles.roleTagEdit, appRoles.roleGroupView, appRoles.roleGroupEdit, appRoles.roleCrmEdit, appRoles.roleVolunteer, appRoles.roleTeamLead],
         route: localRoutes.help,
         icon: HelpIcon
     }
@@ -179,12 +191,11 @@ const NavMenu = (props: any) => {
             onClose()
     }
     const pathMatches = (path: string, str: string) => path.indexOf(str) > -1
-
+    const user = useSelector((state: IState) => state.core.user)
     const isSelected = (pathStr: string): boolean => {
         const { pathname } = location
         return pathMatches(pathname, pathStr)
     }
-
     return (
         <div style={{ backgroundColor: navBackgroundColor }}>
             <Grid className={classes.logoHolder}
@@ -198,6 +209,7 @@ const NavMenu = (props: any) => {
             <List style={{ paddingTop: 0 }}>
                 {
                     routes.map(it => {
+                        if (it.requiredRoles && it.requiredRoles.length > 0 && hasAnyRole(user, it.requiredRoles)){    
                         const Icon = it.icon
                         if (it.items) {
                             return <Fragment key={it.name}>
@@ -245,6 +257,7 @@ const NavMenu = (props: any) => {
                             </ListItemIcon>
                             <ListItemText primary={it.name} className={classes.whiteText} />
                         </StyledListItem>
+                        }
                     })
                 }
             </List>

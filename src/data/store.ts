@@ -13,6 +13,7 @@ const reducers: any = {core, crm, services, tags, };
 const middleware = applyMiddleware(createLogger(), thunk);
 const store: any = middleware(devTools(createStore))(combineReducers(reducers));
 
+const initialState ={permissions:{}}
 export default store
 
 

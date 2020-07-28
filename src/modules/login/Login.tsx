@@ -94,5 +94,3 @@ export const schema = yup.object().shape(
 );
 
 export default Login
-
-

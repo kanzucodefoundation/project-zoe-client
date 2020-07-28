@@ -1,13 +1,12 @@
 import React from "react";
 import * as yup from "yup";
-import { reqDate, reqObject, reqString, reqPositiveInteger } from "../../data/validations";
+import { reqString } from "../../data/validations";
 import { ministryCategories } from "../../data/comboCategories";
 import { statusCategories } from "../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
-import XDateInput from "../../components/inputs/XDateInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
 import { toOptions } from "../../components/inputs/inputHelpers";
 
@@ -16,10 +15,8 @@ import { useDispatch } from "react-redux";
 import { servicesConstants } from "../../data/tasks/reducer";
 import { post } from "../../utils/ajax";
 import Toast from "../../utils/Toast";
-import { XRemoteSelect } from "../../components/inputs/XRemoteSelect";
 import { Box } from "@material-ui/core";
 import { ICreateTaskDto } from "./Types";
-import { isoDateString } from "../../utils/dateHelpers";
 
 import Navigation from "../../components/layout/Layout";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
