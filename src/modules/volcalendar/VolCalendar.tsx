@@ -283,9 +283,9 @@ class VolunteerCalendar extends React.PureComponent {
     }
    
 
+
     async componentDidMount() {        
         const res = await fetch(remoteRoutes.singleUserTask + '/' + sessionStorage.getItem('id'));
-        // console.log('xxxxxxxzzzzzz', res);
         const json = await res.json();
         console.log('zzzzzzzz')
         console.log(json);

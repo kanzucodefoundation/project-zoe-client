@@ -133,7 +133,7 @@ const BlockDateForm = ({done}: IProps) => {
 
     
     return (
-      <Navigation>
+    //   <Navigation>
         <Box p={1} className={classes.root}>
             <Header title="Block A Date" />
 
@@ -176,7 +176,7 @@ const BlockDateForm = ({done}: IProps) => {
 
             <br />
         </Box>
-      </Navigation>
+    //   </Navigation>
     );
 }
 

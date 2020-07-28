@@ -13,7 +13,7 @@ export interface ICreatePersonDto {
     middleName?: string;
     gender: Gender;
     civilStatus: CivilStatus;
-    dateOfBirth: string;
+    dateOfBirth?: string | null;
     ageGroup: string;
     cellGroupId: string;
     churchLocationId: string;

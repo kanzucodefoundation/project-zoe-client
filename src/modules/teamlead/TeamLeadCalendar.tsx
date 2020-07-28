@@ -121,32 +121,21 @@ const containerStyles = (theme: Theme) => createStyles({
 });
 
 
-// const data = [
-//     {
-//       taskId: 'Website Re-Design Plan',
-//       startDate: new Date(2020, 6, 28, 9, 35),
-//       endDate: new Date(2020, 6, 28, 11, 30),
-//       id: 0,
-//       userId: 'Room 1',
-//     }
-//   ];
-
-
 const data = [
     {
-      taskId: 'Website Re-Design Plan',
-      startDate: new Date(2020, 6, 28, 9, 35),
-      endDate: new Date(2020, 6, 28, 11, 30),
-      id: 0,
-      userId: 'Room 1',
+        taskId: 'Website Re-Design Plan',
+        startDate: new Date(2020, 6, 28, 9, 35),
+        endDate: new Date(2020, 6, 28, 11, 30),
+        id: 0,
+        userId: 'Room 1',
     }
-  ];
+];
 
 
 
 
 
-  interface IProps {
+interface IProps {
     data: any | null
     done?: () => any
 }
@@ -218,7 +207,6 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const AssignTask = ({ done }: IProps) => {
-    
     const dispatch = useDispatch();
     const classes = useStyles();
     function appointmentTasks(values: any, actions: any, id: any) {
@@ -318,56 +306,27 @@ const AssignTask = ({ done }: IProps) => {
     }
 
 
-    // changeAppointment({ field, changes }: any) {
-    //     const nextChanges = {
-    //         ...this.getAppointmentChanges(),
-    //         [field]: changes,
-    //     };
-    //     this.setState({
-    //         appointmentChanges: nextChanges,
-    //     });
-    // }
-
-    // const displayAppointmentData = {
-    //     ...appointmentData,
-    //     ...appointmentChanges,
-    // };
-
-
-    // const textEditorProps = (field: string) => ({
-    //     // variant: 'outlined |filled | standard| undefined',
-    //     onChange: ({ target: change }: any) => this.changeAppointment({
-    //         field: [field], changes: change.value,
-    //     }),
-    //     value: displayAppointmentData[field] || '',
-    //     label: field[0].toUpperCase() + field.slice(1),
-    //     className: classes.textField,
-    // });
-
     return (
         <Box p={1} className={classes.root}>
             <Header title="Assign Volunteers Task" />
-            {/* <Grid item xs={12}> */}
-                <XForm
-                    onSubmit={handleSubmit}
-                    schema={schema}
-                    initialValues={initialValues}
-                >
-                    <div className={classes.content}>
-                        <div className={classes.wrapper}>
-                                <Create className={classes.icon} color="action" />
-                            <XRemoteSelect
-                                remote={remoteRoutes.tasks}
-                                filter={{ 'taskName[]': '' }}
-                                parser={({ taskName, id }: any) => ({ label: taskName, value: id })}
-                                name="taskId"
-                                label="Task Name"
-                                variant='outlined'
-                                // {...textEditorProps('Task Name')}
-                            />
-                            </div>
-                        <div className={classes.wrapper}>
-                                <CalendarToday className={classes.icon} color="action" />
+
+            <XForm
+                onSubmit={handleSubmit}
+                schema={schema}
+                initialValues={initialValues}
+            >
+                <div className={classes.content}>
+
+                    <XRemoteSelect
+                        remote={remoteRoutes.tasks}
+                        filter={{ 'taskName[]': '' }}
+                        parser={({ taskName, id }: any) => ({ label: taskName, value: id })}
+                        name="taskId"
+                        label="Task Name"
+                        variant='outlined'
+                    />
+
+                    <div className={classes.wrapper}>
                         <RightPadded>
                             <XDateInput
                                 name="startDate"
@@ -380,22 +339,18 @@ const AssignTask = ({ done }: IProps) => {
                                 label="End Date"
                             />
                         </LeftPadded>
-                        </div>
-                        <div className={classes.wrapper}>
-                        <EmojiPeopleIcon className={classes.icon} color="action" />
-                            <XRemoteSelect
-                                multiple
-                                remote={remoteRoutes.contactsPerson}
-                                filter={{ 'firstName[]+" "+lastName[]': 'Volunteer' }}
-                                parser={({ firstName, lastName, id }: any) => ({ label: firstName + " " + lastName, value: id })}
-                                name="userId"
-                                label="Volunteers"
-                                variant='outlined'
-                            />
-                             </div>
                     </div>
-                </XForm>
-            {/* </Grid> */}
+                    <XRemoteSelect
+                        multiple
+                        remote={remoteRoutes.contactsPerson}
+                        filter={{ 'firstName[]+" "+lastName[]': 'Volunteer' }}
+                        parser={({ firstName, lastName, id }: any) => ({ label: firstName + " " + lastName, value: id })}
+                        name="userId"
+                        label="Volunteers"
+                        variant='outlined'
+                    />
+                </div>
+            </XForm>
         </Box>
     );
 }
@@ -411,11 +366,9 @@ class AppointmentFormContainerBasic extends React.PureComponent {
     getAppointmentChanges: () => any;
     constructor(props: any) {
         super(props);
-
         this.state = {
             appointmentChanges: {},
         };
-
         this.getAppointmentData = () => {
             const { appointmentData }: any = this.props;
             return appointmentData;
@@ -424,7 +377,6 @@ class AppointmentFormContainerBasic extends React.PureComponent {
             const { appointmentChanges }: any = this.state;
             return appointmentChanges;
         };
-
         this.changeAppointment = this.changeAppointment.bind(this);
         this.commitAppointment = this.commitAppointment.bind(this);
     }
@@ -480,7 +432,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
             : () => this.commitAppointment('changed');
 
         const textEditorProps = (field: string) => ({
-            // variant: 'outlined |filled | standard| undefined',
+            variant: 'outlined |filled | standard| undefined',
             onChange: ({ target: change }: any) => this.changeAppointment({
                 field: [field], changes: change.value,
             }),
@@ -510,7 +462,6 @@ class AppointmentFormContainerBasic extends React.PureComponent {
             cancelAppointment();
         };
 
-       
 
         return (
             <AppointmentForm.Overlay
@@ -520,16 +471,27 @@ class AppointmentFormContainerBasic extends React.PureComponent {
                 onHide={onHide}
             >
                 <div>
-                <div className={classes.header}>
-            <IconButton
-              className={classes.closeButton}
-              onClick={cancelChanges}
-            >
-              <Close color="action" />
-            </IconButton>
-          </div>
-          <AssignTask data={{}}  />
-          <div className={classes.buttonGroup}>
+                    <div className={classes.header}>
+                        <IconButton
+                            className={classes.closeButton}
+                            onClick={cancelChanges}
+                        >
+                            {isNewAppointment ? 'Create' : 'Save'}
+                        </IconButton>
+                    </div>
+
+                    
+                    
+
+                </div>
+
+                    <AssignTask data={{}}
+                        {...textEditorProps('Task Name')}
+                        {...pickerEditorProps('startDate')}
+                        {...pickerEditorProps('endDate')}
+                        {...textEditorProps('userId')}
+                    />
+                    {/* <div className={classes.buttonGroup}>
                         {!isNewAppointment && (
                             <Button
                                 variant="outlined"
@@ -554,11 +516,9 @@ class AppointmentFormContainerBasic extends React.PureComponent {
                         >
                             {isNewAppointment ? 'Create' : 'Save'}
                         </Button>
-                    </div>
-                    
-                    
+                    </div> */}
+                 
 
-</div>
             </AppointmentForm.Overlay>
 
         );
@@ -576,7 +536,6 @@ const styles = (theme: Theme) => createStyles({
     },
 });
 
-/* eslint-disable-next-line react/no-multi-comp */
 class TeamLeadCalendar extends React.PureComponent {
     appointmentForm: (React.ComponentClass<any, any> & { update(): void; }) | (React.FunctionComponent<any> & { update(): void; });
     cancelDelete: ((event: {}, reason: "backdropClick" | "escapeKeyDown") => void) | undefined;
@@ -640,8 +599,30 @@ class TeamLeadCalendar extends React.PureComponent {
 
         const res = await fetch(remoteRoutes.userTasks);
         const json = await res.json();
-        console.log('xxxyyyy', json);
 
+        const id = [
+            {
+              id: 1,
+              color: '#7E57C2',
+            }, {
+              id: 2,
+              color: '#FF7043',
+            }, {
+              text: 'John Heart',
+              id: 3,
+              color: '#E91E63',
+            }, {     
+              id: 4,
+              color: '#E91E63',
+            }, {            
+              id: 5,
+              color: '#AB47BC',
+            }, {     
+              id: 6,
+              color: '#FFA726',
+            },
+          ];
+          
         const appoints: any = [];
         json.map((item: any, index: any) => {
             appoints.push({
@@ -649,7 +630,7 @@ class TeamLeadCalendar extends React.PureComponent {
                 title: item.appTask.task["taskName"],
                 startDate: new Date(item.appTask.app["startDate"]),
                 endDate: new Date(item.appTask.app["endDate"]),
-                location: item.user["firstName "],
+                userId: item.user["firstName "],
             })
             return ""
         });
@@ -666,6 +647,8 @@ class TeamLeadCalendar extends React.PureComponent {
     }
 
     onEditingAppointmentChange(editingAppointment: any) {
+        // let {data} = this.state
+        // console.log(data)
         this.setState({ editingAppointment });
     }
 
@@ -707,6 +690,7 @@ class TeamLeadCalendar extends React.PureComponent {
     }
 
     commitChanges({ added, changed, deleted }: any) {
+        console.log("added")
         this.setState((state) => {
             let { data }: any = state;
             if (added) {
@@ -776,7 +760,6 @@ class TeamLeadCalendar extends React.PureComponent {
                             showCloseButton
                             showDeleteButton
                         />
-
 
                         <ViewSwitcher />
                         <AppointmentForm

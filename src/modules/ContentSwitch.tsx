@@ -28,12 +28,11 @@ const ContentSwitch = () => {
         <Route path={localRoutes.users} component={Users} />
         <Route path={localRoutes.usersGroups} component={UserGroups} />
         <Route path={localRoutes.groups} component={Groups} />
-        <Route path={localRoutes.settings} component={Settings} />
-                
+        <Route path={localRoutes.settings} component={Settings} />              
         <Route path={localRoutes.viewVolunteers} component={ViewVolunteers}/>
-        <Route path={localRoutes.addVolunteers} component={AddVolunteers}/>
-               
+        <Route path={localRoutes.addVolunteers} component={AddVolunteers}/>       
         <Route path={localRoutes.teamleadcalendar} component={teamleadcalendar} />
+        <Route path={localRoutes.assignedtasks} component={assignedtasks} />
         <Route path={localRoutes.viewVolunteers} component={ViewVolunteers} />
         <Route path={localRoutes.addVolunteers} component={AddVolunteers} />
         <Route path={localRoutes.volcalendar} component={volcalendar} />

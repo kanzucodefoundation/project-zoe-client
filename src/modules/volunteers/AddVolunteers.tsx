@@ -10,6 +10,7 @@ import {useDispatch} from 'react-redux';
 import {servicesConstants} from "../../data/volunteers/reducer";
 import {post} from "../../utils/ajax";
 import Toast from "../../utils/Toast";
+import {sendEmail} from "../../utils/sendEmail";
 import {Box} from "@material-ui/core";
 import {ICreateAVolunteerDto, ICreateAMembershipDto} from "./types";
 
@@ -21,6 +22,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
+import XCheckBoxInput from '../../components/inputs/XCheckBoxInput';
 
 interface IProps {
     data: any | null
@@ -34,7 +36,8 @@ const schema = yup.object().shape(
 )
 
 const initialValues = {
-    ministry: '',
+    ministry: [],
+    teamLead: ""
 }
 
 
@@ -60,10 +63,10 @@ const AddVolunteersForm = ({done}: IProps) => {
     const classes = useStyles();
 
     // Retrieve all persons so that the volunteer may be selected
-    const [persons, setPersons] = useState<any>({id: 0, contactId: 0, firstName: "", email: "", listOfPersons: []});
+    const [persons, setPersons] = useState<any>({id: 0, contactId: 0, firstName: "", email: "", listOfPersons: [], ministriesIn: [], ministriesNotIn: []});
     useEffect(() => {
         const fetchPersons = async () => {
-            const result = await fetch(remoteRoutes.contactsPerson).then(
+            const result = await fetch(remoteRoutes.contactsPersonsAndTheirGroups).then(
                 response => response.json()
             )
             setPersons({
@@ -83,49 +86,37 @@ const AddVolunteersForm = ({done}: IProps) => {
             contactId: persons.contactId,
             roles: ["VOLUNTEER"]
         }
-        
-        const toSaveToGroupMemberships: ICreateAMembershipDto = {
-            groupId: values.ministry.value,
-            contactId: persons.contactId,
-            role: "Volunteer",
-        }
 
         // Add person to user table
         post(remoteRoutes.users, toSave,
             () => {
-                // Then send email to new volunteer
-                // get a instance of sendgrid and set the API key
-                const sendgrid = require('@sendgrid/mail');
-                sendgrid.setApiKey(process.env.REACT_APP_SENDGRID_API_KEY);// construct an email
-                const email = {
-                to: 'd.buyinza@student.ciu.ac.ug', // TODO: Remember to change this to a variable to pick the actual email of person when deploying to production
-                from: process.env.REACT_APP_FROM, // must include email address of the sender
-                subject: 'You have been added as a Volunteer',
-                html: 'Hello ' + persons.firstName + ', <br>You have been added as a new volunteer at Worship Harvest Ministries serving in the ' + values.ministry.label + ' ministry. <br><br>Please use these details to log into your account on our platform; <br> Link to the platform: https://app.worshipharvest.org/ <br>Your email address: ' + persons.email + '<br>Your password: ' + toSave.password + '<br><br>You are most welcome!',
-                };// send the email via sendgrid
-                sendgrid.send(email)
-                .then(() => { Toast.info("A welcome email has been sent to the new volunteer") }, (error: { response: { body: any; }; }) => {
-                    console.error(error);
-                 
-                    if (error.response) {
-                      console.error(error.response.body)
-                    }
-                  });
+                // Then send email to person on adding them as a new volunteer
+                sendEmail(persons.email, `You have been added as a ${values.teamLead === true ? "Team Lead" : "Volunteer"}.`, 'Hello ' + persons.firstName + `, <br>You have been added as a new Volunteer ${values.teamLead === true ? " and Team Lead" : ""} at Worship Harvest Ministries serving with the ` + values.ministry.map((ministryTeam: any) => { return ministryTeam.label }).join(", ") + ' team. <br><br>Please use these details to log into your account on our platform; <br> Link to the platform: https://app.worshipharvest.org/ <br>Your email address: ' + persons.email + '<br>Your password: ' + toSave.password + '<br><br>You are most welcome!<br>Worship Harvest Ministries.', 'A welcome email has been sent to the new volunteer');
 
-                // Add person to group_membership table
-                post(remoteRoutes.groupsMemberships, toSaveToGroupMemberships,
-                    (data) => {
-                        Toast.info('Operation successful')
-                        actions.resetForm()
-                        dispatch({
-                            type: servicesConstants.servicesAddVolunteer,
-                            payload: {...data},
-                        })
+                values.ministry.map((item: any, index: any) => {
+                    const toSaveToGroupMemberships: ICreateAMembershipDto = {
+                        groupId: item.value,
+                        contactId: persons.contactId,
+                        role: values.teamLead === true ? "Team Lead" : "Volunteer",
+                        isActive: true,
                     }
-                )
-                if (done) {
-                    done()
-                }
+                    // Add person to group_membership table
+                    post(remoteRoutes.groupsMemberships, toSaveToGroupMemberships,
+                        (data) => {
+                            if (index === values.groupId.length-1){
+                                dispatch({
+                                    type: servicesConstants.servicesAddVolunteer,
+                                    payload: {...data},
+                                })
+                            }
+                        }
+                    )
+                    if (done) {
+                        done()
+                    }
+                })
+                Toast.info('Operation successful')
+                actions.resetForm()
             },
             undefined,
             () => {
@@ -138,17 +129,39 @@ const AddVolunteersForm = ({done}: IProps) => {
         const fetchEmail = async () => {
             const getEmail = fetch(remoteRoutes.contactsEmail + "/" + value.id)
             const getPerson = fetch(remoteRoutes.contactsOnePerson + "/" + value.id)
+            const getMinistries = fetch(remoteRoutes.ministries) // To check which ministries exist
+            const getVolunteer = fetch(remoteRoutes.contactsPersonOneVolunteer + "/" + value.id) // For checking if a person is already a volunteer in any of the ministries
 
-            Promise.all([getEmail, getPerson]).then(async ([email, person]) => {
+            Promise.all([getEmail, getPerson, getMinistries, getVolunteer]).then(async ([email, person, ministries, volunteer]) => {
                 const fetchedEmail = await email.json()
                 const pickedPerson = await person.json()
+                const fetchedMinistries = await ministries.json()
+                const pickedVolunteer = await volunteer.json()
+
+                let ministryNames = fetchedMinistries.map((ministry: { name: any; }) => { return ministry.name })
+
+                let notInTheseMinistries: string[] = []; // Ministries where the selected person is not in
+
+                if (pickedVolunteer[0] === undefined) { // The picked person is not a volunteer attached to any ministry
+                    notInTheseMinistries = [...ministryNames];
+                } else { // Otherwise
+                    var inTheseMinistries = pickedVolunteer[0].group.map((ministry: { name: any; }) => { return ministry.name }) // They are volunteers in this ministries
+
+                    for (const ministry of ministryNames) {
+                        if (!inTheseMinistries.includes(ministry)) {
+                            notInTheseMinistries.push(ministry)
+                        }
+                    }
+                }
                 
                 setPersons({
                     ...persons,
                     id: value.id,
                     email: fetchedEmail.value,
                     contactId: fetchedEmail.contactId,
-                    firstName: pickedPerson[0].firstName
+                    firstName: pickedPerson[0].firstName,
+                    ministriesIn: inTheseMinistries,
+                    ministriesNotIn: notInTheseMinistries
                 })
             }).catch(e => {
                 console.log(e)
@@ -175,22 +188,32 @@ const AddVolunteersForm = ({done}: IProps) => {
                                 id="free-solo-demo"
                                 freeSolo
                                 options={persons.listOfPersons}
-                                getOptionLabel={(option) => option.firstName + " " + option.lastName}
+                                getOptionLabel={(option) => option.firstName + " " + option.lastName + " - " + option.ageGroup + " yrs" + " - [" + option.group.map((group: any) => { if (group.name === 'Music' || group.name === 'Guest Experience' || group.name === 'Media' || group.name === 'Kids') { return group.name } }).filter(Boolean).sort().join(", ") + "]"}
                                 onChange={(event: any, value: any) => handleChange(value)} // prints the selected value
                                 renderInput={(params) => (
-                                <TextField {...params} label="Search for person to add as Volunteer" margin="normal" variant="outlined" />
+                                <TextField {...params} label="Search for person to add as new Volunteer" margin="normal" variant="outlined" />
                                 )}
                             />
 
                             <Grid spacing={0} container>
                                 <Grid item xs={12}>
                                     <XRemoteSelect
+                                        multiple
                                         remote={remoteRoutes.groupsCombo}
                                         filter={{'categories[]': 'M'}}
                                         parser={({name, id}: any) => ({label: name, value: id})}
                                         name="ministry"
                                         label="Ministry"
                                         variant='outlined'
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            <Grid spacing={0} container>
+                                <Grid item xs={12}>
+                                    <XCheckBoxInput
+                                        name="teamLead"
+                                        label="Make volunteer the Team Lead of the selected ministry"
                                     />
                                 </Grid>
                             </Grid>

@@ -48,6 +48,8 @@ export const localRoutes = {
   addTasks: "/tasks/add-tasks",
   viewTasks:"/tasks/view-tasks",
   help: "/help", 
+
+  ministries: "/ministries" // Added by Daniel - to be placed in the XRemoteSelect component in AddVolunteer. It contains the ministry names
 };
 
 const debug = process.env.NODE_ENV !== "production";
@@ -67,6 +69,8 @@ export const remoteRoutes = {
   contactsPerson: url + "/api/crm/people",
   contactsOnePerson: url + "/api/crm/people", // Added by Daniel
   contactsPersonVolunteer: url + "/api/crm/people/volunteers", // Added by Daniel
+  contactsPersonOneVolunteer: url + "/api/crm/people/volunteers", // Added by Daniel
+  contactsPersonsAndTheirGroups: url + "/api/crm/people/personsAndTheirGroups", // Persons and all the groups they are part of and active in i.e. ministries and other community groups
   contactsChc: url + "/api/crm/person/chc",
   contactsEmail: url + "/api/crm/emails",
   tags: url + "/api/tags",
@@ -85,7 +89,10 @@ export const remoteRoutes = {
 
   contactsCompany: url + "/api/crm/contact/company",
   contactsAvatar: url + "/api/crm/contact/avatar",
-  volunteers: url + "/api/services/volunteers",
+
+  volunteers: url + "/api/services/volunteering/persons", // Added by Daniel
+  ministries: url + "/api/services/volunteering/ministries", // Added by Daniel
+  day: url + '/api/appointment/day',
   appointments: url + "/api/appointment/appointments",
   assignedTasks: url + "/api/appointment-task/assignedTasks",
   appointmentTask: url + "/api/appointment-task",
