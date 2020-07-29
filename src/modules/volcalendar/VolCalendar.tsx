@@ -173,10 +173,10 @@ class AppointmentFormContainerBasic extends React.PureComponent {
         }: any = this.props;
         const { appointmentChanges }: any = this.state;
 
-        const displayAppointmentData = {
-            ...appointmentData,
-            ...appointmentChanges,
-        };
+        // const displayAppointmentData = {
+        //     ...appointmentData,
+        //     ...appointmentChanges,
+        // };
 
         const isNewAppointment = appointmentData.id === undefined;
 
@@ -286,26 +286,21 @@ class VolunteerCalendar extends React.PureComponent {
 
     async componentDidMount() {        
         const res = await fetch(remoteRoutes.singleUserTask + '/' + sessionStorage.getItem('id'));
-        const json = await res.json();
-        console.log('zzzzzzzz')
+        const json = await res.json();        
         console.log(json);
 
         const appoints: any = [];
-        json.map((item: any, index: any) => {
+        json.map((item: any) => {           
             appoints.push({
-                id: item.id,
-                // title: item.appTask["task"],
-                // startDate: item.appTask.app.startDate,
-                // endDate: item.appTask.app.endDate,
-                owner: item.user.firstName,
-                })
+                id: item.id,                
+                title: item.appTask[0].task.taskName + ' - ' + item.appTask[0].task.taskDescription,                
+                startDate: item.appTask[0].app[0].startDate,
+                endDate: item.appTask[0].app[0].endDate,
 
-            return ""
+            })           
         });
-            
        
-
-        console.log('bbbccc', appoints);
+        console.log('Appoints', appoints);
         this.setState({
             data: appoints
         })

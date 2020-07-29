@@ -71,6 +71,7 @@ import { ministryCategories } from "../../data/comboCategories";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { id } from 'date-fns/locale';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
+// import { sendEmail } from "../../utils/sendEmail";
 
 
 
@@ -277,6 +278,7 @@ const AssignTask = ({ done }: IProps) => {
                 actions.setSubmitting(false);
             }
         )
+        // sendEmail()  
     }
 
     const [persons, setPersons] = useState<any>({ id: 0, contacts: [], listOfPersons: [] });
@@ -479,46 +481,13 @@ class AppointmentFormContainerBasic extends React.PureComponent {
                             {isNewAppointment ? 'Create' : 'Save'}
                         </IconButton>
                     </div>
-
-                    
-                    
-
                 </div>
-
                     <AssignTask data={{}}
                         {...textEditorProps('Task Name')}
                         {...pickerEditorProps('startDate')}
                         {...pickerEditorProps('endDate')}
                         {...textEditorProps('userId')}
-                    />
-                    {/* <div className={classes.buttonGroup}>
-                        {!isNewAppointment && (
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                className={classes.button}
-                                onClick={() => {
-                                    visibleChange();
-                                    this.commitAppointment('deleted');
-                                }}
-                            >
-                                Delete
-                            </Button>
-                        )}
-                        <Button
-                            variant="outlined"
-                            color="primary"
-                            className={classes.button}
-                            onClick={() => {
-                                visibleChange();
-                                applyChanges();
-                            }}
-                        >
-                            {isNewAppointment ? 'Create' : 'Save'}
-                        </Button>
-                    </div> */}
-                 
-
+                    />                    
             </AppointmentForm.Overlay>
 
         );
@@ -634,8 +603,6 @@ class TeamLeadCalendar extends React.PureComponent {
             })
             return ""
         });
-
-        // console.log(appoints);
         this.setState({
             data: appoints
         })
