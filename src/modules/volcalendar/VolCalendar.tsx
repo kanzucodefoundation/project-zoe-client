@@ -299,15 +299,10 @@ class VolunteerCalendar extends React.PureComponent {
 
             })           
         });
-       
-        console.log('Appoints', appoints);
         this.setState({
             data: appoints
         })
     }
-
-
-
     componentDidUpdate() {
         this.appointmentForm.update();
     }
