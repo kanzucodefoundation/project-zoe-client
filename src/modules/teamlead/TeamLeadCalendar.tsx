@@ -71,7 +71,7 @@ import { ministryCategories } from "../../data/comboCategories";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { id } from 'date-fns/locale';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
-// import { sendEmail } from "../../utils/sendEmail";
+import { sendEmail } from "../../utils/sendEmail";
 
 
 
@@ -228,10 +228,18 @@ const AssignTask = ({ done }: IProps) => {
         )
     }
 
-    function userTask(values: any, actions: any, id: any) {
-        console.log("tasksffff")
-        console.log(values)
-        console.log(values.userId)
+    function userTask(values: any, actions: any, id: any) {        
+        const fetchPersons = async () => {
+            const result = await fetch(remoteRoutes.contactsEmail + '/' + values.userId[0].value).then(
+                response => response.json()
+            )
+            setPersons({
+                ...persons,
+                email: result.value
+            });
+            
+        }
+        fetchPersons();
         values.userId.map((item: any, index: any) => {
             const toSaveUserTaskTable: ISaveToUTT = {
                 appointmentTaskId: id,
@@ -261,27 +269,7 @@ const AssignTask = ({ done }: IProps) => {
         })
     }
 
-    function handleSubmit(values: any, actions: FormikHelpers<any>) {
-        const toSave: ICreateDayDto = {
-            startDate: values.startDate,
-            endDate: values.endDate,
-        }
-        console.log(values)
-
-        post(remoteRoutes.appointments, toSave,
-            (data) => {
-                console.log(data, data.id)
-                appointmentTasks(values, actions, data.id);
-            },
-            undefined,
-            () => {
-                actions.setSubmitting(false);
-            }
-        )
-        // sendEmail()  
-    }
-
-    const [persons, setPersons] = useState<any>({ id: 0, contacts: [], listOfPersons: [] });
+    const [persons, setPersons] = useState<any>({ id: 0, contacts: [], listOfPersons: [], email: {value: ""} });
     useEffect(() => {
         const fetchPersons = async () => {
             const result = await fetch(remoteRoutes.contactsPerson).then(
@@ -293,7 +281,28 @@ const AssignTask = ({ done }: IProps) => {
             });
         }
         fetchPersons();
+
     }, []);
+    
+    function handleSubmit(values: any, actions: FormikHelpers<any>) {
+        const toSave: ICreateDayDto = {
+            startDate: values.startDate,
+            endDate: values.endDate,
+        }
+        
+        post(remoteRoutes.appointments, toSave,
+            (data) => {
+                console.log(data, data.id)
+                appointmentTasks(values, actions, data.id);
+            },
+            undefined,
+            () => {
+                actions.setSubmitting(false);
+            }
+        )
+        sendEmail(persons.email, 'New Appointment', persons.firstName + ',' + 'you have just been assigned a new appointment from Angie. Kindly review it for more details', 'Appointment made successfully')  
+    }
+
 
     const handleChange = (value: any) => {
         let contacts: number[] = [];
