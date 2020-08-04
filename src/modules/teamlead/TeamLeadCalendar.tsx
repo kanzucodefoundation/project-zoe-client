@@ -210,6 +210,20 @@ const useStyles = makeStyles((theme: Theme) =>
 const AssignTask = ({ done }: IProps) => {
     const dispatch = useDispatch();
     const classes = useStyles();
+    const [persons, setPersons] = useState<any>({ id: 0, contacts: [], listOfPersons: [], email: {value: ""} });
+        useEffect(() => {
+            const fetchPersons = async () => {
+                const result = await fetch(remoteRoutes.contactsPerson).then(
+                    response => response.json()
+                )
+                setPersons({
+                    ...persons,
+                    listOfPersons: result
+                });
+            }
+            fetchPersons();
+    }, []);
+    
     function appointmentTasks(values: any, actions: any, id: any) {
         const toSaveAppointmentTaskTable: ISaveToATT = {
             appointmentId: id,
@@ -217,8 +231,7 @@ const AssignTask = ({ done }: IProps) => {
         }
 
         post(remoteRoutes.appointmentTask, toSaveAppointmentTaskTable,
-            (data) => {
-                console.log("appointment")
+            (data) => {                    
                 userTask(values, actions, data.id)
             },
             undefined,
@@ -236,18 +249,33 @@ const AssignTask = ({ done }: IProps) => {
             setPersons({
                 ...persons,
                 email: result.value
-            });
-            
+            });            
         }
         fetchPersons();
+
         values.userId.map((item: any, index: any) => {
             const toSaveUserTaskTable: ISaveToUTT = {
                 appointmentTaskId: id,
                 userId: item.value,
             }
             post(remoteRoutes.userTask, toSaveUserTaskTable,
-                (data) => {
-                    console.log("usertask")
+                (data) => {                    
+                    for (let i = 0; i < values.userId.length; i++) {
+                        const fetchEmail = async () => {
+                            const result = await fetch(remoteRoutes.contactsEmail + '/' + values.userId[i].value).then(
+                                response => response.json()
+                            )
+                            setPersons({
+                                ...persons,
+                                email: result.value
+                            });
+                            
+                            sendEmail(result.value, 'New Appointment', values.userId[i].label + ',' + 'you have just been assigned a new appointment from Angie. Kindly review it for more details', 'Appointment made successfully')            
+                            }
+                        fetchEmail();                       
+                    }
+                        
+                    
                     if (index === values.userId.length - 1) {
                         Toast.info('Operation successful')
                         actions.resetForm()
@@ -261,28 +289,14 @@ const AssignTask = ({ done }: IProps) => {
                 },
                 undefined,
                 () => {
-                    actions.setSubmitting(false);
-                    console.log("data")
+                    actions.setSubmitting(false);                        
                 }
 
             )
         })
     }
 
-    const [persons, setPersons] = useState<any>({ id: 0, contacts: [], listOfPersons: [], email: {value: ""} });
-    useEffect(() => {
-        const fetchPersons = async () => {
-            const result = await fetch(remoteRoutes.contactsPerson).then(
-                response => response.json()
-            )
-            setPersons({
-                ...persons,
-                listOfPersons: result
-            });
-        }
-        fetchPersons();
-
-    }, []);
+    
     
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const toSave: ICreateDayDto = {
@@ -291,16 +305,15 @@ const AssignTask = ({ done }: IProps) => {
         }
         
         post(remoteRoutes.appointments, toSave,
-            (data) => {
-                console.log(data, data.id)
+            (data) => {                
                 appointmentTasks(values, actions, data.id);
             },
             undefined,
             () => {
                 actions.setSubmitting(false);
             }
-        )
-        sendEmail(persons.email, 'New Appointment', persons.firstName + ',' + 'you have just been assigned a new appointment from Angie. Kindly review it for more details', 'Appointment made successfully')  
+        )       
+        
     }
 
 
@@ -308,7 +321,7 @@ const AssignTask = ({ done }: IProps) => {
         let contacts: number[] = [];
         for (let index = 0; index < value.length; index++) {
             const user = value[index];
-            contacts.push(user.contactId)
+            contacts.push(user.contactId)            
         }
         setPersons({
             ...persons,
