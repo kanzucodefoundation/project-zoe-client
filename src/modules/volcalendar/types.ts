@@ -6,5 +6,6 @@ export interface ICreateABlockDateDto {
     reason: string;
     startDate: Date;
     endDate: Date;
+    fullName: string;
 }
 

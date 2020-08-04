@@ -35,7 +35,7 @@ const schema = yup.object().shape(
         startDate: reqDate,
         endDate: reqDate,
         reason: reqString,
-        
+        fullName: reqString
 
     }
 )
@@ -45,7 +45,7 @@ const initialValues = {
     startDate: '',
     endDate: '',
     reason: '',
-    
+    fullName: '',
 
 }
 
@@ -83,29 +83,18 @@ const BlockDateForm = ({done}: IProps) => {
     const dispatch = useDispatch();
     const classes = useStyles();
 
-    // Retrieve all persons so that the volunteer may be selected
-    // const [persons, setPersons] = useState<any>({id: 0, contactId: 0, email: "", listOfPersons: []});
-    // useEffect(() => {
-    //     const fetchPersons = async () => {
-    //         const result = await fetch(remoteRoutes.contactsPerson).then(
-    //             response => response.json()
-    //         )
-    //         setPersons({
-    //             ...persons,
-    //             listOfPersons: result
-    //         });
-    //     }
-    //     fetchPersons();
-    // }, []);
+    
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         console.log(values)
+        
         
         const toSaveBlockedDateTable: ICreateABlockDateDto = {
 
             reason: values.reason, 
             startDate: values.startDate,
-            endDate: values.endDate
+            endDate: values.endDate,
+            fullName: values.fullName,
         }
                 
         console.log(toSaveBlockedDateTable)
@@ -167,7 +156,12 @@ const BlockDateForm = ({done}: IProps) => {
 
                             />
                         	</LeftPadded>
-
+                            <XTextInput
+                                name="fullName"
+                                label="your name"
+                                type="text"
+                                variant='outlined'
+                            />
                             
                         </XForm>
                     </CardContent>
