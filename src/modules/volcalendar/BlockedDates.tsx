@@ -17,7 +17,7 @@ interface Row {
     startDate: Date;
     endDate: Date;
     reason: string;
-    fullName: string;
+    Name: string;
 }
 
 interface TableState {
@@ -52,7 +52,7 @@ const BlockedDate = ({ done }: IProps) => {
             { title: 'Start Date', field: 'startDate' },
             { title: 'End Date', field: 'endDate' },
             { title: 'Reason', field: 'reason' },
-            { title: 'Volunteer Name', field: 'fullName'},            
+            { title: 'Name', field: 'Name'},            
         ],
         data: [
         ],
@@ -74,7 +74,7 @@ const BlockedDate = ({ done }: IProps) => {
                             startDate: blockedDate.startDate,
                             endDate: blockedDate.endDate,
                             reason: blockedDate.reason,
-                            fullName: blockedDate.fullName,                            
+                            Name: blockedDate.fullName,                            
                         }
                     })
                 })

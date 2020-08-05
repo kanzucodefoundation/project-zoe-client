@@ -275,7 +275,7 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                                         filter={{'categories[]': 'M'}}
                                         parser={({name, id}: any) => ({label: name, value: id})}
                                         name="ministry"
-                                        label="Select the ministry you'd like to add them to"
+                                        label="Select the new ministry you'd like to add them to"
                                         variant='outlined'
                                     />
                                 </Grid>
@@ -285,7 +285,7 @@ const ListOfVolunteers = ({data, done, contactId}: IProps) => {
                                 <Grid item xs={12}>
                                     <XCheckBoxInput
                                         name="teamLead"
-                                        label="Make them the Team Lead of the selected ministry"
+                                        label="Make them the Team Lead of this ministry"
                                     />
                                 </Grid>
                             </Grid>
