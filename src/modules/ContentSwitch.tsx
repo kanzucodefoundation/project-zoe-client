@@ -16,7 +16,8 @@ import AddTasks from "./tasks/AddTasks";
 import teamleadcalendar from "./teamlead/TeamLeadCalendar";
 import assignedtasks from "./teamlead/AssignedTasks";
 import assigntask from "./teamlead/AssignTask";
-import volcalendar from "./volcalendar/VolCalendar"
+import volcalendar from "./volcalendar/VolCalendar";
+import BlockedDate from "./volcalendar/BlockedDates";
 const ContentSwitch = () => {
     return (
       <Switch>
@@ -27,21 +28,22 @@ const ContentSwitch = () => {
         <Route path={localRoutes.users} component={Users} />
         <Route path={localRoutes.usersGroups} component={UserGroups} />
         <Route path={localRoutes.groups} component={Groups} />
-        <Route path={localRoutes.settings} component={Settings} />
-                
+        <Route path={localRoutes.settings} component={Settings} />              
         <Route path={localRoutes.viewVolunteers} component={ViewVolunteers}/>
-        <Route path={localRoutes.addVolunteers} component={AddVolunteers}/>
-               
+        <Route path={localRoutes.addVolunteers} component={AddVolunteers}/>       
         <Route path={localRoutes.teamleadcalendar} component={teamleadcalendar} />
+        <Route path={localRoutes.assignedtasks} component={assignedtasks} />
         <Route path={localRoutes.viewVolunteers} component={ViewVolunteers} />
         <Route path={localRoutes.addVolunteers} component={AddVolunteers} />
         <Route path={localRoutes.volcalendar} component={volcalendar} />
+        <Route path={localRoutes.volblockedDate} component={BlockedDate} />
         {/* <Route path={localRoutes.volcalendar} component={volcalendar}/>
         <Route path={localRoutes.voldashboard} component={VolDashboard}/>
         <Route path={localRoutes.volblockdate} component={VolBlockDate}/>
         <Route path={localRoutes.volviewteam} component={VolViewTeam}/> */}
         <Route path={localRoutes.addTasks} component={AddTasks} />
         <Route path={localRoutes.viewTasks} component={ViewTasks} />
+        <Route path={localRoutes.assignedtasks} component={assignedtasks} />
         <Route component={NoMatch}/>
       </Switch>
     )

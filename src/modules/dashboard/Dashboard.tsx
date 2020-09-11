@@ -69,11 +69,11 @@ const data = [
         icon: People
     }             
 ]
-
 export default function SimpleSelect() {
     const profile = useSelector((state: IState) => state.core.user)
+    //const user = useSelector((state: IState) => state.core.user)
 
-    return (
+    return (         
         <Layout>
             <Box p={2}>
                 <Grid container spacing={2}>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box } from "@material-ui/core";
 import { remoteRoutes } from "../../data/constants";
+
 import Layout from "../../components/layout/Layout";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import Header from "./Header";
@@ -12,12 +13,11 @@ interface IProps {
     done?: () => any
 }
 
-interface Row {
-    taskName: string;
+interface Row {    
     startDate: Date;
     endDate: Date;
-    taskInfo: string;
-    firstName: string;
+    reason: string;
+    Name: string;
 }
 
 interface TableState {
@@ -43,51 +43,57 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const AssignedTasks = ({ done }: IProps) => {
+const BlockedDate = ({ done }: IProps) => {
     const classes = useStyles();
+
+    // For displaying the table data
     const [state, setData] = React.useState<TableState>({
-        columns: [
-            { title: 'Task Name', field: 'taskName' },
+        columns: [            
             { title: 'Start Date', field: 'startDate' },
             { title: 'End Date', field: 'endDate' },
-            { title: 'Task Details', field: 'taskDescription' },
-            { title: 'Volunteers', field: 'userId' },
+            { title: 'Reason', field: 'reason' },
+            { title: 'Name', field: 'Name'},            
         ],
         data: [
         ],
     });
 
+   
+
     React.useEffect(() => {
-        async function fetchAppointments() {
-            const res = await fetch(remoteRoutes.userTasks);
+        async function fetchBlockedDates() {
+            const res = await fetch(remoteRoutes.blockedDate);            
+            console.log(res)
             if (res.status >= 200 && res.status <= 299) {
                 const json = await res.json();
                 setData({
                     ...state,
-                    data: json.map((anAssignedTask: any) => {
+                    data:json.map((blockedDate: any) => {
                         return {
-                            taskName: anAssignedTask.appTask.task.taskName,
-                            startDate: anAssignedTask.appTask.app.startDate,
-                            endDate: anAssignedTask.appTask.app.endDate,
-                            taskDescription: anAssignedTask.appTask.task.taskDescription,
-                            userId: anAssignedTask.user.firstName,
+
+                            startDate: blockedDate.startDate,
+                            endDate: blockedDate.endDate,
+                            reason: blockedDate.reason,
+                            Name: blockedDate.fullName,                            
                         }
                     })
                 })
             } else {
-                Toast.error('Unable to retrieve the list of appointments.')
+                Toast.error('Unable to retrieve the list of blocked dates.')
                 console.log(res.status, res.statusText);
             }
         }
-        fetchAppointments();
-    }, []);
+        fetchBlockedDates();
+        console.log(fetchBlockedDates());
+    }, []);   
+
 
     return (
         <Layout>
             <Box p={1} className={classes.root}>
-                <Header title="Assigned Tasks" />
+                <Header title="Blocked Date" />
                 <MaterialTable
-                    title="Assigned Tasks"
+                    title="Blocked Date"
                     columns={state.columns}
                     data={state.data}
                 />
@@ -96,4 +102,4 @@ const AssignedTasks = ({ done }: IProps) => {
     );
 }
 
-export default AssignedTasks;
+export default BlockedDate;

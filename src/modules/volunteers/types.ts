@@ -9,4 +9,5 @@ export interface ICreateAMembershipDto {
     groupId: number;
     contactId: number;
     role: string;
+    isActive: boolean;
 }

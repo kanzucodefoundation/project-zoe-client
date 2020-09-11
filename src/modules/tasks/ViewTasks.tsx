@@ -4,7 +4,6 @@ import { XHeadCell } from "../../components/table/XTableHead";
 import { Avatar } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import Header from "./Header";
 import DataList from "../../components/DataList";
 import { AddFabButton } from "../../components/EditIconButton";
 import { search } from "../../utils/ajax";
@@ -14,9 +13,7 @@ import PeopleIcon from "@material-ui/icons/People";
 import Hidden from "@material-ui/core/Hidden";
 import EditDialog from "../../components/EditDialog";
 import TaskEditor from "./TaskEditor";
-import { ICreateTaskDto } from "./Types";
 import Loading from "../../components/Loading";
-import { FormikHelpers } from "formik"
 const columns: XHeadCell[] = [
   
   {

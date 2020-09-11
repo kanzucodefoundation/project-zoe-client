@@ -242,4 +242,3 @@ export const appointments = [
       location: 'Room 1',
     },
   ];
-  
