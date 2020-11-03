@@ -3,7 +3,7 @@ import * as yup from "yup";
 export const invalidInputs = [null, 'null', 'undefined', undefined, '']
 export const reqMsg = 'Input is required'
 
-export const reqString = yup.string().required(reqMsg).nullable(false)
+export const reqString = yup.string().required(reqMsg).nullable(true)
 export const reqObject = yup.object().required(reqMsg).nullable(true)
 
 export const reqArray = yup.array().ensure().required(reqMsg).min(1)

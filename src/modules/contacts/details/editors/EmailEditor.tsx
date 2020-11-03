@@ -14,6 +14,9 @@ import {remoteRoutes} from "../../../../data/constants";
 import {useDispatch} from 'react-redux'
 import {crmConstants} from "../../../../data/contacts/reducer";
 import {handleSubmission, ISubmission} from "../../../../utils/formHelpers";
+import {del, handleError} from "../../../../utils/ajax";
+import Toast from "../../../../utils/Toast";
+import {useDelete} from "../../../../data/hooks/useDelete";
 
 interface IProps {
     contactId: string
@@ -48,11 +51,21 @@ const EmailEditor = ({data, isNew, contactId, done}: IProps) => {
         handleSubmission(submission)
     }
 
+    const deleteActions = useDelete({
+        url: `${remoteRoutes.contactsEmail}/${data?.id}`,
+        onDone: done,
+        id: data?.id!,
+        action: crmConstants.crmDeleteEmail
+    })
+
     return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={data}
+            onCancel={done}
+            onDelete={deleteActions.handleDelete}
+            loading={deleteActions.loading}
         >
             <Grid spacing={0} container>
                 <Grid item xs={12}>
@@ -69,6 +82,7 @@ const EmailEditor = ({data, isNew, contactId, done}: IProps) => {
                         label="Email"
                         type="email"
                         variant='outlined'
+                        aria-label='phone'
                     />
                 </Grid>
                 <Grid item xs={12}>

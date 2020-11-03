@@ -7,7 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
-import {toOptions} from "../../components/inputs/inputHelpers";
+import {hasValue, toOptions} from "../../components/inputs/inputHelpers";
 
 import {remoteRoutes} from "../../data/constants";
 import {post} from "../../utils/ajax";
@@ -29,7 +29,7 @@ interface IProps {
 const schema = yup.object().shape(
     {
         firstName: reqString,
-        lastName: reqString,
+        otherNames: reqString,
         // middleName: reqString,
         gender: reqString,
         birthDay: reqString,
@@ -37,10 +37,8 @@ const schema = yup.object().shape(
         civilStatus: reqString,
 
         ageGroup: reqString,
-        placeOfWork: reqString,
         residence: reqString,
 
-        //cellGroup: reqObject,
         churchLocation: reqObject,
 
         email: reqEmail,
@@ -67,25 +65,34 @@ const initialValues = {
 
 }
 
+const processName = (name: string): string[] => {
+    const [lastName, ...otherNames] = name.split(" ")
+    if (hasValue(otherNames)) {
+        return [lastName, otherNames.join(" ")]
+    } else return [lastName]
+}
+
 const RegisterForm = ({done}: IProps) => {
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
+        const [lastName, middleName] = processName(values.otherNames)
         const toSave: ICreatePersonDto = {
             firstName: values.firstName,
-            middleName: values.middleName,
-            lastName: values.lastName,
+            middleName: middleName,
+            lastName: lastName,
             dateOfBirth: `1800-${values.birthMonth}-${values.birthDay}T00:00:00.000Z`,
             gender: values.gender,
             civilStatus: values.civilStatus,
             ageGroup: values.ageGroup,
             placeOfWork: values.placeOfWork,
             residence: values.residence,
+
             cellGroupId: values.cellGroup.id,
             churchLocationId: values.churchLocation.id,
             email: values.email,
             phone: values.phone
         }
 
-        post(remoteRoutes.contactsPeople, toSave,
+        post(remoteRoutes.register, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
@@ -113,7 +120,7 @@ const RegisterForm = ({done}: IProps) => {
                         </Box>
                         <Divider/>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} >
                         <XTextInput
                             name="firstName"
                             label="First Name"
@@ -122,29 +129,11 @@ const RegisterForm = ({done}: IProps) => {
                             margin='none'
                         />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} >
                         <XTextInput
-                            name="lastName"
-                            label="Last Name"
-                            type="text"
-                            variant='outlined'
-                            margin='none'
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <XTextInput
-                            name="middleName"
+                            name="otherNames"
                             label="Other Names"
                             type="text"
-                            variant='outlined'
-                            margin='none'
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <XSelectInput
-                            name="civilStatus"
-                            label="Civil Status"
-                            options={toOptions(civilStatusCategories)}
                             variant='outlined'
                             margin='none'
                         />
@@ -159,28 +148,15 @@ const RegisterForm = ({done}: IProps) => {
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <Box width='100%' display='flex'>
-                            <Box width='50%'>
-                                <XSelectInput
-                                    name="birthMonth"
-                                    label="Birth Month"
-                                    options={toOptions(getMonthsList())}
-                                    variant='outlined'
-                                    margin='none'
-                                />
-                            </Box>
-                            <Box width='50%'>
-                                <XSelectInput
-                                    name="birthDay"
-                                    label="Birth Day"
-                                    options={toOptions(getDayList())}
-                                    variant='outlined'
-                                    margin='none'
-                                />
-                            </Box>
-                        </Box>
+                        <XSelectInput
+                            name="civilStatus"
+                            label="Civil Status"
+                            options={toOptions(civilStatusCategories)}
+                            variant='outlined'
+                            margin='none'
+                        />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={4}>
                         <XSelectInput
                             name="ageGroup"
                             label="Age Group"
@@ -189,6 +165,25 @@ const RegisterForm = ({done}: IProps) => {
                             margin='none'
                         />
                     </Grid>
+                    <Grid item xs={6} md={4}>
+                        <XSelectInput
+                            name="birthMonth"
+                            label="Birth Month"
+                            options={toOptions(getMonthsList())}
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+                    <Grid item xs={6} md={4}>
+                        <XSelectInput
+                            name="birthDay"
+                            label="Birth Day"
+                            options={toOptions(getDayList())}
+                            variant='outlined'
+                            margin='none'
+                        />
+                    </Grid>
+
                     <Grid item xs={12}>
                         <Box pt={2}>
                             <Typography variant='caption'>Address details</Typography>

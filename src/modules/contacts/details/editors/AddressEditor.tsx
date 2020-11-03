@@ -14,6 +14,7 @@ import {remoteRoutes} from "../../../../data/constants";
 import {useDispatch} from 'react-redux'
 import {crmConstants} from "../../../../data/contacts/reducer";
 import {handleSubmission, ISubmission} from "../../../../utils/formHelpers";
+import {useDelete} from "../../../../data/hooks/useDelete";
 
 interface IProps {
     contactId: string
@@ -27,8 +28,7 @@ const schema = yup.object().shape(
         category: reqString.oneOf(addressCategories),
         country: reqString,
         district: reqString,
-        county: reqString,
-        subCounty: reqString,
+        freeForm: reqString
     }
 )
 
@@ -51,11 +51,20 @@ const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
         handleSubmission(submission)
     }
 
+    const deleteActions = useDelete({
+        url: `${remoteRoutes.contactsAddress}/${data?.id}`,
+        onDone: done,
+        id: data?.id!,
+        action: crmConstants.crmDeleteEmail
+    })
+
     return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={data}
+            loading={deleteActions.loading}
+            onDelete={deleteActions.handleDelete}
         >
             <Grid spacing={0} container>
                 <Grid item xs={12}>
@@ -84,24 +93,8 @@ const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
                 </Grid>
                 <Grid item xs={12}>
                     <XTextInput
-                        name="county"
-                        label="County"
-                        type="text"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="subCounty"
-                        label="Sub County"
-                        type="text"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="village"
-                        label="Village"
+                        name="freeForm"
+                        label="Address"
                         type="text"
                         variant='outlined'
                     />

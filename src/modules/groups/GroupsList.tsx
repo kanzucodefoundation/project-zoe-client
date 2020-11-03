@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import Layout from "../../components/layout/Layout";
 import XTreeData from "../../components/tree/XTreeData";
 import arrayToTree from 'array-to-tree'
 import {IGroup} from "./types";
@@ -18,10 +17,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         groupsHolder: {
             width: 500,
-            maxWidth: '100%',
-            // [theme.breakpoints.down('sm')]: {
-            //     paddingRight:theme.spacing(1)
-            // },
+            maxWidth: '100%'
         }
     }),
 );
@@ -36,12 +32,10 @@ const GroupsList = () => {
     const [selected, setSelected] = useState<IGroup | null>(null);
     const [data, setData] = useState<IGroup[]>([]);
 
-
     useEffect(() => {
         setLoading(true);
         search(remoteRoutes.groups, filter, data => {
             setData(data)
-            console.log("Got Data",data)
         }, undefined, () => {
             setLoading(false)
         })
@@ -77,47 +71,42 @@ const GroupsList = () => {
     }
 
     const openRecords = data.map(it => it.id);
-
-    console.log("Converting to tree")
     const treeData: any = arrayToTree(data, {
         parentProperty: 'parentId',
         customID: 'id'
     });
-    console.log("Done converting to tree")
     const starterData = selected ? {
         parent: {
             id: selected.id, name: selected.name
         }
     } : undefined;
     return (
-        <Layout>
-            <Box p={1}>
-                <Header
-                    onAddNew={handleNew}
-                    title='Groups'
-                    onChange={handleSearch}
-                />
-                <Box display='flex' justifyContent='center'>
-                    {
-                        loading ? <Loading/> :
-                            data.length > 0 ?
-                                <div className={classes.groupsHolder}>
-                                    <XTreeData
-                                        data={treeData}
-                                        open={openRecords}
-                                        onAddUnder={handleAddUnder}
-                                        onDetails={handleDetails}
-                                    />
-                                </div>
-                                :
-                                <InfoMessage text='No records found'/>
-                    }
-                </Box>
+        <Box p={1}>
+            <Header
+                onAddNew={handleNew}
+                title='Groups'
+                onChange={handleSearch}
+            />
+            <Box display='flex' justifyContent='center'>
+                {
+                    loading ? <Loading/> :
+                        data.length > 0 ?
+                            <div className={classes.groupsHolder}>
+                                <XTreeData
+                                    data={treeData}
+                                    open={openRecords}
+                                    onAddUnder={handleAddUnder}
+                                    onDetails={handleDetails}
+                                />
+                            </div>
+                            :
+                            <InfoMessage text='No records found'/>
+                }
             </Box>
             <EditDialog open={dialog} onClose={handleClose} title='Add new group'>
                 <GroupEditor data={starterData} isNew={true} onCreated={handleAdded}/>
             </EditDialog>
-        </Layout>
+        </Box>
     );
 };
 

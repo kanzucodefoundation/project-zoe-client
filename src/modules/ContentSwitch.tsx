@@ -6,7 +6,7 @@ import Contacts from "./contacts/Contacts";
 import ContactDetails from "./contacts/details/Details";
 import Settings from "./settings/Settings";
 import Layout from "../components/layout/Layout";
-import Groups from "./groups/GroupsList";
+import Groups from "./groups/GroupTabView";
 import GroupDetails from "./groups/Details";
 import Users from "./admin/users/Users";
 import {useSelector} from "react-redux";

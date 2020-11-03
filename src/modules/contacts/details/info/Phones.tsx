@@ -2,15 +2,14 @@ import React, {useState} from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import PhoneIcon from '@material-ui/icons/Phone';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IBox from "../../../../components/ibox/IBox";
 import {IContact, IEmail} from "../../types";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
-import EditIconButton, {AddIconButton} from "../../../../components/EditIconButton";
 import EditDialog from "../../../../components/EditDialog";
 import PhoneEditor from "../editors/PhoneEditor";
-import Typography from "@material-ui/core/Typography";
+import DataCard from "../../../../components/DataCard";
+import Button from "@material-ui/core/Button";
+import Hidden from "@material-ui/core/Hidden";
+import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 
 interface IProps {
     data: IContact
@@ -49,27 +48,32 @@ const Phones = (props: IProps) => {
     }
 
     const {phones, id = ''} = props.data
-    const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <PhoneIcon fontSize='small'/><Typography variant='body2'>&nbsp;<b>Phones</b></Typography>
-    </div>
 
     return (
-        <IBox title={title} action={<AddIconButton onClick={handleNew}/>}>
+        <DataCard
+            useActionContent={true}
+            title='Phones'
+            buttons={
+                <Button size="small" color="primary" onClick={handleNew}>
+                    Add New
+                </Button>
+            }
+        >
             <List className={classes.noPadding}>
                 {phones.map(it => (
                     <ListItem button key={it.id} className={classes.noPadding} onClick={handleClick(it)}>
                         <ListItemText primary={it.value} secondary={it.category}/>
-                        <ListItemSecondaryAction>
-                            <EditIconButton onClick={handleClick(it)}/>
-                        </ListItemSecondaryAction>
+                        <Hidden mdUp>
+                            <ArrowRightIcon/>
+                        </Hidden>
                     </ListItem>
                 ))}
             </List>
             <EditDialog title={selected ? "Edit Phone" : "New Phone"} open={dialog} onClose={handleClose}>
                 <PhoneEditor data={selected} isNew={!selected} contactId={id} done={handleClose}/>
             </EditDialog>
-        </IBox>
-    );
+        </DataCard>
+    )
 }
 
 export default Phones;

@@ -95,7 +95,7 @@ export default function reducer(state = initialState, action: any) {
             const id: string = action.payload
             if (state.selected) {
                 const {emails, ...rest} = state.selected
-                const selected: IContact = {...rest, emails: emails.filter(it => it.id === id)}
+                const selected: IContact = {...rest, emails: emails.filter(it => it.id !== id)}
                 return {...state, selected}
             }
             return state
@@ -125,7 +125,7 @@ export default function reducer(state = initialState, action: any) {
             const id: string = action.payload
             if (state.selected) {
                 const {phones, ...rest} = state.selected
-                const selected: IContact = {...rest, phones: phones.filter(it => it.id === id)}
+                const selected: IContact = {...rest, phones: phones.filter(it => it.id !== id)}
                 return {...state, selected}
             }
             return state
@@ -155,7 +155,7 @@ export default function reducer(state = initialState, action: any) {
             const id: string = action.payload
             if (state.selected) {
                 const {identifications, ...rest} = state.selected
-                const selected: IContact = {...rest, identifications: identifications.filter(it => it.id === id)}
+                const selected: IContact = {...rest, identifications: identifications.filter(it => it.id !== id)}
                 return {...state, selected}
             }
             return state
@@ -186,7 +186,7 @@ export default function reducer(state = initialState, action: any) {
             const id: string = action.payload
             if (state.selected) {
                 const {addresses, ...rest} = state.selected
-                const selected: IContact = {...rest, addresses: addresses.filter(it => it.id === id)}
+                const selected: IContact = {...rest, addresses: addresses.filter(it => it.id !== id)}
                 return {...state, selected}
             }
             return state

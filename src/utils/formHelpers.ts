@@ -1,4 +1,4 @@
-import {handleError, post, put} from "./ajax";
+import {del, handleError, post, put} from "./ajax";
 import Toast from "./Toast";
 import {FormikHelpers} from "formik";
 
@@ -40,3 +40,6 @@ export function handleSubmission(submission: ISubmission) {
         )
     }
 }
+
+
+

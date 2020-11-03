@@ -1,13 +1,11 @@
 import React, {useState} from 'react';
+import Button from '@material-ui/core/Button';
 import {IContact, renderName} from "../../types";
-import IBox from "../../../../components/ibox/IBox";
 import DetailView, {IRec} from "../../../../components/DetailView";
-import {printDate} from "../../../../utils/dateHelpers";
-import PersonIcon from '@material-ui/icons/PermIdentity';
-import EditIconButton from "../../../../components/EditIconButton";
-import EditDialog from "../../../../components/EditDialog";
+import {printBirthday, printDate} from "../../../../utils/dateHelpers";
+import DataCard from "../../../../components/DataCard";
 import PersonEditor from "../editors/PersonEditor";
-import Typography from "@material-ui/core/Typography";
+import EditDialog from "../../../../components/EditDialog";
 
 interface IProps {
     data: IContact
@@ -22,7 +20,7 @@ export const idFields = (data: IContact): IRec[] => {
         },
         {
             label: 'BirthDay',
-            value: printDate(person.dateOfBirth)
+            value: printBirthday(person.dateOfBirth)
         },
         {
             label: 'Gender',
@@ -35,30 +33,34 @@ export const idFields = (data: IContact): IRec[] => {
     ]
 }
 
-const BioData = ({data}: IProps) => {
+const BasicData = ({data}: IProps) => {
     const [dialog, setDialog] = useState(false)
     const {id = ''} = data
 
-    const handleClick =  () => {
+    const handleClick = () => {
         setDialog(true)
     }
 
     const handleClose = () => {
         setDialog(false)
     }
-
-    const displayData = idFields(data);
-    const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <PersonIcon fontSize='small' /><Typography variant='body2'>&nbsp;<b>Basic data</b></Typography>
-    </div>
-
     return (
-        <IBox title={title} action={<EditIconButton onClick={handleClick}/>}>
-            <DetailView data={displayData}/>
+        <DataCard
+            useActionContent={true}
+            title="Person details"
+            buttons={
+                <Button size="small" color="primary" onClick={handleClick}>
+                    Edit
+                </Button>
+            }
+        >
+            <DetailView data={idFields(data)}/>
             <EditDialog title='Edit Basic Data' open={dialog} onClose={handleClose}>
-                <PersonEditor data={data.person}  contactId={id} done={handleClose}/>
+                <PersonEditor data={data.person} contactId={id} done={handleClose}/>
             </EditDialog>
-        </IBox>
+        </DataCard>
     );
 }
-export default BioData;
+
+
+export default BasicData;

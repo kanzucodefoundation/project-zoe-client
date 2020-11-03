@@ -2,15 +2,14 @@ import React, {useState} from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import MailIcon from '@material-ui/icons/Mail';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IBox from "../../../../components/ibox/IBox";
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import {IContact, IEmail} from "../../types";
 import {createStyles, makeStyles, Theme} from "@material-ui/core";
 import EmailEditor from "../editors/EmailEditor";
-import EditIconButton, {AddIconButton} from "../../../../components/EditIconButton";
 import EditDialog from "../../../../components/EditDialog";
-import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+import DataCard from "../../../../components/DataCard";
+import Hidden from "@material-ui/core/Hidden";
 
 interface IProps {
     data: IContact
@@ -49,26 +48,33 @@ const Emails = (props: IProps) => {
         setDialog(true)
     }
 
-    const title = <div style={{display: 'flex', flexDirection: 'row'}}>
-        <MailIcon fontSize='small' /><Typography variant='body2'>&nbsp;<b>Emails</b></Typography>
-    </div>
     return (
-        <IBox title={title} action={<AddIconButton onClick={handleNew}/>}>
+        <DataCard
+            useActionContent={true}
+            title='Emails'
+            buttons={
+                <Button size="small" color="primary" onClick={handleNew}>
+                    Add New
+                </Button>
+            }
+        >
             <List className={classes.noPadding}>
                 {emails.map(it => (
                     <ListItem button key={it.id} className={classes.noPadding} onClick={handleClick(it)}>
                         <ListItemText primary={it.value} secondary={it.category}/>
-                        <ListItemSecondaryAction>
-                            <EditIconButton onClick={handleClick(it)}/>
-                        </ListItemSecondaryAction>
+                        <Hidden mdUp>
+                            <ArrowRightIcon/>
+                        </Hidden>
                     </ListItem>
                 ))}
             </List>
             <EditDialog title={selected ? "Edit Email" : "New Email"} open={dialog} onClose={handleClose}>
-                <EmailEditor data={selected} isNew={!selected} contactId={id} done={handleClose}/>
+                <EmailEditor data={selected} isNew={!selected} contactId={id} done={handleClose} />
             </EditDialog>
-        </IBox>
-    );
+        </DataCard>
+    )
+
+
 }
 
 export default Emails;

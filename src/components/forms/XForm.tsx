@@ -18,11 +18,12 @@ interface IProps {
     children?: React.ReactNode
     initialValues?: any
 }
+
 const useStyles = makeStyles((theme) => ({
     root: {
-        minWidth:350,
+        minWidth: 350,
         [theme.breakpoints.down('sm')]: {
-            minWidth:"100%",
+            minWidth: "100%",
         }
     }
 }));
@@ -30,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const XForm = (props: IProps) => {
     const [count, setCount] = useState<number>(0)
     const classes = useStyles()
+
     function handleDelete() {
         if (count === 1) {
             setCount(0)
@@ -46,13 +48,13 @@ const XForm = (props: IProps) => {
         validateOnBlur
         enableReinitialize
 
-    >{({submitForm, isSubmitting, values, errors, touched}) => (
+    >{({submitForm, isSubmitting, values, errors,touched, submitCount}) => (
         <Form>
             <Grid container spacing={0} className={classes.root}>
                 {
-                    hasValue(errors) &&
+                    submitCount > 0 && hasValue(errors) &&
                     <Grid item xs={12}>
-                        <Box display='flex' justifyContent='center'>
+                        <Box display='flex' justifyContent='center' pb={2}>
                             <Alert severity="warning">Please provide all required fields.</Alert>
                         </Box>
                     </Grid>

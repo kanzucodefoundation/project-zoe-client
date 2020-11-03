@@ -1,12 +1,11 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqDate, reqEmail, reqObject, reqString} from "../../data/validations";
+import {reqEmail, reqObject, reqString} from "../../data/validations";
 import {ageCategories, civilStatusCategories, genderCategories} from "../../data/comboCategories";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
-import XDateInput from "../../components/inputs/XDateInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
 
@@ -19,7 +18,7 @@ import XRadioInput from "../../components/inputs/XRadioInput";
 import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
 import {ICreatePersonDto} from "./types";
-import {getDayList, getMonthsList, isoDateString} from "../../utils/dateHelpers";
+import {getDayList, getMonthsList} from "../../utils/dateHelpers";
 
 interface IProps {
     data: any | null
@@ -67,17 +66,7 @@ const initialValues = {
 
 }
 
-const RightPadded = ({children,...props}: any) => <Grid item xs={6}>
-    <Box pr={1} {...props}>
-        {children}
-    </Box>
-</Grid>
 
-const LeftPadded = ({children,...props}: any) => <Grid item xs={6}>
-    <Box pl={1} {...props}>
-        {children}
-    </Box>
-</Grid>
 
 const NewPersonForm = ({done}: IProps) => {
     const dispatch = useDispatch();

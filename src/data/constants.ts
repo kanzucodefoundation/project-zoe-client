@@ -54,7 +54,7 @@ export const remoteRoutes = {
     authServer: url,
     login: url + '/api/auth/login',
     profile: url + '/api/auth/profile',
-    register: url + '/api/auth/register',
+    register: url + '/api/register',
     resetPass: url + '/reset',
     contacts: url + '/api/crm/contacts',
     contactSearch: url + '/api/crm/contact/search',

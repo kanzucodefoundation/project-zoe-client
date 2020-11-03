@@ -7,7 +7,6 @@ import XTable from "../../components/table/XTable";
 import {XHeadCell} from "../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
 import Filter from "./Filter";
-import EmailLink from "../../components/EmalLink";
 import ContactLink from "../../components/ContactLink";
 import {search} from "../../utils/ajax";
 import {localRoutes, remoteRoutes} from "../../data/constants";
@@ -70,7 +69,6 @@ const headCells: XHeadCell[] = [
 ];
 
 const toMobileRow = (data: IContactListDto): IMobileRow => {
-    const hasAvatar = hasValue(data.avatar)
     return {
         avatar: <XAvatar data={data}/>,
         primary: data.name,

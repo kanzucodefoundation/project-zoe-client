@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(8),
         marginBottom: theme.spacing(8),
         padding: theme.spacing(2),
-        width: 700,
+        width: 500,
         maxWidth: '100%',
         margin: '0 auto',
         [theme.breakpoints.down('sm')]: {
@@ -132,9 +132,8 @@ export default function Register() {
                 <div className={classes.cardGrid}>
                     <div className={classes.titleContent}>
                         <Typography variant="h5" component="h2">
-                            SUB Card
+                           Register
                         </Typography>
-
                         {
                             done &&
                             <Box pt={2}>

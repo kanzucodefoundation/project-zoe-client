@@ -14,7 +14,7 @@ const XCheckBoxInput = (props: IProps) => {
         label={props.label}
         control={
             <Checkbox
-                checked={field.value}
+                checked={field.value||false}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 name={props.name}

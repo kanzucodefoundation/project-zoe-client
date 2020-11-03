@@ -15,6 +15,7 @@ import {remoteRoutes} from "../../../../data/constants";
 import {useDispatch} from 'react-redux'
 import {crmConstants} from "../../../../data/contacts/reducer";
 import {handleSubmission, ISubmission} from "../../../../utils/formHelpers";
+import {useDelete} from "../../../../data/hooks/useDelete";
 
 interface IProps {
     contactId: string
@@ -52,11 +53,21 @@ const IdentificationEditor = ({data, isNew, contactId, done}: IProps) => {
         handleSubmission(submission)
     }
 
+    const deleteActions = useDelete({
+        url: `${remoteRoutes.contactsIdentification}/${data?.id}`,
+        onDone: done,
+        id: data?.id!,
+        action: crmConstants.crmDeleteIdentification
+    })
+
     return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={data}
+            onCancel={done}
+            loading={deleteActions.loading}
+            onDelete={deleteActions.handleDelete}
         >
             <Grid spacing={1} container>
                 <Grid item xs={12}>
