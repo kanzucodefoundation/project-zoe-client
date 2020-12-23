@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {SyntheticEvent} from 'react';
 import {Button} from "@material-ui/core";
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,6 +16,7 @@ import Toast from "../../utils/Toast";
 import XTextInput from "../../components/inputs/XTextInput";
 import {useLoginStyles} from "./loginStyles";
 import {useHistory} from "react-router";
+import Link from '@material-ui/core/Link';
 
 
 function Login() {
@@ -25,11 +26,17 @@ function Login() {
     const onSubmit = (data: any, actions: FormikHelpers<any>) => {
         post(remoteRoutes.login, data, resp => {
             dispatch(handleLogin(resp))
+            Toast.success(`Authentication succeess ${resp}`)
             history.push(localRoutes.home)
         }, () => {
-            Toast.error("Authentication failed, invalid username/password")
+            Toast.error(`Authentication failed, invalid username/password ${data}`)
             actions.setSubmitting(false)
         })
+    }
+
+    function handleForgotPassword(e: SyntheticEvent<any>) {
+        e.preventDefault()
+        history.push(localRoutes.forgotPassword);
     }
 
     return (
@@ -78,6 +85,12 @@ function Login() {
                             >
                                 Sign in
                             </Button>
+                            <Link
+                                className={classes.link}
+                                onClick={handleForgotPassword}
+                            >
+                                Forgot Password?
+                            </Link>       
                         </Form>
                     )}
                 </Formik>
