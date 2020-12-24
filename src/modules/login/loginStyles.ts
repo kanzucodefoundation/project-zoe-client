@@ -5,6 +5,7 @@ export const useLoginStyles = makeStyles((theme: Theme) =>
     createStyles({
         main: {
             width: 'auto',
+            overflowX: 'hidden',
             display: 'block', // Fix IE 11 issue.
             marginLeft: theme.spacing(3),
             marginRight: theme.spacing(3),
@@ -15,7 +16,7 @@ export const useLoginStyles = makeStyles((theme: Theme) =>
             },
         },
         paper: {
-            marginTop: theme.spacing(8),
+            marginTop: theme.spacing(14),
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -31,6 +32,14 @@ export const useLoginStyles = makeStyles((theme: Theme) =>
         },
         submit: {
             marginTop: theme.spacing(3),
+            marginBottom: theme.spacing(3),
+        },
+        link: {
+            color: theme.palette.text.secondary,
+            '&:hover': {
+                color: theme.palette.primary.main,
+            },
+            cursor: 'pointer',
         },
     }),
 );

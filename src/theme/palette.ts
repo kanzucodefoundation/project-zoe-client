@@ -1,6 +1,7 @@
 import {colors} from '@material-ui/core';
 
 const white = '#FFFFFF';
+const black = '#000000';
 
 const palette={
     primary: {
@@ -28,6 +29,12 @@ const palette={
     background: {
         default: '#F4F6F8',
         paper: white
+    },
+    links: {
+        white: '#FFFFFF',
+        black: '#000000',
+
     }
+
 };
 export default palette

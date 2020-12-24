@@ -39,6 +39,9 @@ export const localRoutes = {
     settings: '/admin/settings',
     test: '/test',
 
+    updatePassword: '/update-password',
+    resetPassword: '/reset-password',
+    forgotPassword: '/forgot-password',
     help: '/help',
     login: '/login',
     home: '/'
@@ -55,7 +58,8 @@ export const remoteRoutes = {
     login: url + '/api/auth/login',
     profile: url + '/api/auth/profile',
     register: url + '/api/register',
-    resetPass: url + '/reset',
+    forgotPassword: url + '/api/auth/forgot-password',
+    resetPassword: url + '/api/auth/reset-password',
     contacts: url + '/api/crm/contacts',
     contactSearch: url + '/api/crm/contact/search',
     contactById: url + '/api/crm/contacts/id',

@@ -13,6 +13,7 @@ import {useSelector} from "react-redux";
 import {IState} from "../data/types";
 import MembersEditor from "./groups/members/MembersEditor";
 import {hasAnyRole} from "../data/appRoles";
+import UpdatePasswordConfirmation from "./login/UpdatePasswordConfirmation";
 
 
 
@@ -34,6 +35,7 @@ const ContentSwitch = () => {
         <Route path={localRoutes.groups} component={Groups}/>
         <Route path={localRoutes.settings} component={Settings}/>
         <Route path={localRoutes.test} component={Testing}/>
+        <Route path={localRoutes.updatePassword} component={UpdatePasswordConfirmation} />
         <Route component={NoMatch}/>
     </Switch>
 }
