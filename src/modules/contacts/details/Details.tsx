@@ -80,7 +80,6 @@ const Details = (props: IProps) => {
     const profile = useSelector((state: IState) => state.core.user)
     const [loading, setLoading] = useState<boolean>(true)
     const [value, setValue] = React.useState('one');
-    // const [contactId, setContactId] = useState(getRouteParam(props, 'contactId'))
 
     const contactId = (getRouteParam(props, 'contactId')) === 'me' ? profile.id :
         getRouteParam(props, 'contactId')
@@ -88,17 +87,8 @@ const Details = (props: IProps) => {
     const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
         setValue(newValue);
     };
-    console.log(data, 'Selectedd')
+    
     useEffect(() => {
-        // if (!!contactId === false) {
-        //     setLoading(true)
-        // } else {
-        //     if (getRouteParam(props, 'contactId') == 'me') {
-        //         setContactId(profile.id)
-        //     } else {
-        //         setContactId(getRouteParam(props, 'contactId'))
-        //     }
-        // }
         setLoading(true)
         get(
             `${remoteRoutes.contacts}/${contactId}`,
