@@ -50,6 +50,10 @@ const routes: IAppRoute[] = [
                 route: localRoutes.contacts
             },
             {
+                name: "Profile",
+                route: localRoutes.profile
+            },
+            {
                 name: "Groups",
                 route: localRoutes.groups
             }

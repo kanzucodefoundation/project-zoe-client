@@ -29,6 +29,7 @@ export const localRoutes = {
 
     dashboard: '/dashboard',
     contacts: '/people/contacts',
+    profile: '/people/contacts/me',
     contactsDetails: '/people/contacts/:contactId',
     groups: '/people/groups',
     groupsDetails: '/people/groups/:groupId',

@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {RouteComponentProps, withRouter} from "react-router";
+import React, { useEffect, useState } from 'react';
+import { RouteComponentProps, withRouter } from "react-router";
 import Navigation from "../../../components/layout/Layout";
-import {getRouteParam} from "../../../utils/routHelpers";
-import {IContact} from "../types";
+import { getRouteParam } from "../../../utils/routHelpers";
+import { IContact } from "../types";
 import Loading from "../../../components/Loading";
 import Error from "../../../components/Error";
-import {createStyles, Grid, makeStyles, Theme} from "@material-ui/core";
+import { createStyles, Grid, makeStyles, Theme } from "@material-ui/core";
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -15,10 +15,11 @@ import Divider from '@material-ui/core/Divider';
 import Profile from "./info/Profile";
 import Groups from "./Groups";
 import Info from "./info/Info";
-import {get} from "../../../utils/ajax";
-import {remoteRoutes} from "../../../data/constants";
-import {useDispatch, useSelector} from "react-redux";
-import {crmConstants} from "../../../data/contacts/reducer";
+import { get } from "../../../utils/ajax";
+import { remoteRoutes } from "../../../data/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { crmConstants } from "../../../data/contacts/reducer";
+import { IState } from '../../../data/types';
 
 interface IProps extends RouteComponentProps {
 
@@ -48,7 +49,7 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-    const {children, value, index, ...other} = props;
+    const { children, value, index, ...other } = props;
 
     return (
         <Typography
@@ -73,18 +74,31 @@ function a11yProps(index: any) {
 
 
 const Details = (props: IProps) => {
-    const contactId = getRouteParam(props, 'contactId')
     const classes = useStyles()
     const dispatch = useDispatch();
     const data: IContact | undefined = useSelector((state: any) => state.crm.selected)
-
+    const profile = useSelector((state: IState) => state.core.user)
     const [loading, setLoading] = useState<boolean>(true)
     const [value, setValue] = React.useState('one');
+    // const [contactId, setContactId] = useState(getRouteParam(props, 'contactId'))
+
+    const contactId = (getRouteParam(props, 'contactId')) === 'me' ? profile.id :
+        getRouteParam(props, 'contactId')
 
     const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
         setValue(newValue);
     };
+    console.log(data, 'Selectedd')
     useEffect(() => {
+        // if (!!contactId === false) {
+        //     setLoading(true)
+        // } else {
+        //     if (getRouteParam(props, 'contactId') == 'me') {
+        //         setContactId(profile.id)
+        //     } else {
+        //         setContactId(getRouteParam(props, 'contactId'))
+        //     }
+        // }
         setLoading(true)
         get(
             `${remoteRoutes.contacts}/${contactId}`,
@@ -98,17 +112,17 @@ const Details = (props: IProps) => {
     const hasError = !loading && !data
     return (
         <Navigation>
-            {loading && <Loading/>}
-            {hasError && <Error text='Failed load contact'/>}
+            {loading && <Loading />}
+            {hasError && <Error text='Failed load contact' />}
             {
                 data &&
                 <div className={classes.root}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} style={{paddingBottom: 0}}>
-                            <Profile data={data}/>
-                            <Divider className={classes.divider}/>
+                        <Grid item xs={12} style={{ paddingBottom: 0 }}>
+                            <Profile data={data} />
+                            <Divider className={classes.divider} />
                         </Grid>
-                        <Grid item xs={12} style={{paddingTop: 0}}>
+                        <Grid item xs={12} style={{ paddingTop: 0 }}>
                             <AppBar position="static" color="inherit" elevation={0}>
                                 <Tabs value={value} onChange={handleChange} aria-label="wrapped label tabs example">
                                     <Tab
@@ -116,15 +130,15 @@ const Details = (props: IProps) => {
                                         label="Summary"
                                         {...a11yProps('one')}
                                     />
-                                    <Tab value="two" label="Teams" {...a11yProps('two')} />
+                                    <Tab value="two" label="Groups" {...a11yProps('two')} />
                                 </Tabs>
                             </AppBar>
-                            <Divider/>
+                            <Divider />
                             <TabPanel value={value} index="one">
-                                <Info data={data}/>
+                                <Info data={data} />
                             </TabPanel>
                             <TabPanel value={value} index="two">
-                                <Groups/>
+                                <Groups />
                             </TabPanel>
                         </Grid>
                     </Grid>
