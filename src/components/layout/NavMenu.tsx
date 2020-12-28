@@ -6,6 +6,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AppsIcon from '@material-ui/icons/Apps';
 import PeopleIcon from '@material-ui/icons/People';
+import PersonIcon from '@material-ui/icons/Person';
 import SettingsIcon from '@material-ui/icons/Settings';
 import HelpIcon from '@material-ui/icons/Help';
 import {useHistory, useLocation} from 'react-router-dom'
@@ -35,10 +36,15 @@ interface IAppRoute {
 
 const routes: IAppRoute[] = [
     {
-        requiredRoles: [appRoles.roleDashboard],
+        //requiredRoles: [appRoles.roleDashboard],
         name: "Dashboard",
         route: localRoutes.dashboard,
         icon: AppsIcon
+    },
+    {
+        name: "Profile",
+        route: localRoutes.profile,
+        icon: PersonIcon
     },
     {
         requiredRoles: [appRoles.roleCrmView, appRoles.roleCrmEdit],
@@ -49,10 +55,7 @@ const routes: IAppRoute[] = [
                 name: "Contacts",
                 route: localRoutes.contacts
             },
-            {
-                name: "Profile",
-                route: localRoutes.profile
-            },
+
             {
                 name: "Groups",
                 route: localRoutes.groups

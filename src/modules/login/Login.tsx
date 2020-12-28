@@ -26,10 +26,10 @@ function Login() {
     const onSubmit = (data: any, actions: FormikHelpers<any>) => {
         post(remoteRoutes.login, data, resp => {
             dispatch(handleLogin(resp))
-            Toast.success(`Authentication succeess ${resp}`)
+            Toast.success(`Authentication success`)
             history.push(localRoutes.home)
         }, () => {
-            Toast.error(`Authentication failed, invalid username/password ${data}`)
+            Toast.error(`Authentication failed, invalid username/password`)
             actions.setSubmitting(false)
         })
     }
