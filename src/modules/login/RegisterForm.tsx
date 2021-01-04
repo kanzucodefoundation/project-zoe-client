@@ -86,7 +86,7 @@ const RegisterForm = ({done}: IProps) => {
             placeOfWork: values.placeOfWork,
             residence: values.residence,
 
-            cellGroupId: values.cellGroup.id,
+            cellGroupId: values.cellGroup?.id,
             churchLocationId: values.churchLocation.id,
             email: values.email,
             phone: values.phone

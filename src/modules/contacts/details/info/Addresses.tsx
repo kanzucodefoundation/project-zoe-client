@@ -32,7 +32,6 @@ const Addresses = (props: IProps) => {
     const [selected, setSelected] = useState<IAddress | null>(null)
     const [dialog, setDialog] = useState(false)
 
-
     const handleClick = (dt: IAddress) => () => {
         setSelected(dt)
         setDialog(true)
@@ -48,10 +47,6 @@ const Addresses = (props: IProps) => {
         setDialog(true)
     }
     const {addresses,id=''} = props.data
-
-
-
-
     return (
         <DataCard
             useActionContent={true}
