@@ -120,7 +120,7 @@ const RegisterForm = ({done}: IProps) => {
                         </Box>
                         <Divider/>
                     </Grid>
-                    <Grid item xs={12} >
+                    <Grid item xs={12} md={6} >
                         <XTextInput
                             name="firstName"
                             label="First Name"
@@ -129,7 +129,7 @@ const RegisterForm = ({done}: IProps) => {
                             margin='none'
                         />
                     </Grid>
-                    <Grid item xs={12} >
+                    <Grid item xs={12} md={6} >
                         <XTextInput
                             name="otherNames"
                             label="Other Names"
