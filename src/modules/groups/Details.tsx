@@ -4,6 +4,7 @@ import EditDialog from "../../components/EditDialog";
 import GroupEditor from "./editors/GroupEditor";
 import Box from "@material-ui/core/Box";
 import Avatar from "@material-ui/core/Avatar";
+import PinDropIcon from '@material-ui/icons/PinDrop';
 import PeopleIcon from "@material-ui/icons/People";
 import Typography from "@material-ui/core/Typography";
 import {createStyles, makeStyles} from "@material-ui/core/styles";
@@ -21,6 +22,7 @@ import {Alert} from "@material-ui/lab";
 import {useHistory, useParams} from "react-router";
 import Layout from "../../components/layout/Layout";
 import IconButton from "@material-ui/core/IconButton";
+import MapLink from "../../components/MapLink";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -113,9 +115,24 @@ export default function Details() {
                                     <Typography variant='body2'>{`${data.privacy}, ${data.category.name}`}</Typography>
                                 </Box>
                                 <Box pr={2}>
-                                    <IconButton aria-label="Edit" color='primary' title='Edit Group' onClick={handleEdit}>
+                                    <IconButton aria-label="Edit" color='primary' title='Edit Group'
+                                                onClick={handleEdit}>
                                         <EditIcon/>
                                     </IconButton>
+                                </Box>
+                            </Box>
+                            <Divider/>
+                            <Box display='flex' pt={1}>
+                                <Box pr={2}>
+                                    <PinDropIcon/>
+                                </Box>
+                                <Box flexGrow={1} pt={0.5}>
+                                    {
+                                        data.placeId ?
+                                            <MapLink title={data.freeForm!} value={data.placeId!}/> :
+                                            <Typography  variant='caption'>No address</Typography>
+
+                                    }
                                 </Box>
                             </Box>
                             <Divider/>

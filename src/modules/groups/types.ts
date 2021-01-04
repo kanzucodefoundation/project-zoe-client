@@ -9,6 +9,12 @@ export interface IGroup {
     categoryId: string;
     parent?: any;
     parentId?: number;
+    metaData?:       any;
+    freeForm?:       string;
+    latitude?:       number;
+    longitude?:      number;
+    geoCoordinates?: string;
+    placeId?:        string;
 }
 
 export interface IGroupMembership {

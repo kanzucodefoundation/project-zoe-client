@@ -92,11 +92,15 @@ const GroupEditor = ({data, isNew, onCreated, onUpdated, onDeleted, onCancel}: I
             })
     }
 
+
+    const {placeId,freeForm}=data||{};
+    const location= data?.placeId?{placeId,description:freeForm}:undefined;
+
     return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
-            initialValues={{...initialData, ...data}}
+            initialValues={{...initialData, ...data,location}}
             onDelete={handleDelete}
             loading={loading}
             onCancel={onCancel}
@@ -114,7 +118,7 @@ const GroupEditor = ({data, isNew, onCreated, onUpdated, onDeleted, onCancel}: I
                     <XRemoteSelect
                         remote={remoteRoutes.groupsCategories}
                         name="category"
-                        label="category"
+                        label="Category"
                         variant='outlined'
                     />
                 </Grid>
@@ -139,6 +143,7 @@ const GroupEditor = ({data, isNew, onCreated, onUpdated, onDeleted, onCancel}: I
                         name="location"
                         label="Location"
                         variant='outlined'
+                        placeholder='Type to search'
                     />
                 </Grid>
                 <Grid item xs={12}>

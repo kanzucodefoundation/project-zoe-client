@@ -28,6 +28,7 @@ const GroupsList = () => {
     const history = useHistory()
     const [loading, setLoading] = useState<boolean>(true);
     const [dialog, setDialog] = useState<boolean>(false);
+
     const [filter, setFilter] = useState<any>({});
     const [selected, setSelected] = useState<IGroup | null>(null);
     const [data, setData] = useState<IGroup[]>([]);
@@ -75,11 +76,13 @@ const GroupsList = () => {
         parentProperty: 'parentId',
         customID: 'id'
     });
+
     const starterData = selected ? {
         parent: {
             id: selected.id, name: selected.name
         }
     } : undefined;
+
     return (
         <Box p={1}>
             <Header

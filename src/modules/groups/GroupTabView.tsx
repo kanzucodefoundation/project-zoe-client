@@ -58,7 +58,7 @@ const GroupTabView = (props: IProps) => {
     return (
         <Layout>
             <div className={classes.root}>
-                <AppBar position="static">
+                <AppBar position="static" color='transparent' elevation={0}>
                     <Tabs value={value} onChange={handleChange} aria-label="group tabs">
                         <Tab label="List View"  />
                         <Tab label="Map View" />
