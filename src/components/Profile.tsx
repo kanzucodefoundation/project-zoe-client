@@ -18,6 +18,8 @@ import MailIcon from '@material-ui/icons/Mail';
 import HiddenJs from "@material-ui/core/Hidden/HiddenJs";
 import {getInitials} from "../utils/stringHelpers";
 import {handleLogout} from "../data/coreActions";
+import {useHistory} from "react-router";
+import {localRoutes} from "./../data/constants";
 
 export const BarView = (props: any) => {
     const profile = useSelector((state: IState) => state.core.user)
@@ -25,9 +27,14 @@ export const BarView = (props: any) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const menuOpen = Boolean(anchorEl);
+    const history = useHistory();
 
     function openDialog() {
         setDialogOpen(true)
+    }
+
+    function handleProfile() {
+        history.push(`${localRoutes.contacts}/${profile.id}`);
     }
 
     function doLogout() {
@@ -78,7 +85,7 @@ export const BarView = (props: any) => {
             open={menuOpen}
             onClose={handleCloseMenu}
         >
-            <MenuItem onClick={openDialog}>Profile</MenuItem>
+            <MenuItem onClick={handleProfile}>Profile</MenuItem>
             <MenuItem onClick={doLogout}>Logout</MenuItem>
         </Menu>
         <Dialog onClose={closeDialog} aria-labelledby="simple-dialog-title" open={dialogOpen}>

@@ -77,7 +77,6 @@ const Details = (props: IProps) => {
     const classes = useStyles()
     const dispatch = useDispatch();
     const data: IContact | undefined = useSelector((state: any) => state.crm.selected)
-
     const [loading, setLoading] = useState<boolean>(true)
     const [value, setValue] = React.useState('one');
 
@@ -124,7 +123,7 @@ const Details = (props: IProps) => {
                                 <Info data={data}/>
                             </TabPanel>
                             <TabPanel value={value} index="two">
-                                <Groups/>
+                                <Groups id={contactId}/>
                             </TabPanel>
                         </Grid>
                     </Grid>

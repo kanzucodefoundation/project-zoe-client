@@ -86,6 +86,7 @@ export const remoteRoutes = {
 
   groupsCategoriesById: url + "/api/groups/category/{id}", // Added by Daniel
   groupsMemberships: url + "/api/groups/member", // Added by Daniel
+  groupsMembership: url + '/api/groups/member',
 
   contactsCompany: url + "/api/crm/contact/company",
   contactsAvatar: url + "/api/crm/contact/avatar",
