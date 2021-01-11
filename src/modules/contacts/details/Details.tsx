@@ -120,7 +120,11 @@ const Details = (props: IProps) => {
                                         label="Summary"
                                         {...a11yProps('one')}
                                     />
-                                    <Tab value="two" label="Groups" {...a11yProps('two')} />
+                                    <Tab 
+                                        value="two" 
+                                        label="Groups" 
+                                        {...a11yProps('two')} 
+                                    />
                                 </Tabs>
                             </AppBar>
                             <Divider />
@@ -128,7 +132,7 @@ const Details = (props: IProps) => {
                                 <Info data={data} />
                             </TabPanel>
                             <TabPanel value={value} index="two">
-                                <Groups />
+                                <Groups user={profile}/>
                             </TabPanel>
                         </Grid>
                     </Grid>
