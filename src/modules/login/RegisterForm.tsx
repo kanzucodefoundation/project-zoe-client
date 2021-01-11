@@ -1,7 +1,7 @@
 import React from 'react';
 import * as yup from "yup";
 import {reqEmail, reqObject, reqString} from "../../data/validations";
-import {ageCategories, civilStatusCategories, genderCategories} from "../../data/comboCategories";
+import {ageCategories, civilStatusCategories, genderCategories, responseCategories} from "../../data/comboCategories";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
@@ -20,6 +20,7 @@ import {getDayList, getMonthsList} from "../../utils/dateHelpers";
 import {ICreatePersonDto} from "../contacts/types";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
+import { XMapsInput } from '../../components/inputs/XMapsInput';
 
 interface IProps {
     data: any | null
@@ -142,7 +143,7 @@ const RegisterForm = ({done}: IProps) => {
                         <Box pt={1} pl={1}>
                             <XRadioInput
                                 name="gender"
-                                label=''
+                                label='Gender'
                                 options={toOptions(genderCategories)}
                             />
                         </Box>
@@ -232,11 +233,17 @@ const RegisterForm = ({done}: IProps) => {
                             freeSolo
                         />
                     </Grid>
+                    <Grid item xs={12} md={12}>
+                        <XRadioInput
+                            name="MC Signup"
+                            label='Do you want to join a Missional Community?'
+                            options={toOptions(responseCategories)}
+                        />
+                    </Grid>
                     <Grid item xs={12} md={6}>
-                        <XTextInput
+                        <XMapsInput
                             name="residence"
                             label="Residence"
-                            type="text"
                             variant='outlined'
                             margin='none'
                         />
@@ -258,3 +265,7 @@ const RegisterForm = ({done}: IProps) => {
 
 
 export default RegisterForm;
+
+
+
+
