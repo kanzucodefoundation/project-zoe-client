@@ -1,5 +1,4 @@
-import React, {SyntheticEvent, useState} from "react";
-
+import React, {useState} from "react";
 import XTable from "../../../components/table/XTable";
 import {XHeadCell} from "../../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
@@ -7,12 +6,11 @@ import {fakeTeam, ITeamMember} from "../types";
 import {trimGuid} from "../../../utils/stringHelpers";
 import {Box} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import theme from "../../../theme";
 import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
 import EditDialog from "../../../components/EditDialog";
 import {get} from "./../../../utils/ajax";
-import {isDebug, localRoutes, remoteRoutes} from "../../../data/constants";
+import {localRoutes, remoteRoutes} from "../../../data/constants";
+import {useHistory} from "react-router";
 
 const headCells: XHeadCell[] = [
     {name: 'id', label: 'ID'/*, render: (dt) => trimGuid(dt)*/},
@@ -26,7 +24,6 @@ const fakeData: ITeamMember[] = [];
 for (let i = 0; i < 3; i++) {
     fakeData.push(fakeTeam())
 }
-
 
 const groupData = (data: any, i: number, groups: ITeamMember[]) => {
     get(remoteRoutes.groupsMembership + `/?contactId=` + data, resp => {
@@ -48,15 +45,20 @@ const groupData = (data: any, i: number, groups: ITeamMember[]) => {
 }
 
 
-
 const Groups = (props: any) => {
     let i = 0;
     const groups: ITeamMember[] = [];
+    const history = useHistory();
     //const [data, setData] = useState(fakeData);
     const [data, setData] = useState(groupData(props.user.contactId, i, groups));
+    
 
     function handleAddNew() {
 
+    }
+
+    const handleView = (dt: any) => {
+        history.push(localRoutes.groups + '/' + dt);
     }
 
     return (
@@ -82,11 +84,15 @@ const Groups = (props: any) => {
                     headCells={headCells}
                     data={data}
                     initialRowsPerPage={10}
+                    handleSelection={handleView}
                 />
             </Grid>
-            {/*/<EditDialog open={} onClose={} title={}></EditDialog>*/}
         </Grid>
     );
 }
 
 export default Groups
+
+
+
+
