@@ -6,7 +6,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import {IGroupMembership} from "../types";
 import {search} from "../../../utils/ajax";
-import {remoteRoutes} from "../../../data/constants";
+import {appRoles, remoteRoutes} from "../../../data/constants";
 import XAvatar from "../../../components/XAvatar";
 import {Grid} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
@@ -19,6 +19,8 @@ import Loading from "../../../components/Loading";
 import EditDialog from "../../../components/EditDialog";
 import MembersEditor from "./MembersEditor";
 import MemberEditor from "./MemberEditor";
+import { profile } from 'console';
+
 
 interface IProps {
     groupId: number
@@ -40,6 +42,7 @@ const MembersList = ({groupId}: IProps) => {
     const [addingMembers, setAddingMembers] = useState<boolean>(false);
     const [selected, setSelected] = useState<IGroupMembership | null>(null);
     const [data, setData] = useState<IGroupMembership[]>([]);
+    const [leader, setLeader] = useState<boolean>(false);
 
     const fetchMembers = useCallback(() => {
         setLoading(true);
@@ -56,6 +59,35 @@ const MembersList = ({groupId}: IProps) => {
     useEffect(() => {
         fetchMembers()
     }, [fetchMembers]);
+
+    const getLeader = (data: any) => {
+        search(remoteRoutes.groupsMembership, data, resp => {
+            if(resp.length > 0) {
+                if(resp[0].role = "Leader") {
+                    setLeader(true)
+                }
+            }
+        })
+    }
+
+    const isLeader = () => {
+        var hasGroupEdit = false;
+    for (let i = 0; i < profile.roles.length; i++) {
+        if (profile.roles[i] == appRoles.roleGroupEdit) {
+            hasGroupEdit = true;
+        }
+    }
+
+    const info = {
+        groupId: groupId,
+        contactId: profile.id
+    }
+    getLeader(info);
+    if (leader && hasGroupEdit) {
+        return true
+    }
+    return false
+    }
 
     function handleAddNew() {
         setAddingMembers(true)
@@ -101,6 +133,8 @@ const MembersList = ({groupId}: IProps) => {
                         <Typography variant='h6' style={{fontSize: '0.92rem'}}>Members</Typography>
                     </Box>
                     <Box display='flex' justifyContent='flex-end'>
+                        {
+                        isLeader() ?
                         <Button
                             variant="text"
                             color="primary"
@@ -110,6 +144,10 @@ const MembersList = ({groupId}: IProps) => {
                         >
                             Add Member(s)&nbsp;&nbsp;
                         </Button>
+                        :
+                        null
+                    }
+                    {console.log(profile)}
                     </Box>
                 </Box>
                 <Divider/>
