@@ -1,5 +1,5 @@
-import React, {SyntheticEvent, useState} from "react";
-
+import React, {useState} from "react";
+import Toast from '../../../utils/Toast';
 import XTable from "../../../components/table/XTable";
 import {XHeadCell} from "../../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
@@ -9,17 +9,15 @@ import {Box} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import theme from "../../../theme";
 import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import EditDialog from "../../../components/EditDialog";
+
 import {get} from "./../../../utils/ajax";
-import {isDebug, localRoutes, remoteRoutes} from "../../../data/constants";
+import { remoteRoutes } from "../../../data/constants";
 
 const headCells: XHeadCell[] = [
     {name: 'id', label: 'ID'/*, render: (dt) => trimGuid(dt)*/},
     {name: 'name', label: 'Name'},
     {name: 'details', label: 'Details'},
     {name: 'role', label: 'Role'},
-
 ];
 
 const fakeData: ITeamMember[] = [];
@@ -48,15 +46,21 @@ const groupData = (data: any, i: number, groups: ITeamMember[]) => {
 }
 
 
-
 const Groups = (props: any) => {
     let i = 0;
     const groups: ITeamMember[] = [];
+    const [selected, setSelected] = useState<any | null>(null)
+    const [dialog, setDialog] = useState<any | null>(null)
     //const [data, setData] = useState(fakeData);
-    const [data, setData] = useState(groupData(props.user.contactId, i, groups));
+    const [data, setData] = useState(groupData(props.user.contactId, i, groups))
 
     function handleAddNew() {
 
+    }
+
+    const handleClose = () => {
+        setSelected(null)
+        setDialog(false)
     }
 
     return (
@@ -84,9 +88,12 @@ const Groups = (props: any) => {
                     initialRowsPerPage={10}
                 />
             </Grid>
-            {/*/<EditDialog open={} onClose={} title={}></EditDialog>*/}
         </Grid>
     );
 }
 
 export default Groups
+
+
+
+
