@@ -14,16 +14,17 @@ import TableBody from "@material-ui/core/TableBody";
 import {XHeadCell} from "./table/XTableHead";
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
-import Typography from "@material-ui/core/Typography";
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 interface IProps {
     data: any[]
     toMobileRow: (data: any) => IMobileRow
     columns: XHeadCell[],
-    onEditClick?: (data:any) => any
+    onEditClick?: (data:any) => any,
+    onViewClick?: (data: any)=> any,
 }
 
-const DataList = ({data, columns, toMobileRow, onEditClick}: IProps) => {
+const DataList = ({data, columns, toMobileRow, onEditClick, onViewClick}: IProps) => {
     const theme = useTheme();
     const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
     return (
@@ -34,7 +35,7 @@ const DataList = ({data, columns, toMobileRow, onEditClick}: IProps) => {
                         data.map((row: any) => {
                             const mobileRow = toMobileRow(row)
                             return <Fragment key={row.id}>
-                                <ListItem alignItems="flex-start" button disableGutters onClick={()=>onEditClick&&onEditClick(row)}>
+                                <ListItem alignItems="flex-start" disableGutters>
                                     <ListItemAvatar>
                                         {mobileRow.avatar}
                                     </ListItemAvatar>
@@ -42,6 +43,30 @@ const DataList = ({data, columns, toMobileRow, onEditClick}: IProps) => {
                                         primary={mobileRow.primary}
                                         secondary={mobileRow.secondary}
                                     />
+                                    {
+                                        onViewClick &&
+                                        <IconButton
+                                            onClick={()=>onViewClick&&onViewClick(row)}
+                                            size='medium'
+                                            color="primary"
+                                            aria-label="edit"
+                                            component="span"
+                                            >
+                                            <VisibilityIcon/>
+                                        </IconButton>
+                                    }
+                                    {
+                                        onEditClick &&
+                                            <IconButton
+                                            onClick={()=>onEditClick&&onEditClick(row)}
+                                            size='medium'
+                                            color="primary"
+                                            aria-label="edit"
+                                            component="span"
+                                            >
+                                            <EditIcon/>
+                                        </IconButton>
+                                    }
                                 </ListItem>
                                 <Divider component="li"/>
                             </Fragment>
@@ -61,9 +86,16 @@ const DataList = ({data, columns, toMobileRow, onEditClick}: IProps) => {
                                     >{it.label}</TableCell>)
                             }
                             {
+                                onViewClick &&
+                                <TableCell
+                                    align='center'
+                                    component='th'
+                                >&nbsp;</TableCell>
+                            }
+                            {
                                 onEditClick &&
                                 <TableCell
-                                    align='right'
+                                    align='center'
                                     component='th'
                                 >&nbsp;</TableCell>
                             }
@@ -83,11 +115,25 @@ const DataList = ({data, columns, toMobileRow, onEditClick}: IProps) => {
                                     ))
                                 }
                                 {
+                                    onViewClick &&
+                                    <TableCell
+                                        align='center'>
+                                        <IconButton
+                                            size='medium'
+                                            color="primary"
+                                            aria-label="edit"
+                                            component="span"
+                                            onClick={()=>onViewClick&&onViewClick(row)}>
+                                            <VisibilityIcon/>
+                                        </IconButton>
+                                    </TableCell>
+                                }
+                                {
                                     onEditClick &&
                                     <TableCell
-                                        align='right'>
+                                        align='center'>
                                         <IconButton
-                                            size='small'
+                                            size='medium'
                                             color="primary"
                                             aria-label="edit"
                                             component="span"

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Layout from "../../../components/layout/Layout";
+import { useHistory } from 'react-router';
 import {XHeadCell} from "../../../components/table/XTableHead";
 import {Avatar} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
@@ -8,7 +9,7 @@ import Header from "../../contacts/Header";
 import DataList from "../../../components/DataList";
 import {AddFabButton} from "../../../components/EditIconButton";
 import {search} from "../../../utils/ajax";
-import {remoteRoutes} from "../../../data/constants";
+import {localRoutes, remoteRoutes} from "../../../data/constants";
 import {hasValue} from "../../../components/inputs/inputHelpers";
 import PersonIcon from "@material-ui/icons/Person";
 import Hidden from "@material-ui/core/Hidden";
@@ -106,6 +107,7 @@ const toMobile = (data: any): IMobileRow => {
 
 
 const Users = () => {
+    const history = useHistory();
     const [filter, setFilter] = useState<any>({})
     const [loading, setLoading] = useState<boolean>(true)
     const [data, setData] = useState<any[]>([])
@@ -138,6 +140,10 @@ const Users = () => {
         }
         setSelected(toEdit)
         setDialog(true)
+    }
+
+    const handleView = (dt: any) => {
+        history.push(`${localRoutes.contacts}/${dt.id}`)  
     }
 
     const handleComplete = (dt: any) => {
@@ -176,6 +182,7 @@ const Users = () => {
                             toMobileRow={toMobile}
                             columns={columns}
                             onEditClick={handleEdit}
+                            onViewClick={handleView}
                         />
                 }
             </Box>
