@@ -5,7 +5,7 @@ import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../components/forms/XForm";
 import XTextInput from "../../../components/inputs/XTextInput";
-
+import XCheckBoxInput from '../../../components/inputs/XCheckBoxInput';
 import {remoteRoutes, rolesList} from "../../../data/constants";
 import {XRemoteSelect} from "../../../components/inputs/XRemoteSelect";
 import {handleSubmission, ISubmission} from "../../../utils/formHelpers";
@@ -37,7 +37,7 @@ const editSchema = yup.object().shape(
         roles: reqArray,
     }
 )
-const initialValues = {contact: null, password: '', roles: []}
+const initialValues = {contact: null, password: null, roles: [], isActive: true}
 const UserEditor = ({data, isNew, done, onDeleted, onCancel}: IProps) => {
 
     const [loading, setLoading] = useState<boolean>(false)
@@ -47,7 +47,8 @@ const UserEditor = ({data, isNew, done, onDeleted, onCancel}: IProps) => {
             ...values,
             contactId: values.contact.id,
             password: values.password,
-            roles: cleanComboValue(values.roles)
+            roles: cleanComboValue(values.roles),
+            isActive: values.isActive
         }
         const submission: ISubmission = {
             url: remoteRoutes.users,
@@ -111,7 +112,15 @@ const UserEditor = ({data, isNew, done, onDeleted, onCancel}: IProps) => {
                         name="password"
                         label="Password"
                         type="password"
+                        value="Hello"
                         variant='outlined'
+                        autoComplete='off'
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <XCheckBoxInput 
+                        name="isActive"
+                        label="Do you want to activate this user?"
                     />
                 </Grid>
             </Grid>

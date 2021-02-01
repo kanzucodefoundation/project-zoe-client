@@ -19,6 +19,16 @@ import Chip from '@material-ui/core/Chip';
 
 const columns: XHeadCell[] = [
     {
+        name: 'isActive',
+        label: 'Status',
+        render: (value) => 
+        <Chip 
+            label={value ? "Active" : "Inactive"} 
+            color="secondary" 
+            size="small"
+        />
+    },
+    {
         name: 'avatar',
         label: 'Avatar',
         render: (data) => {
@@ -73,7 +83,10 @@ const toMobile = (data: any): IMobileRow => {
                 alt="Avatar"
                 src={data.avatar}
             /> : <Avatar><PersonIcon/></Avatar>,
-        primary: data.fullName,
+        primary: <>
+            {`${data.fullName}\t`}
+            <Chip label={data.isActive ? "Active" : "Inactive"} color="secondary" size="small"/>
+            </>,
         secondary: <>
             <Typography variant='caption' color='textSecondary'>{data.username}</Typography>
             <div>{data.roles?.map((it: any) => (
@@ -115,12 +128,13 @@ const Users = () => {
     }
 
     const handleEdit = (dt: any) => {
-        const {id, username, contactId, fullName, roles} = dt
+        const {id, username, contactId, fullName, roles, isActive} = dt
         const toEdit = {
             id,
             username,
             roles: [...roles],
-            contact: {id: contactId, label: fullName}
+            contact: {id: contactId, label: fullName},
+            isActive: isActive,
         }
         setSelected(toEdit)
         setDialog(true)
