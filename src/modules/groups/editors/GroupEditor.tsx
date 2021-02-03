@@ -32,7 +32,7 @@ const schema = yup.object().shape(
         name: reqString,
         privacy: reqString,
         details: reqString,
-        location: reqObject,
+        //location: reqObject,
         category: reqObject
     }
 )

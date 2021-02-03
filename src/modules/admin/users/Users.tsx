@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Layout from "../../../components/layout/Layout";
+import { useHistory } from 'react-router';
 import {XHeadCell} from "../../../components/table/XTableHead";
 import {Avatar} from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
@@ -8,7 +9,7 @@ import Header from "../../contacts/Header";
 import DataList from "../../../components/DataList";
 import {AddFabButton} from "../../../components/EditIconButton";
 import {search} from "../../../utils/ajax";
-import {remoteRoutes} from "../../../data/constants";
+import {localRoutes, remoteRoutes} from "../../../data/constants";
 import {hasValue} from "../../../components/inputs/inputHelpers";
 import PersonIcon from "@material-ui/icons/Person";
 import Hidden from "@material-ui/core/Hidden";
@@ -18,6 +19,16 @@ import Loading from "../../../components/Loading";
 import Chip from '@material-ui/core/Chip';
 
 const columns: XHeadCell[] = [
+    {
+        name: 'isActive',
+        label: 'Status',
+        render: (value) => 
+        <Chip 
+            label={value ? "Active" : "Inactive"} 
+            color="secondary" 
+            size="small"
+        />
+    },
     {
         name: 'avatar',
         label: 'Avatar',
@@ -73,7 +84,10 @@ const toMobile = (data: any): IMobileRow => {
                 alt="Avatar"
                 src={data.avatar}
             /> : <Avatar><PersonIcon/></Avatar>,
-        primary: data.fullName,
+        primary: <>
+            {`${data.fullName}\t`}
+            <Chip label={data.isActive ? "Active" : "Inactive"} color="secondary" size="small"/>
+            </>,
         secondary: <>
             <Typography variant='caption' color='textSecondary'>{data.username}</Typography>
             <div>{data.roles?.map((it: any) => (
@@ -93,6 +107,7 @@ const toMobile = (data: any): IMobileRow => {
 
 
 const Users = () => {
+    const history = useHistory();
     const [filter, setFilter] = useState<any>({})
     const [loading, setLoading] = useState<boolean>(true)
     const [data, setData] = useState<any[]>([])
@@ -115,15 +130,20 @@ const Users = () => {
     }
 
     const handleEdit = (dt: any) => {
-        const {id, username, contactId, fullName, roles} = dt
+        const {id, username, contactId, fullName, roles, isActive} = dt
         const toEdit = {
             id,
             username,
             roles: [...roles],
-            contact: {id: contactId, label: fullName}
+            contact: {id: contactId, label: fullName},
+            isActive: isActive,
         }
         setSelected(toEdit)
         setDialog(true)
+    }
+
+    const handleView = (dt: any) => {
+        history.push(`${localRoutes.contacts}/${dt.id}`)  
     }
 
     const handleComplete = (dt: any) => {
@@ -162,6 +182,7 @@ const Users = () => {
                             toMobileRow={toMobile}
                             columns={columns}
                             onEditClick={handleEdit}
+                            onViewClick={handleView}
                         />
                 }
             </Box>

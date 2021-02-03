@@ -17,7 +17,6 @@ const headCells: XHeadCell[] = [
     {name: 'name', label: 'Name'},
     {name: 'details', label: 'Details'},
     {name: 'role', label: 'Role'},
-
 ];
 
 const fakeData: ITeamMember[] = [];
@@ -48,18 +47,18 @@ const groupData = (data: any, i: number, groups: ITeamMember[]) => {
 const Groups = (props: any) => {
     let i = 0;
     const groups: ITeamMember[] = [];
-    const history = useHistory();
+
+    const [selected, setSelected] = useState<any | null>(null)
+    const [dialog, setDialog] = useState<any | null>(null)
     //const [data, setData] = useState(fakeData);
-    const [data, setData] = useState(groupData(props.user.contactId, i, groups));
-    
+    const [data, setData] = useState(groupData(props.user.contactId, i, groups))
 
     function handleAddNew() {
 
     }
-
+  
     const handleView = (dt: any) => {
         history.push(localRoutes.groups + '/' + dt);
-    }
 
     return (
         <Grid container spacing={2}>

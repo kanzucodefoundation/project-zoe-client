@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import { useSelector } from "react-redux";
 import {IGroup} from "./types";
 import EditDialog from "../../components/EditDialog";
 import GroupEditor from "./editors/GroupEditor";
@@ -15,14 +16,16 @@ import Divider from "@material-ui/core/Divider";
 import EditIcon from '@material-ui/icons/Edit';
 import MembersList from "./members/MembersList";
 import {grey} from "@material-ui/core/colors";
-import {get} from "../../utils/ajax";
-import {localRoutes, remoteRoutes} from "../../data/constants";
+import {get, search} from "../../utils/ajax";
+import {localRoutes, remoteRoutes, appRoles} from "../../data/constants";
 import Loading from "../../components/Loading";
 import {Alert} from "@material-ui/lab";
 import {useHistory, useParams} from "react-router";
 import Layout from "../../components/layout/Layout";
 import IconButton from "@material-ui/core/IconButton";
 import MapLink from "../../components/MapLink";
+import { IState } from "./../../data/types";
+import { hasAnyRole } from '../../data/appRoles';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -54,6 +57,8 @@ export default function Details() {
     const [dialog, setDialog] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(true)
     const [data, setData] = useState<IGroup | null>(null)
+    const profile = useSelector((state: IState) => state.core.user);
+    const [leader, setLeader] = useState<boolean>(false)
     const classes = useStyles()
 
     useEffect(() => {
@@ -65,6 +70,28 @@ export default function Details() {
                 setLoading(false)
             })
     }, [groupId])
+
+    const getLeader = (data: any) => {
+        search(remoteRoutes.groupsMembership, data, resp => {
+            if (resp.length > 0) {
+                if (resp[0].role === "Leader") {
+                    setLeader(true)
+                }
+            }
+        })
+    }
+
+    const isLeader = () => {
+        const info = {
+            groupId: groupId,
+            contactId: profile.id
+        }
+        getLeader(info);
+        if (leader && hasAnyRole(profile, [appRoles.roleGroupEdit])) {
+            return true
+        } 
+        return false
+    }
 
     function handleClose() {
         setDialog(false)
@@ -114,12 +141,23 @@ export default function Details() {
                                     <Typography variant='h6'>{data.name}</Typography>
                                     <Typography variant='body2'>{`${data.privacy}, ${data.category.name}`}</Typography>
                                 </Box>
-                                <Box pr={2}>
-                                    <IconButton aria-label="Edit" color='primary' title='Edit Group'
+
+                                
+                                {
+                                    isLeader() ?
+                                        <Box pr={2}>
+                                            <IconButton 
+                                                aria-label="Edit" 
+                                                color='primary' 
+                                                title='Edit Group'
                                                 onClick={handleEdit}>
-                                        <EditIcon/>
-                                    </IconButton>
-                                </Box>
+                                                <EditIcon/>
+                                            </IconButton>
+                                        </Box>
+                                    :
+                                        null
+                                }
+                            
                             </Box>
                             <Divider/>
                             <Box display='flex' pt={1}>
