@@ -132,7 +132,7 @@ const Details = (props: IProps) => {
                                 <Info data={data} />
                             </TabPanel>
                             <TabPanel value={value} index="two">
-                                <Groups user={profile}/>
+                                <Groups contactId={contactId}/>
                             </TabPanel>
                         </Grid>
                     </Grid>

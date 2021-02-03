@@ -1,30 +1,20 @@
 import React, {useState} from "react";
-import Toast from '../../../utils/Toast';
 import XTable from "../../../components/table/XTable";
 import {XHeadCell} from "../../../components/table/XTableHead";
 import Grid from '@material-ui/core/Grid';
-import {fakeTeam, ITeamMember} from "../types";
-import {trimGuid} from "../../../utils/stringHelpers";
+import {ITeamMember} from "../types";
 import {Box} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import theme from "../../../theme";
 import Button from "@material-ui/core/Button";
-
 import {get} from "./../../../utils/ajax";
 import { remoteRoutes } from "../../../data/constants";
 
 const headCells: XHeadCell[] = [
-    {name: 'id', label: 'ID'/*, render: (dt) => trimGuid(dt)*/},
+    {name: 'id', label: 'ID'},
     {name: 'name', label: 'Name'},
     {name: 'details', label: 'Details'},
     {name: 'role', label: 'Role'},
 ];
-
-const fakeData: ITeamMember[] = [];
-for (let i = 0; i < 3; i++) {
-    fakeData.push(fakeTeam())
-}
-
 
 const groupData = (data: any, i: number, groups: ITeamMember[]) => {
     get(remoteRoutes.groupsMembership + `/?contactId=` + data, resp => {
@@ -51,8 +41,7 @@ const Groups = (props: any) => {
     const groups: ITeamMember[] = [];
     const [selected, setSelected] = useState<any | null>(null)
     const [dialog, setDialog] = useState<any | null>(null)
-    //const [data, setData] = useState(fakeData);
-    const [data, setData] = useState(groupData(props.user.contactId, i, groups))
+    const [data, setData] = useState(groupData(props.contactId, i, groups))
 
     function handleAddNew() {
 

@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import Filter from "./Filter";
 import ContactLink from "../../components/ContactLink";
 import { search } from "../../utils/ajax";
-import { localRoutes, remoteRoutes } from "../../data/constants";
+import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
 import Loading from "../../components/Loading";
 import Box from "@material-ui/core/Box";
 import Header from "./Header";
@@ -33,6 +33,8 @@ import { crmConstants, ICrmState } from "../../data/contacts/reducer";
 import { printBirthday } from "../../utils/dateHelpers";
 import GroupLink from "../../components/GroupLink";
 import XAvatar from "../../components/XAvatar";
+import { hasAnyRole } from "../../data/appRoles";
+import { IState } from "../../data/types";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -88,6 +90,7 @@ const Contacts = () => {
     const { data, loading }: ICrmState = useSelector((state: any) => state.crm)
     const [showFilter, setShowFilter] = useState(!isSmall);
     const [filter, setFilter] = useState<IContactsFilter>({});
+    const user = useSelector((state: IState) => state.core.user);
 
     const classes = useStyles();
     useEffect(() => {
@@ -152,7 +155,7 @@ const Contacts = () => {
         <Navigation>
             <Box p={1} className={classes.root}>
                 <Header
-                    onAddNew={handleNew}
+                    onAddNew={hasAnyRole(user, [appRoles.roleCrmEdit]) ? handleNew : undefined}
                     onFilterToggle={handleFilterToggle}
                     title='Contacts'
                     onChange={handleNameSearch}
@@ -202,9 +205,14 @@ const Contacts = () => {
                     <EditDialog open={showFilter} onClose={() => setShowFilter(false)} title={filterTitle}>
                         {filterComponent}
                     </EditDialog>
-                    <Fab aria-label='add-new' className={classes.fab} color='primary' onClick={handleNew}>
-                        <AddIcon />
-                    </Fab>
+                    {
+                        hasAnyRole(user, [appRoles.roleCrmEdit]) ? 
+                            <Fab aria-label='add-new' className={classes.fab} color='primary' onClick={handleNew}>
+                                <AddIcon />
+                            </Fab>
+                        :
+                            undefined
+                    }
                 </Hidden>
             </Box>
             <EditDialog title={createTitle} open={createDialog} onClose={closeCreateDialog}>
