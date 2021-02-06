@@ -17,6 +17,10 @@ export const XRemoteSelect = (props: XRemoteProps) => {
 
     function handleChange(value: ComboValue) {
         helpers.setValue(value)
+        
+        if (props.customOnChange !== undefined){
+            props.customOnChange(value)
+        }
     }
 
     return <PRemoteSelect
