@@ -10,7 +10,7 @@ import theme from "../../theme";
 
 interface IProps {
     title?: string
-    onAddNew: () => any
+    onAddNew?: () => any
     onFilterToggle?: () => any
     onChange?: (v: string) => any
 }
@@ -33,6 +33,8 @@ const Header = ({onAddNew, onFilterToggle,onChange, title}: IProps) => {
                     </Box>
                     <Hidden xsDown>
                         <Box flexShrink={0} ml={1}>
+                        {
+                            onAddNew &&
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -42,6 +44,7 @@ const Header = ({onAddNew, onFilterToggle,onChange, title}: IProps) => {
                             >
                                 New&nbsp;&nbsp;
                             </Button>
+                        }
                         </Box>
                     </Hidden>
                 </Box>

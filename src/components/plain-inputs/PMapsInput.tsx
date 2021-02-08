@@ -125,7 +125,7 @@ export default function PMapsInput(props: PMapsProps) {
             input: inputValue,
             fields: ["geometry"],
             componentRestrictions: {
-                country: 'ug'
+                country: ['ug','ke'] //Countries...to be updated based on the countries with MCs
             }
         }
         fetch(autoCompleteReq, (results?: GooglePlace[]) => {

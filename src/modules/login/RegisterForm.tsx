@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as yup from "yup";
 import {reqEmail, reqObject, reqString} from "../../data/validations";
-import {ageCategories, civilStatusCategories, genderCategories} from "../../data/comboCategories";
+import {ageCategories, civilStatusCategories, genderCategories, responseCategories} from "../../data/comboCategories";
 import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../components/forms/XForm";
@@ -20,6 +20,7 @@ import {getDayList, getMonthsList} from "../../utils/dateHelpers";
 import {ICreatePersonDto} from "../contacts/types";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
+import { XMapsInput } from '../../components/inputs/XMapsInput';
 
 interface IProps {
     data: any | null
@@ -42,7 +43,8 @@ const schema = yup.object().shape(
         churchLocation: reqObject,
 
         email: reqEmail,
-        phone: reqString
+        phone: reqString,
+        inCell: reqString
     }
 )
 
@@ -62,6 +64,8 @@ const initialValues = {
     churchLocation: null,
     email: '',
     phone: '',
+    inCell:'',
+    joinCell:''
 
 }
 
@@ -73,6 +77,12 @@ const processName = (name: string): string[] => {
 }
 
 const RegisterForm = ({done}: IProps) => {
+    //Does visitor belong to a missional community state
+    const [inMc, setIsInMc] = useState(false);
+
+    //Does visitor want to join a misional community state
+    const [joinMc, setIsJoinMc] = useState(false);
+
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const [lastName, middleName] = processName(values.otherNames)
         const toSave: ICreatePersonDto = {
@@ -89,7 +99,9 @@ const RegisterForm = ({done}: IProps) => {
             cellGroupId: values.cellGroup?.id,
             churchLocationId: values.churchLocation.id,
             email: values.email,
-            phone: values.phone
+            phone: values.phone,
+            inCell: values.inCell,
+            joinCell: values.joinCell
         }
 
         post(remoteRoutes.register, toSave,
@@ -104,6 +116,12 @@ const RegisterForm = ({done}: IProps) => {
                 actions.setSubmitting(false);
             }
         )
+    }
+
+    //Does visitor belong to/want to join a missional community function
+    const fn_mcStatus = (value:any) =>{
+        value==='Yes' ? setIsInMc(true):setIsInMc(false)
+        value==='No' ? setIsJoinMc(true):setIsJoinMc(false)
     }
 
     return (
@@ -142,7 +160,7 @@ const RegisterForm = ({done}: IProps) => {
                         <Box pt={1} pl={1}>
                             <XRadioInput
                                 name="gender"
-                                label=''
+                                label='Gender'
                                 options={toOptions(genderCategories)}
                             />
                         </Box>
@@ -221,6 +239,17 @@ const RegisterForm = ({done}: IProps) => {
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
+                        <Box>
+                            <XRadioInput
+                                name="inCell"
+                                label='Do you belong to an MC?'
+                                options={toOptions(responseCategories)}
+                                customOnChange={fn_mcStatus}
+                            />
+                        </Box>
+                    </Grid>
+                    {/* Field appears if user belongs to a Missional Community */}
+                    {inMc && (<Grid item xs={12} md={12}>
                         <XRemoteSelect
                             remote={remoteRoutes.groupsCombo}
                             filter={{'categories[]': 'MC'}}
@@ -229,14 +258,22 @@ const RegisterForm = ({done}: IProps) => {
                             label="Missional Community"
                             variant='outlined'
                             margin='none'
-                            freeSolo
                         />
-                    </Grid>
+                    </Grid>)}
+                    {/* Field appears if user does not belong to a Missional Community */}    
+                    {joinMc && (<Grid item xs={12} md={12}>
+                        <Box>
+                            <XRadioInput
+                                name="joinCell"
+                                label='Do you want to join a Missional Community?'
+                                options={toOptions(responseCategories)}
+                            />
+                        </Box>
+                    </Grid>)}
                     <Grid item xs={12} md={6}>
-                        <XTextInput
+                        <XMapsInput
                             name="residence"
                             label="Residence"
-                            type="text"
                             variant='outlined'
                             margin='none'
                         />
@@ -258,3 +295,7 @@ const RegisterForm = ({done}: IProps) => {
 
 
 export default RegisterForm;
+
+
+
+

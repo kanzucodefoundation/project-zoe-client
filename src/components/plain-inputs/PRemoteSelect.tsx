@@ -31,6 +31,7 @@ export interface IPRemoteProps extends Omit<PComboProps, 'options'> {
     searchOnline?: boolean
     parser?: (d: any) => IOption | string
     defaultIOptions?: IOption[] | string[]
+    customOnChange?:(value:any) => void|undefined
 }
 
 export function PRemoteSelect(props: IPRemoteProps) {

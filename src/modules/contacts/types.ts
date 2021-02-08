@@ -19,6 +19,8 @@ export interface ICreatePersonDto {
     churchLocationId: string;
     residence: string;
     placeOfWork: string;
+    inCell?: UserResponse;
+    joinCell?: UserResponse;
 }
 
 export interface IPersonComboValue {
@@ -93,6 +95,11 @@ export enum RelationshipCategory {
     Sister = 'Sister',
     Brother = 'Brother',
     Other = 'Other',
+}
+
+export enum UserResponse {
+    Yes = 'Yes',
+    No = 'No',
 }
 
 export interface IPhone {

@@ -14,6 +14,7 @@ interface IProps {
     label: string
     name: string
     options: IOption[]
+    customOnChange?:(value:any) => void|undefined
 }
 
 const XRadioInput = (props: IProps) => {
@@ -31,6 +32,13 @@ const XRadioInput = (props: IProps) => {
             form.setFieldTouched(name)
         }
 
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
+            form.setFieldValue(name ,e.target.value)
+            if (props.customOnChange !== undefined){
+                props.customOnChange(e.target.value)
+            }
+        }
+
         return <FormControl error={showError}>
             <FormLabel htmlFor={name}>{label}</FormLabel>
             <RadioGroup
@@ -38,7 +46,7 @@ const XRadioInput = (props: IProps) => {
                 onBlur={handleBlur}
                 value={value || ''}
                 row
-
+                onChange={handleChange}
             >
                 {
                     options.map(
