@@ -198,6 +198,28 @@ export interface ITeamMember {
     role: TeamRole
 }
 
+export interface IGroup {
+    id: string
+    name: string
+    privacy: string
+    details: string
+    categoryId: string
+    parentId: string
+    category: {
+        id: string
+        name: string
+    }
+    parent: {
+        id: string
+        name: string
+    }
+    placeId: string
+    longitude: string
+    latitude: string
+    geoCoordinates: string 
+    freeForm: string
+}
+
 export interface IContactsFilter {
     query?: string
     skip?: string

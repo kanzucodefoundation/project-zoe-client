@@ -6,8 +6,10 @@ import {ITeamMember} from "../types";
 import {Box} from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import Button from "@material-ui/core/Button";
+
 import {get} from "./../../../utils/ajax";
-import { remoteRoutes } from "../../../data/constants";
+import {localRoutes, remoteRoutes} from "../../../data/constants";
+import {useHistory} from "react-router";
 
 const headCells: XHeadCell[] = [
     {name: 'id', label: 'ID'},
@@ -39,6 +41,7 @@ const groupData = (data: any, i: number, groups: ITeamMember[]) => {
 const Groups = (props: any) => {
     let i = 0;
     const groups: ITeamMember[] = [];
+
     const [selected, setSelected] = useState<any | null>(null)
     const [dialog, setDialog] = useState<any | null>(null)
     const [data, setData] = useState(groupData(props.contactId, i, groups))
@@ -46,11 +49,9 @@ const Groups = (props: any) => {
     function handleAddNew() {
 
     }
-
-    const handleClose = () => {
-        setSelected(null)
-        setDialog(false)
-    }
+  
+    const handleView = (dt: any) => {
+        history.push(localRoutes.groups + '/' + dt);
 
     return (
         <Grid container spacing={2}>
@@ -75,6 +76,7 @@ const Groups = (props: any) => {
                     headCells={headCells}
                     data={data}
                     initialRowsPerPage={10}
+                    handleSelection={handleView}
                 />
             </Grid>
         </Grid>
