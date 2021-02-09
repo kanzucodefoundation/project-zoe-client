@@ -19,7 +19,9 @@ import Loading from "../../../components/Loading";
 import EditDialog from "../../../components/EditDialog";
 import MembersEditor from "./MembersEditor";
 import MemberEditor from "./MemberEditor";
-import { profile } from 'console';
+import { useSelector } from "react-redux";
+import { IState } from "../../../data/types";
+import { hasAnyRole } from '../../../data/appRoles';
 
 
 interface IProps {
@@ -43,6 +45,7 @@ const MembersList = ({groupId}: IProps) => {
     const [selected, setSelected] = useState<IGroupMembership | null>(null);
     const [data, setData] = useState<IGroupMembership[]>([]);
     const [leader, setLeader] = useState<boolean>(false);
+    const profile = useSelector((state: IState) => state.core.user)
 
     const fetchMembers = useCallback(() => {
         setLoading(true);
@@ -71,19 +74,19 @@ const MembersList = ({groupId}: IProps) => {
     }
 
     const isLeader = () => {
-        var hasGroupEdit = false;
-    for (let i = 0; i < profile.roles.length; i++) {
-        if (profile.roles[i] == appRoles.roleGroupEdit) {
-            hasGroupEdit = true;
-        }
-    }
+    //     var hasGroupEdit = false;
+    // for (let i = 0; i < profile.roles.length; i++) {
+    //     if (profile.roles[i] == appRoles.roleGroupEdit) {
+    //         hasGroupEdit = true;
+    //     }
+    // }
 
     const info = {
         groupId: groupId,
         contactId: profile.id
     }
     getLeader(info);
-    if (leader && hasGroupEdit) {
+    if (leader && hasAnyRole(profile, [appRoles.roleGroupEdit])) {
         return true
     }
     return false
@@ -186,7 +189,10 @@ const MembersList = ({groupId}: IProps) => {
             >
                 <MembersEditor group={{id: groupId}} done={handleDone}/>
             </EditDialog>
-
+            
+            {
+                isLeader() ?
+            
             <EditDialog
                 open={Boolean(selected)}
                 onClose={() => setSelected(null)}
@@ -199,6 +205,9 @@ const MembersList = ({groupId}: IProps) => {
                     done={handleMemberEdited}
                 />
             </EditDialog>
+            :
+            null
+            }
         </Grid>
     );
 }
