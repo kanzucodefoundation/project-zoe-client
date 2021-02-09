@@ -74,13 +74,7 @@ const MembersList = ({groupId}: IProps) => {
     }
 
     const isLeader = () => {
-    //     var hasGroupEdit = false;
-    // for (let i = 0; i < profile.roles.length; i++) {
-    //     if (profile.roles[i] == appRoles.roleGroupEdit) {
-    //         hasGroupEdit = true;
-    //     }
-    // }
-
+   
     const info = {
         groupId: groupId,
         contactId: profile.id
@@ -150,7 +144,7 @@ const MembersList = ({groupId}: IProps) => {
                         :
                         null
                     }
-                    {console.log(profile)}
+                    
                     </Box>
                 </Box>
                 <Divider/>
