@@ -8,7 +8,6 @@ import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
 import XSelectInput from "../../components/inputs/XSelectInput";
 import {toOptions} from "../../components/inputs/inputHelpers";
-
 import {remoteRoutes} from "../../data/constants";
 import {useDispatch} from 'react-redux'
 import {crmConstants} from "../../data/contacts/reducer";
@@ -19,6 +18,7 @@ import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
 import {Box} from "@material-ui/core";
 import {ICreatePersonDto} from "./types";
 import {getDayList, getMonthsList} from "../../utils/dateHelpers";
+import { XMapsInput } from '../../components/inputs/XMapsInput';
 
 interface IProps {
     data: any | null
@@ -244,10 +244,9 @@ const NewPersonForm = ({done}: IProps) => {
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <XTextInput
+                    <XMapsInput
                         name="residence"
                         label="Residence"
-                        type="text"
                         variant='outlined'
                         margin='none'
                     />
