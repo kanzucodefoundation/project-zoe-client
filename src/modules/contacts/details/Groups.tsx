@@ -41,7 +41,7 @@ const groupData = (data: any, i: number, groups: ITeamMember[]) => {
 const Groups = (props: any) => {
     let i = 0;
     const groups: ITeamMember[] = [];
-
+    const history = useHistory();
     const [selected, setSelected] = useState<any | null>(null)
     const [dialog, setDialog] = useState<any | null>(null)
     const [data, setData] = useState(groupData(props.contactId, i, groups))
@@ -52,6 +52,7 @@ const Groups = (props: any) => {
   
     const handleView = (dt: any) => {
         history.push(localRoutes.groups + '/' + dt);
+    }
 
     return (
         <Grid container spacing={2}>
