@@ -1,11 +1,12 @@
-import { Box, Grid, Typography, Divider, Avatar } from '@material-ui/core';
-import React, { useState } from 'react';
-import DataList, { IMobileRow } from '../../../components/DataList';
-import { XHeadCell } from '../../../components/table/XTableHead';
+import {Avatar, Box, Divider, Grid, Typography} from '@material-ui/core';
+import React, {useEffect, useState} from 'react';
+import DataList, {IMobileRow} from '../../../components/DataList';
+import {XHeadCell} from '../../../components/table/XTableHead';
 import PersonIcon from "@material-ui/icons/Person";
-import { hasValue } from '../../../components/inputs/inputHelpers';
-import { remoteRoutes } from '../../../data/constants';
-import { search } from '../../../utils/ajax';
+import {hasValue} from '../../../components/inputs/inputHelpers';
+import {remoteRoutes} from '../../../data/constants';
+import {search} from '../../../utils/ajax';
+import Loading from "../../../components/Loading";
 
 const headCells: XHeadCell[] = [
     {
@@ -16,7 +17,7 @@ const headCells: XHeadCell[] = [
         name: 'avatar',
         label: 'Avatar',
         render: (data) => {
-            const hasAvatar= hasValue(data);
+            const hasAvatar = hasValue(data);
 
             return hasAvatar ?
                 <Avatar
@@ -68,17 +69,21 @@ const MemberRequests = (props: any) => {
     const [loading, setLoading] = useState<boolean>(true)
     const [data, setData] = useState<any[]>([]);
 
-    const getRequests = () => {
+    // TODO @anna  delete this comment after you have gone through my changes
+    // TODO @anna use 'useEffect' hook to fetch data
+
+    useEffect(() => {
         let filter = {};
 
+        // TODO @anna, what is the use of this condition
         if (props.group.categoryId === "Location") {
             filter = {parentId: props.group.id}
         } else {
-            filter= {groupId: props.group.id}
+            filter = {groupId: props.group.id}
         }
         search(remoteRoutes.groupsRequest, filter, resp => {
             const request: IRequestMember[] = [];
-            for(let i = 0; i < resp.length; i++) {
+            for (let i = 0; i < resp.length; i++) {
                 const single = {
                     id: resp[i].id,
                     avatar: resp[i].contact.avatar,
@@ -91,8 +96,7 @@ const MemberRequests = (props: any) => {
             setLoading(false)
             setData(request)
         })
-    }
-    // TODO @Anna use 'useEffect' hook to fetch data
+    }, [props.group.categoryId, props.group.id])
 
     return (
         <Grid container>
@@ -103,12 +107,14 @@ const MemberRequests = (props: any) => {
                     </Box>
                     <Divider/>
                     <Box>
-                        {loading ? getRequests() : null}
-                        <DataList
-                            data={data}
-                            columns={headCells}
-                            toMobileRow={toMobile}
-                        />
+                        {
+                            loading ?
+                                <Loading/> :
+                                <DataList
+                                    data={data}
+                                    columns={headCells}
+                                    toMobileRow={toMobile}
+                                />}
                     </Box>
                 </Box>
 
