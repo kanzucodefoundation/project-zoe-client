@@ -80,6 +80,7 @@ export const remoteRoutes = {
     groupsCombo: url + '/api/groups/combo',
     groupsCategories: url + '/api/groups/category',
     groupsMembership: url + '/api/groups/member',
+    groupsRequest: url + '/api/groups/request',
 
     contactsCompany: url + '/api/crm/contact/company',
     contactsAvatar: url + '/api/crm/contact/avatar',

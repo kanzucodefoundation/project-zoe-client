@@ -26,6 +26,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MapLink from "../../components/MapLink";
 import { IState } from "./../../data/types";
 import { hasAnyRole } from '../../data/appRoles';
+import MemberRequests from './members/MemberRequests';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -187,6 +188,16 @@ export default function Details() {
                                 </Box>
                             </Box>
                         </Grid>
+                        {
+                            isLeader() ? 
+                                <Grid item xs={12}>
+                                    <Box>
+                                        <MemberRequests group={data}/>
+                                    </Box>
+                                </Grid>
+                            :
+                                null
+                        }
                         <Grid item xs={12}>
                             <Box>
                                 <MembersList groupId={Number(groupId)}/>
