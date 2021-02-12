@@ -9,17 +9,17 @@ import { search } from '../../../utils/ajax';
 
 const headCells: XHeadCell[] = [
     {
-        name: 'id', 
+        name: 'id',
         label: 'ID'
     },
     {
-        name: 'avatar', 
-        label: 'Avatar', 
+        name: 'avatar',
+        label: 'Avatar',
         render: (data) => {
             const hasAvatar= hasValue(data);
 
             return hasAvatar ?
-                <Avatar 
+                <Avatar
                     alt={"Avatar"}
                     src={data}
                 /> :
@@ -27,11 +27,11 @@ const headCells: XHeadCell[] = [
         }
     },
     {
-        name: 'fullName', 
+        name: 'fullName',
         label: 'Full Name'
     },
     {
-        name: 'groupName', 
+        name: 'groupName',
         label: 'Group Name'
     },
 ]
@@ -40,9 +40,9 @@ const headCells: XHeadCell[] = [
 const toMobile = (data: any): IMobileRow => {
     const hasAvatar = hasValue(data.avatar)
     return {
-        avatar: 
+        avatar:
             hasAvatar ?
-                <Avatar 
+                <Avatar
                     alt="Avatar"
                     src={data.avatar}
                 /> :
@@ -92,6 +92,7 @@ const MemberRequests = (props: any) => {
             setData(request)
         })
     }
+    // TODO @Anna use 'useEffect' hook to fetch data
 
     return (
         <Grid container>

@@ -15,6 +15,7 @@ export interface IGroup {
     longitude?:      number;
     geoCoordinates?: string;
     placeId?:        string;
+    leaders?:        number[];
 }
 
 export interface IGroupMembership {

@@ -73,7 +73,7 @@ const MembersList = ({groupId}: IProps) => {
     }
 
     const isLeader = () => {
-   
+
         const info = {
             groupId: groupId,
             contactId: profile.id
@@ -125,9 +125,6 @@ const MembersList = ({groupId}: IProps) => {
         <Grid container>
             <Grid item xs={12}>
                 <Box display='flex' pt={1}>
-                    <Box pt={0.5} pr={3}>
-                        <Typography variant='h6' style={{fontSize: '0.92rem'}}>Members</Typography>
-                    </Box>
                     <Box display='flex' justifyContent='flex-end'>
                         {
                             isLeader() ?
@@ -143,7 +140,7 @@ const MembersList = ({groupId}: IProps) => {
                         :
                         null
                         }
-                        
+
                     </Box>
                 </Box>
                 <Divider/>
@@ -201,7 +198,7 @@ const MembersList = ({groupId}: IProps) => {
             null
             }
 
-            
+
         </Grid>
     );
 }

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
 import {IGroup} from "./types";
 import EditDialog from "../../components/EditDialog";
 import GroupEditor from "./editors/GroupEditor";
@@ -16,17 +16,18 @@ import Divider from "@material-ui/core/Divider";
 import EditIcon from '@material-ui/icons/Edit';
 import MembersList from "./members/MembersList";
 import {grey} from "@material-ui/core/colors";
-import {get, search} from "../../utils/ajax";
-import {localRoutes, remoteRoutes, appRoles} from "../../data/constants";
+import {get} from "../../utils/ajax";
+import {appRoles, localRoutes, remoteRoutes} from "../../data/constants";
 import Loading from "../../components/Loading";
 import {Alert} from "@material-ui/lab";
 import {useHistory, useParams} from "react-router";
 import Layout from "../../components/layout/Layout";
 import IconButton from "@material-ui/core/IconButton";
 import MapLink from "../../components/MapLink";
-import { IState } from "./../../data/types";
-import { hasAnyRole } from '../../data/appRoles';
+import {IState} from "../../data/types";
+import {hasAnyRole} from '../../data/appRoles';
 import MemberRequests from './members/MemberRequests';
+import TabbedView from "./TabbedView";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -59,7 +60,6 @@ export default function Details() {
     const [loading, setLoading] = useState<boolean>(true)
     const [data, setData] = useState<IGroup | null>(null)
     const profile = useSelector((state: IState) => state.core.user);
-    const [leader, setLeader] = useState<boolean>(false)
     const classes = useStyles()
 
     useEffect(() => {
@@ -72,26 +72,17 @@ export default function Details() {
             })
     }, [groupId])
 
-    const getLeader = (data: any) => {
-        search(remoteRoutes.groupsMembership, data, resp => {
-            if (resp.length > 0) {
-                if (resp[0].role === "Leader") {
-                    setLeader(true)
-                }
-            }
-        })
-    }
 
     const isLeader = () => {
-        const info = {
-            groupId: groupId,
-            contactId: profile.id
-        }
-        getLeader(info);
-        if (leader && hasAnyRole(profile, [appRoles.roleGroupEdit])) {
-            return true
-        } 
-        return false
+        const userId = `${profile.id}`
+        const _leaderIds: number[] = data?.leaders || [];
+        const leaderIds: string[] = _leaderIds.map(it => `${it}`);
+
+        const isLeader = leaderIds.indexOf(userId) > -1;
+
+        return isLeader || hasAnyRole(profile, [appRoles.roleGroupEdit]);
+        // Both leaders and people with the groupEdit role should be able to edit a group
+
     }
 
     function handleClose() {
@@ -102,9 +93,6 @@ export default function Details() {
         setDialog(true)
     }
 
-    function handleDelete() {
-        //TODO implement delete
-    }
 
     function handleEdited(dt: any) {
         setDialog(false)
@@ -128,6 +116,19 @@ export default function Details() {
         history.push(localRoutes.groups)
     }
 
+    const tabs = [
+        {
+            name:"Members",
+            component:<MembersList groupId={Number(groupId)}/>
+        }
+    ]
+    if(isLeader()){
+        tabs.push({
+            name:"Pending requests",
+            component:<MemberRequests group={data}/>
+        })
+    }
+
     return (
         <Layout>
             <Box p={2} className={classes.root}>
@@ -143,22 +144,22 @@ export default function Details() {
                                     <Typography variant='body2'>{`${data.privacy}, ${data.category.name}`}</Typography>
                                 </Box>
 
-                                
+
                                 {
                                     isLeader() ?
                                         <Box pr={2}>
-                                            <IconButton 
-                                                aria-label="Edit" 
-                                                color='primary' 
+                                            <IconButton
+                                                aria-label="Edit"
+                                                color='primary'
                                                 title='Edit Group'
                                                 onClick={handleEdit}>
                                                 <EditIcon/>
                                             </IconButton>
                                         </Box>
-                                    :
+                                        :
                                         null
                                 }
-                            
+
                             </Box>
                             <Divider/>
                             <Box display='flex' pt={1}>
@@ -169,7 +170,7 @@ export default function Details() {
                                     {
                                         data.placeId ?
                                             <MapLink title={data.freeForm!} value={data.placeId!}/> :
-                                            <Typography  variant='caption'>No address</Typography>
+                                            <Typography variant='caption'>No address</Typography>
 
                                     }
                                 </Box>
@@ -188,20 +189,10 @@ export default function Details() {
                                 </Box>
                             </Box>
                         </Grid>
-                        {
-                            isLeader() ? 
-                                <Grid item xs={12}>
-                                    <Box>
-                                        <MemberRequests group={data}/>
-                                    </Box>
-                                </Grid>
-                            :
-                                null
-                        }
                         <Grid item xs={12}>
-                            <Box>
-                                <MembersList groupId={Number(groupId)}/>
-                            </Box>
+                            <TabbedView
+                                tabs={tabs}
+                            />
                         </Grid>
                     </Grid>
 
