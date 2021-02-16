@@ -1,100 +1,51 @@
-import {Avatar, Box, Divider, Grid, Typography} from '@material-ui/core';
-import React, {useEffect, useState} from 'react';
-import DataList, {IMobileRow} from '../../../components/DataList';
-import {XHeadCell} from '../../../components/table/XTableHead';
-import PersonIcon from "@material-ui/icons/Person";
-import {hasValue} from '../../../components/inputs/inputHelpers';
-import {remoteRoutes} from '../../../data/constants';
-import {search} from '../../../utils/ajax';
-import Loading from "../../../components/Loading";
-
-const headCells: XHeadCell[] = [
-    {
-        name: 'id',
-        label: 'ID'
-    },
-    {
-        name: 'avatar',
-        label: 'Avatar',
-        render: (data) => {
-            const hasAvatar = hasValue(data);
-
-            return hasAvatar ?
-                <Avatar
-                    alt={"Avatar"}
-                    src={data}
-                /> :
-                <Avatar><PersonIcon/></Avatar>
-        }
-    },
-    {
-        name: 'fullName',
-        label: 'Full Name'
-    },
-    {
-        name: 'groupName',
-        label: 'Group Name'
-    },
-]
-
-
-const toMobile = (data: any): IMobileRow => {
-    const hasAvatar = hasValue(data.avatar)
-    return {
-        avatar:
-            hasAvatar ?
-                <Avatar
-                    alt="Avatar"
-                    src={data.avatar}
-                /> :
-                <Avatar><PersonIcon/></Avatar>,
-        primary: <>
-            {`${data.fullName}\t`}
-        </>,
-        secondary: <>
-            <Typography variant='caption' color='textSecondary'>{`Group Name: ${data.groupName}`}</Typography>
-        </>
-    }
-}
-
-interface IRequestMember {
-    id: number,
-    avatar?: string;
-    fullName: string,
-    groupName: string,
-}
+import { Box, Divider, Grid, IconButton, ListItem, ListItemAvatar, ListItemText, Typography } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { remoteRoutes } from '../../../data/constants';
+import { search, del, post } from '../../../utils/ajax';
+import { Alert } from '@material-ui/lab';
+import XAvatar from '../../../components/XAvatar';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@material-ui/icons/Cancel';
+import Toast from '../../../utils/Toast';
+import { useHistory } from 'react-router';
 
 const MemberRequests = (props: any) => {
 
-    const [loading, setLoading] = useState<boolean>(true)
+    const history = useHistory();
     const [data, setData] = useState<any[]>([]);
+    const [isLocation, setIsLocation] = useState<boolean>(false);
 
-    // TODO @anna  delete this comment after you have gone through my changes
-    // TODO @anna use 'useEffect' hook to fetch data
+    function handleApprove(dt: any) {
+        const toSave = {
+            groupId: props.group.id,
+            members: [dt.contactId],
+            role: 'Member'
+        }
+        post(`${remoteRoutes.groupsMembership}`, toSave, resp => {
+           Toast.info("USER REQUEST APPROVED")
+           del(`${remoteRoutes.groupsRequest}/${dt.id}`, resp => {
+                setTimeout(() => history.go(0), 3000)
+            })
+        })
+    }
+
+    function handleDelete(dt: any) {
+        del(`${remoteRoutes.groupsRequest}/${dt}`, resp => {
+            Toast.info("USER REQUEST DENIED");
+            setTimeout(() => history.go(0), 3000)
+        })
+    }
 
     useEffect(() => {
         let filter = {};
-
-        // TODO @anna, what is the use of this condition
         if (props.group.categoryId === "Location") {
+            setIsLocation(true)
             filter = {parentId: props.group.id}
         } else {
             filter = {groupId: props.group.id}
         }
         search(remoteRoutes.groupsRequest, filter, resp => {
-            const request: IRequestMember[] = [];
-            for (let i = 0; i < resp.length; i++) {
-                const single = {
-                    id: resp[i].id,
-                    avatar: resp[i].contact.avatar,
-                    fullName: resp[i].contact.fullName,
-                    groupName: resp[i].group.name
-                }
-                request.push(single);
-            }
-
-            setLoading(false)
-            setData(request)
+            setData(resp)
         })
     }, [props.group.categoryId, props.group.id])
 
@@ -108,13 +59,45 @@ const MemberRequests = (props: any) => {
                     <Divider/>
                     <Box>
                         {
-                            loading ?
-                                <Loading/> :
-                                <DataList
-                                    data={data}
-                                    columns={headCells}
-                                    toMobileRow={toMobile}
-                                />}
+                            data.length === 0 ?
+                                <ListItem>
+                                    <Alert severity='info' style={{width: '100%'}}>No Pending Memberships</Alert>
+                                </ListItem>
+                                :
+                                data.map(mbr => {
+                                    return (
+                                        <ListItem key={mbr.id}>
+                                            <ListItemAvatar>
+                                                <XAvatar data={mbr.contact.avatar}/>
+                                            </ListItemAvatar>
+                                            <ListItemText 
+                                                primary={mbr.contact.fullName}
+                                                secondary={isLocation ? `${mbr.group.name}` : null}
+                                            />
+                                            {
+                                                isLocation ? null :
+                                                    <>
+                                                        <IconButton
+                                                            color='primary'
+                                                            size='medium'
+                                                            onClick={() => handleApprove(mbr)}
+                                                        >
+                                                            <CheckCircleIcon/>
+                                                        </IconButton>
+                                                        <IconButton
+                                                            color='secondary'
+                                                            size='medium'
+                                                            onClick={() => handleDelete(mbr.id)}
+                                                        >
+                                                            <CancelIcon/>
+                                                        </IconButton>
+                                                    
+                                                    </>
+                                            } 
+                                        </ListItem>
+                                    )
+                                })
+                            }
                     </Box>
                 </Box>
 

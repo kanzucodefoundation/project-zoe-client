@@ -124,12 +124,12 @@ const MembersList = ({groupId}: IProps) => {
     return (
         <Grid container>
             <Grid item xs={12}>
-                <Box display='flex' pt={1}>
+                <Box display='flex' pt={1} style={{paddingBottom: 20}}>
                     <Box display='flex' justifyContent='flex-end'>
                         {
                             isLeader() ?
                             <Button
-                            variant="text"
+                            variant="contained"
                             color="primary"
                             startIcon={<AddIcon/>}
                             onClick={handleAddNew}
