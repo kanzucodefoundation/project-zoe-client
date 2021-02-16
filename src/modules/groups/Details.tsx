@@ -81,7 +81,6 @@ export default function Details() {
         const isLeader = leaderIds.indexOf(userId) > -1;
 
         return isLeader || hasAnyRole(profile, [appRoles.roleGroupEdit]);
-        // Both leaders and people with the groupEdit role should be able to edit a group
 
     }
 
@@ -204,3 +203,6 @@ export default function Details() {
         </Layout>
     );
 }
+
+
+
