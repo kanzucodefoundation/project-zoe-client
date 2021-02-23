@@ -195,7 +195,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
             error={showError}
             helperText={showError && helperText}
             variant={props.variant}
-            autoComplete="off"
+            autoComplete="nope"
             InputProps={{
               ...params.InputProps,
               endAdornment: (

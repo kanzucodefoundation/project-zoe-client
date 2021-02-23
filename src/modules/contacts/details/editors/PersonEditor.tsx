@@ -1,6 +1,6 @@
 import React from "react";
 import * as yup from "yup";
-import { reqDate, reqString } from "../../../../data/validations";
+import { reqString } from "../../../../data/validations";
 import {
   ageCategories,
   civilStatusCategories,
@@ -11,7 +11,10 @@ import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../../components/forms/XForm";
 import XTextInput from "../../../../components/inputs/XTextInput";
-import { toOptions } from "../../../../components/inputs/inputHelpers";
+import {
+  hasValue,
+  toOptions
+} from "../../../../components/inputs/inputHelpers";
 
 import { remoteRoutes } from "../../../../data/constants";
 import { useDispatch } from "react-redux";
@@ -34,7 +37,6 @@ const schema = yup.object().shape({
   firstName: reqString,
   lastName: reqString,
   gender: reqString,
-  dateOfBirth: reqDate,
 
   birthDay: reqString,
   birthMonth: reqString,
@@ -58,9 +60,7 @@ const PersonEditor = ({ data, done }: IProps) => {
       civilStatus: values.civilStatus,
       dateOfBirth: `1800-${values.birthMonth}-${values.birthDay}T00:00:00.000Z`,
       ageGroup: values.ageGroup,
-
-      placeOfWork: values.placeOfWork,
-      residence: values.residence
+      placeOfWork: values.placeOfWork
     };
     put(
       remoteRoutes.contactsPeople,
@@ -82,14 +82,17 @@ const PersonEditor = ({ data, done }: IProps) => {
   }
 
   const { dateOfBirth } = data;
-  const initialData: any = { ...data, birthDay: "", birthMonth: "" };
-  try {
-    const dt: Date = parseISO(`${dateOfBirth}`);
-    initialData["birthDay"] = `${dt.getDay()}`.padStart(2, "0");
-    initialData["birthMonth"] = `${dt.getMonth()}`.padStart(2, "0");
-  } catch (e) {
-    console.log("invalid date");
+  const initialData: any = { ...data, birthDay: null, birthMonth: null };
+  if (hasValue(dateOfBirth)) {
+    try {
+      const dt: Date = parseISO(`${dateOfBirth}`);
+      initialData["birthDay"] = `${dt.getDay()}`.padStart(2, "0");
+      initialData["birthMonth"] = `${dt.getMonth()}`.padStart(2, "0");
+    } catch (e) {
+      console.log("invalid date");
+    }
   }
+
   return (
     <XForm
       onSubmit={handleSubmit}
@@ -180,15 +183,6 @@ const PersonEditor = ({ data, done }: IProps) => {
 
         <Grid item xs={12} md={6}>
           <XTextInput
-            name="residence"
-            label="Residence"
-            type="text"
-            variant="outlined"
-            margin="none"
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <XTextInput
             name="placeOfWork"
             label="Place of work"
             type="text"
@@ -196,7 +190,7 @@ const PersonEditor = ({ data, done }: IProps) => {
             margin="none"
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} md={6}>
           <XTextInput
             name="about"
             label="About"

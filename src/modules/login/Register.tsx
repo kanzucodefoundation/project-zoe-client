@@ -31,7 +31,8 @@ const useStyles = makeStyles(theme => ({
   root: {
     color: "white",
     width: "100%",
-    height: "100%"
+    height: "100%",
+    overflowY: "scroll"
   },
   icon: {
     marginRight: theme.spacing(2)
@@ -75,8 +76,9 @@ const useStyles = makeStyles(theme => ({
     }
   },
   footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6)
+    backgroundColor: "black",
+    padding: theme.spacing(6),
+    color: "whitesmoke"
   },
   toolbarTitle: {
     flexGrow: 1
@@ -102,7 +104,7 @@ export default function Register() {
     <div
       style={{
         backgroundImage: "url(" + image + ")",
-        backgroundSize: "auto",
+        backgroundSize: "cover",
         backgroundPosition: "top center"
       }}
       className={classes.root}
@@ -112,7 +114,7 @@ export default function Register() {
         <Toolbar>
           <Avatar alt="Logo" src={logo} className={classes.icon} />
           <Typography
-            variant="h6"
+            variant="h5"
             color="inherit"
             noWrap
             className={classes.toolbarTitle}
@@ -150,13 +152,13 @@ export default function Register() {
       </Box>
 
       <footer className={classes.footer}>
-        <Typography variant="h6" align="center" gutterBottom color="primary">
+        <Typography variant="h6" align="center" gutterBottom color="inherit">
           Worship Harvest is a Movement of the Gospel, Discipleship and Mission.
         </Typography>
         <Typography
           variant="subtitle1"
           align="center"
-          color="textSecondary"
+          color="inherit"
           component="p"
         >
           <b>
