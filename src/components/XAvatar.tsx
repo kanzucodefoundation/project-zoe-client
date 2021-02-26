@@ -1,22 +1,24 @@
 import React from "react";
-import PersonIcon from "@material-ui/icons/Person";
-import {hasValue} from "./inputs/inputHelpers";
-import {Avatar} from "@material-ui/core";
+import { Avatar } from "@material-ui/core";
 
 interface IProps {
-    data: any
+  value: string;
 }
 
-const XAvatar = ({data}: IProps) => {
-    return hasValue(data.avatar) ?
-        <Avatar
-            alt="Avatar"
-            src={data.avatar}
-        /> :
-        <Avatar>
-            <PersonIcon/>
-        </Avatar>
-        ;
-}
+const isUrl = (str: string) => {
+  try {
+    return Boolean(new URL(str));
+  } catch (e) {
+    return false;
+  }
+};
+
+const XAvatar = ({ value }: IProps) => {
+  return isUrl(value) ? (
+    <Avatar alt="Avatar" src={value} />
+  ) : (
+    <Avatar>{value[0]}</Avatar>
+  );
+};
 
 export default XAvatar;

@@ -27,7 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { crmConstants, ICrmState } from "../../data/contacts/reducer";
 import { printBirthday } from "../../utils/dateHelpers";
 import GroupLink from "../../components/GroupLink";
-import XAvatar from "../../components/XAvatar";
+import PersonAvatar from "../../components/PersonAvatar";
 import { hasAnyRole } from "../../data/appRoles";
 import { IState } from "../../data/types";
 import ListHeader from "../../components/ListHeader";
@@ -75,7 +75,7 @@ const headCells: XHeadCell[] = [
 
 const toMobileRow = (data: IContactListDto): IMobileRow => {
   return {
-    avatar: <XAvatar data={data} />,
+    avatar: <PersonAvatar data={data} />,
     primary: data.name,
     secondary: (
       <>

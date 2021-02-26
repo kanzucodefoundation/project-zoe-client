@@ -26,6 +26,7 @@ import { ICreatePersonDto } from "../contacts/types";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import { XMapsInput } from "../../components/inputs/XMapsInput";
+import { parseGooglePlace } from "../../components/plain-inputs/PMapsInput";
 
 interface IProps {
   data: any | null;
@@ -86,6 +87,7 @@ const RegisterForm = ({ done }: IProps) => {
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const [lastName, middleName] = processName(values.otherNames);
+
     const toSave: ICreatePersonDto = {
       firstName: values.firstName,
       middleName: middleName,
@@ -95,8 +97,7 @@ const RegisterForm = ({ done }: IProps) => {
       civilStatus: values.civilStatus,
       ageGroup: values.ageGroup,
       placeOfWork: values.placeOfWork,
-      residence: values.residence,
-
+      residence: parseGooglePlace(values.residence),
       cellGroupId: values.cellGroup?.id,
       churchLocationId: values.churchLocation.id,
       email: values.email,

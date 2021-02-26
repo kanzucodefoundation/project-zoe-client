@@ -153,7 +153,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
     showError,
     parser: i,
     defaultIOptions,
-    searchOnline,
+    searchOnline = true,
     margin = "normal",
     freeSolo,
     textFieldProps,

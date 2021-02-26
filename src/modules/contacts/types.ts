@@ -16,7 +16,7 @@ export interface ICreatePersonDto {
   ageGroup: string;
   cellGroupId: string;
   churchLocationId: string;
-  residence: string;
+  residence: any;
   placeOfWork: string;
   inCell?: UserResponse;
   joinCell?: UserResponse;

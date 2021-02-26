@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import { Breadcrumbs, Link } from "@material-ui/core";
 
 import Box from "@material-ui/core/Box";
 import Hidden from "@material-ui/core/Hidden";
-import Typography from "@material-ui/core/Typography";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import { Link as RouterLink } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Collapse from "@material-ui/core/Collapse";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -14,6 +10,7 @@ import TextField from "@material-ui/core/TextField";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import Grid from "@material-ui/core/Grid";
 import { localRoutes } from "../data/constants";
+import XBreadCrumbs from "./XBreadCrumbs";
 
 interface IProps {
   onFilter: (data: any) => void;
@@ -41,22 +38,10 @@ const ListHeader = (props: IProps) => {
     <div>
       {showBreadCrumbs && (
         <Box pb={1}>
-          <Breadcrumbs
-            separator={<NavigateNextIcon fontSize="small" />}
-            aria-label="breadcrumb"
-          >
-            <Link
-              variant="body1"
-              color="inherit"
-              to={localRoutes.home}
-              component={RouterLink}
-            >
-              Dashboard
-            </Link>
-            <Typography variant="body1" color="textPrimary">
-              {props.title}
-            </Typography>
-          </Breadcrumbs>
+          <XBreadCrumbs
+            title={props.title}
+            paths={[{ path: localRoutes.home, label: "Dashboard" }]}
+          />
         </Box>
       )}
       <Grid container spacing={2}>
