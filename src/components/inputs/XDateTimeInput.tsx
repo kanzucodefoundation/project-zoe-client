@@ -4,12 +4,12 @@ import "date-fns";
 import { isValid } from "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import {
-  KeyboardDatePicker,
+  KeyboardDateTimePicker,
   MuiPickersUtilsProvider,
-    DateTimePicker
+  DateTimePicker
 } from "@material-ui/pickers";
 import { hasValue } from "./inputHelpers";
-import { dateFormat } from "../../utils/dateHelpers";
+import { dateFormat, dateTimeFormat } from "../../utils/dateHelpers";
 import { MaterialUiPickersDate } from "@material-ui/pickers/typings/date";
 import { KeyboardDatePickerProps } from "@material-ui/pickers/DatePicker/DatePicker";
 
@@ -21,7 +21,7 @@ interface IProps {
 
 type PickerProps = Omit<KeyboardDatePickerProps, "variant" | "inputVariant">;
 
-const XDateInput = (props: IProps & Partial<PickerProps>) => {
+const XDateTimeInput = (props: IProps & Partial<PickerProps>) => {
   const { variant, pickerVariant, margin = "normal", ...rest } = props;
   const [field, meta, helpers] = useField({ name: props.name });
   const error = hasValue(meta.error) ? meta.error : undefined;
@@ -37,12 +37,12 @@ const XDateInput = (props: IProps & Partial<PickerProps>) => {
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDatePicker
+      <KeyboardDateTimePicker
         {...rest}
         margin={margin}
         fullWidth
         variant={pickerVariant}
-        format={dateFormat}
+        format={dateTimeFormat}
         autoOk
         name={field.name}
         value={field.value || null}
@@ -56,4 +56,4 @@ const XDateInput = (props: IProps & Partial<PickerProps>) => {
   );
 };
 
-export default XDateInput;
+export default XDateTimeInput;

@@ -23,7 +23,7 @@ export interface ICreatePersonDto {
 }
 
 export interface IPersonComboValue {
-  id: number;
+  id: string;
   name: string;
   avatar: string;
 }

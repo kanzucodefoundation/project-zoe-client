@@ -33,6 +33,16 @@ export interface IPRemoteProps extends Omit<PComboProps, "options"> {
   customOnChange?: (value: any) => void | undefined;
 }
 
+function hashCode(str: string): number {
+  return str
+    .split("")
+    .reduce(
+      (prevHash, currVal) =>
+        ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0,
+      0
+    );
+}
+
 export function PRemoteSelect(props: IPRemoteProps) {
   const [loading, setLoading] = React.useState(false);
   const [options, setIOptions] = React.useState<IOption[] | string[]>(
@@ -42,16 +52,6 @@ export function PRemoteSelect(props: IPRemoteProps) {
   const [inputValue, setInputValue] = React.useState("");
 
   const [dataCache, setDataCache] = React.useState<any>({});
-
-  function hashCode(str: string): number {
-    return str
-      .split("")
-      .reduce(
-        (prevHash, currVal) =>
-          ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0,
-        0
-      );
-  }
 
   const isInCache = useCallback(
     (filter: any) => {
@@ -77,7 +77,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
       if (hasNoValue(props.remote)) {
         return;
       }
-      const newFilter = { ...props.filter, query, limit: 50 };
+      const newFilter = { ...(props.filter || {}), query, limit: 300 };
       const cached = isInCache(newFilter);
       if (cached) {
         setIOptions(cached);
@@ -87,9 +87,11 @@ export function PRemoteSelect(props: IPRemoteProps) {
       search(
         props.remote,
         newFilter,
-        resp => {
-          if (props.parser) {
-            const data = resp.map(props.parser);
+        (resp: any[] = []) => {
+          if (!Array.isArray(resp)) {
+            console.error("Invalid response for remote select", resp);
+          } else if (props.parser) {
+            const data: any[] = resp.map(props.parser);
             setIOptions(data);
             addToCache(newFilter, data);
           } else {
@@ -115,7 +117,6 @@ export function PRemoteSelect(props: IPRemoteProps) {
   };
 
   function handleChange(event: ChangeEvent<{}>, value: ComboValue, _: any) {
-    console.log("handleChange", value);
     onChange(value);
   }
 

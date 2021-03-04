@@ -59,7 +59,7 @@ const MembersEditor = (props: IProps) => {
   const [addingMembers, setAddingMembers] = useState<boolean>(false);
   const [fetchingMembers, setFetchingMembers] = useState<boolean>(true);
   const [selected, setSelected] = useState<IPersonComboValue[]>([]);
-  const [selectedIdList, setSelectedIdList] = useState<number[]>([]);
+  const [selectedIdList, setSelectedIdList] = useState<string[]>([]);
   const [peopleData, setPeopleData] = useState<IPersonComboValue[]>([]);
   const [membership, setMembership] = useState<IGroupMembership[]>([]);
   const [query, setQuery] = useState<string>("");
@@ -118,7 +118,7 @@ const MembersEditor = (props: IProps) => {
     }
   };
 
-  const handleDelete = (id: number) => () => {
+  const handleDelete = (id: string) => () => {
     setSelected([...selected.filter(it => it.id !== id)]);
     setSelectedIdList([...selectedIdList.filter(it => it !== id)]);
   };

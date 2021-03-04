@@ -39,7 +39,7 @@ export default function reducer(state = initialState, action: any) {
       return { ...state, data: [...state.data, dt] };
     }
     case groupConstants.groupsDelete: {
-      const id: number = action.payload;
+      const id: string = action.payload;
       return { ...state, data: [...state.data.filter(it => it.id !== id)] };
     }
     case groupConstants.groupsEdit: {

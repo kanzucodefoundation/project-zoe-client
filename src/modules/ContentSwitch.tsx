@@ -14,6 +14,8 @@ import { IState } from "../data/types";
 import MembersEditor from "./groups/members/MembersEditor";
 import { hasAnyRole } from "../data/appRoles";
 import UpdatePasswordConfirmation from "./login/UpdatePasswordConfirmation";
+import EventDetails from "./events/details/EventDetails";
+import Events from "./events/EventsList";
 
 const ContentSwitch = () => {
   const user = useSelector((state: IState) => state.core.user);
@@ -38,6 +40,14 @@ const ContentSwitch = () => {
 
       {hasAnyRole(user, [appRoles.roleGroupEdit, appRoles.roleGroupView]) && (
         <Route path={localRoutes.groups} component={Groups} />
+      )}
+
+      {hasAnyRole(user, [appRoles.roleEventView, appRoles.roleEventEdit]) && (
+        <Route path={localRoutes.eventsDetails} component={EventDetails} />
+      )}
+
+      {hasAnyRole(user, [appRoles.roleEventView, appRoles.roleEventEdit]) && (
+        <Route path={localRoutes.events} component={Events} />
       )}
 
       <Route path={localRoutes.settings} component={Settings} />
