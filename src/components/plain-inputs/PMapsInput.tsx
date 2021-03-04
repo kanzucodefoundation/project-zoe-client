@@ -9,6 +9,7 @@ import parse from "autosuggest-highlight/parse";
 import throttle from "lodash/throttle";
 import { AutocompleteProps } from "@material-ui/lab/Autocomplete/Autocomplete";
 import { TextFieldProps } from "@material-ui/core/TextField/TextField";
+import { hasValue } from "../inputs/inputHelpers";
 
 function loadScript(src: string, position: HTMLElement | null, id: string) {
   if (!position) {
@@ -36,12 +37,14 @@ export interface IGPlace {
   description: string;
 }
 
-export const parseGooglePlace = (dt: GooglePlace | IGPlace): IGPlace => {
+export const parseGooglePlace = (dt: GooglePlace | IGPlace): IGPlace | null => {
   const data: any = dt;
-  return {
-    placeId: data["place_id"] || data.placeId,
-    description: dt.description
-  };
+  if (hasValue(dt))
+    return {
+      placeId: data["place_id"] || data.placeId,
+      description: dt.description
+    };
+  else return null;
 };
 
 export interface GooglePlace {

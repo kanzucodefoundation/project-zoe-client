@@ -189,8 +189,11 @@ export default function Details() {
                 <PinDropIcon />
               </Box>
               <Box flexGrow={1} pt={0.5}>
-                {data.placeId ? (
-                  <MapLink title={data.freeForm!} value={data.placeId!} />
+                {data.address ? (
+                  <MapLink
+                    title={data.address.name!}
+                    value={data.address.placeId!}
+                  />
                 ) : (
                   <Typography variant="caption">No address</Typography>
                 )}

@@ -10,11 +10,7 @@ export interface IGroup {
   parent?: any;
   parentId?: number;
   metaData?: any;
-  freeForm?: string;
-  latitude?: number;
-  longitude?: number;
-  geoCoordinates?: string;
-  placeId?: string;
+  address?: any;
   leaders?: number[];
 }
 
