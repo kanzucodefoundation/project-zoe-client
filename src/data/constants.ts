@@ -89,6 +89,7 @@ export const remoteRoutes = {
   events: url + "/api/events/event",
   eventsCategories: url + "/api/events/category",
   eventsAttendance: url + "/api/events/attendance",
+  eventsField: url + "/api/events/fields",
 
   contactsCompany: url + "/api/crm/contact/company",
   contactsAvatar: url + "/api/crm/contact/avatar"
