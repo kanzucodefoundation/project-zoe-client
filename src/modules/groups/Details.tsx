@@ -13,12 +13,14 @@ import { Theme } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
+import EventIcon from '@material-ui/icons/Event';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import MembersList from "./members/MembersList";
 import { grey } from "@material-ui/core/colors";
 import { get } from "../../utils/ajax";
 import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
 import Loading from "../../components/Loading";
-import { Alert } from "@material-ui/lab";
+import { Alert, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@material-ui/lab";
 import { useHistory, useParams } from "react-router";
 import Layout from "../../components/layout/Layout";
 import IconButton from "@material-ui/core/IconButton";
@@ -28,6 +30,9 @@ import { hasAnyRole } from "../../data/appRoles";
 import MemberRequests from "./members/MemberRequests";
 import TabbedView from "./TabbedView";
 import XBreadCrumbs from "../../components/XBreadCrumbs";
+import NewReport from "./groupReports/NewReport";
+import GroupEventsList from "./groupReports/GroupEventsList";
+import EventForm from "../events/forms/EventForm";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,16 +56,42 @@ const useStyles = makeStyles((theme: Theme) =>
       minHeight: 100,
       borderRadius: 5,
       backgroundColor: grey[100]
+    },
+    speedDial: {
+        position: 'fixed',
+        '&.MuiSpeedDial-directionDown': {
+            top: theme.spacing(13),
+            right: theme.spacing(4),
+        }
+    },
+    '@media (max-width: 480px)': {
+        speedDial:{
+            position:'relative',
+            '&.MuiSpeedDial-directionDown': {
+                top: theme.spacing(1),
+                right: theme.spacing(-2),
+            }
+        }
     }
   })
 );
+
+const actions = [
+  { icon: <EditIcon color="primary" />, name: 'Edit Group', operation: 'Edit Group' },
+  { icon: <EventIcon color="primary"/>, name: 'New Event', operation: 'New Event'},
+  { icon: <NoteAddIcon color="primary" />, name: 'New Report', operation: 'New Report'},
+];
+
 
 export default function Details() {
   let { groupId } = useParams();
   const history = useHistory();
   const [dialog, setDialog] = useState<boolean>(false);
+  const [report, setNewReport] = useState<boolean>(false)
+  const [event, setNewEvent] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<IGroup | null>(null);
+  const [open, setOpen] = useState(false)
   const profile = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
 
@@ -101,6 +132,48 @@ export default function Details() {
     setData(dt);
   }
 
+  const handleDialClose = () => {
+    setOpen(false);
+  };
+
+  const handleDialOpen = () => {
+      setOpen(true);
+  };
+
+  function handleNewReport (){
+      setNewReport(true)
+  }
+
+  function handleNewReportClose (){
+      setNewReport(false)
+  }
+
+  function handleNewEvent (){
+    setNewEvent(true)
+  }
+
+  function handleNewEventClose (){
+    setNewEvent(false)
+  }
+
+  //handler function
+  const handleIconClick = (operation:any)=>{
+      if(operation==='Edit Group'){
+        // do something 
+        handleEdit()
+        console.log('Edit clicked')
+      }else if(operation==='New Report'){
+        //do something else
+        handleNewReport()
+        console.log('New Report clicked')
+      }else if(operation==='New Event'){
+        //do something else
+        handleNewEvent()
+        console.log('New Event clicked')
+      }
+      setOpen(!open); //To close the speed dial
+  }
+
   if (loading)
     return (
       <Layout>
@@ -137,6 +210,14 @@ export default function Details() {
       name: "Pending requests",
       component: <MemberRequests group={data} />
     });
+    tabs.push({
+      name: "Events",
+      component: <GroupEventsList />
+    });
+    tabs.push({
+      name: "Reports",
+      component: <MemberRequests group={data} />
+    });
   }
 
   return (
@@ -171,15 +252,31 @@ export default function Details() {
               </Box>
 
               {isLeader() ? (
-                <Box pr={2}>
-                  <IconButton
-                    aria-label="Edit"
-                    color="primary"
-                    title="Edit Group"
-                    onClick={handleEdit}
+                <Box pr={2} flexGrow={1}>
+                  <SpeedDial
+                    ariaLabel="SpeedDial"
+                    className={classes.speedDial}
+                    icon={<SpeedDialIcon />}
+                    onClose={handleDialClose}
+                    onOpen={handleDialOpen}
+                    onClick={handleIconClick}
+                    open={open}
+                    direction='down'
+                    color='primary'
+                    FabProps={{
+                      size: 'small',
+                    }}
                   >
-                    <EditIcon />
-                  </IconButton>
+                    {actions.map((action) => (
+                      <SpeedDialAction
+                        key={action.name}
+                        icon={action.icon}
+                        tooltipTitle={action.name}
+                        tooltipPlacement="left"
+                        onClick={() => {handleIconClick(action.operation)}}
+                      />
+                    ))}
+                  </SpeedDial>
                 </Box>
               ) : null}
             </Box>
@@ -224,6 +321,12 @@ export default function Details() {
             onUpdated={handleEdited}
             onDeleted={handleDeleted}
           />
+        </EditDialog>
+        <EditDialog open={report} onClose={handleNewReportClose} title='New Report'>
+          <NewReport data={data} isNew={false}/>                 
+        </EditDialog>
+        <EditDialog open={event} onClose={handleNewEventClose} title='New Event'>
+          <EventForm data={data} isNew={false}/>
         </EditDialog>
       </Box>
     </Layout>
