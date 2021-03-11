@@ -35,6 +35,7 @@ import EventForm from "../forms/EventForm";
 import { printPrettyDate, printPrettyTime } from "../../../utils/dateHelpers";
 import GroupLink from "../../../components/GroupLink";
 import EventAttendance from "./EventAttendance";
+import EventMetadata from "./EventMetadata";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -127,14 +128,14 @@ export default function Details() {
 
   const tabs = [
     {
+      name: "Extra data",
+      component: <EventMetadata event={data}/>
+    },
+    {
       name: "Attendance",
       component: (
         <EventAttendance groupId={`${data.groupId}`} eventId={`${data.id}`} />
       )
-    },
-    {
-      name: "Extra data",
-      component: <Typography>Coming soon</Typography>
     }
   ];
 
