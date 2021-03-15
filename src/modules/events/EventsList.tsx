@@ -63,10 +63,10 @@ const headCells: XHeadCell[] = [
     label: "Name",
     render: (value, rec) => <EventLink id={value} name={rec.name} />
   },
-  { name: "categoryId", label: "Category" },
+  { name: "category.name", label: "Category" },
   { name: "startDate", label: "Start Date", render: printDate },
   {
-    name: "groupId",
+    name: "group",
     label: "Group",
     render: value =>
       hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-"
@@ -79,11 +79,8 @@ const toMobileRow = (data: IEvent): IMobileRow => {
     primary: data.name,
     secondary: (
       <>
-        <Typography variant="caption" color="textSecondary" display="block">
-          {data.name}
-        </Typography>
         <Typography variant="caption" color="textSecondary">
-          {data.categoryId}: {printDate(data.startDate)}
+          {data.category.name}: {printDate(data.startDate)}
         </Typography>
       </>
     )

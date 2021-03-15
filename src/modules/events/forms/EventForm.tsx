@@ -18,7 +18,6 @@ import { cleanComboValue } from "../../../utils/dataHelpers";
 import { parseGooglePlace } from "../../../components/plain-inputs/PMapsInput";
 import { XMapsInput } from "../../../components/inputs/XMapsInput";
 import { IEvent } from "../types";
-import XDateInput from "../../../components/inputs/XDateInput";
 import XDateTimeInput from "../../../components/inputs/XDateTimeInput";
 
 interface IProps {

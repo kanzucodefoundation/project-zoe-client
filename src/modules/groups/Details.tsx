@@ -23,16 +23,16 @@ import Loading from "../../components/Loading";
 import { Alert, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@material-ui/lab";
 import { useHistory, useParams } from "react-router";
 import Layout from "../../components/layout/Layout";
-import IconButton from "@material-ui/core/IconButton";
 import MapLink from "../../components/MapLink";
 import { IState } from "../../data/types";
 import { hasAnyRole } from "../../data/appRoles";
 import MemberRequests from "./members/MemberRequests";
 import TabbedView from "./TabbedView";
 import XBreadCrumbs from "../../components/XBreadCrumbs";
-import NewReport from "./groupReports/NewReport";
-import GroupEventsList from "./groupReports/GroupEventsList";
+import GroupEventsList from "./GroupEventsList";
 import EventForm from "../events/forms/EventForm";
+import ReportForm from "../reports/forms/ReportForm";
+import GroupReportsList from "./GroupReportsList";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -87,8 +87,8 @@ export default function Details() {
   let { groupId } = useParams();
   const history = useHistory();
   const [dialog, setDialog] = useState<boolean>(false);
-  const [report, setNewReport] = useState<boolean>(false)
-  const [event, setNewEvent] = useState<boolean>(false)
+  const [report, setNewReport] = useState<boolean>(false);
+  const [event, setNewEvent] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<IGroup | null>(null);
   const [open, setOpen] = useState(false)
@@ -148,6 +148,9 @@ export default function Details() {
       setNewReport(false)
   }
 
+  const createEventTitle = "New Event";
+  const createReportTitle = "New Report";
+
   function handleNewEvent (){
     setNewEvent(true)
   }
@@ -156,22 +159,16 @@ export default function Details() {
     setNewEvent(false)
   }
 
-  //handler function
   const handleIconClick = (operation:any)=>{
       if(operation==='Edit Group'){
-        // do something 
         handleEdit()
-        console.log('Edit clicked')
-      }else if(operation==='New Report'){
-        //do something else
-        handleNewReport()
-        console.log('New Report clicked')
       }else if(operation==='New Event'){
-        //do something else
         handleNewEvent()
-        console.log('New Event clicked')
       }
-      setOpen(!open); //To close the speed dial
+      else if(operation==='New Report'){
+        handleNewReport()
+      }
+      setOpen(!open);
   }
 
   if (loading)
@@ -199,6 +196,8 @@ export default function Details() {
     history.push(localRoutes.groups);
   }
 
+  
+
   const tabs = [
     {
       name: "Members",
@@ -212,11 +211,11 @@ export default function Details() {
     });
     tabs.push({
       name: "Events",
-      component: <GroupEventsList />
+      component: <GroupEventsList groupId={Number(groupId)} />
     });
     tabs.push({
       name: "Reports",
-      component: <MemberRequests group={data} />
+      component: <GroupReportsList />
     });
   }
 
@@ -322,11 +321,11 @@ export default function Details() {
             onDeleted={handleDeleted}
           />
         </EditDialog>
-        <EditDialog open={report} onClose={handleNewReportClose} title='New Report'>
-          <NewReport data={data} isNew={false}/>                 
+        <EditDialog title={createEventTitle} open={event} onClose={handleNewEventClose}>
+          <EventForm data={{}} isNew={true} onCreated={handleNewEventClose}/>
         </EditDialog>
-        <EditDialog open={event} onClose={handleNewEventClose} title='New Event'>
-          <EventForm data={data} isNew={false}/>
+        <EditDialog title={createReportTitle} open={report} onClose={handleNewReportClose} >
+          <ReportForm data={{}} isNew={true} onCreated={handleNewReportClose}/>                 
         </EditDialog>
       </Box>
     </Layout>
