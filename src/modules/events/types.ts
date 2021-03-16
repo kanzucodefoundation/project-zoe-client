@@ -24,4 +24,12 @@ export interface IAttendance {
   contactId: number;
 }
 
+export interface IGroupEvent {
+  id: string;
+  group: any;
+  groupId: number;
+  category: any;
+  categoryId: string;
+}
+
 export interface MetaData {}

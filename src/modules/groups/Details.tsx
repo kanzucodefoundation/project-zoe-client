@@ -13,21 +13,26 @@ import { Theme } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
+import EventIcon from '@material-ui/icons/Event';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
 import MembersList from "./members/MembersList";
 import { grey } from "@material-ui/core/colors";
 import { get } from "../../utils/ajax";
 import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
 import Loading from "../../components/Loading";
-import { Alert } from "@material-ui/lab";
+import { Alert, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@material-ui/lab";
 import { useHistory, useParams } from "react-router";
 import Layout from "../../components/layout/Layout";
-import IconButton from "@material-ui/core/IconButton";
 import MapLink from "../../components/MapLink";
 import { IState } from "../../data/types";
 import { hasAnyRole } from "../../data/appRoles";
 import MemberRequests from "./members/MemberRequests";
 import TabbedView from "./TabbedView";
 import XBreadCrumbs from "../../components/XBreadCrumbs";
+import GroupEventsList from "./GroupEventsList";
+import EventForm from "../events/forms/EventForm";
+import ReportForm from "../reports/forms/ReportForm";
+import GroupReportsList from "./GroupReportsList";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,16 +56,42 @@ const useStyles = makeStyles((theme: Theme) =>
       minHeight: 100,
       borderRadius: 5,
       backgroundColor: grey[100]
+    },
+    speedDial: {
+        position: 'fixed',
+        '&.MuiSpeedDial-directionDown': {
+            top: theme.spacing(13),
+            right: theme.spacing(4),
+        }
+    },
+    '@media (max-width: 480px)': {
+        speedDial:{
+            position:'relative',
+            '&.MuiSpeedDial-directionDown': {
+                top: theme.spacing(1),
+                right: theme.spacing(-2),
+            }
+        }
     }
   })
 );
+
+const actions = [
+  { icon: <EditIcon color="primary" />, name: 'Edit Group', operation: 'Edit Group' },
+  { icon: <EventIcon color="primary"/>, name: 'New Event', operation: 'New Event'},
+  { icon: <NoteAddIcon color="primary" />, name: 'New Report', operation: 'New Report'},
+];
+
 
 export default function Details() {
   let { groupId } = useParams();
   const history = useHistory();
   const [dialog, setDialog] = useState<boolean>(false);
+  const [report, setNewReport] = useState<boolean>(false);
+  const [event, setNewEvent] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<IGroup | null>(null);
+  const [open, setOpen] = useState(false)
   const profile = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
 
@@ -101,6 +132,45 @@ export default function Details() {
     setData(dt);
   }
 
+  const handleDialClose = () => {
+    setOpen(false);
+  };
+
+  const handleDialOpen = () => {
+      setOpen(true);
+  };
+
+  function handleNewReport (){
+      setNewReport(true)
+  }
+
+  function handleNewReportClose (){
+      setNewReport(false)
+  }
+
+  const createEventTitle = "New Event";
+  const createReportTitle = "New Report";
+
+  function handleNewEvent (){
+    setNewEvent(true)
+  }
+
+  function handleNewEventClose (){
+    setNewEvent(false)
+  }
+
+  const handleIconClick = (operation:any)=>{
+      if(operation==='Edit Group'){
+        handleEdit()
+      }else if(operation==='New Event'){
+        handleNewEvent()
+      }
+      else if(operation==='New Report'){
+        handleNewReport()
+      }
+      setOpen(!open);
+  }
+
   if (loading)
     return (
       <Layout>
@@ -126,6 +196,8 @@ export default function Details() {
     history.push(localRoutes.groups);
   }
 
+  
+
   const tabs = [
     {
       name: "Members",
@@ -136,6 +208,14 @@ export default function Details() {
     tabs.push({
       name: "Pending requests",
       component: <MemberRequests group={data} />
+    });
+    tabs.push({
+      name: "Events",
+      component: <GroupEventsList groupId={Number(groupId)} />
+    });
+    tabs.push({
+      name: "Reports",
+      component: <GroupReportsList />
     });
   }
 
@@ -171,15 +251,31 @@ export default function Details() {
               </Box>
 
               {isLeader() ? (
-                <Box pr={2}>
-                  <IconButton
-                    aria-label="Edit"
-                    color="primary"
-                    title="Edit Group"
-                    onClick={handleEdit}
+                <Box pr={2} flexGrow={1}>
+                  <SpeedDial
+                    ariaLabel="SpeedDial"
+                    className={classes.speedDial}
+                    icon={<SpeedDialIcon />}
+                    onClose={handleDialClose}
+                    onOpen={handleDialOpen}
+                    onClick={handleIconClick}
+                    open={open}
+                    direction='down'
+                    color='primary'
+                    FabProps={{
+                      size: 'small',
+                    }}
                   >
-                    <EditIcon />
-                  </IconButton>
+                    {actions.map((action) => (
+                      <SpeedDialAction
+                        key={action.name}
+                        icon={action.icon}
+                        tooltipTitle={action.name}
+                        tooltipPlacement="left"
+                        onClick={() => {handleIconClick(action.operation)}}
+                      />
+                    ))}
+                  </SpeedDial>
                 </Box>
               ) : null}
             </Box>
@@ -224,6 +320,12 @@ export default function Details() {
             onUpdated={handleEdited}
             onDeleted={handleDeleted}
           />
+        </EditDialog>
+        <EditDialog title={createEventTitle} open={event} onClose={handleNewEventClose}>
+          <EventForm data={{}} isNew={true} onCreated={handleNewEventClose}/>
+        </EditDialog>
+        <EditDialog title={createReportTitle} open={report} onClose={handleNewReportClose} >
+          <ReportForm data={{}} isNew={true} onCreated={handleNewReportClose}/>                 
         </EditDialog>
       </Box>
     </Layout>

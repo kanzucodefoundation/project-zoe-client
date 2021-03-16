@@ -16,7 +16,10 @@ export const appRoles = {
   roleGroupEdit: "GROUP_EDIT",
 
   roleEventView: "EVENT_VIEW",
-  roleEventEdit: "EVENT_EDIT"
+  roleEventEdit: "EVENT_EDIT",
+
+  roleReportView: "REPORT_VIEW",
+  roleReportEdit: "REPORT_EDIT"
 };
 
 export const rolesList = Object.values(appRoles);
@@ -37,6 +40,9 @@ export const localRoutes = {
 
   events: "/events",
   eventsDetails: "/events/:eventId",
+
+  reports: "/reports",
+  reportsDetails: "/reports/:reportId",
 
   users: "/admin/users",
   usersGroups: "/admin/user-groups",
@@ -90,6 +96,9 @@ export const remoteRoutes = {
   eventsCategories: url + "/api/events/category",
   eventsAttendance: url + "/api/events/attendance",
   eventsField: url + "/api/events/fields",
+
+  reports: url + "/api/reports/report",
+  reportsCategories: url + "api/reports/category",
 
   contactsCompany: url + "/api/crm/contact/company",
   contactsAvatar: url + "/api/crm/contact/avatar"

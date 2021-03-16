@@ -10,6 +10,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import SettingsIcon from "@material-ui/icons/Settings";
 import HelpIcon from "@material-ui/icons/Help";
 import EventIcon from "@material-ui/icons/Event";
+import AssessmentIcon from '@material-ui/icons/Assessment';
 import { useHistory, useLocation } from "react-router-dom";
 import { appRoles, localRoutes } from "../../data/constants";
 import appLogo from "../../assets/cool.png";
@@ -67,6 +68,11 @@ const routes: IAppRoute[] = [
     name: "Events",
     route: localRoutes.events,
     icon: EventIcon,
+  },
+  {
+    name: "Reports",
+    route: localRoutes.reports,
+    icon: AssessmentIcon
   },
   {
     requiredRoles: [appRoles.roleUserEdit, appRoles.roleUserEdit],

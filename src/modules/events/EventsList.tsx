@@ -72,6 +72,7 @@ const headCells: XHeadCell[] = [
     label: "Start Date", 
     render: printDate 
   },
+
   {
     name: "group",
     label: "Group",
@@ -100,6 +101,7 @@ const toMobileRow = (data: IEvent): IMobileRow => {
         </Typography>
         <Typography variant="caption" color="textSecondary" display="block">
           Attendance: {(data.attendance.length/data.group.members.length)*100}%
+
         </Typography>
       </>
     )

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import * as yup from "yup";
 import { reqDate, reqObject, reqString } from "../../../data/validations";
 import { FormikHelpers } from "formik";
@@ -6,23 +6,20 @@ import Grid from "@material-ui/core/Grid";
 import XForm from "../../../components/forms/XForm";
 import XTextInput from "../../../components/inputs/XTextInput";
 import { remoteRoutes } from "../../../data/constants";
-import { GroupPrivacy } from "../../groups/types";
-import XSelectInput from "../../../components/inputs/XSelectInput";
-import { toOptions } from "../../../components/inputs/inputHelpers";
-import { enumToArray } from "../../../utils/stringHelpers";
 import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { del } from "../../../utils/ajax";
-import Toast from "../../../utils/Toast";
 import { cleanComboValue } from "../../../utils/dataHelpers";
 import { parseGooglePlace } from "../../../components/plain-inputs/PMapsInput";
+import { Box, Divider, Typography } from "@material-ui/core";
+import XDateInput from "../../../components/inputs/XDateInput";
 import { XMapsInput } from "../../../components/inputs/XMapsInput";
-import { IEvent } from "../types";
-import XDateTimeInput from "../../../components/inputs/XDateTimeInput";
+import { IReport } from "../types";
+import XTextAreaInput from "../../../components/inputs/XTextAreaInput";
 
 interface IProps {
-  data?: Partial<IEvent>;
+  data?: Partial<IReport>;
   isNew: boolean;
+  groupId?: string;
   onCreated?: (g: any) => any;
   onUpdated?: (g: any) => any;
   onDeleted?: (g: any) => any;
@@ -30,33 +27,27 @@ interface IProps {
 }
 
 const schema = yup.object().shape({
-  privacy: reqString,
   category: reqObject,
   name: reqString,
-  details: reqString,
 
   venue: reqObject,
   group: reqObject,
 
-  startDate: reqDate,
-  endDate: reqDate
+  startDate: reqDate
 });
 
 const initialData = {
   name: "",
-  privacy: GroupPrivacy.Public,
   category: null,
-  details: "",
 
   venue: null,
   group: null,
 
   startDate: new Date(),
-  endDate: new Date(),
   metaData: null
 };
 
-const EventForm = ({
+const ReportForm = ({
   data,
   isNew,
   onCreated,
@@ -65,24 +56,23 @@ const EventForm = ({
   onCancel
 }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [reportType, setReportType] = useState(false);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
-    const toSave: any = {
+     const toSave: any = {
       id: values.id,
       name: values.name,
       details: values.details,
-      privacy: values.privacy,
       categoryId: cleanComboValue(values.category),
 
       startDate: "2021-02-23T11:06:07.926Z",
-      endDate: "2021-02-23T11:06:07.926Z",
 
       venue: parseGooglePlace(values.venue),
       groupId: cleanComboValue(values.group)
     };
 
     const submission: ISubmission = {
-      url: remoteRoutes.events,
+      url: remoteRoutes.reports,
       values: toSave,
       actions,
       isNew,
@@ -96,23 +86,16 @@ const EventForm = ({
         actions.setSubmitting(false);
       }
     };
-    handleSubmission(submission);
+    handleSubmission(submission); 
   }
 
   function handleDelete() {
-    setLoading(true);
-    del(
-      `${remoteRoutes.events}/${data?.id}`,
-      () => {
-        Toast.success("Operation succeeded");
-        onDeleted && onDeleted(data?.id);
-      },
-      undefined,
-      () => {
-        setLoading(false);
-      }
-    );
+    
   }
+
+  const fn_reportType = (value:any) =>{
+    value === "MC Report" ? setReportType(true):setReportType(false);
+  };
 
   const { placeId, name } = data?.venue || {};
   const venue = data?.venue ? { placeId, description: name } : undefined;
@@ -127,33 +110,19 @@ const EventForm = ({
       onCancel={onCancel}
     >
       <Grid spacing={1} container>
-        <Grid item xs={4}>
-          <XSelectInput
-            name="privacy"
-            label="Privacy"
-            options={toOptions(enumToArray(GroupPrivacy))}
-            variant="outlined"
-          />
-        </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={12} md={6}>
           <XRemoteSelect
-            remote={remoteRoutes.eventsCategories}
+            remote={remoteRoutes.reportsCategories}
             name="category"
             label="Category"
             variant="outlined"
+            customOnChange={fn_reportType}
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <XDateTimeInput
+          <XDateInput
             name="startDate"
-            label="Start Date"
-            variant="outlined"
-          />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <XDateTimeInput
-            name="endDate"
-            label="Start Date"
+            label="Date"
             variant="outlined"
           />
         </Grid>
@@ -168,32 +137,80 @@ const EventForm = ({
         <Grid item xs={12}>
           <XTextInput
             name="name"
-            label="Event name"
+            label="Report name"
             type="text"
             variant="outlined"
           />
         </Grid>
-        <Grid item xs={12}>
-          <XMapsInput
-            name="venue"
-            label="Venue"
-            variant="outlined"
-            placeholder="Type to search"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <XTextInput
-            name="details"
-            label="Details"
-            variant="outlined"
-            multiline
-            rowsMax="3"
-            rows={3}
-          />
-        </Grid>
+       {/* {reportType &&  ( */}
+         <Grid spacing={1} container>
+            <Grid item xs={12}>
+              <XMapsInput
+                name="venue"
+                label="Venue"
+                variant="outlined"
+                placeholder="Type to search"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Box pt={2}>
+                <Typography variant="button" display="block">Attendance</Typography>
+              </Box>
+              <Divider/>
+            </Grid>
+            <Grid item xs={12}>
+                <Box pt={2}>
+                  <Typography variant="button" display="block">Highlights</Typography>
+                </Box>
+                <Divider />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <XTextAreaInput
+                name="learningPoints"
+                label="Learning Points"
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <XTextAreaInput
+                name="actionPoints"
+                label="Action Points"
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+                <Box pt={2}>
+                  <Typography variant="button" display="block">Testimonies</Typography>
+                </Box>
+                <Divider />
+            </Grid>
+            <Grid item xs={12}>
+              <XTextAreaInput
+                name="testimonies"
+                label="Testimonies"
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+                <Box pt={2}>
+                  <Typography variant="button" display="block">Prayer Requests</Typography>
+                </Box>
+                <Divider />
+            </Grid>
+            <Grid item xs={12}>
+              <XTextAreaInput
+                name="prayerRequests"
+                label="Prayer Requests"
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+         {/* )}  */}
+        
+        
       </Grid>
     </XForm>
   );
 };
 
-export default EventForm;
+export default ReportForm;
