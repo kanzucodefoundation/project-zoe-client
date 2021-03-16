@@ -63,14 +63,27 @@ const headCells: XHeadCell[] = [
     label: "Name",
     render: (value, rec) => <EventLink id={value} name={rec.name} />
   },
-  { name: "categoryId", label: "Category" },
-  { name: "startDate", label: "Start Date", render: printDate },
+  { 
+    name: "category.name", 
+    label: "Category" 
+  },
+  { 
+    name: "startDate", 
+    label: "Start Date", 
+    render: printDate 
+  },
   {
-    name: "groupId",
+    name: "group",
     label: "Group",
     render: value =>
       hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-"
-  }
+  },
+  {
+    name: "attendance",
+    label: "Attendance",
+    render: (value, rec) => 
+      hasValue(rec) && hasValue(value) ? ((value.length/rec.group.members.length)*100)+'%' : 0+'%'
+  },
 ];
 
 const toMobileRow = (data: IEvent): IMobileRow => {
@@ -82,8 +95,11 @@ const toMobileRow = (data: IEvent): IMobileRow => {
         <Typography variant="caption" color="textSecondary" display="block">
           {data.name}
         </Typography>
-        <Typography variant="caption" color="textSecondary">
-          {data.categoryId}: {printDate(data.startDate)}
+        <Typography variant="caption" color="textSecondary" display="block">
+          {data.category.name}: {printDate(data.startDate)}
+        </Typography>
+        <Typography variant="caption" color="textSecondary" display="block">
+          Attendance: {(data.attendance.length/data.group.members.length)*100}%
         </Typography>
       </>
     )
@@ -116,7 +132,7 @@ const EventsList = () => {
   }
 
   const handleItemClick = (id: string) => () => {
-    history.push(`${localRoutes.contacts}/${id}`);
+    history.push(`${localRoutes.events}/${id}`);
   };
 
   function closeCreateDialog() {
