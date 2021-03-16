@@ -40,12 +40,12 @@ const routes: IAppRoute[] = [
     //requiredRoles: [appRoles.roleDashboard],
     name: "Dashboard",
     route: localRoutes.dashboard,
-    icon: AppsIcon
+    icon: AppsIcon,
   },
   {
     name: "Profile",
     route: localRoutes.profile,
-    icon: PersonIcon
+    icon: PersonIcon,
   },
   {
     requiredRoles: [appRoles.roleCrmView, appRoles.roleCrmEdit],
@@ -54,19 +54,20 @@ const routes: IAppRoute[] = [
     items: [
       {
         name: "People",
-        route: localRoutes.contacts
+        route: localRoutes.contacts,
       },
 
       {
         name: "Groups",
-        route: localRoutes.groups
-      }
-    ]
+        route: localRoutes.groups,
+      },
+    ],
   },
   {
+    requiredRoles: [appRoles.roleEventView, appRoles.roleEventView],
     name: "Events",
     route: localRoutes.events,
-    icon: EventIcon
+    icon: EventIcon,
   },
   {
     name: "Reports",
@@ -81,55 +82,55 @@ const routes: IAppRoute[] = [
     items: [
       {
         name: "Users",
-        route: localRoutes.users
+        route: localRoutes.users,
       },
       {
         name: "Settings",
-        route: localRoutes.settings
-      }
-    ]
+        route: localRoutes.settings,
+      },
+    ],
   },
   {
     name: "Help",
     route: localRoutes.help,
-    icon: HelpIcon
-  }
+    icon: HelpIcon,
+  },
 ];
 const menBackgroundColor = grey[800];
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     logoHolder: {
-      height: 140
+      height: 140,
     },
     logo: {
       [theme.breakpoints.only("xs")]: {
         height: 50,
-        width: "auto"
+        width: "auto",
       },
       height: 58,
-      width: "auto"
+      width: "auto",
     },
     whiteText: {
-      color: "white"
+      color: "white",
     },
     menuItem: {
       "&:hover": {
-        backgroundColor: menBackgroundColor
-      }
+        backgroundColor: menBackgroundColor,
+      },
     },
     nested: {
-      paddingLeft: theme.spacing(4)
-    }
+      paddingLeft: theme.spacing(4),
+    },
   })
 );
 
 const StyledListItem = withStyles({
   root: {
     "&$selected": {
-      backgroundColor: menBackgroundColor
-    }
+      backgroundColor: menBackgroundColor,
+    },
   },
-  selected: {}
+  selected: {},
 })(ListItem);
 
 const NavMenu = (props: any) => {
@@ -156,7 +157,7 @@ const NavMenu = (props: any) => {
   };
 
   const cleanRoutes = (r: IAppRoute[]) => {
-    return r.filter(it => {
+    return r.filter((it) => {
       if (it.items && hasValue(it.items)) {
         it.items = cleanRoutes(it.items);
       }
@@ -179,7 +180,7 @@ const NavMenu = (props: any) => {
       </Grid>
       <Divider />
       <List style={{ paddingTop: 0 }}>
-        {finalRoutes.map(it => {
+        {finalRoutes.map((it) => {
           const Icon = it.icon;
           if (it.items) {
             return (
@@ -204,7 +205,7 @@ const NavMenu = (props: any) => {
                   unmountOnExit
                 >
                   <List component="div" disablePadding>
-                    {it.items.map(ch => (
+                    {it.items.map((ch) => (
                       <StyledListItem
                         button
                         onClick={onClick(ch.route!)}
@@ -212,7 +213,7 @@ const NavMenu = (props: any) => {
                         key={ch.name}
                         className={classes.menuItem}
                         classes={{
-                          selected: classes.menuItem
+                          selected: classes.menuItem,
                         }}
                       >
                         <ListItemText
@@ -235,7 +236,7 @@ const NavMenu = (props: any) => {
               key={it.name}
               className={classes.menuItem}
               classes={{
-                selected: classes.menuItem
+                selected: classes.menuItem,
               }}
             >
               <ListItemIcon>

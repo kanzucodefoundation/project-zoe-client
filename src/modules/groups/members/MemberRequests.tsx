@@ -6,7 +6,6 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Typography
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { remoteRoutes } from "../../../data/constants";
@@ -22,6 +21,19 @@ const MemberRequests = (props: any) => {
   const history = useHistory();
   const [data, setData] = useState<any[]>([]);
   const [isLocation, setIsLocation] = useState<boolean>(false);
+
+  useEffect(() => {
+    let filter = {};
+    if (props.group.categoryId === "Location") {
+      setIsLocation(true);
+      filter = { parentId: props.group.id };
+    } else {
+      filter = { groupId: props.group.id };
+    }
+    search(remoteRoutes.groupsRequest, filter, resp => {
+      setData(resp);
+    });
+  }, [props.group.categoryId, props.group.id]);
 
   function handleApprove(dt: any) {
     const toSave = {
@@ -39,33 +51,15 @@ const MemberRequests = (props: any) => {
 
   function handleDelete(dt: any) {
     del(`${remoteRoutes.groupsRequest}/${dt}`, resp => {
-      Toast.info("USER REQUEST DENIED");
+      Toast.info("User Request Denied");
       setTimeout(() => history.go(0), 3000);
     });
   }
-
-  useEffect(() => {
-    let filter = {};
-    if (props.group.categoryId === "Location") {
-      setIsLocation(true);
-      filter = { parentId: props.group.id };
-    } else {
-      filter = { groupId: props.group.id };
-    }
-    search(remoteRoutes.groupsRequest, filter, resp => {
-      setData(resp);
-    });
-  }, [props.group.categoryId, props.group.id]);
 
   return (
     <Grid container>
       <Grid item xs={12}>
         <Box display="flex" flexDirection="column">
-          <Box pb={1}>
-            <Typography variant="h6" style={{ fontSize: "0.92rem" }}>
-              Pending Members
-            </Typography>
-          </Box>
           <Divider />
           <Box>
             {data.length === 0 ? (

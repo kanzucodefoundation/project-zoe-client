@@ -26,18 +26,18 @@ interface IProps {
 const schema = yup.object().shape({
   password: reqString.min(8),
   contact: reqObject,
-  roles: reqArray
+  roles: reqArray,
 });
 
 const editSchema = yup.object().shape({
   password: yup.string().min(8),
-  roles: reqArray
+  roles: reqArray,
 });
 const initialValues = {
   contact: null,
   password: null,
   roles: [],
-  isActive: true
+  isActive: true,
 };
 const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -46,16 +46,16 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
     const toSave: any = {
       ...values,
       contactId: values.contact.id,
-      password: values.newPassword,
+      password: values.password,
       roles: cleanComboValue(values.roles),
-      isActive: values.isActive
+      isActive: values.isActive,
     };
     const submission: ISubmission = {
       url: remoteRoutes.users,
       values: toSave,
       actions,
       isNew,
-      onAjaxComplete: done
+      onAjaxComplete: done,
     };
     handleSubmission(submission);
   }
@@ -64,7 +64,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
     setLoading(true);
     del(
       remoteRoutes.users,
-      dt => {
+      (dt) => {
         console.log("Delete response", dt);
         Toast.success("Operation succeeded");
         onDeleted(data);
@@ -92,7 +92,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
               name="contact"
               label="Person"
               filter={{
-                skipUsers: true
+                skipUsers: true,
               }}
               remote={remoteRoutes.contactsPeopleCombo}
               parser={comboParser}
@@ -111,7 +111,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
         </Grid>
         <Grid item xs={12}>
           <XTextInput
-            name="newPassword"
+            name="password"
             label="Password"
             type="password"
             value="Hello"
