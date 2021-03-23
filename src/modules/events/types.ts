@@ -9,6 +9,7 @@ export interface IEvent {
   details: string;
   venue?: any;
   categoryId: string;
+  attendancePercentage: string;
   category: any;
   groupId: number;
   group: any;

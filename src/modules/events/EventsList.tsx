@@ -3,8 +3,7 @@ import Navigation from "../../components/layout/Layout";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import XTable from "../../components/table/XTable";
 import { XHeadCell } from "../../components/table/XTableHead";
-import { search } from "../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
+import { appRoles, localRoutes } from "../../data/constants";
 import Loading from "../../components/Loading";
 import Box from "@material-ui/core/Box";
 import Hidden from "@material-ui/core/Hidden";
@@ -21,7 +20,6 @@ import Divider from "@material-ui/core/Divider";
 import { useHistory } from "react-router";
 import { hasValue } from "../../components/inputs/inputHelpers";
 import { useDispatch, useSelector } from "react-redux";
-import { crmConstants, ICrmState } from "../../data/contacts/reducer";
 import { printDate } from "../../utils/dateHelpers";
 import GroupLink from "../../components/GroupLink";
 import PersonAvatar from "../../components/PersonAvatar";
@@ -34,26 +32,22 @@ import EventsFilter from "./EventsFilter";
 import EventForm from "./forms/EventForm";
 import EventLink from "./EventLink";
 import { IEvent } from "./types";
-import events, {
-  eventsConstants,
-  eventsFetchAsync,
-  IEventState
-} from "../../data/events/eventsReducer";
+import { eventsFetchAsync, IEventState } from "../../data/events/eventsReducer";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      flexGrow: 1
+      flexGrow: 1,
     },
     filterPaper: {
       borderRadius: 0,
-      padding: theme.spacing(2)
+      padding: theme.spacing(2),
     },
     fab: {
       position: "absolute",
       bottom: theme.spacing(2),
-      right: theme.spacing(2)
-    }
+      right: theme.spacing(2),
+    },
   })
 );
 
@@ -61,29 +55,28 @@ const headCells: XHeadCell[] = [
   {
     name: "id",
     label: "Name",
-    render: (value, rec) => <EventLink id={value} name={rec.name} />
+    render: (value, rec) => <EventLink id={value} name={rec.name} />,
   },
-  { 
-    name: "category.name", 
-    label: "Category" 
+  {
+    name: "category.name",
+    label: "Category",
   },
-  { 
-    name: "startDate", 
-    label: "Start Date", 
-    render: printDate 
+  {
+    name: "startDate",
+    label: "Start Date",
+    render: printDate,
   },
 
   {
     name: "group",
     label: "Group",
-    render: value =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-"
+    render: (value) =>
+      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-",
   },
   {
-    name: "attendance",
+    name: "attendancePercentage",
     label: "Attendance",
-    render: (value, rec) => 
-      hasValue(rec) && hasValue(value) ? ((value.length/rec.group.members.length)*100)+'%' : 0+'%'
+    render: (value) => value + "%",
   },
 ];
 
@@ -100,10 +93,10 @@ const toMobileRow = (data: IEvent): IMobileRow => {
           {data.category.name}: {printDate(data.startDate)}
         </Typography>
         <Typography variant="caption" color="textSecondary" display="block">
-          Attendance: {(data.attendance.length/data.group.members.length)*100}%
+          Attendance: {data.attendancePercentage} %
         </Typography>
       </>
-    )
+    ),
   };
 };
 
@@ -115,7 +108,7 @@ const EventsList = () => {
     (state: any) => state.events
   );
   const [filter, setFilter] = useState<IContactsFilter>({
-    limit: 200
+    limit: 200,
   });
   const user = useSelector((state: IState) => state.core.user);
   const classes = useStyles();

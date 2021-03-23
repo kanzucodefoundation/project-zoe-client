@@ -25,6 +25,7 @@ import { hasAnyRole } from "../../../data/appRoles";
 
 interface IProps {
   groupId: number;
+  isLeader: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -32,12 +33,12 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       width: "100%",
       maxWidth: 360,
-      backgroundColor: theme.palette.background.paper
-    }
+      backgroundColor: theme.palette.background.paper,
+    },
   })
 );
 
-const MembersList = ({ groupId }: IProps) => {
+const MembersList = ({ groupId, isLeader }: IProps) => {
   const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
   const [addingMembers, setAddingMembers] = useState<boolean>(false);
@@ -51,9 +52,9 @@ const MembersList = ({ groupId }: IProps) => {
     search(
       remoteRoutes.groupsMembership,
       {
-        groupId: groupId
+        groupId: groupId,
       },
-      data => {
+      (data) => {
         setData(data);
       },
       undefined,
@@ -66,28 +67,6 @@ const MembersList = ({ groupId }: IProps) => {
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
-
-  const getLeader = (data: any) => {
-    search(remoteRoutes.groupsMembership, data, resp => {
-      if (resp.length > 0) {
-        if ((resp[0].role = "Leader")) {
-          setLeader(true);
-        }
-      }
-    });
-  };
-
-  const isLeader = () => {
-    const info = {
-      groupId: groupId,
-      contactId: profile.id
-    };
-    getLeader(info);
-    if (leader && hasAnyRole(profile, [appRoles.roleGroupEdit])) {
-      return true;
-    }
-    return false;
-  };
 
   function handleAddNew() {
     setAddingMembers(true);
@@ -128,7 +107,7 @@ const MembersList = ({ groupId }: IProps) => {
       <Grid item xs={12}>
         <Box display="flex" pt={1} style={{ paddingBottom: 20 }}>
           <Box display="flex" justifyContent="flex-end">
-            {isLeader() ? (
+            {isLeader ? (
               <Button
                 variant="contained"
                 color="primary"
@@ -152,7 +131,7 @@ const MembersList = ({ groupId }: IProps) => {
               </Alert>
             </ListItem>
           ) : (
-            data.map(mbr => {
+            data.map((mbr) => {
               return (
                 <ListItem key={mbr.id} button onClick={handleSelected(mbr)}>
                   <ListItemAvatar>
@@ -178,7 +157,7 @@ const MembersList = ({ groupId }: IProps) => {
         <MembersEditor group={{ id: groupId }} done={handleDone} />
       </EditDialog>
 
-      {isLeader() ? (
+      {isLeader ? (
         <EditDialog
           open={Boolean(selected)}
           onClose={() => setSelected(null)}
