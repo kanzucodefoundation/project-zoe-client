@@ -1,98 +1,70 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../../components/layout/Layout";
 import { Grid } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
-import Widget from "./Widget";
 import Box from "@material-ui/core/Box";
-import Money from "@material-ui/icons/Money";
-import Info from "@material-ui/icons/Info";
-import People from "@material-ui/icons/People";
-import { printInteger, printMoney } from "../../utils/numberHelpers";
-import UsersByDevice from "./UsersByDevice";
+import { format, lastDayOfWeek, startOfWeek } from 'date-fns';
+import Loading from "../../components/Loading";
+import DashboardData from "./DashboardData";
+import { addDays } from "date-fns/esm";
+import { search } from "../../utils/ajax";
+import { remoteRoutes } from "../../data/constants";
 
-const data = [
-  {
-    title: "Giving",
-    value: printMoney(20088766),
-    percentage: -6,
-    icon: Money
-  },
-  {
-    title: "Attendance",
-    value: printInteger(2567),
-    percentage: 4,
-    icon: Info
-  },
-  {
-    title: "MC Attendance",
-    value: 256,
-    percentage: 1,
-    icon: People
-  },
-  {
-    title: "Salvation",
-    value: 45,
-    percentage: 2,
-    icon: People
-  },
-  {
-    title: "No. of mechanics",
-    value: 56,
-    percentage: 4,
-    icon: People
-  },
-  {
-    title: "No. of Baptisms",
-    value: 5,
-    percentage: 5,
-    icon: People
-  },
-  {
-    title: "No. of recommitments",
-    value: 23,
-    percentage: 7,
-    icon: People
-  },
-  {
-    title: "No. of babies born",
-    value: 5,
-    percentage: 1,
-    icon: People
-  },
-  {
-    title: "No. of weddings",
-    value: 3,
-    percentage: 6,
-    icon: People
+const Dashboard = () => {
+  const today = new Date()
+  const lastWeekDate = addDays(today, -7)
+  const startPeriod = startOfWeek(today)
+  const endPeriod = lastDayOfWeek(today)
+  const [currWeek, setCurrWeek] = useState<any[]>([])
+  const [prevWeek, setPrevWeek] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true);
+  const currFilter = {
+    periodStart: format(startPeriod, 'yyyy-MM-dd'),
+    periodEnd: format(endPeriod, 'yyyy-MM-dd')
   }
-];
+  const prevFilter = {
+    periodStart: format(startOfWeek(lastWeekDate), 'yyyy-MM-dd'),
+    periodEnd: format(lastDayOfWeek(lastWeekDate), 'yyyy-MM-dd')
+  }
 
-export default function SimpleSelect() {
+  useEffect(() => {
+    setLoading(true)
+
+    search(remoteRoutes.events, currFilter, resp => {
+      setCurrWeek(resp)
+    })
+    
+    search(remoteRoutes.events, prevFilter, resp => {
+      setPrevWeek(resp)
+    })
+
+    setLoading(false)
+  }, [currFilter.periodStart, currFilter.periodEnd,]);
+
   return (
     <Layout>
       <Box p={2}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="overline" component="div">
+            <Typography variant="button" component="div"> 
               Dashboard
             </Typography>
             <Typography variant="caption" component="div">
               Here's what's happening
             </Typography>
+            <Typography variant="overline" component="div">
+              {`${format(new Date(startPeriod), 'PP')} - ${format(new Date(endPeriod), 'PP')}`}
+            </Typography>
           </Grid>
-          {data.map(it => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={it.title}>
-              <Widget {...it} />
-            </Grid>
-          ))}
-          <Grid item xs={12} md={6}>
-            <UsersByDevice />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <UsersByDevice />
-          </Grid>
+          {loading ? (
+            <Loading /> ) : (
+            <DashboardData currWeekEvents={currWeek} prevWeekEvents={prevWeek}/>
+          )}
         </Grid>
       </Box>
     </Layout>
-  );
+  )
 }
+
+export default Dashboard;
+

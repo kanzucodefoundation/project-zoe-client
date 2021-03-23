@@ -26,21 +26,14 @@ const ContactGroups = ({ isOwnProfile, contactId, contact }: IProps) => {
   useEffect(() => {
     get(remoteRoutes.groupsMembership + `/?contactId=` + contactId, resp => {
       const groups: ITeamMember[] = [];
-      // TODO @mariam, please change this to user array.map
-      let i = 0;
-      if (i === resp.length) {
-        return;
-      }
-      while (i < resp.length) {
-        const single = {
-          id: resp[i].group.id,
-          name: resp[i].group.name,
-          details: resp[i].group.groupDetails,
-          role: resp[i].role
-        };
-        groups.push(single);
-        i++;
-      }
+      resp.map((it: any) => {
+        groups.push({
+          id: it.group.id,
+          name: it.group.name,
+          details: it.group.groupDetails,
+          role: it.role
+        })
+      })
       setData(groups);
     });
   }, [contactId]);
