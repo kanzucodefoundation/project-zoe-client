@@ -24,6 +24,14 @@ export const appRoles = {
 
 export const rolesList = Object.values(appRoles);
 
+export const eventsCategories = {
+  garage: "Garage",
+  evangelism: "Evangelism",
+  wedding: "Wedding",
+  baptism: "Baptism",
+  mc: "MC Meeting"
+}
+
 export const redux = {
   doLogin: "DO_LOGIN",
   doLogout: "DO_LOGOUT",

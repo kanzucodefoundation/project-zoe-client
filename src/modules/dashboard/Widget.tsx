@@ -100,7 +100,7 @@ const Widget = (props: IProps) => {
                     <Typography
                         variant="caption"
                     >
-                        Since last month
+                        Since last week
                     </Typography>
                 </div>
             </CardContent>

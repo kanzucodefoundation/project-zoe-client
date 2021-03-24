@@ -74,8 +74,8 @@ const EventForm = ({
       privacy: values.privacy,
       categoryId: cleanComboValue(values.category),
 
-      startDate: "2021-02-23T11:06:07.926Z",
-      endDate: "2021-02-23T11:06:07.926Z",
+      startDate: values.startDate,
+      endDate: values.endDate, 
 
       venue: parseGooglePlace(values.venue),
       groupId: cleanComboValue(values.group)
@@ -153,7 +153,7 @@ const EventForm = ({
         <Grid item xs={12} md={6}>
           <XDateTimeInput
             name="endDate"
-            label="Start Date"
+            label="End Date"
             variant="outlined"
           />
         </Grid>
