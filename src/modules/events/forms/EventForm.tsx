@@ -19,6 +19,8 @@ import { parseGooglePlace } from "../../../components/plain-inputs/PMapsInput";
 import { XMapsInput } from "../../../components/inputs/XMapsInput";
 import { IEvent } from "../types";
 import XDateTimeInput from "../../../components/inputs/XDateTimeInput";
+import { useSelector } from "react-redux";
+import { IState } from "../../../data/types";
 
 interface IProps {
   data?: Partial<IEvent>;
@@ -65,6 +67,7 @@ const EventForm = ({
   onCancel
 }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const user = useSelector((state: IState) => state.core.user);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: any = {
@@ -73,9 +76,13 @@ const EventForm = ({
       details: values.details,
       privacy: values.privacy,
       categoryId: cleanComboValue(values.category),
+      parentId: values.group.parentId,
 
       startDate: values.startDate,
       endDate: values.endDate, 
+
+      submittedAt: new Date(),
+      submittedBy: user.contactId,
 
       venue: parseGooglePlace(values.venue),
       groupId: cleanComboValue(values.group)

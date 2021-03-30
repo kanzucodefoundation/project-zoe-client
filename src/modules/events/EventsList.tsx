@@ -3,7 +3,7 @@ import Navigation from "../../components/layout/Layout";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import XTable from "../../components/table/XTable";
 import { XHeadCell } from "../../components/table/XTableHead";
-import { appRoles, localRoutes } from "../../data/constants";
+import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
 import Loading from "../../components/Loading";
 import Box from "@material-ui/core/Box";
 import Hidden from "@material-ui/core/Hidden";
@@ -31,8 +31,10 @@ import { IContactsFilter } from "../contacts/types";
 import EventsFilter from "./EventsFilter";
 import EventForm from "./forms/EventForm";
 import EventLink from "./EventLink";
-import { IEvent } from "./types";
+import { EventCategory, IEvent } from "./types";
 import { eventsFetchAsync, IEventState } from "../../data/events/eventsReducer";
+import { search } from "../../utils/ajax";
+import { GroupCategory, GroupRole } from "../groups/types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -66,7 +68,6 @@ const headCells: XHeadCell[] = [
     label: "Start Date",
     render: printDate,
   },
-
   {
     name: "group",
     label: "Group",
@@ -114,7 +115,18 @@ const EventsList = () => {
   const classes = useStyles();
 
   useEffect(() => {
-    dispatch(eventsFetchAsync(filter));
+    search(remoteRoutes.groupsMembership, {contactId: user.contactId}, resp => {
+      resp.map((it: any) => {
+        if (it.role === GroupRole.Leader) { 
+          if (it.category.id === GroupCategory.MC) {
+            dispatch(eventsFetchAsync({filter, groupId: it.groupId})); 
+          }
+          if (it.category.id === GroupCategory.Cohort) { 
+            dispatch(eventsFetchAsync({filter, parentId: it.groupId, categoryId: EventCategory.WeeklyMC}));
+          }
+        }
+      })
+    })
   }, [filter, dispatch]);
 
   function handleFilter(value: any) {
@@ -138,7 +150,7 @@ const EventsList = () => {
     <Navigation>
       <Box p={1} className={classes.root}>
         <ListHeader
-          title="Events"
+          title="Reports"
           onFilter={handleFilter}
           filter={filter}
           filterComponent={<EventsFilter onFilter={handleFilter} />}

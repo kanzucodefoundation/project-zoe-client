@@ -39,6 +39,14 @@ export enum GroupRole {
   Leader = "Leader"
 }
 
+export enum GroupCategory {
+  Cohort = "Cohort",
+  MC = "MC",
+  GarageTeam = "GarageTeam",
+  Huddle = "Huddle",
+  Location = "Loaction",
+}
+
 export interface IStats {
   isComplete: boolean;
   percentage: number;
