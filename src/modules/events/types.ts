@@ -33,4 +33,13 @@ export interface IGroupEvent {
   categoryId: string;
 }
 
+export enum EventCategory {
+  WeeklyMC = "Weekly MC",
+  Garage = "Garage",
+  Evangelism = "Evangelism",
+  Wedding = "Wedding",
+  Baptism = "Baptism",
+  MC = "MC Meeting"
+}
+
 export interface MetaData {}
