@@ -29,7 +29,7 @@ import XBreadCrumbs from "../../../components/XBreadCrumbs";
 import {
   eventFetchAsync,
   eventsEdit,
-  IEventState
+  IEventState,
 } from "../../../data/events/eventsReducer";
 import EventForm from "../forms/EventForm";
 import { printPrettyDate, printPrettyTime } from "../../../utils/dateHelpers";
@@ -43,28 +43,28 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
       padding: theme.spacing(2),
       [theme.breakpoints.up("sm")]: {
-        padding: theme.spacing(1)
-      }
+        padding: theme.spacing(1),
+      },
     },
     largeIcon: {
       width: theme.spacing(6),
-      height: theme.spacing(6)
+      height: theme.spacing(6),
     },
 
     rootPaper: {
       padding: theme.spacing(2),
-      borderRadius: 0
+      borderRadius: 0,
     },
     description: {
       minHeight: 100,
       borderRadius: 5,
-      backgroundColor: grey[100]
-    }
+      backgroundColor: grey[100],
+    },
   })
 );
 
 export default function Details() {
-  let { eventId } = useParams();
+  let { eventId } = useParams<any>();
   const history = useHistory();
   const [dialog, setDialog] = useState<boolean>(false);
   const { selected: data, loading }: IEventState = useSelector(
@@ -81,7 +81,7 @@ export default function Details() {
   const isLeader = () => {
     const userId = `${profile.id}`;
     const _leaderIds: number[] = data?.leaders || [];
-    const leaderIds: string[] = _leaderIds.map(it => `${it}`);
+    const leaderIds: string[] = _leaderIds.map((it) => `${it}`);
 
     const isLeader = leaderIds.indexOf(userId) > -1;
 
@@ -129,14 +129,14 @@ export default function Details() {
   const tabs = [
     {
       name: "Extra data",
-      component: <EventMetadata event={data}/>
+      component: <EventMetadata event={data} />,
     },
     {
       name: "Attendance",
       component: (
         <EventAttendance groupId={`${data.groupId}`} eventId={`${data.id}`} />
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -148,12 +148,12 @@ export default function Details() {
             paths={[
               {
                 path: localRoutes.home,
-                label: "Dashboard"
+                label: "Dashboard",
               },
               {
                 path: localRoutes.events,
-                label: "Events"
-              }
+                label: "Events",
+              },
             ]}
           />
         </Box>
