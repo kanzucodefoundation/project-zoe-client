@@ -20,12 +20,7 @@ import { grey } from "@material-ui/core/colors";
 import { get } from "../../utils/ajax";
 import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
 import Loading from "../../components/Loading";
-import {
-  Alert,
-  SpeedDial,
-  SpeedDialAction,
-  SpeedDialIcon,
-} from "@material-ui/lab";
+import { Alert, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@material-ui/lab";
 import { useHistory, useParams } from "react-router";
 import Layout from "../../components/layout/Layout";
 import MapLink from "../../components/MapLink";
@@ -263,7 +258,8 @@ export default function Details() {
               </Box>
               <Box flexGrow={1}>
                 <Typography variant="h6">{data.name}</Typography>
-                <Typography variant="body2">{`${data.privacy}, ${data.category.name}`}</Typography>
+                <Typography variant="body1">{`${data.privacy}, ${data.category.name}`}</Typography>
+                <Typography variant="overline">{`Attendance This Month: ${data.totalAttendance} (${20}%)`}</Typography>
               </Box>
 
               {isLeader() ? (

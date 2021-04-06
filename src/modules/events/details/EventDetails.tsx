@@ -190,7 +190,7 @@ export default function Details() {
                   <PeopleIcon />
                 </Box>
                 <Box flexGrow={1} pt={0.5}>
-                  <GroupLink id={data.group?.name} name={data.group?.name} />
+                  <GroupLink id={data.group?.id} name={data.group?.name} />
                 </Box>
               </Box>
               <Box display="flex" pt={1}>
