@@ -14,6 +14,8 @@ export interface IGroup {
   leaders?: number[];
   children?: number[];
   totalAttendance?: number;
+  averageAttendance?: string;
+  childEvents?: any[];
 }
 
 export interface IGroupMembership {

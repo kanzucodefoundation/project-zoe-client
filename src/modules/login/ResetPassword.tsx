@@ -23,13 +23,11 @@ function ResetPassword() {
         const token = localStorage.getItem('password_token')
         put(remoteRoutes.resetPassword + '/' + token, data, resp => {
             actions.resetForm()
-            console.log(resp)
             localStorage.removeItem('password_token')
             history.push(localRoutes.updatePassword)
         }, () => {
             Toast.error("Password change was unsuccessful. Try again")
             actions.setSubmitting(false)
-            console.log(token)
             actions.resetForm()
         })
     }

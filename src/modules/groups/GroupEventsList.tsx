@@ -6,28 +6,22 @@ import {
   Hidden,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemText,
   makeStyles,
   Theme,
   Typography,
 } from "@material-ui/core";
-import React, { Fragment, useCallback, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import { IMobileRow } from "../../components/DataList";
-import PersonAvatar from "../../components/PersonAvatar";
 import { XHeadCell } from "../../components/table/XTableHead";
 import { printDate } from "../../utils/dateHelpers";
 import EventLink from "../events/EventLink";
-import { IEvent, IGroupEvent } from "../events/types";
-import Loading from "../../components/Loading";
+import { IEvent } from "../events/types";
 import XTable from "../../components/table/XTable";
 import { useHistory } from "react-router";
-import { localRoutes, remoteRoutes } from "../../data/constants";
-import { search } from "../../utils/ajax";
+import { localRoutes } from "../../data/constants";
 import { Alert } from "@material-ui/lab";
-import EditDialog from "../../components/EditDialog";
-import EventForm from "../events/forms/EventForm";
-import { IGroup } from "./types";
+import GroupLink from "../../components/GroupLink";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,9 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface IProps {
-  groupId: number;
-  group: IGroup;
-  isLeader: boolean;
+  childEvents: IEvent[];
 }
 
 const headCells: XHeadCell[] = [
@@ -49,107 +41,74 @@ const headCells: XHeadCell[] = [
     label: "Name",
     render: (value, rec) => <EventLink id={value} name={rec.name} />,
   },
-  { name: "category.name", label: "Category" },
-  { name: "startDate", label: "Start Date", render: printDate },
-  { name: "attendance", label: "Attendance" },
+  { 
+    name: "category.name", 
+    label: "Category" 
+  },
+  {
+    name: "group.id",
+    label: "Group",
+    render: (value, rec) => <GroupLink id={value} name={rec.name}/>,
+  },
+  { 
+    name: "startDate", 
+    label: "Start Date", 
+    render: printDate 
+  },
+  {
+    name: "attendancePercentage",
+    label: "Attendance (%)",
+  },
 ];
 
 const toMobileRow = (data: IEvent): IMobileRow => {
   return {
-    avatar: <PersonAvatar data={data} />,
     primary: data.name,
     secondary: (
       <>
         <Typography variant="caption" color="textSecondary" display="block">
           {data.category.name}: {printDate(data.startDate)}
         </Typography>
+        <Typography variant="caption" color="textSecondary" display="block">
+          Group Name: {data.group.name}
+        </Typography>
       </>
     ),
   };
 };
 
-const GroupEventsList = ({ groupId, group }: IProps) => {
+const GroupEventsList = ({ childEvents }: IProps) => {
   const classes = useStyles();
   const history = useHistory();
-  const [event, setNewEvent] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<IGroupEvent[]>([]);
 
-  const createTitle = "New Event";
   const handleItemClick = (id: string) => () => {
     history.push(`${localRoutes.events}/${id}`);
   };
-
-  function handleNewEvent() {
-    setNewEvent(true);
-  }
-
-  function handleNewEventClose() {
-    setNewEvent(false);
-  }
-
-  const fetchGroupEvents = useCallback(() => {
-    setLoading(true);
-    search(
-      remoteRoutes.events,
-      {
-        groupId: groupId,
-      },
-      (data) => {
-        setData(data);
-      },
-      undefined,
-      () => {
-        setLoading(false);
-      }
-    );
-  }, [groupId]);
-
-  useEffect(() => {
-    fetchGroupEvents();
-  }, [fetchGroupEvents]);
-
-  if (loading) return <Loading />;
 
   return (
     <Grid container>
       <Box p={1} className={classes.root}>
         <Hidden smDown>
           <Box pt={1}>
-            {data.length === 0 ? (
-              <ListItem button onClick={handleNewEvent}>
-                <Alert severity="info" style={{ width: "100%" }}>
-                  No events click to add new
-                </Alert>
-              </ListItem>
-            ) : (
-              <XTable
-                headCells={headCells}
-                data={data}
-                initialRowsPerPage={10}
-                initialSortBy="name"
-                handleSelection={handleItemClick}
-              />
-            )}
+            <XTable
+              headCells={headCells}
+              data={childEvents}
+              initialRowsPerPage={10}
+              initialSortBy="name"
+              handleSelection={handleItemClick}
+            />
           </Box>
-          <EditDialog
-            title={createTitle}
-            open={event}
-            onClose={handleNewEventClose}
-          >
-            <EventForm data={{}} isNew={true} onCreated={handleNewEventClose} />
-          </EditDialog>
         </Hidden>
         <Hidden mdUp>
           <List>
-            {data.length === 0 ? (
-              <ListItem button onClick={handleNewEvent}>
+            {childEvents.length < 0 ? (
+              <ListItem>
                 <Alert severity="info" style={{ width: "100%" }}>
-                  No events click to add new
+                  No events to display
                 </Alert>
               </ListItem>
             ) : (
-              data.map((row: any) => {
+              childEvents.map((row: any) => {
                 const mobileRow = toMobileRow(row);
                 return (
                   <Fragment key={row.id}>
@@ -159,7 +118,6 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
                       disableGutters
                       onClick={handleItemClick(row.id)}
                     >
-                      <ListItemAvatar>{mobileRow.avatar}</ListItemAvatar>
                       <ListItemText
                         primary={mobileRow.primary}
                         secondary={mobileRow.secondary}
@@ -171,17 +129,6 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
               })
             )}
           </List>
-          <EditDialog
-            title={createTitle}
-            open={event}
-            onClose={handleNewEventClose}
-          >
-            <EventForm
-              data={{ group: { id: group.id, name: group.name } }}
-              isNew={true}
-              onCreated={handleNewEventClose}
-            />
-          </EditDialog>
         </Hidden>
       </Box>
     </Grid>

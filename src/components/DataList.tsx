@@ -150,7 +150,7 @@ const DataList = ({
 };
 
 export interface IMobileRow {
-  avatar: any;
+  avatar?: any;
   primary: any;
   secondary: any;
 }

@@ -85,12 +85,7 @@ const actions = [
     icon: <EventIcon color="primary" />,
     name: "New Event",
     operation: "New Event",
-  },
-  {
-    icon: <NoteAddIcon color="primary" />,
-    name: "New Report",
-    operation: "New Report",
-  },
+  }
 ];
 
 export default function Details() {
@@ -215,12 +210,10 @@ export default function Details() {
   ];
   if (isLeader()) {
     tabs.push({
-      name: "Events/Reports",
+      name: "Reports",
       component: (
         <GroupEventsList
-          groupId={Number(groupId)}
-          group={data}
-          isLeader={isLeader()}
+          childEvents={data.childEvents ? data.childEvents : []}
         />
       ),
     });
@@ -259,7 +252,7 @@ export default function Details() {
               <Box flexGrow={1}>
                 <Typography variant="h6">{data.name}</Typography>
                 <Typography variant="body1">{`${data.privacy}, ${data.category.name}`}</Typography>
-                <Typography variant="overline">{`Attendance This Month: ${data.totalAttendance} (${20}%)`}</Typography>
+                <Typography variant="overline">{`Attendance This Month: ${data.totalAttendance} (${data.averageAttendance}%)`}</Typography>
               </Box>
 
               {isLeader() ? (

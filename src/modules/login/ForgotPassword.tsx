@@ -10,7 +10,7 @@ import Link from '@material-ui/core/Link';
 import XTextInput from "../../components/inputs/XTextInput";
 import HelpIcon from '@material-ui/icons/Help';
 import { post } from "../../utils/ajax";
-import { isDebug, localRoutes, remoteRoutes } from "../../data/constants";
+import { isDebug, remoteRoutes } from "../../data/constants";
 import * as yup from "yup";
 import Toast from "../../utils/Toast";
 import { useHistory } from 'react-router';
@@ -24,7 +24,6 @@ export default function ForgotPassword() {
             Toast.success(`Reset Password Link Sent to Email`)
             const token = resp.token
             localStorage.setItem('password_token', token)
-            console.log(resp)
             actions.resetForm()
         }, () => {
             Toast.error(`Error: Message Not Set. Try Again Later`)
