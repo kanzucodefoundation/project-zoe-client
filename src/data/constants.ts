@@ -19,23 +19,23 @@ export const appRoles = {
   roleEventEdit: "EVENT_EDIT",
 
   roleReportView: "REPORT_VIEW",
-  roleReportEdit: "REPORT_EDIT"
+  roleReportEdit: "REPORT_EDIT",
 };
 
 export const rolesList = Object.values(appRoles);
 
 export const eventsCategories = {
-  garage: "Garage",
-  evangelism: "Evangelism",
-  wedding: "Wedding",
-  baptism: "Baptism",
-  mc: "MC Meeting"
-}
+  garage: "garage",
+  evangelism: "evangelism",
+  wedding: "wedding",
+  baptism: "baptism",
+  mc: "mc",
+};
 
 export const redux = {
   doLogin: "DO_LOGIN",
   doLogout: "DO_LOGOUT",
-  doSearch: "DO_SEARCH"
+  doSearch: "DO_SEARCH",
 };
 
 export const localRoutes = {
@@ -63,7 +63,7 @@ export const localRoutes = {
   forgotPassword: "/forgot-password",
   help: "/help",
   login: "/login",
-  home: "/"
+  home: "/",
 };
 
 export const isDebug = process.env.NODE_ENV !== "production";
@@ -109,5 +109,5 @@ export const remoteRoutes = {
   reportsCategories: url + "api/reports/category",
 
   contactsCompany: url + "/api/crm/contact/company",
-  contactsAvatar: url + "/api/crm/contact/avatar"
+  contactsAvatar: url + "/api/crm/contact/avatar",
 };

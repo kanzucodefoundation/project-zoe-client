@@ -17,7 +17,7 @@ const initialData: any = {
   from: null,
   to: null,
   limit: 100,
-  skip: 0
+  skip: 0,
 };
 const EventsFilter = ({ onFilter }: IProps) => {
   const [data, setData] = useState(initialData);
@@ -32,8 +32,9 @@ const EventsFilter = ({ onFilter }: IProps) => {
   };
 
   const handleDateChange = (name: string) => (value: Date | null) => {
-    setData({ ...data, [name]: value });
-    onFilter({ ...data, [name]: value });
+    setData({ ...data, [name]: value?.toISOString() });
+    onFilter({ ...data, [name]: value?.toISOString() });
+    console.log("FIlter>>>", { ...data, [name]: value?.toISOString() });
   };
 
   return (
@@ -68,7 +69,7 @@ const EventsFilter = ({ onFilter }: IProps) => {
           <PDateInput
             name="to"
             value={data["to"]}
-            onChange={handleDateChange("from")}
+            onChange={handleDateChange("to")}
             label="To"
             inputVariant="outlined"
           />

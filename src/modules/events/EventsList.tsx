@@ -108,25 +108,23 @@ const EventsList = () => {
   const { data, loading }: IEventState = useSelector(
     (state: any) => state.events
   );
-  const [filter, setFilter] = useState<IContactsFilter>({
+  const [filter, setFilter] = useState<any>({
     limit: 200,
   });
   const user = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
 
   useEffect(() => {
-    search(remoteRoutes.groupsMembership, {contactId: user.contactId}, resp => {
-      resp.map((it: any) => {
-        if (it.role === GroupRole.Leader) { 
-          if (it.category.id === GroupCategory.MC) {
-            dispatch(eventsFetchAsync({filter, groupId: it.groupId})); 
-          }
-          if (it.category.id === GroupCategory.Cohort) { 
-            dispatch(eventsFetchAsync({filter, parentId: it.groupId, categoryId: EventCategory.WeeklyMC}));
-          }
-        }
-      })
-    })
+    search(
+      remoteRoutes.groupsMembership,
+      { contactId: user.contactId },
+      (resp) => {
+        const groupIdList = resp
+          .filter((it: any) => it.role === GroupRole.Leader)
+          .map((it: any) => it.id);
+        dispatch(eventsFetchAsync({ ...filter, groupIdList }));
+      }
+    );
   }, [filter, dispatch]);
 
   function handleFilter(value: any) {

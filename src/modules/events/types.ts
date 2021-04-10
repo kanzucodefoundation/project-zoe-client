@@ -11,6 +11,7 @@ export interface IEvent {
   categoryId: string;
   attendancePercentage: string;
   category: any;
+  categoryFields: any[];
   groupId: number;
   group: any;
   attendance: IAttendance[];
@@ -39,7 +40,7 @@ export enum EventCategory {
   Evangelism = "Evangelism",
   Wedding = "Wedding",
   Baptism = "Baptism",
-  MC = "MC Meeting"
+  MC = "MC Meeting",
 }
 
 export interface MetaData {}
