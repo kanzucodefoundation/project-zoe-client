@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { IGroup } from "./types";
+import { GroupCategory, IGroup } from "./types";
 import EditDialog from "../../components/EditDialog";
 import GroupEditor from "./editors/GroupEditor";
 import Box from "@material-ui/core/Box";
@@ -9,18 +9,17 @@ import PinDropIcon from "@material-ui/icons/PinDrop";
 import PeopleIcon from "@material-ui/icons/People";
 import Typography from "@material-ui/core/Typography";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { Theme } from "@material-ui/core";
+import { Button, Collapse, Link, List, ListItem, ListItemIcon, ListItemText, Theme } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
 import EventIcon from "@material-ui/icons/Event";
-import NoteAddIcon from "@material-ui/icons/NoteAdd";
 import MembersList from "./members/MembersList";
 import { grey } from "@material-ui/core/colors";
 import { get } from "../../utils/ajax";
 import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
 import Loading from "../../components/Loading";
-import { Alert, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@material-ui/lab";
+import { Alert, AlertTitle, SpeedDial, SpeedDialAction, SpeedDialIcon } from "@material-ui/lab";
 import { useHistory, useParams } from "react-router";
 import Layout from "../../components/layout/Layout";
 import MapLink from "../../components/MapLink";
@@ -32,6 +31,12 @@ import XBreadCrumbs from "../../components/XBreadCrumbs";
 import GroupEventsList from "./GroupEventsList";
 import EventForm from "../events/forms/EventForm";
 import ReportForm from "../reports/forms/ReportForm";
+import { EventCategory } from "../events/types";
+import { isThisWeek } from "date-fns/esm";
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import { green, red } from '@material-ui/core/colors';
+import GroupLink from "../../components/GroupLink";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,6 +80,12 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+interface IReportSummary {
+  id: number;
+  name: string;
+  submitted: boolean;
+}
+
 const actions = [
   {
     icon: <EditIcon color="primary" />,
@@ -97,8 +108,11 @@ export default function Details() {
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<IGroup | null>(null);
   const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(false);
   const profile = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
+  let count = 0;
+  let mcReportSummary: IReportSummary[] = [];
 
   useEffect(() => {
     setLoading(true);
@@ -175,6 +189,10 @@ export default function Details() {
     setOpen(!open);
   };
 
+  const handleShow = () => {
+    setShow(!show)
+  }
+
   if (loading)
     return (
       <Layout>
@@ -212,15 +230,35 @@ export default function Details() {
     tabs.push({
       name: "Reports",
       component: (
-        <GroupEventsList
-          childEvents={data.childEvents ? data.childEvents : []}
-        />
+        <GroupEventsList childEvents={data.childEvents ? data.childEvents : []} />
       ),
     });
     tabs.push({
       name: "Pending requests",
       component: <MemberRequests group={data} />,
     });
+  }
+
+  const getReports = () => {
+    if (data.childEvents === undefined || data.children === undefined) {
+      return false
+    }
+
+    data.children.map((it : any) => {
+      mcReportSummary.push({id: it.id, name: it.name, submitted: false})
+    })
+    
+    data.childEvents.map((it: any) => {
+      if (isThisWeek(new Date(it.startDate)) && it.category.name === EventCategory.WeeklyMC) {
+        mcReportSummary.map((r: any) => {
+          if (r.id === it.group.id) {
+            r.submitted = true;
+          }
+        })
+        count++;
+      }
+    })
+    return true; 
   }
 
   return (
@@ -316,6 +354,46 @@ export default function Details() {
               </Box>
             </Box>
           </Grid>
+          {getReports() && isLeader() && data.categoryId === GroupCategory.Cohort || data.categoryId === GroupCategory.Location ? 
+            (<Grid item xs={12}>
+              <Box display="flex" flexDirection="column">
+                <Alert 
+                  severity={count === data.children?.length ? "success" : "warning"}
+                  action={
+                    <Button onClick={handleShow}>
+                      {show ? "Close Details" : "View Details"}
+                    </Button>
+                  }
+                >
+                  <AlertTitle>{`${count}/${data.children?.length} MC Reports Submitted`}</AlertTitle>
+                  <Collapse in={show}>
+                    <List>
+                      {
+                        mcReportSummary.map((it: any) => {
+                          return (
+                            <ListItem 
+                              key={it.id} 
+                              button 
+                              onClick={
+                                () => history.push(`${localRoutes.groups}/${it.id}`)}
+                            >
+                              <ListItemIcon>
+                                { it.submitted ? 
+                                  <CheckCircleOutlineIcon style={{ color: green[500] }}/>  
+                                  : <HighlightOffIcon style={{ color: red[500] }}/> }
+                              </ListItemIcon>
+                              <ListItemText>
+                                <Typography variant="body1">{it.name}</Typography>  
+                              </ListItemText>
+                            </ListItem>                
+                          )
+                        })
+                      }
+                    </List>
+                  </Collapse>
+                </Alert>
+              </Box>
+            </Grid>) : (undefined)}
           <Grid item xs={12}>
             <TabbedView tabs={tabs} />
           </Grid>

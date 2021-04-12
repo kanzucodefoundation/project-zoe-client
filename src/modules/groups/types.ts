@@ -48,7 +48,7 @@ export enum GroupCategory {
   MC = "MC",
   GarageTeam = "GarageTeam",
   Huddle = "Huddle",
-  Location = "Loaction",
+  Location = "Location",
 }
 
 export interface IStats {
