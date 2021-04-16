@@ -14,7 +14,6 @@ import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
 import EventIcon from "@material-ui/icons/Event";
-import NoteAddIcon from "@material-ui/icons/NoteAdd";
 import MembersList from "./members/MembersList";
 import { grey } from "@material-ui/core/colors";
 import { get } from "../../utils/ajax";
@@ -36,7 +35,6 @@ import TabbedView from "./TabbedView";
 import XBreadCrumbs from "../../components/XBreadCrumbs";
 import GroupEventsList from "./GroupEventsList";
 import EventForm from "../events/forms/EventForm";
-import ReportForm from "../reports/forms/ReportForm";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,24 +55,15 @@ const useStyles = makeStyles((theme: Theme) =>
       borderRadius: 0,
     },
     description: {
-      minHeight: 100,
+      minHeight: 70,
       borderRadius: 5,
       backgroundColor: grey[100],
     },
     speedDial: {
       position: "fixed",
       "&.MuiSpeedDial-directionDown": {
-        top: theme.spacing(13),
+        top: theme.spacing(15),
         right: theme.spacing(4),
-      },
-    },
-    "@media (max-width: 480px)": {
-      speedDial: {
-        position: "relative",
-        "&.MuiSpeedDial-directionDown": {
-          top: theme.spacing(1),
-          right: theme.spacing(-2),
-        },
       },
     },
   })
@@ -91,18 +80,12 @@ const actions = [
     name: "New Event",
     operation: "New Event",
   },
-  {
-    icon: <NoteAddIcon color="primary" />,
-    name: "New Report",
-    operation: "New Report",
-  },
 ];
 
 export default function Details() {
   let { groupId } = useParams<any>();
   const history = useHistory();
   const [dialog, setDialog] = useState<boolean>(false);
-  const [report, setNewReport] = useState<boolean>(false);
   const [event, setNewEvent] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<IGroup | null>(null);
@@ -155,16 +138,7 @@ export default function Details() {
     setOpen(true);
   };
 
-  function handleNewReport() {
-    setNewReport(true);
-  }
-
-  function handleNewReportClose() {
-    setNewReport(false);
-  }
-
   const createEventTitle = "New Event";
-  const createReportTitle = "New Report";
 
   function handleNewEvent() {
     setNewEvent(true);
@@ -179,8 +153,6 @@ export default function Details() {
       handleEdit();
     } else if (operation === "New Event") {
       handleNewEvent();
-    } else if (operation === "New Report") {
-      handleNewReport();
     }
     setOpen(!open);
   };
@@ -220,7 +192,7 @@ export default function Details() {
   ];
   if (isLeader()) {
     tabs.push({
-      name: "Events/Reports",
+      name: "Reports",
       component: (
         <GroupEventsList
           groupId={Number(groupId)}
@@ -230,7 +202,7 @@ export default function Details() {
       ),
     });
     tabs.push({
-      name: "Pending requests",
+      name: "Requests",
       component: <MemberRequests group={data} />,
     });
   }
@@ -348,17 +320,6 @@ export default function Details() {
             data={{ group: { id: data.id, name: data.name } }}
             isNew={true}
             onCreated={handleNewEventClose}
-          />
-        </EditDialog>
-        <EditDialog
-          title={createReportTitle}
-          open={report}
-          onClose={handleNewReportClose}
-        >
-          <ReportForm
-            data={{ group: { id: data.id, name: data.name } }}
-            isNew={true}
-            onCreated={handleNewReportClose}
           />
         </EditDialog>
       </Box>

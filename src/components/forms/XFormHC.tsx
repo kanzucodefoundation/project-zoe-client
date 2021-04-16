@@ -15,7 +15,7 @@ interface IProps {
   onDelete?: () => any;
   debug?: boolean;
   loading?: boolean;
-  children?: React.ReactNode;
+  children?: (data: any) => React.ReactNode;
   initialValues?: any;
 }
 
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const XForm = (props: IProps) => {
+const XFormHC = (props: IProps) => {
   const [count, setCount] = useState<number>(0);
   const classes = useStyles();
 
@@ -62,7 +62,7 @@ const XForm = (props: IProps) => {
               </Grid>
             )}
             <Grid item xs={12}>
-              <Box>{props.children}</Box>
+              <Box>{props.children && props.children(values)}</Box>
             </Grid>
             <Grid item xs={12}>
               <Box p={1} pt={2}>
@@ -123,4 +123,4 @@ const XForm = (props: IProps) => {
   );
 };
 
-export default XForm;
+export default XFormHC;

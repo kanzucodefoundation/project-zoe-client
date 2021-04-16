@@ -12,7 +12,10 @@ const devTools: any = myWindow[toolsName]
   ? myWindow[toolsName]()
   : (f: any) => f;
 const reducers: any = { core, crm, tags, events };
-const middleware = applyMiddleware(createLogger(), thunk);
+const middleware = applyMiddleware(
+  //createLogger(),
+  thunk
+);
 const store: any = middleware(devTools(createStore))(combineReducers(reducers));
 
 export default store;

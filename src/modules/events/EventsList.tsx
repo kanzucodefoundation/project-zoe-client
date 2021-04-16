@@ -3,7 +3,7 @@ import Navigation from "../../components/layout/Layout";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import XTable from "../../components/table/XTable";
 import { XHeadCell } from "../../components/table/XTableHead";
-import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
+import { appRoles, localRoutes } from "../../data/constants";
 import Loading from "../../components/Loading";
 import Box from "@material-ui/core/Box";
 import Hidden from "@material-ui/core/Hidden";
@@ -20,21 +20,18 @@ import Divider from "@material-ui/core/Divider";
 import { useHistory } from "react-router";
 import { hasValue } from "../../components/inputs/inputHelpers";
 import { useDispatch, useSelector } from "react-redux";
-import { printDate } from "../../utils/dateHelpers";
+import { printDate, printDateTime } from "../../utils/dateHelpers";
 import GroupLink from "../../components/GroupLink";
 import PersonAvatar from "../../components/PersonAvatar";
 import { hasAnyRole } from "../../data/appRoles";
 import { IState } from "../../data/types";
 import ListHeader from "../../components/ListHeader";
 import Button from "@material-ui/core/Button";
-import { IContactsFilter } from "../contacts/types";
 import EventsFilter from "./EventsFilter";
 import EventForm from "./forms/EventForm";
 import EventLink from "./EventLink";
-import { EventCategory, IEvent } from "./types";
+import { IEvent } from "./types";
 import { eventsFetchAsync, IEventState } from "../../data/events/eventsReducer";
-import { search } from "../../utils/ajax";
-import { GroupCategory, GroupRole } from "../groups/types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -74,11 +71,6 @@ const headCells: XHeadCell[] = [
     render: (value) =>
       hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-",
   },
-  {
-    name: "attendancePercentage",
-    label: "Attendance",
-    render: (value) => value + "%",
-  },
 ];
 
 const toMobileRow = (data: IEvent): IMobileRow => {
@@ -88,13 +80,10 @@ const toMobileRow = (data: IEvent): IMobileRow => {
     secondary: (
       <>
         <Typography variant="caption" color="textSecondary" display="block">
-          {data.name}
+          Group: {data.group.name}
         </Typography>
         <Typography variant="caption" color="textSecondary" display="block">
-          {data.category.name}: {printDate(data.startDate)}
-        </Typography>
-        <Typography variant="caption" color="textSecondary" display="block">
-          Attendance: {data.attendancePercentage} %
+          {data.category.name}: {printDateTime(data.startDate)}
         </Typography>
       </>
     ),
@@ -108,39 +97,29 @@ const EventsList = () => {
   const { data, loading }: IEventState = useSelector(
     (state: any) => state.events
   );
-  const [filter, setFilter] = useState<any>({
-    limit: 200,
-  });
+  const [filter, setFilter] = useState<any>({ limit: 5000 });
   const user = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
 
   useEffect(() => {
-    search(
-      remoteRoutes.groupsMembership,
-      { contactId: user.contactId },
-      (resp) => {
-        const groupIdList = resp
-          .filter((it: any) => it.role === GroupRole.Leader)
-          .map((it: any) => it.id);
-        dispatch(eventsFetchAsync({ ...filter, groupIdList }));
-      }
-    );
+    dispatch(eventsFetchAsync(filter));
   }, [filter, dispatch]);
-
-  function handleFilter(value: any) {
-    setFilter({ ...filter, ...value });
-  }
 
   function handleNew() {
     setShowDialog(true);
+    dispatch(eventsFetchAsync(filter));
   }
+  const handleRowClick = (id: string) => {
+    history.push(`${localRoutes.events}/${id}`);
+  };
 
   const handleItemClick = (id: string) => () => {
-    history.push(`${localRoutes.events}/${id}`);
+    handleRowClick(id);
   };
 
   function closeCreateDialog() {
     setShowDialog(false);
+    dispatch(eventsFetchAsync(filter));
   }
 
   const createTitle = "New Event";
@@ -149,9 +128,9 @@ const EventsList = () => {
       <Box p={1} className={classes.root}>
         <ListHeader
           title="Reports"
-          onFilter={handleFilter}
+          onFilter={setFilter}
           filter={filter}
-          filterComponent={<EventsFilter onFilter={handleFilter} />}
+          filterComponent={<EventsFilter onFilter={setFilter} />}
           loading={loading}
           buttons={
             <>
@@ -179,7 +158,7 @@ const EventsList = () => {
                 data={data}
                 initialRowsPerPage={10}
                 initialSortBy="name"
-                handleSelection={handleItemClick}
+                handleSelection={handleRowClick}
               />
             )}
           </Box>

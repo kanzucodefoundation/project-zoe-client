@@ -1,0 +1,27 @@
+import React, { useEffect, useState } from "react";
+import { remoteRoutes } from "../../../data/constants";
+import FormFields from "../../../components/forms/FormFields";
+import { get } from "../../../utils/ajax";
+import { hasNoValue, hasValue } from "../../../components/inputs/inputHelpers";
+import { Alert } from "@material-ui/lab";
+
+interface IProps {
+  eventCategory: string;
+}
+
+const EventMetadataForm = ({ eventCategory }: IProps) => {
+  const [fields, setFields] = useState<any[]>([]);
+  useEffect(() => {
+    if (hasValue(eventCategory)) {
+      get(`${remoteRoutes.eventsCategories}/${eventCategory}`, (resp) => {
+        setFields(resp.fields);
+      });
+    }
+  }, [eventCategory]);
+
+  if (hasNoValue(fields))
+    return <Alert>Select category for more options</Alert>;
+  return <FormFields fields={fields} spacing={2} parentField="metaData" />;
+};
+
+export default EventMetadataForm;

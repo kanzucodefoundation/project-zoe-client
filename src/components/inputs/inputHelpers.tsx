@@ -1,13 +1,11 @@
 import React from "react";
-import { isEmpty } from "lodash";
+import { isEmpty, isNumber } from "lodash";
 import XTextInput from "./XTextInput";
 import { IColumn, InputType } from "../dynamic-editor/types";
 import XDateInput from "./XDateInput";
 import XRadioInput from "./XRadioInput";
 import XSelectInput from "./XSelectInput";
 import XTextAreaInput from "./XTextAreaInput";
-import { ComboValue } from "../plain-inputs/PComboInput";
-import { cleanComboValue } from "../../utils/dataHelpers";
 
 export interface IOption {
   name: string;
@@ -15,16 +13,17 @@ export interface IOption {
 }
 
 export const toOptions = (data: string[]): IOption[] => {
-  return data.map(it => ({ name: it, id: it }));
+  return data.map((it) => ({ name: it, id: it }));
 };
 
 export const comboParser = ({ id, name }: any): IOption => ({ id, name });
 
 export const hasValue = (text: any) => {
-  return !isEmpty(text);
+  return !hasNoValue(text);
 };
 
 export const hasNoValue = (text: any) => {
+  if (isNumber(text)) return false;
   return isEmpty(text);
 };
 

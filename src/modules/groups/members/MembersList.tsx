@@ -6,11 +6,10 @@ import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import { IGroupMembership } from "../types";
 import { search } from "../../../utils/ajax";
-import { remoteRoutes, appRoles } from "../../../data/constants";
+import { remoteRoutes } from "../../../data/constants";
 import PersonAvatar from "../../../components/PersonAvatar";
 import { Grid } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import Divider from "@material-ui/core/Divider";
@@ -21,7 +20,6 @@ import MembersEditor from "./MembersEditor";
 import MemberEditor from "./MemberEditor";
 import { useSelector } from "react-redux";
 import { IState } from "../../../data/types";
-import { hasAnyRole } from "../../../data/appRoles";
 
 interface IProps {
   groupId: number;
@@ -49,6 +47,7 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
 
   const fetchMembers = useCallback(() => {
     setLoading(true);
+    console.log("fetchMembers", groupId);
     search(
       remoteRoutes.groupsMembership,
       {

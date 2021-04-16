@@ -72,7 +72,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rm build/static/js/*.map && rm build/static/css/*.map",
+    "build": "react-scripts build",
+    "build-prod": "react-scripts build && rm build/static/js/*.map && rm build/static/css/*.map",
     "test": "react-scripts test",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"

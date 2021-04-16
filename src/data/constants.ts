@@ -101,6 +101,7 @@ export const remoteRoutes = {
   groupsRequest: url + "/api/groups/request",
 
   events: url + "/api/events/event",
+  eventsMetricsRaw: url + "/api/events/metrics/raw",
   eventsCategories: url + "/api/events/category",
   eventsAttendance: url + "/api/events/attendance",
   eventsField: url + "/api/events/fields",
