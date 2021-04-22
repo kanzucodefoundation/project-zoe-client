@@ -13,7 +13,6 @@ import Grid from "@material-ui/core/Grid";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
-import MembersList from "../../groups/members/MembersList";
 import { grey } from "@material-ui/core/colors";
 import { appRoles, localRoutes } from "../../../data/constants";
 import Loading from "../../../components/Loading";
@@ -225,18 +224,6 @@ export default function Details() {
               </Box>
             </Box>
             <Divider />
-          </Grid>
-          <Grid item xs={12}>
-            <Box display="flex" flexDirection="column">
-              <Box pb={1}>
-                <Typography variant="h6" style={{ fontSize: "0.92rem" }}>
-                  About:
-                </Typography>
-              </Box>
-              <Box className={classes.description} p={2}>
-                <Typography variant="body2">{data.details}</Typography>
-              </Box>
-            </Box>
           </Grid>
           <Grid item xs={12}>
             <TabbedView tabs={tabs} />

@@ -1,93 +1,83 @@
-import { Grid } from "@material-ui/core";
-import { FormikHelpers } from "formik";
 import React from "react";
-import { useHistory } from "react-router";
-import XForm from "../../../components/forms/XForm";
-import XDateTimeInput from "../../../components/inputs/XDateTimeInput";
-import XTextAreaInput from "../../../components/inputs/XTextAreaInput";
-import XTextInput from "../../../components/inputs/XTextInput";
-import { remoteRoutes } from "../../../data/constants";
-import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
+import { Grid, GridSpacing } from "@material-ui/core";
+import { sortBy } from "lodash";
+
 import { IEvent } from "../types";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
+import { parseXpath } from "../../../utils/jsonHelpers";
+import { printNumber } from "../../../utils/numberHelpers";
+import { printDate, printDateTime } from "../../../utils/dateHelpers";
 
 interface IProps {
   event: IEvent;
+  sizes?: {
+    [name: string]: number;
+  };
+  spacing?: GridSpacing;
 }
 
-const EventMetadata = ({ event }: IProps) => {
-  const history = useHistory();
+const Label = (props: { label: string; value: any }) => (
+  <Box width="100%" pb={1}>
+    <Box width="100%">
+      <Typography variant="caption">
+        <b>{props.label}:</b>
+      </Typography>
+    </Box>
+    <Box width="100%">
+      <Typography variant="body2">{props.value || ""}</Typography>
+    </Box>
+  </Box>
+);
 
-  function handleSave(values: any, actions: FormikHelpers<any>) {
-    const toSave: any = {
-      id: event.id,
-      metaData: { ...values },
-    };
-
-    const submission: ISubmission = {
-      url: remoteRoutes.events,
-      values: toSave,
-      actions,
-      isNew: false,
-      onAjaxComplete: (data: any) => {
-        actions.setSubmitting(false);
-        history.go(0);
-      },
-    };
-    handleSubmission(submission);
-  }
-
+const EventMetadata = ({
+  event,
+  sizes = { xs: 12, md: 6 },
+  spacing = 2,
+}: IProps) => {
   const createField = (it: any) => {
+    const value = parseXpath(event.metaData || {}, it.name);
     if (it.type === "number") {
       return (
-        <Grid key={it.name} item xs={12}>
-          <XTextInput
-            name={it.name}
-            label={it.label}
-            margin="none"
-            variant="outlined"
-            type="number"
-          />
+        <Grid key={it.name} item {...sizes}>
+          <Label label={it.label} value={printNumber(value)} />
         </Grid>
       );
     }
     if (it.type === "date") {
       return (
-        <Grid key={it.name} item xs={12}>
-          <XDateTimeInput name={it.name} label={it.label} variant="outlined" />
+        <Grid key={it.name} item {...sizes}>
+          <Label label={it.label} value={printDate(value)} />
+        </Grid>
+      );
+    }
+    if (it.type === "datetime") {
+      return (
+        <Grid key={it.name} item {...sizes}>
+          <Label label={it.label} value={printDateTime(value)} />
         </Grid>
       );
     }
     if (it.type === "textarea") {
       return (
-        <Grid key={it.name} item xs={12}>
-          <XTextAreaInput name={it.name} label={it.label} variant="outlined" />
+        <Grid key={it.name} item {...sizes}>
+          <Label label={it.label} value={value} />
         </Grid>
       );
     }
     return (
-      <Grid key={it.name} item xs={12}>
-        <XTextInput
-          name={it.name}
-          label={it.label}
-          margin="none"
-          variant="outlined"
-        />
+      <Grid key={it.name} item {...sizes}>
+        <Label label={it.label} value={value} />
       </Grid>
     );
   };
 
   return (
-    <>
-      {
-        <XForm onSubmit={handleSave} initialValues={event.metaData}>
-          <div style={{ padding: 8 }}>
-            <Grid spacing={2} container className="min-width-100">
-              {event.categoryFields.map(createField)}
-            </Grid>
-          </div>
-        </XForm>
-      }
-    </>
+    <div>
+      <Grid spacing={spacing} container>
+        {sortBy(event.categoryFields, "order").map(createField)}
+      </Grid>
+    </div>
   );
 };
 

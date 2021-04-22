@@ -30,8 +30,8 @@ const ListHeader = (props: IProps) => {
     setShowFilter(!showFilter);
   }
 
-  function handleNameSearch(query: string) {
-    props.onFilter({ ...props.filter, query });
+  function handleQuerySearch(query: string) {
+    props.onFilter({ query });
   }
 
   return (
@@ -54,9 +54,9 @@ const ListHeader = (props: IProps) => {
                 <InputAdornment position="start">
                   <SearchIcon fontSize="inherit" />
                 </InputAdornment>
-              )
+              ),
             }}
-            onChange={e => handleNameSearch(e.target.value)}
+            onChange={(e) => handleQuerySearch(e.target.value)}
             variant="outlined"
             size="small"
             name="query"

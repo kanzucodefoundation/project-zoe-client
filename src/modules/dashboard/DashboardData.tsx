@@ -10,92 +10,65 @@ import {
   People,
   Restore,
 } from "@material-ui/icons";
-import React, { useEffect, useState } from "react";
-import { eventsCategories } from "../../data/constants";
+import { filter } from "lodash";
+import React, { useMemo, useState } from "react";
 import { printInteger, printMoney } from "../../utils/numberHelpers";
 import { IEvent } from "../events/types";
 import UsersByDevice from "./UsersByDevice";
 import Widget from "./Widget";
+import { AgField, aggregateValue, aggregateValues } from "./utils";
 
 interface IProps {
   currWeekEvents: IEvent[];
   prevWeekEvents: IEvent[];
 }
 
+const fields: AgField[] = [
+  {
+    path: "metaData.giving",
+    name: "giving",
+  },
+  {
+    path: "metaData.noOfSalvations",
+    name: "noOfSalvations",
+  },
+  {
+    path: "metaData.noOfBaptisms",
+    name: "noOfBaptisms",
+  },
+  {
+    path: "metaData.noOfMechanics",
+    name: "noOfMechanics",
+  },
+  {
+    path: "metaData.noOfRecommitments",
+    name: "noOfRecommitments",
+  },
+  {
+    path: "metaData.totalMcAttendance",
+    name: "totalMcAttendance",
+  },
+  {
+    path: "metaData.totalGarageAttendance",
+    name: "totalGarageAttendance",
+  },
+];
 const DashboardData = ({ currWeekEvents, prevWeekEvents }: IProps) => {
-  const [giving, setGiving] = useState<number>(0);
-  const [prevGiving, setPrevGiving] = useState<number>(0);
-  const [att, setAtt] = useState<number>(0);
-  const [prevAtt, setPrevAtt] = useState<number>(0);
-  const [mcAtt, setMcAtt] = useState<number>(0);
-  const [prevMcAtt, setPrevMcAtt] = useState<number>(0);
-  const [salvation, setSalvation] = useState<number>(0);
-  const [prevSalvation, setPrevSalvation] = useState<number>(0);
-  const [mechanics, setMechanics] = useState<number>(0);
-  const [prevMechanics, setPrevMechanics] = useState<number>(0);
-  const [baptism, setBaptism] = useState<number>(0);
-  const [prevBaptism, setPrevBaptism] = useState<number>(0);
-  const [recom, setRecom] = useState<number>(0);
-  const [prevRecom, setPrevRecom] = useState<number>(0);
-  const [babies, setBabies] = useState<number>(20);
-  const [prevBabies, setPrevBabies] = useState<number>(10);
+  const currentData = aggregateValues(currWeekEvents, fields);
+  const previousData = aggregateValues(prevWeekEvents, fields);
+  const totalMcAttendance = aggregateValue(
+    filter(currWeekEvents, { categoryId: "mc" }),
+    "attendance"
+  );
+  const totalMcAttendancePrev = aggregateValue(
+    filter(prevWeekEvents, { categoryId: "mc" }),
+    "attendance"
+  );
+
+  const [babies, setBabies] = useState<number>(0);
+  const [prevBabies, setPrevBabies] = useState<number>(0);
   const [weddings, setWeddings] = useState<number>(0);
   const [prevWeddings, setPrevWeddings] = useState<number>(0);
-
-  useEffect(() => {
-    currWeekEvents.map((it) => getValues(it, true));
-    prevWeekEvents.map((it) => getValues(it, false));
-  }, [currWeekEvents.length]);
-
-  const getValues = (data: any, isCurrWeek: boolean) => {
-    if (data.category.id === eventsCategories.garage) {
-      const attValue = data.attendance.length;
-      isCurrWeek ? setAtt(att + attValue) : setPrevAtt(prevAtt + attValue);
-      if (data.metaData) {
-        const givingValue = data.metaData.totalGiving;
-        const mechValue = data.metaData.noOfMechanics;
-        isCurrWeek
-          ? setGiving(giving + givingValue)
-          : setPrevGiving(prevGiving + givingValue);
-        isCurrWeek
-          ? setMechanics(mechanics + mechValue)
-          : setPrevMechanics(prevMechanics + mechValue);
-      }
-    }
-
-    if (data.category.id === eventsCategories.mc) {
-      const value = data.attendance.length;
-      isCurrWeek ? setMcAtt(mcAtt + value) : setPrevMcAtt(prevMcAtt + value);
-    }
-
-    if (data.category.id === eventsCategories.evangelism) {
-      if (data.metaData) {
-        const value = data.metaData.noOfSalvations;
-        const recomValue = data.metaData.noOfRecommitments;
-        isCurrWeek
-          ? setSalvation(salvation + value)
-          : setPrevSalvation(prevSalvation + value);
-        isCurrWeek
-          ? setRecom(recom + recomValue)
-          : setPrevRecom(setPrevRecom + recomValue);
-      }
-    }
-
-    if (data.category.id === eventsCategories.baptism) {
-      if (data.metaData) {
-        const value = data.metaData.noOfBaptisms;
-        isCurrWeek
-          ? setBaptism(baptism + value)
-          : setPrevBaptism(prevBaptism + value);
-      }
-    }
-
-    if (data.category.id === eventsCategories.wedding) {
-      isCurrWeek
-        ? setWeddings(weddings + 1)
-        : setPrevWeddings(prevWeddings + 1);
-    }
-  };
 
   const getPercentage = (prev: number, current: number) => {
     if (prev > 0) {
@@ -106,58 +79,61 @@ const DashboardData = ({ currWeekEvents, prevWeekEvents }: IProps) => {
 
   const data = [
     {
-      title: "Giving",
-      value: printMoney(giving),
-      percentage: getPercentage(prevGiving, giving),
-      icon: Money,
-    },
-    {
-      title: "Attendance",
-      value: printInteger(att),
-      percentage: getPercentage(prevAtt, att),
-      icon: People,
-    },
-    {
       title: "MC Attendance",
-      value: mcAtt,
-      percentage: getPercentage(prevMcAtt, mcAtt),
+      value: printInteger(totalMcAttendance),
+      percentage: getPercentage(totalMcAttendance, totalMcAttendancePrev),
       icon: Grain,
     },
     {
       title: "Salvation",
-      value: salvation,
-      percentage: getPercentage(prevSalvation, salvation),
+      value: printInteger(currentData.noOfSalvations),
+      percentage: getPercentage(
+        previousData.noOfSalvations,
+        currentData.noOfSalvations
+      ),
       icon: Info,
     },
     {
       title: "No. of Mechanics",
-      value: mechanics,
-      percentage: getPercentage(prevMechanics, mechanics),
+      value: printInteger(currentData.noOfMechanics),
+      percentage: getPercentage(
+        previousData.noOfMechanics,
+        currentData.noOfMechanics
+      ),
       icon: Build,
     },
     {
       title: "No. of Baptisms",
-      value: baptism,
-      percentage: getPercentage(prevBaptism, baptism),
+      value: printInteger(currentData.noOfBaptisms),
+      percentage: getPercentage(
+        previousData.noOfBaptisms,
+        currentData.noOfBaptisms
+      ),
       icon: EmojiPeople,
     },
     {
-      title: "No. of Recomitments",
-      value: recom,
-      percentage: getPercentage(prevRecom, recom),
+      title: "No. of Recommitments",
+      value: printInteger(currentData.noOfRecommitments),
+      percentage: getPercentage(
+        previousData.noOfRecommitments,
+        currentData.noOfRecommitments
+      ),
       icon: Restore,
     },
     {
-      title: "No. of Babies Born",
-      value: babies,
-      percentage: getPercentage(prevBabies, babies),
-      icon: ChildFriendly,
+      title: "Garage Attendance",
+      value: printInteger(currentData.totalGarageAttendance),
+      percentage: getPercentage(
+        previousData.totalGarageAttendance,
+        currentData.totalGarageAttendance
+      ),
+      icon: People,
     },
     {
-      title: "No. of Weddings",
-      value: weddings,
-      percentage: getPercentage(prevWeddings, weddings),
-      icon: LocalFlorist,
+      title: "Giving",
+      value: printMoney(currentData.giving),
+      percentage: getPercentage(previousData.giving, currentData.giving),
+      icon: Money,
     },
   ];
 

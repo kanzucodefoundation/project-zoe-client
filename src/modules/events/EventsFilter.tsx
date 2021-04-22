@@ -2,10 +2,12 @@ import * as React from "react";
 import { useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import { remoteRoutes } from "../../data/constants";
-import { cleanComboValue } from "../../utils/dataHelpers";
 import { PRemoteSelect } from "../../components/plain-inputs/PRemoteSelect";
-import { ComboValue } from "../../components/plain-inputs/PComboInput";
 import PDateInput from "../../components/plain-inputs/PDateInput";
+import {
+  handleComboChange,
+  handleDateChange,
+} from "../../utils/fitlerUtilities";
 
 interface IProps {
   onFilter: (data: any) => any;
@@ -13,7 +15,8 @@ interface IProps {
 
 const initialData: any = {
   query: "",
-  groups: [],
+  groupIdList: [],
+  categoryIdList: [],
   from: null,
   to: null,
   limit: 100,
@@ -21,37 +24,44 @@ const initialData: any = {
 };
 const EventsFilter = ({ onFilter }: IProps) => {
   const [data, setData] = useState(initialData);
-
-  const handleComboChange = (name: string) => (value: ComboValue) => {
-    const hasSingleElement = (v: any) => {
-      return Array.isArray(value) && value.length === 1;
-    };
-    setData({ ...data, [name]: value });
-    const filterName = hasSingleElement(value) ? `${name}[]` : name;
-    onFilter({ ...data, [filterName]: cleanComboValue(value) });
-  };
-
-  const handleDateChange = (name: string) => (value: Date | null) => {
-    setData({ ...data, [name]: value?.toISOString() });
-    onFilter({ ...data, [name]: value?.toISOString() });
-    console.log("FIlter>>>", { ...data, [name]: value?.toISOString() });
-  };
-
   return (
     <form>
       <Grid spacing={2} container>
         <Grid item xs={12} md>
           <PRemoteSelect
-            remote={remoteRoutes.groupsCombo}
-            parser={({ name, id }: any) => ({ name: name, id: id })}
-            name="groups"
-            label="Group(s)"
+            remote={remoteRoutes.eventsCategories}
+            name="categoryIdList"
+            label="Categories"
             variant="outlined"
             size="small"
             margin="none"
             multiple
-            onChange={handleComboChange("groups")}
-            value={data["groups"]}
+            onChange={(value) =>
+              handleComboChange(
+                "categoryIdList",
+                setData,
+                data,
+                onFilter,
+                value
+              )
+            }
+            value={data["categoryIdList"]}
+            searchOnline
+          />
+        </Grid>
+        <Grid item xs={12} md>
+          <PRemoteSelect
+            remote={remoteRoutes.groupsCombo}
+            name="groupIdList"
+            label="Groups"
+            variant="outlined"
+            size="small"
+            margin="none"
+            multiple
+            onChange={(value) =>
+              handleComboChange("groupIdList", setData, data, onFilter, value)
+            }
+            value={data["groupIdList"]}
             searchOnline
           />
         </Grid>
@@ -59,7 +69,9 @@ const EventsFilter = ({ onFilter }: IProps) => {
           <PDateInput
             name="from"
             value={data["from"]}
-            onChange={handleDateChange("from")}
+            onChange={(value) =>
+              handleDateChange("from", setData, data, onFilter, value)
+            }
             label="From"
             inputVariant="outlined"
           />
@@ -69,9 +81,11 @@ const EventsFilter = ({ onFilter }: IProps) => {
           <PDateInput
             name="to"
             value={data["to"]}
-            onChange={handleDateChange("to")}
             label="To"
             inputVariant="outlined"
+            onChange={(value) =>
+              handleDateChange("to", setData, data, onFilter, value)
+            }
           />
         </Grid>
       </Grid>
