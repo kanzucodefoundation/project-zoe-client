@@ -65,9 +65,19 @@ const routes: IAppRoute[] = [
   },
   {
     requiredRoles: [appRoles.roleEventView, appRoles.roleEventView],
-    name: "Reports",
-    route: localRoutes.events,
+    name: "Events",
+    // route: localRoutes.events,
     icon: AssessmentIcon,
+    items: [
+      {
+        name: "Reports",
+        route: localRoutes.events,
+      },
+      {
+        name: "Categories",
+        route: localRoutes.eventsCategories,
+      },
+    ]
   },
   /*{
     requiredRoles: [appRoles.roleReportEdit, appRoles.roleReportView],

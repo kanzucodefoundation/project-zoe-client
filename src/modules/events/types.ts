@@ -43,4 +43,14 @@ export enum EventCategory {
   MC = "MC Meeting",
 }
 
+export interface IEventCategory {
+  id:number;
+  name: string;
+  fields: any[];
+}
+
+export interface IEventFields {
+  id: number;
+}
+
 export interface MetaData {}
