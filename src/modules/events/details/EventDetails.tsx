@@ -35,6 +35,7 @@ import { printPrettyDate, printPrettyTime } from "../../../utils/dateHelpers";
 import GroupLink from "../../../components/GroupLink";
 import EventAttendance from "./EventAttendance";
 import EventMetadata from "./EventMetadata";
+import EventFirstMeeting from "./EventFirstMeeting";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -134,6 +135,12 @@ export default function Details() {
       name: "Attendance",
       component: (
         <EventAttendance groupId={`${data.groupId}`} eventId={`${data.id}`} />
+      ),
+    },
+    {
+      name: "First Time Guests",
+      component: (
+        <EventFirstMeeting groupId={`${data.groupId}`} eventId={`${data.id}`} />
       ),
     },
   ];
