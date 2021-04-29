@@ -34,19 +34,29 @@ export interface IGroupEvent {
   categoryId: string;
 }
 
-export enum EventCategory {
-  WeeklyMC = "Weekly MC",
-  Garage = "Garage",
-  Evangelism = "Evangelism",
-  Wedding = "Wedding",
-  Baptism = "Baptism",
-  MC = "MC Meeting",
-}
+// export enum EventCategory {
+//   WeeklyMC = "Weekly MC",
+//   Garage = "Garage",
+//   Evangelism = "Evangelism",
+//   Wedding = "Wedding",
+//   Baptism = "Baptism",
+//   MC = "MC Meeting",
+// }
 
 export interface IEventCategory {
   id:number;
   name: string;
-  fields: any[];
+  fields: IEventFields[];
+}
+
+export interface IEventFields {
+  id: number;
+  name: string;
+  label: string;
+  details?: string;
+  type: any;
+  isRequired: boolean;
+  categoryId?: number;
 }
 
 export interface IEventFields {

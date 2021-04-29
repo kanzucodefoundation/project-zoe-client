@@ -49,7 +49,7 @@ export const localRoutes = {
   events: "/events",
   eventsDetails: "/events/:eventId",
 
-  eventsCategories:"/events/category",
+  eventsCategories:"/category",
 
   reports: "/reports",
   reportsDetails: "/reports/:reportId",
