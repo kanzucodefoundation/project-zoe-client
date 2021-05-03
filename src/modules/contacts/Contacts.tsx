@@ -15,6 +15,7 @@ import NewPersonForm from "./NewPersonForm";
 import AddIcon from "@material-ui/icons/Add";
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
+import UploadIcon from "@material-ui/icons/CloudUpload";
 import { IMobileRow } from "../../components/DataList";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -33,21 +34,22 @@ import { IState } from "../../data/types";
 import ListHeader from "../../components/ListHeader";
 import Button from "@material-ui/core/Button";
 import ContactFilter from "./ContactFilter";
+import ContactUpload from "./ContactUpload";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      flexGrow: 1
+      flexGrow: 1,
     },
     filterPaper: {
       borderRadius: 0,
-      padding: theme.spacing(2)
+      padding: theme.spacing(2),
     },
     fab: {
       position: "absolute",
       bottom: theme.spacing(2),
-      right: theme.spacing(2)
-    }
+      right: theme.spacing(2),
+    },
   })
 );
 
@@ -55,22 +57,22 @@ const headCells: XHeadCell[] = [
   {
     name: "id",
     label: "Name",
-    render: (value, rec) => <ContactLink id={value} name={rec.name} />
+    render: (value, rec) => <ContactLink id={value} name={rec.name} />,
   },
   { name: "phone", label: "Phone" },
   { name: "dateOfBirth", label: "D.O.B", render: printBirthday },
   {
     name: "cellGroup",
     label: "MC",
-    render: value =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-"
+    render: (value) =>
+      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-",
   },
   {
     name: "location",
     label: "Location",
-    render: value =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-"
-  }
+    render: (value) =>
+      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-",
+  },
 ];
 
 const toMobileRow = (data: IContactListDto): IMobileRow => {
@@ -86,7 +88,7 @@ const toMobileRow = (data: IContactListDto): IMobileRow => {
           {data.phone}
         </Typography>
       </>
-    )
+    ),
   };
 };
 
@@ -95,8 +97,9 @@ const Contacts = () => {
   const history = useHistory();
   const [createDialog, setCreateDialog] = useState(false);
   const { data, loading }: ICrmState = useSelector((state: any) => state.crm);
+  const [uploadDialog, setUploadDialog] = useState(false);
   const [filter, setFilter] = useState<IContactsFilter>({
-    limit: 200
+    limit: 200,
   });
   const user = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
@@ -104,30 +107,26 @@ const Contacts = () => {
   useEffect(() => {
     dispatch({
       type: crmConstants.crmFetchLoading,
-      payload: true
+      payload: true,
     });
     search(
       remoteRoutes.contacts,
       filter,
-      resp => {
+      (resp) => {
         dispatch({
           type: crmConstants.crmFetchAll,
-          payload: [...resp]
+          payload: [...resp],
         });
       },
       undefined,
       () => {
         dispatch({
           type: crmConstants.crmFetchLoading,
-          payload: false
+          payload: false,
         });
       }
     );
   }, [filter, dispatch]);
-
-  function handleFilter(value: any) {
-    setFilter({ ...filter, ...value });
-  }
 
   function handleNew() {
     setCreateDialog(true);
@@ -141,15 +140,28 @@ const Contacts = () => {
     setCreateDialog(false);
   }
 
+  function handleUpload() {
+    setUploadDialog(true);
+  }
+
+  function handleUploadComplete() {
+    setFilter({ ...filter });
+    setUploadDialog(false);
+  }
+
+  function closeUploadDialog() {
+    setUploadDialog(false);
+  }
+
   const createTitle = "New Person";
   return (
     <Navigation>
       <Box p={1} className={classes.root}>
         <ListHeader
           title="People"
-          onFilter={handleFilter}
+          onFilter={setFilter}
           filter={filter}
-          filterComponent={<ContactFilter onFilter={handleFilter} />}
+          filterComponent={<ContactFilter onFilter={setFilter} />}
           loading={loading}
           buttons={
             <>
@@ -162,6 +174,17 @@ const Contacts = () => {
                   style={{ marginLeft: 8 }}
                 >
                   Add new&nbsp;&nbsp;
+                </Button>
+              )}
+              {hasAnyRole(user, [appRoles.roleCrmEdit]) && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<UploadIcon />}
+                  onClick={handleUpload}
+                  style={{ marginLeft: 8 }}
+                >
+                  Upload&nbsp;&nbsp;
                 </Button>
               )}
             </>
@@ -228,6 +251,11 @@ const Contacts = () => {
       >
         <NewPersonForm data={{}} done={closeCreateDialog} />
       </EditDialog>
+      <ContactUpload
+        show={uploadDialog}
+        onClose={closeUploadDialog}
+        onDone={handleUploadComplete}
+      />
     </Navigation>
   );
 };

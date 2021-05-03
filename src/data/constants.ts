@@ -84,6 +84,9 @@ export const remoteRoutes = {
   contactById: url + "/api/crm/contacts/id",
   contactsPeople: url + "/api/crm/people",
   contactsPeopleCombo: url + "/api/crm/people/combo",
+
+  contactsPeopleSample: url + "/api/crm/import",
+  contactsPeopleUpload: url + "/api/crm/import",
   contactsChc: url + "/api/crm/person/chc",
   contactsEmail: url + "/api/crm/emails",
   tags: url + "/api/tags",

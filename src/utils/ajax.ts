@@ -180,3 +180,23 @@ export const del = (
     .timeout(timeout)
     .end(handleResponse(callBack, errorCallBack, endCallBack));
 };
+
+export const downLoad = (
+  url: string,
+  callBack: CallbackFunction,
+  errorCallBack?: ErrorCallback,
+  endCallBack?: EndCallback
+) => {
+  superagent
+    .get(url)
+    .set("Authorization", `Bearer ${getToken()}`)
+    .responseType("blob")
+    .end(handleResponse(callBack, errorCallBack, endCallBack));
+};
+
+export const triggerDownLoad = (data: Blob, fileName = "export.csv") => {
+  const a = document.createElement("a");
+  a.href = window.URL.createObjectURL(data);
+  a.download = fileName;
+  a.click();
+};

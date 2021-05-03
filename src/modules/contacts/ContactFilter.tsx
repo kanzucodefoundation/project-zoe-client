@@ -1,11 +1,9 @@
 import * as React from "react";
-import { useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import { remoteRoutes } from "../../data/constants";
-import { cleanComboValue } from "../../utils/dataHelpers";
 import { TextField } from "@material-ui/core";
 import { PRemoteSelect } from "../../components/plain-inputs/PRemoteSelect";
-import { ComboValue } from "../../components/plain-inputs/PComboInput";
+import { useFilter } from "../../utils/fitlerUtilities";
 
 interface IProps {
   onFilter: (data: any) => any;
@@ -19,32 +17,14 @@ const initialData: any = {
   email: "",
   phone: "",
   limit: 100,
-  skip: 0
+  skip: 0,
 };
 const ContactFilter = ({ onFilter }: IProps) => {
-  const [data, setData] = useState(initialData);
-
-  function handleChange(event: React.ChangeEvent<any>) {
-    const name = event.target.name;
-    const value = event.target.value;
-    const newData = { ...data, [name]: value };
-    setData({ ...newData });
-    onFilter(newData);
-  }
-
-  const handleComboChange = (name: string) => (value: ComboValue) => {
-    const hasSingleElement = (v: any) => {
-      return Array.isArray(value) && value.length === 1;
-    };
-    setData({ ...data, [name]: value });
-    const filterName = hasSingleElement(value) ? `${name}[]` : name;
-    onFilter({ ...data, [filterName]: cleanComboValue(value) });
-  };
-
-  function handleClear() {
-    setData(initialData);
-    onFilter(initialData);
-  }
+  const { data, handleTextChange, handleComboChange } = useFilter({
+    initialData,
+    onFilter,
+    comboFields: ["churchLocations", "cellGroups"],
+  });
 
   return (
     <form>
@@ -60,7 +40,7 @@ const ContactFilter = ({ onFilter }: IProps) => {
             size="small"
             margin="none"
             multiple
-            onChange={handleComboChange("churchLocations")}
+            onChange={(value) => handleComboChange("churchLocations", value)}
             value={data["churchLocations"]}
             searchOnline
           />
@@ -76,7 +56,7 @@ const ContactFilter = ({ onFilter }: IProps) => {
             size="small"
             margin="none"
             multiple
-            onChange={handleComboChange("cellGroups")}
+            onChange={(value) => handleComboChange("cellGroups", value)}
             value={data["cellGroups"]}
             searchOnline
           />
@@ -86,7 +66,7 @@ const ContactFilter = ({ onFilter }: IProps) => {
           <TextField
             name="email"
             value={data["email"]}
-            onChange={handleChange}
+            onChange={(value) => handleTextChange("email", value)}
             label="Email"
             type="email"
             variant="outlined"
@@ -98,7 +78,7 @@ const ContactFilter = ({ onFilter }: IProps) => {
           <TextField
             name="phone"
             value={data["phone"]}
-            onChange={handleChange}
+            onChange={(value) => handleTextChange("phone", value)}
             label="Phone"
             type="text"
             variant="outlined"
