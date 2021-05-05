@@ -1,13 +1,9 @@
 import * as React from "react";
-import { useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import { remoteRoutes } from "../../data/constants";
 import { PRemoteSelect } from "../../components/plain-inputs/PRemoteSelect";
 import PDateInput from "../../components/plain-inputs/PDateInput";
-import {
-  handleComboChange,
-  handleDateChange,
-} from "../../utils/fitlerUtilities";
+import { useFilter } from "../../utils/fitlerUtilities";
 
 interface IProps {
   onFilter: (data: any) => any;
@@ -23,7 +19,11 @@ const initialData: any = {
   skip: 0,
 };
 const EventsFilter = ({ onFilter }: IProps) => {
-  const [data, setData] = useState(initialData);
+  const { data, handleComboChange, handleDateChange } = useFilter({
+    initialData,
+    onFilter,
+    comboFields: ["categoryIdList", "groupIdList"],
+  });
   return (
     <form>
       <Grid spacing={2} container>
@@ -36,15 +36,7 @@ const EventsFilter = ({ onFilter }: IProps) => {
             size="small"
             margin="none"
             multiple
-            onChange={(value) =>
-              handleComboChange(
-                "categoryIdList",
-                setData,
-                data,
-                onFilter,
-                value
-              )
-            }
+            onChange={(value) => handleComboChange("categoryIdList", value)}
             value={data["categoryIdList"]}
             searchOnline
           />
@@ -58,9 +50,7 @@ const EventsFilter = ({ onFilter }: IProps) => {
             size="small"
             margin="none"
             multiple
-            onChange={(value) =>
-              handleComboChange("groupIdList", setData, data, onFilter, value)
-            }
+            onChange={(value) => handleComboChange("groupIdList", value)}
             value={data["groupIdList"]}
             searchOnline
           />
@@ -69,9 +59,7 @@ const EventsFilter = ({ onFilter }: IProps) => {
           <PDateInput
             name="from"
             value={data["from"]}
-            onChange={(value) =>
-              handleDateChange("from", setData, data, onFilter, value)
-            }
+            onChange={(value) => handleDateChange("from", value)}
             label="From"
             inputVariant="outlined"
           />
@@ -83,9 +71,7 @@ const EventsFilter = ({ onFilter }: IProps) => {
             value={data["to"]}
             label="To"
             inputVariant="outlined"
-            onChange={(value) =>
-              handleDateChange("to", setData, data, onFilter, value)
-            }
+            onChange={(value) => handleDateChange("to", value)}
           />
         </Grid>
       </Grid>

@@ -1,36 +1,57 @@
 import { ComboValue } from "../components/plain-inputs/PComboInput";
 import { cleanComboValue } from "./dataHelpers";
+import * as React from "react";
+import { useState } from "react";
+import { hasValue } from "../components/inputs/inputHelpers";
 
 const hasSingleElement = (v: any) => {
   return Array.isArray(v) && v.length === 1;
 };
 
-export const handleComboChange = (
-  name: string,
-  setData: any,
-  data: any,
-  onFilter: any,
-  value: ComboValue
-) => {
-  console.log("ComboValue", value);
-  console.log("ComboValueClean", cleanComboValue(value));
-  setData({ ...data, [name]: value });
-  const filterName = hasSingleElement(value) ? `${name}[]` : name;
-  const filterData = { ...data };
-  delete filterData[filterName];
-  delete filterData[name];
-  const finalFilter = { ...filterData, [filterName]: cleanComboValue(value) };
-  onFilter(finalFilter);
-  console.log("finalFilter>>>>", finalFilter);
-};
+export function useFilter({
+  initialData,
+  onFilter: rawFilter,
+  comboFields,
+}: {
+  initialData: any;
+  onFilter: (data: any) => any;
+  comboFields?: string[];
+}) {
+  // Clean up residue data
+  const onFilter = (data: any) => {
+    const filter = { ...data };
+    if (comboFields && hasValue(comboFields)) {
+      for (const comboField of comboFields) {
+        filter[comboField] = cleanComboValue(filter[comboField]);
+      }
+      rawFilter(filter);
+    } else rawFilter(data);
+  };
 
-export const handleDateChange = (
-  name: string,
-  setData: any,
-  data: any,
-  onFilter: any,
-  value: Date | null
-) => {
-  setData({ ...data, [name]: value?.toISOString() });
-  onFilter({ ...data, [name]: value?.toISOString() });
-};
+  const [data, setData] = useState(initialData);
+  const handleTextChange = (name: string, event: React.ChangeEvent<any>) => {
+    setData({ ...data, [name]: event.target.value });
+    onFilter({ ...data, [name]: event.target.value });
+  };
+
+  const handleDateChange = (name: string, value: Date | null) => {
+    setData({ ...data, [name]: value?.toISOString() });
+    onFilter({ ...data, [name]: value?.toISOString() });
+  };
+
+  const handleComboChange = (name: string, value: ComboValue) => {
+    setData({ ...data, [name]: value });
+    const filterName = hasSingleElement(value) ? `${name}[]` : name;
+    const filterData = { ...data };
+    delete filterData[filterName];
+    delete filterData[name];
+    const finalFilter = { ...filterData, [filterName]: cleanComboValue(value) };
+    onFilter(finalFilter);
+  };
+  return {
+    handleTextChange,
+    handleDateChange,
+    handleComboChange,
+    data,
+  };
+}
