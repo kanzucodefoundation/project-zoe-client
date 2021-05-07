@@ -102,7 +102,13 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
       remoteRoutes.eventsAttendance,
       toUpdate,
       (resp) => {
-        setData(updated);
+        const newList: IAttendance[] = data.map((it) => {
+          if (it.contactId === contactId) {
+            return { ...it, ...resp };
+          }
+          return it;
+        });
+        setData(newList);
       },
       () => {
         Toast.error("Update failed");
@@ -111,6 +117,18 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
   };
 
   const handleManualAdd = () => {};
+  data.sort((a, b) => {
+    var nameA = a.contact.name;
+    var nameB = b.contact.name;
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    // names must be equal
+    return 0;
+  });
 
   return (
     <Box>
@@ -124,7 +142,11 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
                 <ListItemAvatar>
                   <XAvatar value={it.contact.name} />
                 </ListItemAvatar>
-                <ListItemText id={it.id} primary={it.contact.name} />
+                <ListItemText
+                  id={it.id}
+                  primary={it.contact.name}
+                  secondary={it.isVisitor && <i>Guest</i>}
+                />
                 <ListItemSecondaryAction>
                   <Checkbox
                     edge="end"
