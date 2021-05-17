@@ -21,22 +21,22 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       width: "100%",
       maxWidth: 360,
-      backgroundColor: theme.palette.background.paper
+      backgroundColor: theme.palette.background.paper,
     },
     fab: {
       position: "absolute",
       bottom: theme.spacing(2),
-      right: theme.spacing(2)
-    }
+      right: theme.spacing(2),
+    },
   })
 );
 
-interface IProps {
+export interface IProps {
   groupId: string;
   eventId: string;
 }
 
-interface IAttendance {
+export interface IAttendance {
   id: string;
   groupId: string;
   eventId: string;
@@ -46,13 +46,13 @@ interface IAttendance {
   isVisitor: boolean;
 }
 
-const processData = (
+export const processData = (
   attendance: IAttendance[],
   memberships: IGroupMembership[],
   eventId: string
 ) => {
   const finalData: IAttendance[] = [...attendance];
-  const atIds = attendance.map(it => `${it.contactId}`);
+  const atIds = attendance.map((it) => `${it.contactId}`);
   memberships.forEach(({ contactId, contact, groupId }) => {
     if (!atIds.includes(`${contactId}`)) {
       finalData.push({
@@ -62,7 +62,7 @@ const processData = (
         id: "0",
         attended: false,
         eventId,
-        isVisitor: false
+        isVisitor: false,
       });
     }
   });
@@ -78,7 +78,7 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
     search(
       remoteRoutes.eventsAttendance,
       { eventId, groupId },
-      resp => {
+      (resp) => {
         const { attendance, memberships } = resp;
         setData(processData(attendance, memberships, eventId));
       },
@@ -91,7 +91,7 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
 
   const handleToggle = (contactId: string) => () => {
     let toUpdate = null;
-    const updated: IAttendance[] = data.map(it => {
+    const updated: IAttendance[] = data.map((it) => {
       if (it.contactId === contactId) {
         toUpdate = { ...it, attended: !it.attended };
         return toUpdate;
@@ -101,8 +101,14 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
     post(
       remoteRoutes.eventsAttendance,
       toUpdate,
-      resp => {
-        setData(updated);
+      (resp) => {
+        const newList: IAttendance[] = data.map((it) => {
+          if (it.contactId === contactId) {
+            return { ...it, ...resp };
+          }
+          return it;
+        });
+        setData(newList);
       },
       () => {
         Toast.error("Update failed");
@@ -111,6 +117,18 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
   };
 
   const handleManualAdd = () => {};
+  data.sort((a, b) => {
+    var nameA = a.contact.name;
+    var nameB = b.contact.name;
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    // names must be equal
+    return 0;
+  });
 
   return (
     <Box>
@@ -118,13 +136,17 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
         {loading ? (
           <Loading />
         ) : (
-          data.map(it => {
+          data.map((it) => {
             return (
               <ListItem key={it.contactId} button>
                 <ListItemAvatar>
                   <XAvatar value={it.contact.name} />
                 </ListItemAvatar>
-                <ListItemText id={it.id} primary={it.contact.name} />
+                <ListItemText
+                  id={it.id}
+                  primary={it.contact.name}
+                  secondary={it.isVisitor && <i>Guest</i>}
+                />
                 <ListItemSecondaryAction>
                   <Checkbox
                     edge="end"
