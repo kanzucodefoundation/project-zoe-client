@@ -239,6 +239,7 @@ export default function Details() {
               <Box flexGrow={1}>
                 <Typography variant="h6">{data.name}</Typography>
                 <Typography variant="body2">{`${data.privacy}, ${data.category.name}`}</Typography>
+                <Typography variant="body2">{`${data.name} attendance this month: ${data.totalAttendance} (${data.percentageAttendance}%)`}</Typography>
               </Box>
 
               {isLeader() ? (
