@@ -186,7 +186,10 @@ export default function Details() {
     {
       name: "Members",
       component: (
-        <MembersList groupId={Number(groupId)} isLeader={isLeader()} />
+        <MembersList 
+          groupId={Number(groupId)} 
+          isLeader={isLeader()} 
+        />
       ),
     },
   ];
@@ -196,8 +199,8 @@ export default function Details() {
       component: (
         <GroupEventsList
           groupId={Number(groupId)}
-          group={data}
-          isLeader={isLeader()}
+          groupName={data.name}
+          groupChildren={data.children ? data.children : []}
         />
       ),
     });

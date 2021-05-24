@@ -12,6 +12,8 @@ export interface IGroup {
   metaData?: any;
   address?: any;
   leaders?: number[];
+  children?: number[];
+  parents?: number[];
 }
 
 export interface IGroupMembership {
