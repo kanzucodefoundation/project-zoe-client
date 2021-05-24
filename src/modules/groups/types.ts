@@ -12,6 +12,10 @@ export interface IGroup {
   metaData?: any;
   address?: any;
   leaders?: number[];
+  parents?: number[];
+  children?: number[];
+  totalAttendance?: number;
+  percentageAttendance?: number;
 }
 
 export interface IGroupMembership {

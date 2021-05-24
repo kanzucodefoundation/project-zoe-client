@@ -51,7 +51,7 @@ const headCells: XHeadCell[] = [
   },
   { name: "category.name", label: "Category" },
   { name: "startDate", label: "Start Date", render: printDate },
-  { name: "attendance", label: "Attendance" },
+  { name: "attendance.length", label: "Attendance" },
 ];
 
 const toMobileRow = (data: IEvent): IMobileRow => {
@@ -93,10 +93,10 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
     search(
       remoteRoutes.events,
       {
-        groupId: groupId,
+        groupIdList: group.children,
       },
-      (data) => {
-        setData(data);
+      (resp) => {
+        setData(resp);
       },
       undefined,
       () => {
