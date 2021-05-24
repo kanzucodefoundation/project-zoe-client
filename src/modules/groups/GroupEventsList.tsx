@@ -27,7 +27,6 @@ import { search } from "../../utils/ajax";
 import { Alert } from "@material-ui/lab";
 import EditDialog from "../../components/EditDialog";
 import EventForm from "../events/forms/EventForm";
-import { IGroup } from "./types";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,8 +38,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface IProps {
   groupId: number;
-  group: IGroup;
-  isLeader: boolean;
+  groupName: string;
+  groupChildren: number[];
 }
 
 const headCells: XHeadCell[] = [
@@ -68,10 +67,9 @@ const toMobileRow = (data: IEvent): IMobileRow => {
   };
 };
 
-const GroupEventsList = ({ groupId, group }: IProps) => {
+const GroupEventsList = ({ groupId, groupName, groupChildren }: IProps) => {
   const classes = useStyles();
   const history = useHistory();
-  const [event, setNewEvent] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<IGroupEvent[]>([]);
 
@@ -79,14 +77,6 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
   const handleItemClick = (id: string) => () => {
     history.push(`${localRoutes.events}/${id}`);
   };
-
-  function handleNewEvent() {
-    setNewEvent(true);
-  }
-
-  function handleNewEventClose() {
-    setNewEvent(false);
-  }
 
   const fetchGroupEvents = useCallback(() => {
     setLoading(true);
@@ -117,9 +107,9 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
         <Hidden smDown>
           <Box pt={1}>
             {data.length === 0 ? (
-              <ListItem button onClick={handleNewEvent}>
+              <ListItem>
                 <Alert severity="info" style={{ width: "100%" }}>
-                  No events click to add new
+                  No reports to display
                 </Alert>
               </ListItem>
             ) : (
@@ -132,20 +122,13 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
               />
             )}
           </Box>
-          <EditDialog
-            title={createTitle}
-            open={event}
-            onClose={handleNewEventClose}
-          >
-            <EventForm data={{}} isNew={true} onCreated={handleNewEventClose} />
-          </EditDialog>
         </Hidden>
         <Hidden mdUp>
           <List>
             {data.length === 0 ? (
-              <ListItem button onClick={handleNewEvent}>
+              <ListItem>
                 <Alert severity="info" style={{ width: "100%" }}>
-                  No events click to add new
+                  No reports to display
                 </Alert>
               </ListItem>
             ) : (
@@ -171,17 +154,6 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
               })
             )}
           </List>
-          <EditDialog
-            title={createTitle}
-            open={event}
-            onClose={handleNewEventClose}
-          >
-            <EventForm
-              data={{ group: { id: group.id, name: group.name } }}
-              isNew={true}
-              onCreated={handleNewEventClose}
-            />
-          </EditDialog>
         </Hidden>
       </Box>
     </Grid>
