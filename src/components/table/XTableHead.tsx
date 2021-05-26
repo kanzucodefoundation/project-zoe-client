@@ -1,13 +1,13 @@
-import React from 'react';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import Typography from '@material-ui/core/Typography';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import {Order} from "./helpers";
-import {useTableStyles} from "./tableStyles";
-import {Size} from "@material-ui/core/Table";
+import React from "react";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
+import Typography from "@material-ui/core/Typography";
+import TableRow from "@material-ui/core/TableRow";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import { Order } from "./helpers";
+import { useTableStyles } from "./tableStyles";
+import { Size } from "@material-ui/core/Table";
 
 
 export interface XTableHeadProps {

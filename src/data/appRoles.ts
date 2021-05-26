@@ -1,15 +1,15 @@
-import {IAuthUser} from "./types";
+import { IAuthUser } from "./types";
 
 export const appRoles = {
-    Super: "SUPER",
-    Admin: "ADMIN",
-    Primary: "PRIMARY",
-    ClientAdmin: "CLIENT_ADMIN",
-    CrmManager: "CRM_MANAGER",
-    LoansManager: "LOANS_MANAGER",
+  Super: "SUPER",
+  Admin: "ADMIN",
+  Primary: "PRIMARY",
+  ClientAdmin: "CLIENT_ADMIN",
+  CrmManager: "CRM_MANAGER",
+  LoansManager: "LOANS_MANAGER",
 
-    User: "USER",
-}
+  User: "USER",
+};
 
 export const primaryRoles = [appRoles.Admin, appRoles.Primary]
 export const clientRoles = [appRoles.ClientAdmin, appRoles.CrmManager, appRoles.LoansManager]

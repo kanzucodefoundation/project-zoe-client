@@ -4,7 +4,7 @@ import {
   fade,
   makeStyles,
   Theme,
-  withStyles
+  withStyles,
 } from "@material-ui/core/styles";
 
 import TreeView from "@material-ui/lab/TreeView";
@@ -25,14 +25,14 @@ const StyledTreeItem = withStyles((theme: Theme) =>
   createStyles({
     iconContainer: {
       "& .close": {
-        opacity: 0.3
-      }
+        opacity: 0.3,
+      },
     },
     group: {
       marginLeft: 12,
       paddingLeft: 12,
-      borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`
-    }
+      borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
+    },
   })
 )((props: TreeItemProps) => (
   <TreeItem {...props} TransitionComponent={TransitionComponent} />
@@ -41,8 +41,8 @@ const StyledTreeItem = withStyles((theme: Theme) =>
 const useStyles = makeStyles(
   createStyles({
     root: {
-      width: "100%"
-    }
+      width: "100%",
+    },
   })
 );
 
@@ -57,20 +57,25 @@ export interface ITreeData {
   id: string;
   name: string;
   children: any[];
+  [name: string]: any;
 }
 
 interface ILabelProps {
   labelText: string;
+  secondaryText?: string;
   onDetailClick: (d: any) => any;
   onAddClick: (d: any) => any;
 }
 
 const TreeLabel = (props: ILabelProps) => (
   <Box display="flex">
-    <Box p={1} flexGrow={1} onClick={props.onDetailClick}>
-      <Typography variant="body1" style={{ padding: 4, maxWidth: "100%" }}>
-        {props.labelText}
-      </Typography>
+    <Box p={1} flexGrow={1} onClick={props.onDetailClick} display="flex">
+      <Typography variant="body1">{props.labelText}</Typography>
+      {props.secondaryText && (
+        <Typography variant="caption" style={{ marginTop: 3 }}>
+          &nbsp;({props.secondaryText})
+        </Typography>
+      )}
     </Box>
     <Box p={1} pl={0}>
       <IconButton
@@ -108,6 +113,7 @@ export default function XTreeData(props: IProps) {
           label={
             <TreeLabel
               labelText={dt.name}
+              secondaryText={dt.categoryId}
               onAddClick={handleAddClick(dt)}
               onDetailClick={handleDetailClick(dt)}
             />
@@ -131,7 +137,7 @@ export default function XTreeData(props: IProps) {
       />
     );
   };
-  const open = props.open?.map(it => `${it}`);
+  const open = props.open?.map((it) => `${it}`);
   return (
     <TreeView
       defaultExpanded={open}

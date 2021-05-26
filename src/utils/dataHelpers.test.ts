@@ -1,42 +1,39 @@
-import {cleanComboValue, removeEmptyFields} from "./dataHelpers";
-import {hasValue, IOption} from "../components/inputs/inputHelpers";
-
-
+import { cleanComboValue, removeEmptyFields } from "./dataHelpers";
+import { hasValue, IOption } from "../components/inputs/inputHelpers";
 
 describe("removeEmptyFields", () => {
-    it('removeEmptyFields can clean up data', () => {
-        const data = {
-            from: null,
-            to: null,
-            categories: [],
-            statuses: [],
-            subStatuses: [],
-            userId: "",
-            applicantId: undefined,
-            assignee: undefined
-        }
-        const result = removeEmptyFields(data)
-        expect(hasValue(result)).toEqual(false);
-    });
+  it("removeEmptyFields can clean up data", () => {
+    const data = {
+      from: null,
+      to: null,
+      categories: [],
+      statuses: [],
+      subStatuses: [],
+      userId: "",
+      applicantId: undefined,
+      assignee: undefined,
+    };
+    const result = removeEmptyFields(data);
+    expect(hasValue(result)).toEqual(false);
+  });
 
-    it('removeEmptyFields can keep filled values', () => {
-        const data = {
-            from: null,
-            to: null,
-            categories: [],
-            statuses: [],
-            subStatuses: [],
-            userId: undefined,
-            applicantId: undefined,
-            assignee: "1000tt",
-        }
-        const result = removeEmptyFields(data)
-        expect(hasValue(result)).toEqual(true);
-        expect(hasValue(result.assignee)).toEqual(true);
-        expect(Object.keys(result).length).toEqual(1);
-    });
-
-})
+  it("removeEmptyFields can keep filled values", () => {
+    const data = {
+      from: null,
+      to: null,
+      categories: [],
+      statuses: [],
+      subStatuses: [],
+      userId: undefined,
+      applicantId: undefined,
+      assignee: "1000tt",
+    };
+    const result = removeEmptyFields(data);
+    expect(hasValue(result)).toEqual(true);
+    expect(hasValue(result.assignee)).toEqual(true);
+    expect(Object.keys(result).length).toEqual(1);
+  });
+});
 
 describe("cleanComboValue", () => {
     it('cleanComboValue can clean up IOption', () => {

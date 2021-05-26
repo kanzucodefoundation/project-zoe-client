@@ -1,21 +1,21 @@
-import React, {Fragment} from "react";
-import Paper from '@material-ui/core/Paper';
-import {createStyles, makeStyles, Theme, useTheme} from "@material-ui/core";
+import React, { Fragment } from "react";
+import Paper from "@material-ui/core/Paper";
+import { createStyles, makeStyles, Theme, useTheme } from "@material-ui/core";
 import XTable from "./table/XTable";
-import {XHeadCell} from "./table/XTableHead";
-import Grid from '@material-ui/core/Grid';
+import { XHeadCell } from "./table/XTableHead";
+import Grid from "@material-ui/core/Grid";
 import Filter from "../modules/contacts/Filter";
-import {localRoutes} from "../data/constants";
+import { localRoutes } from "../data/constants";
 import Loading from "./Loading";
 import EditDialog from "./EditDialog";
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
-import {IMobileRow} from "./DataList";
+import { IMobileRow } from "./DataList";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
-import {useHistory} from "react-router";
+import { useHistory } from "react-router";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

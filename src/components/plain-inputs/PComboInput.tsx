@@ -1,9 +1,9 @@
-import React, {ChangeEvent} from 'react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import {AutocompleteProps} from "@material-ui/lab/Autocomplete/Autocomplete";
-import {TextFieldProps} from "@material-ui/core/TextField/TextField";
-import {IOption} from "../inputs/inputHelpers";
+import React, { ChangeEvent } from "react";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { AutocompleteProps } from "@material-ui/lab/Autocomplete/Autocomplete";
+import { TextFieldProps } from "@material-ui/core/TextField/TextField";
+import { IOption } from "../inputs/inputHelpers";
 
 
 export type ComboValue = string | IOption | (string | IOption)[] | null

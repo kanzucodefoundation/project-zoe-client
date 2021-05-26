@@ -1,23 +1,23 @@
-import React, {useState} from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Dialog from '@material-ui/core/Dialog';
-import PersonIcon from '@material-ui/icons/Person';
-import Avatar from '@material-ui/core/Avatar';
-import {useDispatch, useSelector} from "react-redux";
-import {IState} from "../data/types";
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MailIcon from '@material-ui/icons/Mail';
+import React, { useState } from "react";
+import IconButton from "@material-ui/core/IconButton";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import MenuItem from "@material-ui/core/MenuItem";
+import Menu from "@material-ui/core/Menu";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import Typography from "@material-ui/core/Typography";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Dialog from "@material-ui/core/Dialog";
+import PersonIcon from "@material-ui/icons/Person";
+import Avatar from "@material-ui/core/Avatar";
+import { useDispatch, useSelector } from "react-redux";
+import { IState } from "../data/types";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import MailIcon from "@material-ui/icons/Mail";
 import HiddenJs from "@material-ui/core/Hidden/HiddenJs";
-import {getInitials} from "../utils/stringHelpers";
-import {handleLogout} from "../data/coreActions";
+import { getInitials } from "../utils/stringHelpers";
+import { handleLogout } from "../data/coreActions";
 
 export const BarView = (props: any) => {
     const profile = useSelector((state: IState) => state.core.user)

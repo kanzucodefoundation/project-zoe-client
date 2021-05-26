@@ -9,7 +9,6 @@ import {
   ListItemAvatar,
   ListItemText,
   makeStyles,
-  Theme,
   Typography,
 } from "@material-ui/core";
 import React, { Fragment, useCallback, useEffect, useState } from "react";
@@ -25,10 +24,8 @@ import { useHistory } from "react-router";
 import { localRoutes, remoteRoutes } from "../../data/constants";
 import { search } from "../../utils/ajax";
 import { Alert } from "@material-ui/lab";
-import EditDialog from "../../components/EditDialog";
-import EventForm from "../events/forms/EventForm";
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       width: "100%",
@@ -67,13 +64,12 @@ const toMobileRow = (data: IEvent): IMobileRow => {
   };
 };
 
-const GroupEventsList = ({ groupId, groupName, groupChildren }: IProps) => {
+const GroupEventsList = ({ groupId, groupChildren }: IProps) => {
   const classes = useStyles();
   const history = useHistory();
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<IGroupEvent[]>([]);
 
-  const createTitle = "New Event";
   const handleItemClick = (id: string) => () => {
     history.push(`${localRoutes.events}/${id}`);
   };

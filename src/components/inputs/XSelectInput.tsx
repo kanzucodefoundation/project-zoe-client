@@ -1,11 +1,11 @@
-import * as React from 'react'
-import {useField} from 'formik';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import {hasValue, IOption} from "./inputHelpers";
+import * as React from "react";
+import { useField } from "formik";
+import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import { hasValue, IOption } from "./inputHelpers";
 
 interface IProps {
     label: string

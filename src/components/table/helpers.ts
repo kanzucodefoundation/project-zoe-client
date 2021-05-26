@@ -1,14 +1,13 @@
-import {parseXpath} from "../../utils/jsonHelpers";
-
+import { parseXpath } from "../../utils/jsonHelpers";
 
 export function desc<T>(a: T, b: T, orderBy: keyof T) {
-    if (parseXpath(b,orderBy) < parseXpath(a,orderBy)) {
-        return -1;
-    }
-    if (parseXpath(b,orderBy) > parseXpath(a,orderBy)) {
-        return 1;
-    }
-    return 0;
+  if (parseXpath(b, orderBy) < parseXpath(a, orderBy)) {
+    return -1;
+  }
+  if (parseXpath(b, orderBy) > parseXpath(a, orderBy)) {
+    return 1;
+  }
+  return 0;
 }
 
 export function stableSort<T>(array: T[], cmp: (a: T, b: T) => number) {

@@ -1,4 +1,4 @@
-import {chunkArray, createArray} from "./arrayHelpers";
+import { chunkArray, createArray } from "./arrayHelpers";
 
 it('chunkArray can split an array', () => {
     const result = chunkArray([1, 2, 3, 4, 5], 2)

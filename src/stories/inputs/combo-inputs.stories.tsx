@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 import XForm from "../../components/forms/XForm";
 import Grid from "@material-ui/core/Grid";
 import * as yup from "yup";
-import {reqArray, reqObject} from "../../data/validations";
-import {top100Films} from "./testData";
+import { reqArray, reqObject } from "../../data/validations";
+import { top100Films } from "./testData";
 import XComboInput from "../../components/inputs/XComboInput";
-import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
-import {parseXpath} from "../../utils/jsonHelpers";
-import {IOption} from "../../components/inputs/inputHelpers";
+import { XRemoteSelect } from "../../components/inputs/XRemoteSelect";
+import { parseXpath } from "../../utils/jsonHelpers";
+import { IOption } from "../../components/inputs/inputHelpers";
 
 export default {
     title: 'Combo Input',

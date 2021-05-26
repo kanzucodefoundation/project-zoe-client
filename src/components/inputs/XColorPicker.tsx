@@ -1,9 +1,9 @@
-import React from 'react';
-import {SketchPicker} from 'react-color';
+import React from "react";
+import { SketchPicker } from "react-color";
 
-import {Field, FieldProps} from 'formik';
-import {TextFieldProps} from '@material-ui/core/TextField';
-import {isValidColor} from "../../utils/colorHelpers";
+import { Field, FieldProps } from "formik";
+import { TextFieldProps } from "@material-ui/core/TextField";
+import { isValidColor } from "../../utils/colorHelpers";
 
 
 const XColorPicker = (props: TextFieldProps & IProps) => {

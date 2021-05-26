@@ -1,12 +1,11 @@
-import React from 'react';
-import {Box} from "@material-ui/core";
-import {useTheme} from "@material-ui/core/styles";
+import React from "react";
+import { Box } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
-
 interface IProps {
-    width?: any
-    children?: any
+  width?: any;
+  children?: any;
 }
 
 

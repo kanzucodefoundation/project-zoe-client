@@ -1,12 +1,12 @@
-import {AUTH_TOKEN_KEY, AUTH_USER_KEY} from "./constants";
-import {ILoginResponse} from "./types";
+import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from "./constants";
+import { ILoginResponse } from "./types";
 
 const initialState: any = {
-    splash: true,
-    user: null,
-    isLoadingUser: true,
-    globalLoader: false
-}
+  splash: true,
+  user: null,
+  isLoadingUser: true,
+  globalLoader: false,
+};
 
 export const coreConstants = {
     coreLogin: "CORE_LOGIN",

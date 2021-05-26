@@ -5,7 +5,7 @@ import {
   ageCategories,
   civilStatusCategories,
   genderCategories,
-  salutationCategories
+  salutationCategories,
 } from "../../../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
@@ -13,7 +13,7 @@ import XForm from "../../../../components/forms/XForm";
 import XTextInput from "../../../../components/inputs/XTextInput";
 import {
   hasValue,
-  toOptions
+  toOptions,
 } from "../../../../components/inputs/inputHelpers";
 
 import { remoteRoutes } from "../../../../data/constants";

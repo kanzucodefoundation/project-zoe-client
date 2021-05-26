@@ -1,7 +1,7 @@
-import React from 'react';
-import {hasValue} from "./inputHelpers";
-import {useField} from "formik";
-import PComboInput, {PComboProps} from "../plain-inputs/PComboInput";
+import React from "react";
+import { hasValue } from "./inputHelpers";
+import { useField } from "formik";
+import PComboInput, { PComboProps } from "../plain-inputs/PComboInput";
 
 type XComboProps = Omit<PComboProps, 'onChange'|'value'|'onBlur'|'helperText'|'showError'>
 const XComboInput = (props: XComboProps) => {

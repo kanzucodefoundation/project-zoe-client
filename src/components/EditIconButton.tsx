@@ -1,13 +1,13 @@
-import React from 'react';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddIcon from '@material-ui/icons/Add';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import React from "react";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import AddIcon from "@material-ui/icons/Add";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import IconButton from "@material-ui/core/IconButton";
 import Fab from "@material-ui/core/Fab";
 import useTheme from "@material-ui/core/styles/useTheme";
-import {errorColor} from "../theme/custom-colors";
-import {SvgIcon} from "@material-ui/core";
+import { errorColor } from "../theme/custom-colors";
+import { SvgIcon } from "@material-ui/core";
 
 interface IProps {
     onClick: () => any

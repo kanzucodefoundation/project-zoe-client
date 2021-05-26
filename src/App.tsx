@@ -1,11 +1,11 @@
-import React, {Suspense} from 'react';
-import {HashRouter as Router, Route, Switch} from 'react-router-dom'
-import {ToastContainer} from "react-toastify";
+import React, { Suspense } from "react";
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import Login from "./modules/login/Login";
 import Splash from "./modules/login/Splash";
-import {useSelector} from 'react-redux'
+import { useSelector } from "react-redux";
 import LoaderDialog from "./components/LoaderDialog";
-import {localRoutes} from "./data/constants";
+import { localRoutes } from "./data/constants";
 import Register from "./modules/login/Register";
 import Loading from "./components/Loading";
 import ForgotPassword from "./modules/login/ForgotPassword";

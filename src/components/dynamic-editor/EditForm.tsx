@@ -1,11 +1,11 @@
-import React from 'react';
-import {IColumn} from "./types";
-import {FormikHelpers} from "formik/dist/types";
-import {handleSubmission, ISubmission} from "../../utils/formHelpers";
+import React from "react";
+import { IColumn } from "./types";
+import { FormikHelpers } from "formik/dist/types";
+import { handleSubmission, ISubmission } from "../../utils/formHelpers";
 import XForm from "../forms/XForm";
 import Grid from "@material-ui/core/Grid";
-import {renderInput} from "../inputs/inputHelpers";
-import {del} from "../../utils/ajax";
+import { renderInput } from "../inputs/inputHelpers";
+import { del } from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 
 interface IProps {

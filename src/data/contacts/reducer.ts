@@ -1,32 +1,39 @@
-import {IAddress, IContact, IEmail, IIdentification, IPerson, IPhone} from "../../modules/contacts/types";
+import {
+  IAddress,
+  IContact,
+  IEmail,
+  IIdentification,
+  IPerson,
+  IPhone,
+} from "../../modules/contacts/types";
 
 export const crmConstants = {
-    crmFetchAll: "crmFetchAll",
-    crmFetchLoading: "crmFetchLoading",
-    crmFetchOne: "crmFetchOne",
+  crmFetchAll: "crmFetchAll",
+  crmFetchLoading: "crmFetchLoading",
+  crmFetchOne: "crmFetchOne",
 
-    crmAddContact: "crmAddContact",
+  crmAddContact: "crmAddContact",
 
-    crmEditPerson: "crmEditPerson",
+  crmEditPerson: "crmEditPerson",
 
-    crmAddEmail: "crmAddEmail",
-    crmEditEmail: "crmEditEmail",
-    crmDeleteEmail: "crmDeleteEmail",
+  crmAddEmail: "crmAddEmail",
+  crmEditEmail: "crmEditEmail",
+  crmDeleteEmail: "crmDeleteEmail",
 
-    crmAddPhone: "crmAddPhone",
-    crmEditPhone: "crmEditPhone",
-    crmDeletePhone: "crmDeletePhone",
+  crmAddPhone: "crmAddPhone",
+  crmEditPhone: "crmEditPhone",
+  crmDeletePhone: "crmDeletePhone",
 
-    crmAddAddress: "crmAddAddress",
-    crmEditAddress: "crmEditAddress",
-    crmDeleteAddress: "crmDeleteAddress",
+  crmAddAddress: "crmAddAddress",
+  crmEditAddress: "crmEditAddress",
+  crmDeleteAddress: "crmDeleteAddress",
 
-    crmAddIdentification: "crmAddIdentification",
-    crmEditIdentification: "crmEditIdentification",
-    crmDeleteIdentification: "crmDeleteIdentification",
+  crmAddIdentification: "crmAddIdentification",
+  crmEditIdentification: "crmEditIdentification",
+  crmDeleteIdentification: "crmDeleteIdentification",
 
-    coreLogout: "CORE_LOGOUT"
-}
+  coreLogout: "CORE_LOGOUT",
+};
 
 export interface ICrmState {
     data: IContact[]

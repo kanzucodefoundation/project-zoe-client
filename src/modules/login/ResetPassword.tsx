@@ -1,18 +1,18 @@
-import React from 'react';
-import {Button} from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import { useLoginStyles } from './loginStyles';
-import { Form, Formik, FormikHelpers } from 'formik';
+import React from "react";
+import { Button } from "@material-ui/core";
+import Avatar from "@material-ui/core/Avatar";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
+import { useLoginStyles } from "./loginStyles";
+import { Form, Formik, FormikHelpers } from "formik";
 import XTextInput from "../../components/inputs/XTextInput";
-import HelpIcon from '@material-ui/icons/Help';
+import HelpIcon from "@material-ui/icons/Help";
 import { put } from "../../utils/ajax";
 import { localRoutes, remoteRoutes } from "../../data/constants";
 import * as yup from "yup";
 import Toast from "../../utils/Toast";
-import { useHistory } from 'react-router';
+import { useHistory } from "react-router";
 
 function ResetPassword() {
 

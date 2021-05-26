@@ -5,7 +5,7 @@ import {
   ageCategories,
   civilStatusCategories,
   genderCategories,
-  responseCategories
+  responseCategories,
 } from "../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";

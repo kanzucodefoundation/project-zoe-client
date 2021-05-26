@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import {IAddress, IContact, printAddress} from "../../types";
-import {createStyles, makeStyles, Theme} from "@material-ui/core";
+import React, { useState } from "react";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import { IAddress, IContact, printAddress } from "../../types";
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import EditDialog from "../../../../components/EditDialog";
 import AddressEditor from "../editors/AddressEditor";
 import DataCard from "../../../../components/DataCard";

@@ -1,22 +1,20 @@
-import React from 'react';
+import React from "react";
 import * as yup from "yup";
-import {reqEmail, reqString} from "../../../../data/validations";
-import {emailCategories} from "../../../../data/comboCategories";
-import {FormikHelpers} from "formik";
+import { reqEmail, reqString } from "../../../../data/validations";
+import { emailCategories } from "../../../../data/comboCategories";
+import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../../components/forms/XForm";
 import XTextInput from "../../../../components/inputs/XTextInput";
 import XSelectInput from "../../../../components/inputs/XSelectInput";
-import {toOptions} from "../../../../components/inputs/inputHelpers";
+import { toOptions } from "../../../../components/inputs/inputHelpers";
 import XCheckBoxInput from "../../../../components/inputs/XCheckBoxInput";
-import {IEmail} from "../../types";
-import {remoteRoutes} from "../../../../data/constants";
-import {useDispatch} from 'react-redux'
-import {crmConstants} from "../../../../data/contacts/reducer";
-import {handleSubmission, ISubmission} from "../../../../utils/formHelpers";
-import {del, handleError} from "../../../../utils/ajax";
-import Toast from "../../../../utils/Toast";
-import {useDelete} from "../../../../data/hooks/useDelete";
+import { IEmail } from "../../types";
+import { remoteRoutes } from "../../../../data/constants";
+import { useDispatch } from "react-redux";
+import { crmConstants } from "../../../../data/contacts/reducer";
+import { handleSubmission, ISubmission } from "../../../../utils/formHelpers";
+import { useDelete } from "../../../../data/hooks/useDelete";
 
 interface IProps {
     contactId: string

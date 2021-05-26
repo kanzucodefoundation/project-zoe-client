@@ -1,5 +1,5 @@
-import React from 'react';
-import {createConfirmation, ReactConfirmProps} from 'react-confirm'
+import React from "react";
+import { createConfirmation, ReactConfirmProps } from "react-confirm";
 import LoaderDialog from "../components/LoaderDialog";
 
 

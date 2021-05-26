@@ -9,7 +9,7 @@ export const groupConstants = {
   groupsCommitAll: "groupsCommitAll",
   groupsAdd: "groupsAdd",
   groupsEdit: "groupsEdit",
-  groupsDelete: "groupsDelete"
+  groupsDelete: "groupsDelete",
 };
 
 export interface IGroupState {

@@ -1,13 +1,13 @@
-import React, { SyntheticEvent } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import { useLoginStyles } from './loginStyles';
-import Link from '@material-ui/core/Link';
+import React, { SyntheticEvent } from "react";
+import Avatar from "@material-ui/core/Avatar";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
+import { useLoginStyles } from "./loginStyles";
+import Link from "@material-ui/core/Link";
 import { localRoutes } from "../../data/constants";
-import { useHistory } from 'react-router';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
+import { useHistory } from "react-router";
+import DoneAllIcon from "@material-ui/icons/DoneAll";
 
 function UpdatePasswordConfirmation() {
 
@@ -31,7 +31,7 @@ function UpdatePasswordConfirmation() {
                 </Typography>
                 <Typography component="p">
                     <b>
-                        Your password has been successfully updated. Go back to the 
+                        Your password has been successfully updated. Go back to the
                         login page to log into your account.
                     </b>
                 </Typography>
@@ -41,7 +41,7 @@ function UpdatePasswordConfirmation() {
                 >
                     Go To Login Page
                 </Link>
-                
+
             </Paper>
         </main>
     )

@@ -9,7 +9,7 @@ export const tagConstants = {
   tagsCommitAll: "tagsCommitAll",
   tagsAdd: "tagsAdd",
   tagsEdit: "tagsEdit",
-  tagsDelete: "tagsDelete"
+  tagsDelete: "tagsDelete",
 };
 
 export interface ITagState {

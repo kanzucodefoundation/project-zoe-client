@@ -1,6 +1,6 @@
-import React from 'react';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import {chunkArray} from "../utils/arrayHelpers";
+import React from "react";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { chunkArray } from "../utils/arrayHelpers";
 import DataLabel from "./DataLabel";
 import DataValue from "./DataValue";
 

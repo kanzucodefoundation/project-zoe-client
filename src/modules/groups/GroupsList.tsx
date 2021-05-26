@@ -1,6 +1,6 @@
 import React from "react";
 import XTreeData from "../../components/tree/XTreeData";
-import arrayToTree from "array-to-tree";
+
 import { IGroup } from "./types";
 import InfoMessage from "../../components/messages/InfoMessage";
 import Box from "@material-ui/core/Box";
@@ -20,14 +20,9 @@ const GroupsList = ({
   data,
   loading,
   handleAddUnder,
-  handleDetails
+  handleDetails,
 }: IProps) => {
-  const openRecords = data.map(it => it.id);
-  const treeData: any = arrayToTree(data, {
-    parentProperty: "parentId",
-    customID: "id"
-  });
-
+  const openRecords = data.map((it) => it.id);
   return (
     <Box p={1}>
       <Box display="flex" justifyContent="center">
@@ -42,7 +37,7 @@ const GroupsList = ({
             </Hidden>
             <Grid item md={6}>
               <XTreeData
-                data={treeData}
+                data={data}
                 open={openRecords}
                 onAddUnder={handleAddUnder}
                 onDetails={handleDetails}

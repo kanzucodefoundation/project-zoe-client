@@ -12,7 +12,7 @@ export const eventsConstants = {
 
   eventsAdd: "eventsAdd",
   eventsEdit: "eventsEdit",
-  eventsDelete: "eventsDelete"
+  eventsDelete: "eventsDelete",
 };
 
 export interface IEventState {

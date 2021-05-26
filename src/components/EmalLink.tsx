@@ -1,6 +1,7 @@
-import React from 'react';
+import React from "react";
+
 interface IProps {
-    value:string
+  value: string;
 }
 const EmailLink = ({value}:IProps) => (
     <a style={{textDecoration:'none'}} href={`mailto:${value}`}>{value}</a>

@@ -1,17 +1,7 @@
-import React from 'react';
+import React from "react";
 import XForm from "../../components/forms/XForm";
-import Grid from "@material-ui/core/Grid";
-import XTextInput from "../../components/inputs/XTextInput";
-import {Box} from "@material-ui/core";
-import XRadioInput from "../../components/inputs/XRadioInput";
-import {toOptions} from "../../components/inputs/inputHelpers";
-import {ageCategories, genderCategories} from "../../data/comboCategories";
-import XDateInput from "../../components/inputs/XDateInput";
-import XSelectInput from "../../components/inputs/XSelectInput";
-import {XRemoteSelect} from "../../components/inputs/XRemoteSelect";
-import {remoteRoutes} from "../../data/constants";
 import * as yup from "yup";
-import {reqDate, reqEmail, reqString} from "../../data/validations";
+import { reqDate, reqEmail, reqString } from "../../data/validations";
 import StoryLayout from "../story.layout";
 import NewPersonForm from "../../modules/contacts/NewPersonForm";
 

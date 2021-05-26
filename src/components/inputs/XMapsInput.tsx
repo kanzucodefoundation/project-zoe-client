@@ -1,7 +1,10 @@
-import React from 'react';
-import {useField} from "formik";
-import {hasValue} from "./inputHelpers";
-import PMapsInput, {GooglePlace, PMapsProps} from "../plain-inputs/PMapsInput";
+import React from "react";
+import { useField } from "formik";
+import { hasValue } from "./inputHelpers";
+import PMapsInput, {
+  GooglePlace,
+  PMapsProps,
+} from "../plain-inputs/PMapsInput";
 
 type XRemoteProps = Omit<PMapsProps, 'onChange'|'value'|'onBlur'|'helperText'|'showError'>
 

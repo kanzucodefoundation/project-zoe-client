@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { remoteRoutes } from "../../../data/constants";
-import { search, del, post } from "../../../utils/ajax";
+import { del, post, search } from "../../../utils/ajax";
 import { Alert } from "@material-ui/lab";
 import PersonAvatar from "../../../components/PersonAvatar";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
