@@ -83,7 +83,7 @@ const GroupEventsList = ({ groupId, groupName, groupChildren }: IProps) => {
     search(
       remoteRoutes.events,
       {
-        groupIdList: group.children,
+        groupIdList: groupChildren,
       },
       (resp) => {
         setData(resp);
