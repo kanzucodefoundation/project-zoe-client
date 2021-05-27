@@ -46,6 +46,8 @@ export const localRoutes = {
   groups: "/people/groups",
   groupsDetails: "/people/groups/:groupId",
 
+  groupsReports: "/groups",
+
   events: "/events",
   eventsDetails: "/events/:eventId",
 
@@ -108,6 +110,7 @@ export const remoteRoutes = {
   eventsCategories: url + "/api/events/category",
   eventsAttendance: url + "/api/events/attendance",
   eventsField: url + "/api/events/fields",
+  groupReports: url + "/api/events/groupreports",
 
   reports: url + "/api/reports/report",
   reportsCategories: url + "api/reports/category",

@@ -76,7 +76,7 @@ const EventForm = ({
       endDate: values.endDate,
 
       submittedAt: new Date(),
-      submittedBy: user.contactId,
+      submittedById: user.contactId,
 
       venue: parseGooglePlace(values.venue),
       groupId: cleanComboValue(values.group),

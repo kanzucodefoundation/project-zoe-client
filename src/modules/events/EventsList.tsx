@@ -71,6 +71,10 @@ const headCells: XHeadCell[] = [
     render: (value) =>
       hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-",
   },
+  {
+    name: "submittedBy",
+    label: "Leader",
+  },
 ];
 
 const toMobileRow = (data: IEvent): IMobileRow => {
@@ -124,10 +128,10 @@ const EventsList = () => {
 
   const createTitle = "New Event";
   return (
-    <Navigation>
+    <>
       <Box p={1} className={classes.root}>
         <ListHeader
-          title="Reports"
+          title="Submitted Group Reports"
           onFilter={setFilter}
           filter={filter}
           filterComponent={<EventsFilter onFilter={setFilter} />}
@@ -209,7 +213,7 @@ const EventsList = () => {
       >
         <EventForm data={{}} isNew={true} onCreated={closeCreateDialog} />
       </EditDialog>
-    </Navigation>
+    </>
   );
 };
 
