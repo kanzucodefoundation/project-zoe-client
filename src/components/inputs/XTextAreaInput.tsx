@@ -1,10 +1,10 @@
-import * as React from 'react'
-import {useField} from 'formik';
-import TextField, {TextFieldProps} from '@material-ui/core/TextField';
-import {hasValue} from "./inputHelpers";
+import * as React from "react";
+import { useField } from "formik";
+import TextField, { TextFieldProps } from "@material-ui/core/TextField";
+import { hasValue } from "./inputHelpers";
 
 interface IProps {
-    name: string
+  name: string;
 }
 
 const XTextAreaInput = ({name,margin = 'normal', ...props}: TextFieldProps & IProps) => {

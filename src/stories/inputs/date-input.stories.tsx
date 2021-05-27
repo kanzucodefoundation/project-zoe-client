@@ -1,10 +1,8 @@
-import React from 'react';
+import React from "react";
 import XForm from "../../components/forms/XForm";
 import Grid from "@material-ui/core/Grid";
 import * as yup from "yup";
-import {reqDate, reqString} from "../../data/validations";
-import {top100Films} from "./testData";
-import XComboInput from "../../components/inputs/XComboInput";
+import { reqDate } from "../../data/validations";
 import XDateInput from "../../components/inputs/XDateInput";
 
 export default {

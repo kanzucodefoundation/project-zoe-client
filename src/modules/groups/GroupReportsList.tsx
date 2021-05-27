@@ -1,14 +1,13 @@
-import { Typography } from '@material-ui/core';
-import React from 'react';
+import { Typography } from "@material-ui/core";
+import React from "react";
 
 const GroupReportsList = () => {
-    return (
-        <div>
-            <Typography>Coming Soon</Typography>
-        </div>
-    );
-
-}
+  return (
+    <div>
+      <Typography>Coming Soon</Typography>
+    </div>
+  );
+};
 
 
 export default GroupReportsList; 

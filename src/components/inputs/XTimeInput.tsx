@@ -1,12 +1,15 @@
 import React from "react";
-import {Field, FieldProps} from 'formik';
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-import {KeyboardDateTimePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
+import { Field, FieldProps } from "formik";
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  KeyboardDateTimePicker,
+  MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
 
 interface IProps {
-    name: string
-    label: string
+  name: string;
+  label: string;
 }
 
 const Component = ({field, form, ...other}: FieldProps) => {

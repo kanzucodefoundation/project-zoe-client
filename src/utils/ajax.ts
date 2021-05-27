@@ -1,8 +1,6 @@
 import * as superagent from "superagent";
 import Toast from "./Toast";
 import { AUTH_TOKEN_KEY } from "../data/constants";
-
-import { isEmpty } from "lodash";
 import { hasNoValue, hasValue } from "../components/inputs/inputHelpers";
 
 export const getToken = (): string | null => {

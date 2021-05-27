@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
-import {Divider} from "@material-ui/core";
+import { Divider } from "@material-ui/core";
 
 interface IProps {
-    title: string
+  title: string;
 }
 
 const XHeader = (props: IProps) => {

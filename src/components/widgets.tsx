@@ -1,6 +1,6 @@
 import React from "react";
-import {createStyles, makeStyles, Theme, Typography} from "@material-ui/core";
-import {errorColor, successColor, warningColor} from "../theme/custom-colors";
+import { createStyles, makeStyles, Theme, Typography } from "@material-ui/core";
+import { errorColor, successColor, warningColor } from "../theme/custom-colors";
 
 
 const useStyles = makeStyles((theme: Theme) =>

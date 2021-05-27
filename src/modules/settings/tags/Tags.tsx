@@ -1,20 +1,25 @@
-import React, {useEffect, useState} from 'react';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import LabelIcon from '@material-ui/icons/Label';
+import React, { useEffect, useState } from "react";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import LabelIcon from "@material-ui/icons/Label";
 import Header from "../../contacts/Header";
-import {ITag} from "./types";
+import { ITag } from "./types";
 import EditDialog from "../../../components/EditDialog";
 import TagEditor from "./TagEditor";
 import Loading from "../../../components/Loading";
-import {useDispatch, useSelector} from "react-redux";
-import {ITagState, tagsFetchAsync, tagsStartLoading} from "../../../data/tags/reducer";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  ITagState,
+  tagsFetchAsync,
+  tagsStartLoading,
+} from "../../../data/tags/reducer";
 import InfoMessage from "../../../components/messages/InfoMessage";
 import Box from "@material-ui/core/Box";
-import {hasNoValue} from "../../../components/inputs/inputHelpers";
+import { hasNoValue } from "../../../components/inputs/inputHelpers";
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {

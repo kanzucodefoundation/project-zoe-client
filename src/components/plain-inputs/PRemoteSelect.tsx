@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useCallback, useEffect } from "react";
 import { search } from "../../utils/ajax";
 import Autocomplete, {
-  createFilterOptions
+  createFilterOptions,
 } from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import CircularProgress from "@material-ui/core/CircularProgress";

@@ -1,17 +1,17 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import * as yup from "yup";
-import {reqString} from "../../../data/validations";
-import {FormikHelpers} from "formik";
+import { reqString } from "../../../data/validations";
+import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../components/forms/XForm";
-import {remoteRoutes} from "../../../data/constants";
-import {handleSubmission, ISubmission} from "../../../utils/formHelpers";
-import {del} from "../../../utils/ajax";
+import { remoteRoutes } from "../../../data/constants";
+import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
+import { del } from "../../../utils/ajax";
 import Toast from "../../../utils/Toast";
 import XComboInput from "../../../components/inputs/XComboInput";
-import {cleanComboValue} from "../../../utils/dataHelpers";
-import {enumToArray} from "../../../utils/stringHelpers";
-import {GroupRole} from "../types";
+import { cleanComboValue } from "../../../utils/dataHelpers";
+import { enumToArray } from "../../../utils/stringHelpers";
+import { GroupRole } from "../types";
 
 interface IProps {
     data: any

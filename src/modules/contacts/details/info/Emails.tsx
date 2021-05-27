@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import {IContact, IEmail} from "../../types";
-import {createStyles, makeStyles, Theme} from "@material-ui/core";
+import React, { useState } from "react";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import ArrowRightIcon from "@material-ui/icons/ArrowRight";
+import { IContact, IEmail } from "../../types";
+import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import EmailEditor from "../editors/EmailEditor";
 import EditDialog from "../../../../components/EditDialog";
 import Button from "@material-ui/core/Button";

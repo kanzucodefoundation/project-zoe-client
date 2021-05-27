@@ -1,8 +1,8 @@
-import React from 'react';
-import {useField} from "formik";
-import {hasValue} from "./inputHelpers";
-import {IPRemoteProps, PRemoteSelect} from "../plain-inputs/PRemoteSelect";
-import {ComboValue} from "../plain-inputs/PComboInput";
+import React from "react";
+import { useField } from "formik";
+import { hasValue } from "./inputHelpers";
+import { IPRemoteProps, PRemoteSelect } from "../plain-inputs/PRemoteSelect";
+import { ComboValue } from "../plain-inputs/PComboInput";
 
 type XRemoteProps = Omit<IPRemoteProps, 'onChange'|'value'|'onBlur'|'helperText'|'showError'>
 
@@ -17,7 +17,7 @@ export const XRemoteSelect = (props: XRemoteProps) => {
 
     function handleChange(value: ComboValue) {
         helpers.setValue(value)
-        
+
         if (props.customOnChange !== undefined){
             props.customOnChange(value)
         }

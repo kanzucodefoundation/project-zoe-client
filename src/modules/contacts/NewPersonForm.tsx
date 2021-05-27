@@ -4,7 +4,7 @@ import { reqEmail, reqObject, reqString } from "../../data/validations";
 import {
   ageCategories,
   civilStatusCategories,
-  genderCategories
+  genderCategories,
 } from "../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";

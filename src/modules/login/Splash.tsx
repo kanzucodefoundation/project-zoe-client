@@ -1,11 +1,16 @@
-import React, {useEffect} from 'react';
-import Grid from '@material-ui/core/Grid';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { useEffect } from "react";
+import Grid from "@material-ui/core/Grid";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import GridWrapper from "../../components/GridWrapper";
-import {remoteRoutes} from "../../data/constants";
-import {useDispatch} from "react-redux";
-import {handleLogin, handleLogout, startLoading, stopLoading} from "../../data/coreActions";
-import {get, getToken} from "../../utils/ajax";
+import { remoteRoutes } from "../../data/constants";
+import { useDispatch } from "react-redux";
+import {
+  handleLogin,
+  handleLogout,
+  startLoading,
+  stopLoading,
+} from "../../data/coreActions";
+import { get, getToken } from "../../utils/ajax";
 
 export default function Splash() {
     const dispatch = useDispatch()

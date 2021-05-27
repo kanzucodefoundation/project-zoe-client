@@ -1,17 +1,15 @@
 import { Grid } from "@material-ui/core";
 import {
   Build,
-  ChildFriendly,
   EmojiPeople,
   Grain,
   Info,
-  LocalFlorist,
   Money,
   People,
   Restore,
 } from "@material-ui/icons";
 import { filter } from "lodash";
-import React, { useMemo, useState } from "react";
+import React from "react";
 import { printInteger, printMoney } from "../../utils/numberHelpers";
 import { IEvent } from "../events/types";
 import UsersByDevice from "./UsersByDevice";
@@ -65,10 +63,10 @@ const DashboardData = ({ currWeekEvents, prevWeekEvents }: IProps) => {
     "attendance"
   );
 
-  const [babies, setBabies] = useState<number>(0);
-  const [prevBabies, setPrevBabies] = useState<number>(0);
-  const [weddings, setWeddings] = useState<number>(0);
-  const [prevWeddings, setPrevWeddings] = useState<number>(0);
+  // const [babies, setBabies] = useState<number>(0);
+  // const [prevBabies, setPrevBabies] = useState<number>(0);
+  // const [weddings, setWeddings] = useState<number>(0);
+  // const [prevWeddings, setPrevWeddings] = useState<number>(0);
 
   const getPercentage = (prev: number, current: number) => {
     if (prev > 0) {

@@ -12,6 +12,10 @@ export interface IGroup {
   metaData?: any;
   address?: any;
   leaders?: number[];
+  parents?: number[];
+  children: any[];
+  totalAttendance?: number;
+  percentageAttendance?: number;
 }
 
 export interface IGroupMembership {
@@ -31,12 +35,12 @@ export interface ICreateBatchMembership {
 
 export enum GroupPrivacy {
   Private = "Private",
-  Public = "Public"
+  Public = "Public",
 }
 
 export enum GroupRole {
   Member = "Member",
-  Leader = "Leader"
+  Leader = "Leader",
 }
 
 export enum GroupCategory {

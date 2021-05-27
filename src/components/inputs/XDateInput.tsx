@@ -6,7 +6,6 @@ import DateFnsUtils from "@date-io/date-fns";
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
-    DateTimePicker
 } from "@material-ui/pickers";
 import { hasValue } from "./inputHelpers";
 import { dateFormat } from "../../utils/dateHelpers";

@@ -1,12 +1,8 @@
-import React from 'react';
+import React from "react";
 
 const GroupMapView = () => {
-    return (
-        <div>
-
-        </div>
-    );
-}
+  return <div></div>;
+};
 
 
 export default GroupMapView;

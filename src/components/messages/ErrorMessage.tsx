@@ -1,9 +1,9 @@
-import React from 'react';
-import {Box, colors, Paper} from "@material-ui/core";
+import React from "react";
+import { Box, colors, Paper } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 
 interface IProps {
-    text: string
+  text: string;
 }
 
 const ErrorMessage = (props: IProps) => {

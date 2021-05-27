@@ -1,10 +1,9 @@
-import React from 'react';
-import { action } from '@storybook/addon-actions';
-import { Button } from '@storybook/react/demo';
+import React from "react";
+import { Button } from "@storybook/react/demo";
 
 export default {
-    title: 'Members List',
-    component: Button,
+  title: "Members List",
+  component: Button,
 };
 
 interface IProps {

@@ -9,7 +9,6 @@ import {
   ListItemAvatar,
   ListItemText,
   makeStyles,
-  Theme,
   Typography,
 } from "@material-ui/core";
 import React, { Fragment, useCallback, useEffect, useState } from "react";
@@ -25,11 +24,8 @@ import { useHistory } from "react-router";
 import { localRoutes, remoteRoutes } from "../../data/constants";
 import { search } from "../../utils/ajax";
 import { Alert } from "@material-ui/lab";
-import EditDialog from "../../components/EditDialog";
-import EventForm from "../events/forms/EventForm";
-import { IGroup } from "./types";
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       width: "100%",
@@ -39,8 +35,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface IProps {
   groupId: number;
-  group: IGroup;
-  isLeader: boolean;
+  groupName: string;
+  groupChildren: number[];
 }
 
 const headCells: XHeadCell[] = [
@@ -51,7 +47,7 @@ const headCells: XHeadCell[] = [
   },
   { name: "category.name", label: "Category" },
   { name: "startDate", label: "Start Date", render: printDate },
-  { name: "attendance", label: "Attendance" },
+  { name: "attendance.length", label: "Attendance" },
 ];
 
 const toMobileRow = (data: IEvent): IMobileRow => {
@@ -68,35 +64,25 @@ const toMobileRow = (data: IEvent): IMobileRow => {
   };
 };
 
-const GroupEventsList = ({ groupId, group }: IProps) => {
+const GroupEventsList = ({ groupId, groupChildren }: IProps) => {
   const classes = useStyles();
   const history = useHistory();
-  const [event, setNewEvent] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<IGroupEvent[]>([]);
 
-  const createTitle = "New Event";
   const handleItemClick = (id: string) => () => {
     history.push(`${localRoutes.events}/${id}`);
   };
-
-  function handleNewEvent() {
-    setNewEvent(true);
-  }
-
-  function handleNewEventClose() {
-    setNewEvent(false);
-  }
 
   const fetchGroupEvents = useCallback(() => {
     setLoading(true);
     search(
       remoteRoutes.events,
       {
-        groupId: groupId,
+        groupIdList: groupChildren,
       },
-      (data) => {
-        setData(data);
+      (resp) => {
+        setData(resp);
       },
       undefined,
       () => {
@@ -117,9 +103,9 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
         <Hidden smDown>
           <Box pt={1}>
             {data.length === 0 ? (
-              <ListItem button onClick={handleNewEvent}>
+              <ListItem>
                 <Alert severity="info" style={{ width: "100%" }}>
-                  No events click to add new
+                  No reports to display
                 </Alert>
               </ListItem>
             ) : (
@@ -132,20 +118,13 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
               />
             )}
           </Box>
-          <EditDialog
-            title={createTitle}
-            open={event}
-            onClose={handleNewEventClose}
-          >
-            <EventForm data={{}} isNew={true} onCreated={handleNewEventClose} />
-          </EditDialog>
         </Hidden>
         <Hidden mdUp>
           <List>
             {data.length === 0 ? (
-              <ListItem button onClick={handleNewEvent}>
+              <ListItem>
                 <Alert severity="info" style={{ width: "100%" }}>
-                  No events click to add new
+                  No reports to display
                 </Alert>
               </ListItem>
             ) : (
@@ -171,17 +150,6 @@ const GroupEventsList = ({ groupId, group }: IProps) => {
               })
             )}
           </List>
-          <EditDialog
-            title={createTitle}
-            open={event}
-            onClose={handleNewEventClose}
-          >
-            <EventForm
-              data={{ group: { id: group.id, name: group.name } }}
-              isNew={true}
-              onCreated={handleNewEventClose}
-            />
-          </EditDialog>
         </Hidden>
       </Box>
     </Grid>

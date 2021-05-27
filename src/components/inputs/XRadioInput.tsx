@@ -1,13 +1,12 @@
-import * as React from 'react'
-import {Field, FieldProps, getIn,} from 'formik';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import {hasValue, IOption} from "./inputHelpers";
-
+import * as React from "react";
+import { Field, FieldProps, getIn } from "formik";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import FormLabel from "@material-ui/core/FormLabel";
+import { hasValue, IOption } from "./inputHelpers";
 
 
 interface IProps {

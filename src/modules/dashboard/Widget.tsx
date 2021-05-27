@@ -1,8 +1,15 @@
-import React from 'react';
-import {makeStyles} from '@material-ui/styles';
-import {Avatar, Card, CardContent, Grid, Theme, Typography} from '@material-ui/core';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import React from "react";
+import { makeStyles } from "@material-ui/styles";
+import {
+  Avatar,
+  Card,
+  CardContent,
+  Grid,
+  Theme,
+  Typography,
+} from "@material-ui/core";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {

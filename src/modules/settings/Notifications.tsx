@@ -1,16 +1,16 @@
-import React from 'react';
-import {makeStyles} from '@material-ui/styles';
+import React from "react";
+import { makeStyles } from "@material-ui/styles";
 import {
-    Button,
-    Card,
-    CardActions,
-    CardContent,
-    Checkbox,
-    Divider,
-    FormControlLabel,
-    Grid,
-    Typography
-} from '@material-ui/core';
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  Grid,
+  Typography,
+} from "@material-ui/core";
 import XHeader from "../../components/ibox/XHeader";
 
 const useStyles = makeStyles(() => ({

@@ -1,5 +1,6 @@
-import * as faker from 'faker';
-const uuid = require('uuid/v4');
+import * as faker from "faker";
+
+const uuid = require("uuid/v4");
 export const tagCategories = ['Group', 'Person', 'Task']
 export interface ITag {
     name: string

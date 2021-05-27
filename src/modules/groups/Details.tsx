@@ -186,7 +186,10 @@ export default function Details() {
     {
       name: "Members",
       component: (
-        <MembersList groupId={Number(groupId)} isLeader={isLeader()} />
+        <MembersList 
+          groupId={Number(groupId)} 
+          isLeader={isLeader()} 
+        />
       ),
     },
   ];
@@ -196,8 +199,8 @@ export default function Details() {
       component: (
         <GroupEventsList
           groupId={Number(groupId)}
-          group={data}
-          isLeader={isLeader()}
+          groupName={data.name}
+          groupChildren={data.children ? data.children : []}
         />
       ),
     });
@@ -236,6 +239,7 @@ export default function Details() {
               <Box flexGrow={1}>
                 <Typography variant="h6">{data.name}</Typography>
                 <Typography variant="body2">{`${data.privacy}, ${data.category.name}`}</Typography>
+                <Typography variant="body2">{`${data.name} attendance this month: ${data.totalAttendance} (${data.percentageAttendance}%)`}</Typography>
               </Box>
 
               {isLeader() ? (

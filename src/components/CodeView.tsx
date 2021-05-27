@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
 interface IProps {
-    data: any
+  data: any;
 }
 
 const CodeView = ({data}: IProps) => {

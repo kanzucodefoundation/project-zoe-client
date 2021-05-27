@@ -1,12 +1,20 @@
-import React from 'react';
-import {Doughnut} from 'react-chartjs-2';
-import {makeStyles, useTheme} from '@material-ui/styles';
-import {Card, CardContent, CardHeader, Divider, IconButton, Theme, Typography} from '@material-ui/core';
-import LaptopMacIcon from '@material-ui/icons/LaptopMac';
-import PhoneIphoneIcon from '@material-ui/icons/PhoneIphone';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import TabletMacIcon from '@material-ui/icons/TabletMac';
-import {iconColor, warning, white} from "../../theme/custom-colors";
+import React from "react";
+import { Doughnut } from "react-chartjs-2";
+import { makeStyles, useTheme } from "@material-ui/styles";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  IconButton,
+  Theme,
+  Typography,
+} from "@material-ui/core";
+import LaptopMacIcon from "@material-ui/icons/LaptopMac";
+import PhoneIphoneIcon from "@material-ui/icons/PhoneIphone";
+import RefreshIcon from "@material-ui/icons/Refresh";
+import TabletMacIcon from "@material-ui/icons/TabletMac";
+import { iconColor, warning, white } from "../../theme/custom-colors";
 
 const useStyles = makeStyles((theme:Theme) => ({
     root: {

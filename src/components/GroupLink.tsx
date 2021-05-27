@@ -1,10 +1,10 @@
-import React from 'react';
-import {Link} from "react-router-dom";
-import {localRoutes} from "../data/constants";
+import React from "react";
+import { Link } from "react-router-dom";
+import { localRoutes } from "../data/constants";
 
 interface IProps {
-    id: string
-    name: string
+  id: string;
+  name: string;
 }
 
 const GroupLink = ({id, name}: IProps) => (

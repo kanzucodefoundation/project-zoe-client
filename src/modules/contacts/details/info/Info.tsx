@@ -1,13 +1,13 @@
-import {Grid} from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import Emails from "./Emails";
 import Phones from "./Phones";
 import Addresses from "./Addresses";
 import React from "react";
-import {IContact} from "../../types";
+import { IContact } from "../../types";
 import BasicData from "./BasicData";
 
 interface IProps {
-    data: IContact
+  data: IContact;
 }
 
 const Info = ({data}: IProps) => {

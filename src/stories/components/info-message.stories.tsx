@@ -1,8 +1,8 @@
-import React from 'react';
-import InfoMessage from '../../components/messages/InfoMessage';
+import React from "react";
+import InfoMessage from "../../components/messages/InfoMessage";
 
 export default {
-  title: 'Info Message',
+  title: "Info Message",
   component: InfoMessage,
 };
 

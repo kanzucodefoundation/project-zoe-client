@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import clsx from "clsx";
-import {createStyles, makeStyles, Theme} from "@material-ui/core/styles";
-import {parseXpath} from "../../utils/jsonHelpers";
-import {Box} from "@material-ui/core";
-import EditIconButton, {DeleteIconButton} from "../EditIconButton";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import { parseXpath } from "../../utils/jsonHelpers";
+import { Box } from "@material-ui/core";
+import EditIconButton, { DeleteIconButton } from "../EditIconButton";
 import Button from "@material-ui/core/Button";
-import AddIcon from '@material-ui/icons/Add';
-import {IColumn} from "./types";
+import AddIcon from "@material-ui/icons/Add";
+import { IColumn } from "./types";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 

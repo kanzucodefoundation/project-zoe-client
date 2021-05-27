@@ -23,7 +23,7 @@ interface IProps {
 const schema = yup.object().shape({
   name: reqString,
   description: reqString,
-  tag: reqString
+  tag: reqString,
 });
 
 const GroupEditor = ({ data, isNew, onGroupAdded, onGroupEdited }: IProps) => {
@@ -35,13 +35,14 @@ const GroupEditor = ({ data, isNew, onGroupAdded, onGroupEdited }: IProps) => {
       name: values.name,
       details: values.description,
       privacy: values.privacy,
-      parent: values.parent
+      parent: values.parent,
+      children: [],
     };
     if (isNew) {
       post(
         remoteRoutes.groups,
         toSave,
-        data => {
+        (data) => {
           Toast.info("Group created");
           actions.resetForm();
           onGroupAdded && onGroupAdded(data);
@@ -55,7 +56,7 @@ const GroupEditor = ({ data, isNew, onGroupAdded, onGroupEdited }: IProps) => {
       put(
         remoteRoutes.groups,
         toSave,
-        data => {
+        (data) => {
           Toast.info("Group updated");
           actions.resetForm();
           onGroupEdited && onGroupEdited(data);

@@ -1,11 +1,11 @@
 import React from "react";
-import {useField} from 'formik';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import { useField } from "formik";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 
 interface IProps {
-    name: string
-    label: string
+  name: string;
+  label: string;
 }
 
 const XCheckBoxInput = (props: IProps) => {
