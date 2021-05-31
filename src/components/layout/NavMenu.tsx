@@ -8,6 +8,7 @@ import AppsIcon from "@material-ui/icons/Apps";
 import PeopleIcon from "@material-ui/icons/People";
 import PersonIcon from "@material-ui/icons/Person";
 import SettingsIcon from "@material-ui/icons/Settings";
+import BubbleChartIcon from '@material-ui/icons/BubbleChart';
 import HelpIcon from "@material-ui/icons/Help";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { useHistory, useLocation } from "react-router-dom";
@@ -42,25 +43,21 @@ const routes: IAppRoute[] = [
     icon: AppsIcon,
   },
   {
-    name: "Profile",
+    name: "My Profile",
     route: localRoutes.profile,
     icon: PersonIcon,
   },
   {
     requiredRoles: [appRoles.roleCrmView, appRoles.roleCrmEdit],
-    name: "Contacts",
+    name: "People",
+    route: localRoutes.contacts,
     icon: PeopleIcon,
-    items: [
-      {
-        name: "People",
-        route: localRoutes.contacts,
-      },
-
-      {
-        name: "Groups",
-        route: localRoutes.groups,
-      },
-    ],
+  },
+  {
+    requiredRoles: [appRoles.roleGroupView, appRoles.roleGroupEdit],
+    name: "Groups",
+    route: localRoutes.groups,
+    icon: BubbleChartIcon,
   },
   {
     requiredRoles: [appRoles.roleEventView, appRoles.roleEventView],
@@ -68,12 +65,6 @@ const routes: IAppRoute[] = [
     route: localRoutes.events,
     icon: AssessmentIcon,
   },
-  /*{
-    requiredRoles: [appRoles.roleReportEdit, appRoles.roleReportView],
-    name: "Reports",
-    route: localRoutes.reports,
-    icon: AssessmentIcon
-  },*/
   {
     requiredRoles: [appRoles.roleUserEdit, appRoles.roleUserEdit],
     name: "Admin",
