@@ -11,14 +11,15 @@ import {
 import { filter } from "lodash";
 import React from "react";
 import { printInteger, printMoney } from "../../utils/numberHelpers";
-import { IEvent } from "../events/types";
+import { IEvent, IInterval } from "../events/types";
 import UsersByDevice from "./UsersByDevice";
 import Widget from "./Widget";
 import { AgField, aggregateValue, aggregateValues } from "./utils";
 
 interface IProps {
-  currWeekEvents: IEvent[];
-  prevWeekEvents: IEvent[];
+  currDataEvents: IEvent[];
+  prevDataEvents: IEvent[];
+  interval: IInterval | undefined;
 }
 
 const fields: AgField[] = [
@@ -51,15 +52,15 @@ const fields: AgField[] = [
     name: "totalGarageAttendance",
   },
 ];
-const DashboardData = ({ currWeekEvents, prevWeekEvents }: IProps) => {
-  const currentData = aggregateValues(currWeekEvents, fields);
-  const previousData = aggregateValues(prevWeekEvents, fields);
+const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => {
+  const currentData = aggregateValues(currDataEvents, fields);
+  const previousData = aggregateValues(prevDataEvents, fields);
   const totalMcAttendance = aggregateValue(
-    filter(currWeekEvents, { categoryId: "mc" }),
+    filter(currDataEvents, { categoryId: "mc" }),
     "attendance"
   );
   const totalMcAttendancePrev = aggregateValue(
-    filter(prevWeekEvents, { categoryId: "mc" }),
+    filter(prevDataEvents, { categoryId: "mc" }),
     "attendance"
   );
 
@@ -139,7 +140,7 @@ const DashboardData = ({ currWeekEvents, prevWeekEvents }: IProps) => {
     <Grid container spacing={2}>
       {data.map((it) => (
         <Grid item xs={12} sm={6} md={4} lg={3} key={it.title}>
-          <Widget {...it} />
+          <Widget interval={interval}  {...it}/>
         </Grid>
       ))}
       <Grid item xs={12} md={6}>
