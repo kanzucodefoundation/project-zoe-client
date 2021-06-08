@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import { IInterval } from "../events/types";
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -62,6 +63,7 @@ interface IProps {
     value: any
     percentage: number
     icon: any
+    interval: IInterval | undefined
 }
 
 const Widget = (props: IProps) => {
@@ -84,7 +86,7 @@ const Widget = (props: IProps) => {
                         >
                             {props.title.toLocaleUpperCase()}
                         </Typography>
-                        <Typography variant="h6">{props.value}</Typography>
+                        <Typography variant="h6">{Number(props.value)}</Typography>
                     </Grid>
                     <Grid item>
                         <Avatar className={props.percentage < 0 ? classes.avatar : classes.avatarPlus}>
@@ -102,12 +104,12 @@ const Widget = (props: IProps) => {
                         className={props.percentage < 0 ? classes.differenceValue : classes.positiveValue}
                         variant="body2"
                     >
-                        {props.percentage}%
+                        {Number(props.percentage.toFixed(2))}%
                     </Typography>
                     <Typography
                         variant="caption"
                     >
-                        Since last week
+                        {`${props.interval?.from} - ${props.interval?.to}`}
                     </Typography>
                 </div>
             </CardContent>

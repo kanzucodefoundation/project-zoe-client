@@ -44,3 +44,8 @@ export enum EventCategory {
 }
 
 export interface MetaData {}
+
+export interface IInterval {
+  from: Date | string;
+  to: Date | string;
+}
