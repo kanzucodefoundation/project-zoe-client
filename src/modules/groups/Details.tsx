@@ -9,7 +9,7 @@ import PinDropIcon from "@material-ui/icons/PinDrop";
 import PeopleIcon from "@material-ui/icons/People";
 import Typography from "@material-ui/core/Typography";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { Theme } from "@material-ui/core";
+import { Button, ButtonGroup, Hidden, Theme } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
@@ -243,34 +243,58 @@ export default function Details() {
               </Box>
 
               {isLeader() ? (
-                <Box pr={2} flexGrow={1}>
-                  <SpeedDial
-                    ariaLabel="SpeedDial"
-                    className={classes.speedDial}
-                    icon={<SpeedDialIcon />}
-                    onClose={handleDialClose}
-                    onOpen={handleDialOpen}
-                    onClick={handleIconClick}
-                    open={open}
-                    direction="down"
-                    color="primary"
-                    FabProps={{
-                      size: "small",
-                    }}
-                  >
-                    {actions.map((action) => (
-                      <SpeedDialAction
-                        key={action.name}
-                        icon={action.icon}
-                        tooltipTitle={action.name}
-                        tooltipPlacement="left"
-                        onClick={() => {
-                          handleIconClick(action.operation);
-                        }}
-                      />
-                    ))}
-                  </SpeedDial>
-                </Box>
+                <>
+                  <Hidden smDown>
+                    <Box pr={2}>
+                      <ButtonGroup variant="contained">
+                        <Button
+                          color="primary"
+                          size="small"
+                          variant="contained"
+                          onClick={handleEdit}
+                        >
+                          Edit Group&nbsp;&nbsp;
+                        </Button>
+                        <Button
+                          color="primary"
+                          size="small"
+                          variant="contained"
+                          onClick={handleNewEvent}
+                        >
+                          Create Report&nbsp;&nbsp;
+                        </Button>
+                      </ButtonGroup>
+                    </Box>
+                  </Hidden>
+                  <Hidden mdUp>
+                    <SpeedDial
+                      ariaLabel="SpeedDial"
+                      className={classes.speedDial}
+                      icon={<SpeedDialIcon />}
+                      onClose={handleDialClose}
+                      onOpen={handleDialOpen}
+                      onClick={handleIconClick}
+                      open={open}
+                      direction="down"
+                      color="primary"
+                      FabProps={{
+                        size: "small",
+                      }}
+                    >
+                      {actions.map((action) => (
+                        <SpeedDialAction
+                          key={action.name}
+                          icon={action.icon}
+                          tooltipTitle={action.name}
+                          tooltipPlacement="left"
+                          onClick={() => {
+                            handleIconClick(action.operation);
+                          }}
+                        />
+                      ))}
+                    </SpeedDial>
+                  </Hidden>
+                </>
               ) : null}
             </Box>
             <Divider />

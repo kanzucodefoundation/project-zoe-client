@@ -3,43 +3,53 @@ import Layout from "../../components/layout/Layout";
 import { Grid } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
-import { format, lastDayOfWeek, startOfWeek } from "date-fns";
+import { differenceInDays, format, lastDayOfWeek, startOfWeek } from "date-fns";
 import Loading from "../../components/Loading";
 import DashboardData from "./DashboardData";
-import { addDays } from "date-fns/esm";
+import { addDays, subDays } from "date-fns/esm";
 import { search } from "../../utils/ajax";
 import { remoteRoutes } from "../../data/constants";
+import DashboardFilter from "./DashboardFilter";
+import { IInterval } from "../events/types";
 
 const Dashboard = () => {
   const today = new Date();
-  const lastWeekDate = addDays(today, -7);
   const startPeriod = startOfWeek(today);
   const endPeriod = lastDayOfWeek(today);
-  const [currWeek, setCurrWeek] = useState<any[]>([]);
-  const [prevWeek, setPrevWeek] = useState<any[]>([]);
+  const [currData, setCurrData] = useState<any[]>([]);
+  const [prevData, setPrevData] = useState<any[]>([]);
+  const [interval, setInterval] = useState<IInterval>();
   const [loading, setLoading] = useState<boolean>(true);
   const currFilter = {
     from: format(startPeriod, "yyyy-MM-dd"),
     to: format(endPeriod, "yyyy-MM-dd"),
   };
-  const prevFilter = {
-    from: format(startOfWeek(lastWeekDate), "yyyy-MM-dd"),
-    to: format(lastDayOfWeek(lastWeekDate), "yyyy-MM-dd"),
-  };
+  const [filter, setFilter] = useState<any>({from: currFilter.from, to: currFilter.to, limit: 5000});
 
   useEffect(() => {
     setLoading(true);
+    search(remoteRoutes.eventsMetricsRaw, filter, (resp) => {
+      setCurrData(resp);
+    })
 
-    search(remoteRoutes.eventsMetricsRaw, currFilter, (resp) => {
-      setCurrWeek(resp);
-    });
+    const d = differenceInDays(new Date(filter.to), new Date(filter.from));
+    const prevTo = subDays(new Date(filter.from), 1);
+    const prevFrom = subDays(prevTo, d);
+    
+
+    const prevFilter = {
+      from: format(prevFrom, "yyyy-MM-dd"),
+      to: format(prevTo, "yyyy-MM-dd"),
+      groupIdList: filter.groupIdList,
+    }
+    setInterval({from: format(prevFrom, "dd/MM"), to: format(prevTo, "dd/MM")})
 
     search(remoteRoutes.eventsMetricsRaw, prevFilter, (resp) => {
-      setPrevWeek(resp);
-    });
-
+      setPrevData(resp);
+    })
     setLoading(false);
-  }, [currFilter.from, currFilter.to]);
+
+  }, [filter])
 
   return (
     <Layout>
@@ -49,22 +59,18 @@ const Dashboard = () => {
             <Typography variant="button" component="div">
               Dashboard
             </Typography>
-            <Typography variant="caption" component="div">
+            <Typography variant="caption" component="div" style={{marginBottom: "10px"}}>
               Here's what's happening
             </Typography>
-            <Typography variant="overline" component="div">
-              {`${format(new Date(startPeriod), "PP")} - ${format(
-                new Date(endPeriod),
-                "PP"
-              )}`}
-            </Typography>
+            <DashboardFilter onFilter={setFilter}/>
           </Grid>
           {loading ? (
             <Loading />
           ) : (
             <DashboardData
-              currWeekEvents={currWeek}
-              prevWeekEvents={prevWeek}
+              currDataEvents={currData}
+              prevDataEvents={prevData}
+              interval={interval}
             />
           )}
         </Grid>

@@ -57,3 +57,8 @@ export interface IGroupReport {
 }
 
 export interface MetaData {}
+
+export interface IInterval {
+  from: Date | string;
+  to: Date | string;
+}
