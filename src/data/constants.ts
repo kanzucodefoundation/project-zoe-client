@@ -104,13 +104,15 @@ export const remoteRoutes = {
   groupsCategories: url + "/api/groups/category",
   groupsMembership: url + "/api/groups/member",
   groupsRequest: url + "/api/groups/request",
+  groupReports: url + "/api/groups/groupreports",
+  groupReportFrequency: url + "/api/groups/reportfrequency",
+  groupCategoriesCombo: url + "/api/groups/groupscombo",
 
   events: url + "/api/events/event",
   eventsMetricsRaw: url + "/api/events/metrics/raw",
   eventsCategories: url + "/api/events/category",
   eventsAttendance: url + "/api/events/attendance",
   eventsField: url + "/api/events/fields",
-  groupReports: url + "/api/events/groupreports",
 
   reports: url + "/api/reports/report",
   reportsCategories: url + "api/reports/category",

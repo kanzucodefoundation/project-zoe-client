@@ -1,6 +1,5 @@
 import Box from "@material-ui/core/Box/Box";
 import React, { Fragment, useEffect } from "react";
-import EventsFilter from "./EventsFilter";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
@@ -26,7 +25,6 @@ import {
 } from "../../data/events/groupReportsReducer";
 import { localRoutes } from "../../data/constants";
 import { addDays, format, lastDayOfWeek, startOfWeek } from "date-fns";
-import { indexOf } from "lodash";
 import UnsubEventsFilter from "./UnsubEventsFilter";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -56,19 +54,19 @@ const headCells: XHeadCell[] = [
 
   {
     name: "group.category",
-    label: "Category",
+    label: "Group Category",
   },
   {
-    name: "eventCategoryId",
-    label: "Missing Report",
+    name: "eventCategory",
+    label: "Report Type",
   },
   {
-    name: "groupLeader.fullName",
+    name: "groupLeader",
     label: "Leader",
   },
   {
-    name: "groupLeader.role",
-    label: "Role",
+    name: "info",
+    label: "Missing Report",
   },
 ];
 
@@ -79,10 +77,10 @@ const toMobileRow = (data: IGroupReport): IMobileRow => {
     secondary: (
       <>
         <Typography variant="caption" color="textSecondary" display="block">
-          Missing Report: {data.eventCategoryId}
+          {data.info}
         </Typography>
         <Typography variant="caption" color="textPrimary" display="block">
-          Leader: {data.groupLeader.fullName}
+          Leader: {data.groupLeader}
         </Typography>
       </>
     ),
@@ -110,7 +108,7 @@ const UnsubmittedReports = () => {
   }, [filter, dispatch]);
 
   const handleRowClick = (id: string) => {
-    history.push(`${localRoutes.events}/${id}`);
+    history.push(`${localRoutes.groups}/${id}`);
   };
   const handleItemClick = (id: string) => () => {
     handleRowClick(id);
@@ -136,7 +134,7 @@ const UnsubmittedReports = () => {
               data={data}
               initialRowsPerPage={10}
               initialSortBy="group"
-              handleSelection={handleRowClick}
+              //handleSelection={handleRowClick}
             />
           )}
         </Box>
@@ -149,8 +147,13 @@ const UnsubmittedReports = () => {
             data.map((row: any, index: number) => {
               const mobileRow = toMobileRow(row);
               return (
-                <Fragment key={index}>
-                  <ListItem alignItems="flex-start" button disableGutters>
+                <Fragment key={row.id}>
+                  <ListItem
+                    alignItems="flex-start"
+                    button
+                    disableGutters
+                    onClick={handleItemClick(row.group.id)}
+                  >
                     <ListItemAvatar>{mobileRow.avatar}</ListItemAvatar>
                     <ListItemText
                       primary={mobileRow.primary}

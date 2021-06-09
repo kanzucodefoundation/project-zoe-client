@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from "react";
-import Navigation from "../../components/layout/Layout";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import XTable from "../../components/table/XTable";
 import { XHeadCell } from "../../components/table/XTableHead";

@@ -4,18 +4,23 @@ import { remoteRoutes } from "../../data/constants";
 import { PRemoteSelect } from "../../components/plain-inputs/PRemoteSelect";
 import PDateInput from "../../components/plain-inputs/PDateInput";
 import { useFilter } from "../../utils/fitlerUtilities";
+import { addDays, format, lastDayOfWeek, startOfWeek } from "date-fns";
 
 interface IProps {
   onFilter: (data: any) => any;
 }
 
+const today = new Date();
+const startPeriod = startOfWeek(today);
+const endPeriod = lastDayOfWeek(today);
+
 const initialData: any = {
   query: "",
   groupIdList: [],
   categoryIdList: [],
-  from: null,
-  to: null,
-  limit: 100,
+  from: `${format(new Date(startPeriod), "PP")}`,
+  to: `${format(new Date(endPeriod), "PP")}`,
+  limit: 200,
   skip: 0,
 };
 const EventsFilter = ({ onFilter }: IProps) => {

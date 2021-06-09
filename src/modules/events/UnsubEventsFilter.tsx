@@ -4,33 +4,38 @@ import { remoteRoutes } from "../../data/constants";
 import { PRemoteSelect } from "../../components/plain-inputs/PRemoteSelect";
 import PDateInput from "../../components/plain-inputs/PDateInput";
 import { useFilter } from "../../utils/fitlerUtilities";
+import { addDays, format, lastDayOfWeek, startOfWeek } from "date-fns";
 
 interface IProps {
   onFilter: (data: any) => any;
 }
 
+const today = new Date();
+const startPeriod = startOfWeek(today);
+const endPeriod = lastDayOfWeek(today);
+
 const initialData: any = {
   query: "",
-  groupIdList: [],
+  reportFreqList: [],
   categoryIdList: [],
-  from: null,
-  to: null,
-  limit: 100,
+  from: `${format(new Date(startPeriod), "PP")}`,
+  to: `${format(new Date(endPeriod), "PP")}`,
+  limit: 200,
   skip: 0,
 };
 const UnsubEventsFilter = ({ onFilter }: IProps) => {
   const { data, handleComboChange, handleDateChange } = useFilter({
     initialData,
     onFilter,
-    comboFields: ["categoryIdList"],
+    comboFields: ["categoryIdList", "reportFreqList"],
   });
-  console.log("UNSUB FILTER===", data);
+
   return (
     <form>
       <Grid spacing={2} container>
         <Grid item xs={12} md>
           <PRemoteSelect
-            remote={remoteRoutes.eventsCategories}
+            remote={remoteRoutes.groupCategoriesCombo}
             name="categoryIdList"
             label="Categories"
             variant="outlined"
@@ -39,6 +44,21 @@ const UnsubEventsFilter = ({ onFilter }: IProps) => {
             multiple
             onChange={(value) => handleComboChange("categoryIdList", value)}
             value={data["categoryIdList"]}
+            searchOnline
+          />
+        </Grid>
+
+        <Grid item xs={12} md>
+          <PRemoteSelect
+            remote={remoteRoutes.groupReportFrequency}
+            name="reportFreqList"
+            label="Report Type"
+            variant="outlined"
+            size="small"
+            margin="none"
+            multiple={true}
+            onChange={(value) => handleComboChange("reportFreqList", value)}
+            value={data["reportFreqList"]}
             searchOnline
           />
         </Grid>
@@ -62,6 +82,7 @@ const UnsubEventsFilter = ({ onFilter }: IProps) => {
             onChange={(value) => handleDateChange("to", value)}
           />
         </Grid>
+        <Grid></Grid>
       </Grid>
     </form>
   );

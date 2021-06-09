@@ -49,10 +49,11 @@ export interface IGroupReport {
   frequency: string;
   submittedById?: number;
   groupLeader?: any;
-  eventCategoryId: string;
+  eventCategory: string;
   category?: any;
   parentId?: number;
   group: any;
+  info: string;
 }
 
 export interface MetaData {}
