@@ -46,6 +46,8 @@ export const localRoutes = {
   groups: "/people/groups",
   groupsDetails: "/people/groups/:groupId",
 
+  groupsReports: "/groups",
+
   events: "/events",
   eventsDetails: "/events/:eventId",
 
@@ -102,6 +104,9 @@ export const remoteRoutes = {
   groupsCategories: url + "/api/groups/category",
   groupsMembership: url + "/api/groups/member",
   groupsRequest: url + "/api/groups/request",
+  groupReports: url + "/api/groups/groupreports",
+  groupReportFrequency: url + "/api/groups/reportfrequency",
+  groupCategoriesCombo: url + "/api/groups/groupscombo",
 
   events: url + "/api/events/event",
   eventsMetricsRaw: url + "/api/events/metrics/raw",

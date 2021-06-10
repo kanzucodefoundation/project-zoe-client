@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from "react";
-import Navigation from "../../components/layout/Layout";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import XTable from "../../components/table/XTable";
 import { XHeadCell } from "../../components/table/XTableHead";
@@ -71,6 +70,10 @@ const headCells: XHeadCell[] = [
     render: (value) =>
       hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-",
   },
+  {
+    name: "submittedBy",
+    label: "Leader",
+  },
 ];
 
 const toMobileRow = (data: IEvent): IMobileRow => {
@@ -122,12 +125,16 @@ const EventsList = () => {
     dispatch(eventsFetchAsync(filter));
   }
 
+  function handleClose() {
+    setShowDialog(false);
+  }
+
   const createTitle = "New Event";
   return (
-    <Navigation>
+    <>
       <Box p={1} className={classes.root}>
         <ListHeader
-          title="Reports"
+          title="Submitted Group Reports"
           onFilter={setFilter}
           filter={filter}
           filterComponent={<EventsFilter onFilter={setFilter} />}
@@ -207,9 +214,9 @@ const EventsList = () => {
         open={showDialog}
         onClose={closeCreateDialog}
       >
-        <EventForm data={{}} isNew={true} onCreated={closeCreateDialog} />
+        <EventForm data={{}} isNew={true} onCreated={closeCreateDialog} onCancel={handleClose} />
       </EditDialog>
-    </Navigation>
+    </>
   );
 };
 

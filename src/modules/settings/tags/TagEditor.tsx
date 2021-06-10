@@ -74,6 +74,7 @@ const TagEditor = ({data, isNew, done}: IProps) => {
             schema={schema}
             initialValues={data}
             onDelete={isNew ? undefined : handleDelete}
+            onCancel={done}
         >
             <Grid spacing={0} container>
                 <Grid item xs={12}>

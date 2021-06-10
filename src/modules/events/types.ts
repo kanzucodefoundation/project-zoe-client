@@ -5,7 +5,8 @@ export interface IEvent {
   startDate: Date;
   endDate: Date;
   submittedAt: Date;
-  submittedBy: string;
+  submittedById: number;
+  submittedBy: any;
   details: string;
   venue?: any;
   categoryId: string;
@@ -41,6 +42,18 @@ export enum EventCategory {
   Wedding = "Wedding",
   Baptism = "Baptism",
   MC = "MC Meeting",
+}
+
+export interface IGroupReport {
+  id: string;
+  frequency: string;
+  submittedById?: number;
+  groupLeader?: any;
+  eventCategory: string;
+  category?: any;
+  parentId?: number;
+  group: any;
+  info: string;
 }
 
 export interface MetaData {}

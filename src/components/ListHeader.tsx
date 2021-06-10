@@ -31,7 +31,7 @@ const ListHeader = (props: IProps) => {
   }
 
   function handleQuerySearch(query: string) {
-    props.onFilter({ query });
+    props.onFilter({ ...props.filter, query });
   }
 
   return (
