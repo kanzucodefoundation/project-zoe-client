@@ -16,25 +16,26 @@ const endPeriod = lastDayOfWeek(today);
 
 const initialData: any = {
   query: "",
-  groupIdList: [],
+  reportFreqList: [],
   categoryIdList: [],
   from: `${format(new Date(startPeriod), "PP")}`,
   to: `${format(new Date(endPeriod), "PP")}`,
   limit: 200,
   skip: 0,
 };
-const EventsFilter = ({ onFilter }: IProps) => {
+const UnsubEventsFilter = ({ onFilter }: IProps) => {
   const { data, handleComboChange, handleDateChange } = useFilter({
     initialData,
     onFilter,
-    comboFields: ["categoryIdList", "groupIdList"],
+    comboFields: ["categoryIdList", "reportFreqList"],
   });
+
   return (
     <form>
       <Grid spacing={2} container>
         <Grid item xs={12} md>
           <PRemoteSelect
-            remote={remoteRoutes.eventsCategories}
+            remote={remoteRoutes.groupCategoriesCombo}
             name="categoryIdList"
             label="Categories"
             variant="outlined"
@@ -46,20 +47,22 @@ const EventsFilter = ({ onFilter }: IProps) => {
             searchOnline
           />
         </Grid>
+
         <Grid item xs={12} md>
           <PRemoteSelect
-            remote={remoteRoutes.groupsCombo}
-            name="groupIdList"
-            label="Groups"
+            remote={remoteRoutes.groupReportFrequency}
+            name="reportFreqList"
+            label="Report Type"
             variant="outlined"
             size="small"
             margin="none"
-            multiple
-            onChange={(value) => handleComboChange("groupIdList", value)}
-            value={data["groupIdList"]}
+            multiple={true}
+            onChange={(value) => handleComboChange("reportFreqList", value)}
+            value={data["reportFreqList"]}
             searchOnline
           />
         </Grid>
+
         <Grid item xs={12} md>
           <PDateInput
             name="from"
@@ -79,9 +82,10 @@ const EventsFilter = ({ onFilter }: IProps) => {
             onChange={(value) => handleDateChange("to", value)}
           />
         </Grid>
+        <Grid></Grid>
       </Grid>
     </form>
   );
 };
 
-export default EventsFilter;
+export default UnsubEventsFilter;

@@ -35,8 +35,8 @@ export function useFilter({
   };
 
   const handleDateChange = (name: string, value: Date | null) => {
-    setData({ ...data, [name]: value?.toISOString() });
-    onFilter({ ...data, [name]: value?.toISOString() });
+    setData({ ...data, [name]: value?.toDateString() });
+    onFilter({ ...data, [name]: value?.toDateString() });
   };
 
   const handleComboChange = (name: string, value: ComboValue) => {

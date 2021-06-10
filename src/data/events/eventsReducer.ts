@@ -24,7 +24,7 @@ export interface IEventState {
 const initialState: IEventState = {
   data: [],
   selected: null,
-  loading: false
+  loading: false,
 };
 
 export default function reducer(state = initialState, action: any) {
@@ -49,7 +49,7 @@ export default function reducer(state = initialState, action: any) {
     }
     case eventsConstants.eventsDelete: {
       const id: string = action.payload;
-      return { ...state, data: [...state.data.filter(it => it.id !== id)] };
+      return { ...state, data: [...state.data.filter((it) => it.id !== id)] };
     }
     case eventsConstants.eventsEdit: {
       return { ...state, selected: action.payload };
@@ -65,7 +65,18 @@ export const eventsFetchAsync = (filter: any) => {
     search(
       remoteRoutes.events,
       filter,
-      (resp: any) => dispatch(eventsCommit(resp)),
+      (resp: any) => {
+        const getFullName = (name: any) => {
+          return `${name.firstName} ${
+            name.middleName && name.middleName !== null ? name.middleName : ""
+          } ${name.lastName}`;
+        };
+
+        const newResp = resp.map((it: any) => {
+          return { ...it, submittedBy: getFullName(it.submittedBy) };
+        });
+        dispatch(eventsCommit(newResp));
+      },
       undefined,
       () => dispatch(eventsStopLoading())
     );
@@ -85,33 +96,33 @@ export const eventFetchAsync = (id: string) => {
 
 export const eventCommit = (data: IEvent) => ({
   type: eventsConstants.eventCommit,
-  payload: data
+  payload: data,
 });
 
 export const eventsCommit = (data: IEvent[]) => ({
   type: eventsConstants.eventsCommit,
-  payload: data
+  payload: data,
 });
 
 export const eventsStartLoading = () => ({
-  type: eventsConstants.eventsStartLoading
+  type: eventsConstants.eventsStartLoading,
 });
 
 export const eventsStopLoading = () => ({
-  type: eventsConstants.eventsStopLoading
+  type: eventsConstants.eventsStopLoading,
 });
 
 export const eventsAdd = (data: IEvent) => ({
   type: eventsConstants.eventsAdd,
-  payload: data
+  payload: data,
 });
 
 export const eventsEdit = (data: IEvent) => ({
   type: eventsConstants.eventsEdit,
-  payload: data
+  payload: data,
 });
 
 export const eventsDelete = (id: string) => ({
   type: eventsConstants.eventsDelete,
-  payload: id
+  payload: id,
 });
