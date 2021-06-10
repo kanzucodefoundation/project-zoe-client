@@ -114,6 +114,7 @@ const NewPersonForm = ({ done }: IProps) => {
       onSubmit={handleSubmit}
       schema={schema}
       initialValues={initialValues}
+      onCancel={done}
     >
       <Grid spacing={2} container className="min-width-100">
         <Grid item xs={6}>

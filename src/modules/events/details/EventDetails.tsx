@@ -116,7 +116,7 @@ export default function Details() {
           display="flex"
           justifyContent="center"
         >
-          <Alert severity="error">Failed to load group data</Alert>
+          <Alert severity="error">Failed to load report data</Alert>
         </Box>
       </Layout>
     );
@@ -174,7 +174,7 @@ export default function Details() {
                   <IconButton
                     aria-label="Edit"
                     color="primary"
-                    title="Edit Group"
+                    title="Edit Report"
                     onClick={handleEdit}
                   >
                     <EditIcon />
@@ -229,12 +229,13 @@ export default function Details() {
             <TabbedView tabs={tabs} />
           </Grid>
         </Grid>
-        <EditDialog open={dialog} onClose={handleClose} title="Edit Group">
+        <EditDialog open={dialog} onClose={handleClose} title="Edit Report">
           <EventForm
             data={data}
             isNew={false}
             onUpdated={handleEdited}
             onDeleted={handleDeleted}
+            onCancel={handleClose}
           />
         </EditDialog>
       </Box>
