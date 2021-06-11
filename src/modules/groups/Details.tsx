@@ -337,6 +337,7 @@ export default function Details() {
             isNew={false}
             onUpdated={handleEdited}
             onDeleted={handleDeleted}
+            onCancel={handleClose}
           />
         </EditDialog>
         <EditDialog
@@ -348,6 +349,7 @@ export default function Details() {
             data={{ group: { id: data.id, name: data.name } }}
             isNew={true}
             onCreated={handleNewEventClose}
+            onCancel={handleNewEventClose}
           />
         </EditDialog>
       </Box>

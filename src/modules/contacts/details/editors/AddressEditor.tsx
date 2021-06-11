@@ -70,6 +70,7 @@ const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
             initialValues={data}
             loading={deleteActions.loading}
             onDelete={deleteActions.handleDelete}
+            onCancel={done}
         >
             <Grid spacing={0} container>
                 <Grid item xs={12}>

@@ -27,22 +27,22 @@ function Copyright() {
   );
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     color: "white",
     width: "100%",
     height: "100%",
-    overflowY: "scroll"
+    overflowY: "scroll",
   },
   icon: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   heroContent: {
     backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6)
+    padding: theme.spacing(8, 0, 6),
   },
   heroButtons: {
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(4),
   },
   cardGrid: {
     color: "black",
@@ -57,32 +57,32 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
-      padding: theme.spacing(1)
-    }
+      padding: theme.spacing(1),
+    },
   },
 
   content: {
     padding: theme.spacing(1),
     paddingTop: 0,
     [theme.breakpoints.down("sm")]: {
-      padding: 0
-    }
+      padding: 0,
+    },
   },
   titleContent: {
     padding: theme.spacing(1),
     [theme.breakpoints.down("sm")]: {
       padding: theme.spacing(1),
-      paddingBottom: 0
-    }
+      paddingBottom: 0,
+    },
   },
   footer: {
     backgroundColor: "black",
     padding: theme.spacing(6),
-    color: "whitesmoke"
+    color: "whitesmoke",
   },
   toolbarTitle: {
-    flexGrow: 1
-  }
+    flexGrow: 1,
+  },
 }));
 
 export default function Register() {
@@ -105,7 +105,7 @@ export default function Register() {
       style={{
         backgroundImage: "url(" + image + ")",
         backgroundSize: "cover",
-        backgroundPosition: "top center"
+        backgroundPosition: "top center",
       }}
       className={classes.root}
     >
@@ -141,7 +141,10 @@ export default function Register() {
             </Typography>
             {done && (
               <Box pt={2}>
-                <Alert>We have received your data, Thank you</Alert>
+                <Alert>
+                  We have received your data, Please reach out to your
+                  administrator to have your account activated, Thank you
+                </Alert>
               </Box>
             )}
           </div>

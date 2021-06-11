@@ -90,7 +90,10 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
   }, [eventId, groupId]);
 
   const handleToggle = (contactId: string) => () => {
-    let toUpdate = null;
+    const [member]: IAttendance[] = data.filter(
+      (it) => it.contactId === contactId
+    );
+    let toUpdate = { ...member, attended: !member.attended };
     post(
       remoteRoutes.eventsAttendance,
       toUpdate,

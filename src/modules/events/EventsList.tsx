@@ -125,6 +125,10 @@ const EventsList = () => {
     dispatch(eventsFetchAsync(filter));
   }
 
+  function handleClose() {
+    setShowDialog(false);
+  }
+
   const createTitle = "New Event";
   return (
     <>
@@ -210,7 +214,7 @@ const EventsList = () => {
         open={showDialog}
         onClose={closeCreateDialog}
       >
-        <EventForm data={{}} isNew={true} onCreated={closeCreateDialog} />
+        <EventForm data={{}} isNew={true} onCreated={closeCreateDialog} onCancel={handleClose} />
       </EditDialog>
     </>
   );

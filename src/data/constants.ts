@@ -61,7 +61,7 @@ export const localRoutes = {
   test: "/test",
 
   updatePassword: "/update-password",
-  resetPassword: "/reset-password",
+  resetPassword: "/reset-password/:token",
   forgotPassword: "/forgot-password",
   help: "/help",
   login: "/login",

@@ -129,6 +129,7 @@ const GroupTabView = () => {
             data={starterData}
             isNew={true}
             onCreated={handleAdded}
+            onCancel={handleClose}
           />
         </EditDialog>
       </Box>

@@ -28,18 +28,18 @@ const columns: XHeadCell[] = [
   {
     name: "isActive",
     label: "Status",
-    render: value => (
+    render: (value) => (
       <Chip
         label={value ? "Active" : "Inactive"}
         color="secondary"
         size="small"
       />
-    )
+    ),
   },
   {
     name: "avatar",
     label: "Avatar",
-    render: data => {
+    render: (data) => {
       const hasAvatar = hasValue(data);
       return hasAvatar ? (
         <Avatar alt="Avatar" src={data} />
@@ -50,26 +50,26 @@ const columns: XHeadCell[] = [
       );
     },
     cellProps: {
-      width: 50
-    }
+      width: 50,
+    },
   },
   {
     name: "username",
-    label: "Username"
+    label: "Username",
   },
   {
     name: "fullName",
     label: "Full Name",
     cellProps: {
       component: "th",
-      scope: "row"
-    }
+      scope: "row",
+    },
   },
   {
     name: "roles",
     label: "Roles",
     render: (roles: string[]) =>
-      roles?.map(it => (
+      roles?.map((it) => (
         <Chip
           color="primary"
           variant="outlined"
@@ -78,8 +78,8 @@ const columns: XHeadCell[] = [
           size="small"
           label={it}
         />
-      ))
-  }
+      )),
+  },
 ];
 
 interface IMobileRow {
@@ -126,7 +126,7 @@ const toMobile = (data: any): IMobileRow => {
           ))}
         </Box>
       </Box>
-    )
+    ),
   };
 };
 
@@ -143,7 +143,7 @@ const Users = () => {
     search(
       remoteRoutes.users,
       filter,
-      resp => {
+      (resp) => {
         setData(resp);
       },
       undefined,
@@ -167,7 +167,7 @@ const Users = () => {
       username,
       roles: [...roles],
       contact: { id: contactId, label: fullName },
-      isActive: isActive
+      isActive: isActive,
     };
     setSelected(toEdit);
     setDialog(true);
@@ -198,6 +198,7 @@ const Users = () => {
   function handleDeleted(dt: any) {
     const newData = data.filter((it: any) => it.id !== dt.id);
     setData(newData);
+    handleClose();
   }
 
   const canEditUsers = hasAnyRole(user, [appRoles.roleUserEdit]);

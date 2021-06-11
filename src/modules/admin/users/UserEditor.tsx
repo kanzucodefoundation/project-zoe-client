@@ -63,7 +63,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
   function handleDelete() {
     setLoading(true);
     del(
-      remoteRoutes.users,
+      `${remoteRoutes.users}/${data.id}`,
       (dt) => {
         console.log("Delete response", dt);
         Toast.success("Operation succeeded");
