@@ -10,6 +10,7 @@ import DataCard from "../../../../components/DataCard";
 import Button from "@material-ui/core/Button";
 import Hidden from "@material-ui/core/Hidden";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
+import Toast from '../../../../utils/Toast';
 
 interface IProps {
     data: IContact
@@ -52,7 +53,9 @@ const Addresses = (props: IProps) => {
             useActionContent={true}
             title='Addresses'
             buttons={
-                <Button size="small" color="primary" onClick={handleNew}>
+                <Button size="small" color="primary" onClick={
+                    () =>
+                      addresses.length >= 4 ? Toast.info("You can only enter up to four addresses") : handleNew()}>
                     Add New
                 </Button>
             }

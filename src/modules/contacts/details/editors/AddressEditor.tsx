@@ -1,7 +1,7 @@
 import React from "react";
 import * as yup from "yup";
 import { reqString } from "../../../../data/validations";
-import { addressCategories } from "../../../../data/comboCategories";
+import { addressCategories, countryList, eaCountries } from '../../../../data/comboCategories';
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../../components/forms/XForm";
@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { crmConstants } from "../../../../data/contacts/reducer";
 import { handleSubmission, ISubmission } from "../../../../utils/formHelpers";
 import { useDelete } from "../../../../data/hooks/useDelete";
+import { XMapsInput } from '../../../../components/inputs/XMapsInput';
 
 interface IProps {
     contactId: string
@@ -36,6 +37,10 @@ const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
     const dispatch = useDispatch();
 
     function handleSubmit(values: any, actions: FormikHelpers<any>) {
+        !values.isPrimary && (values.isPrimary = false)
+        const {freeForm, ...rest} = values
+        values.freeForm = freeForm.description
+        values.placeId = freeForm.place_id
         const submission: ISubmission = {
             url: remoteRoutes.contactsAddress,
             values:{...values,contactId}, actions, isNew,
@@ -76,11 +81,11 @@ const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <XTextInput
-                        name="country"
-                        label="Country"
-                        type="text"
-                        variant='outlined'
+                    <XSelectInput
+                      name="country"
+                      label="Country"
+                      options={toOptions(eaCountries)}
+                      variant='outlined'
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -92,11 +97,12 @@ const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <XTextInput
-                        name="freeForm"
-                        label="Address"
-                        type="text"
-                        variant='outlined'
+                    <XMapsInput
+                      name="freeForm"
+                      label="Address"
+                      variant="outlined"
+                      margin="none"
+                      placeholder="Type to search"
                     />
                 </Grid>
                 <Grid item xs={12}>
