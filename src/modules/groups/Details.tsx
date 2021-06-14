@@ -198,9 +198,7 @@ export default function Details() {
       name: "Reports",
       component: (
         <GroupEventsList
-          groupId={Number(groupId)}
-          groupName={data.name}
-          groupChildren={data.children ? data.children : []}
+          reports = {data.reports ? data.reports : []}
         />
       ),
     });
