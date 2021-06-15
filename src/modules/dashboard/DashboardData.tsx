@@ -12,7 +12,6 @@ import { filter } from "lodash";
 import React from "react";
 import { printInteger, printMoney } from "../../utils/numberHelpers";
 import { IEvent, IInterval } from "../events/types";
-import UsersByDevice from "./UsersByDevice";
 import Widget from "./Widget";
 import { AgField, aggregateValue, aggregateValues } from "./utils";
 
@@ -143,9 +142,6 @@ const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => 
           <Widget interval={interval}  {...it}/>
         </Grid>
       ))}
-      <Grid item xs={12} md={6}>
-        <UsersByDevice />
-      </Grid>
     </Grid>
   );
 };
