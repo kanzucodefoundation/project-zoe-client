@@ -108,10 +108,11 @@ export default function reducer(state = initialState, action: any) {
             return state
         }
         case crmConstants.crmAddPhone: {
-            const phone: IPhone = action.payload
+            const phone: IPhone[] = action.payload
+            const newPhone: IPhone[] = []
             if (state.selected) {
                 const {phones, ...rest} = state.selected
-                const selected: IContact = {...rest, phones: [...phones, phone]}
+                const selected: IContact = {...rest, phones: [...phone]}
                 return {...state, selected}
             }
             return state
