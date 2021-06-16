@@ -108,7 +108,7 @@ export default function reducer(state = initialState, action: any) {
             return state
         }
         case crmConstants.crmAddPhone: {
-            const phone: IPhone[] = action.payload
+            const phone: IPhone[] = action.payload //TODO @herbert We expect one email from the server
             const newPhone: IPhone[] = []
             if (state.selected) {
                 const {phones, ...rest} = state.selected
