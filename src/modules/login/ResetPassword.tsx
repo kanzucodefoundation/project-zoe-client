@@ -15,28 +15,47 @@ import Toast from "../../utils/Toast";
 import { useHistory, useParams } from "react-router";
 import { hasNoValue } from "../../components/inputs/inputHelpers";
 import Error from "../../components/Error";
+import { useState } from "react";
 
 function ResetPassword() {
   const classes = useLoginStyles();
   const history = useHistory();
   const { token } = useParams<any>();
+  const [password, setPassword] = useState("");
+  const [isValid, setIsValid] = useState<boolean>(false);
+  const [isLength, setIsLength] = useState<boolean>(false);
+  const lengthCheck = yup.string()
+    .min(8, 'Password is too short - should be 8 characters minimum.');
+  
+  const handleChange = (e: any) => {
+    setPassword(e.target.value)
+  }
+
+  async function validation() {
+    setIsLength(await lengthCheck.isValid(password))
+  }
 
   const onSubmit = (data: any, actions: FormikHelpers<any>) => {
-    put(
-      remoteRoutes.resetPassword + "/" + token,
-      data,
-      (resp) => {
-        actions.resetForm();
-        localStorage.removeItem("password_token");
-        history.push(localRoutes.updatePassword);
-      },
-      () => {
-        Toast.error("Password change was unsuccessful. Try again");
-        actions.setSubmitting(false);
-        console.log(token);
-        actions.resetForm();
-      }
-    );
+    if (isLength) {
+      put(
+        remoteRoutes.resetPassword + "/" + token,
+        data,
+        (resp) => {
+          actions.resetForm();
+          localStorage.removeItem("password_token");
+          history.push(localRoutes.updatePassword);
+        },
+        () => {
+          Toast.error("Password change was unsuccessful. Try again");
+          actions.setSubmitting(false);
+          console.log(token);
+          actions.resetForm();
+        }
+      );
+    } else {
+      Toast.error("Password does not meet criteria. Try again");
+      actions.resetForm();
+    }
   };
   if (hasNoValue(token)) return <Error text="Invalid password reset link" />;
 
@@ -63,6 +82,8 @@ function ResetPassword() {
                 label="Password"
                 autoComplete="off"
                 margin="normal"
+                onChangeCapture={handleChange}
+                onKeyUp={validation}
               />
               <Button
                 type="submit"
@@ -76,6 +97,7 @@ function ResetPassword() {
               </Button>
             </Form>
           )}
+          <Typography variant="body2" style={{color: isLength ? "green" : "red"}}>Password must be 8 characters long</Typography> 
         </Formik>
       </Paper>
     </main>
