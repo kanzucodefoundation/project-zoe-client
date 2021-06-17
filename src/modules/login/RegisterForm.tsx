@@ -27,6 +27,7 @@ import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import { XMapsInput } from "../../components/inputs/XMapsInput";
 import { parseGooglePlace } from "../../components/plain-inputs/PMapsInput";
+import { isEmpty } from "lodash";
 
 interface IProps {
   data: any | null;
@@ -49,7 +50,7 @@ const schema = yup.object().shape({
 
   email: reqEmail,
   phone: reqString,
-  inCell: reqString
+  inCell: reqString,
 });
 
 const initialValues = {
@@ -68,7 +69,7 @@ const initialValues = {
   email: "",
   phone: "",
   inCell: "",
-  joinCell: ""
+  joinCell: "",
 };
 
 const processName = (name: string): string[] => {
@@ -103,16 +104,20 @@ const RegisterForm = ({ done }: IProps) => {
       email: values.email,
       phone: values.phone,
       inCell: values.inCell,
-      joinCell: values.joinCell
+      joinCell: values.joinCell,
     };
 
     post(
       remoteRoutes.register,
       toSave,
-      data => {
-        Toast.info("Operation successful");
-        actions.resetForm();
-        if (done) done();
+      (data) => {
+        if (isEmpty(data)) {
+          Toast.error("This Email address is already in use");
+        } else {
+          Toast.info("Operation successful");
+          actions.resetForm();
+          if (done) done();
+        }
       },
       undefined,
       () => {
