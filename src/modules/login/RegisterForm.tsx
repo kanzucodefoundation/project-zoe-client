@@ -20,7 +20,6 @@ import Toast from "../../utils/Toast";
 import XRadioInput from "../../components/inputs/XRadioInput";
 import { XRemoteSelect } from "../../components/inputs/XRemoteSelect";
 import { Box } from "@material-ui/core";
-
 import { getDayList, getMonthsList } from "../../utils/dateHelpers";
 import { ICreatePersonDto } from "../contacts/types";
 import Typography from "@material-ui/core/Typography";
@@ -49,7 +48,7 @@ const schema = yup.object().shape({
 
   email: reqEmail,
   phone: reqString,
-  inCell: reqString
+  inCell: reqString,
 });
 
 const initialValues = {
@@ -68,7 +67,7 @@ const initialValues = {
   email: "",
   phone: "",
   inCell: "",
-  joinCell: ""
+  joinCell: "",
 };
 
 const processName = (name: string): string[] => {
@@ -103,13 +102,13 @@ const RegisterForm = ({ done }: IProps) => {
       email: values.email,
       phone: values.phone,
       inCell: values.inCell,
-      joinCell: values.joinCell
+      joinCell: values.joinCell,
     };
 
     post(
       remoteRoutes.register,
       toSave,
-      data => {
+      (data) => {
         Toast.info("Operation successful");
         actions.resetForm();
         if (done) done();
