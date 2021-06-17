@@ -20,14 +20,12 @@ import Toast from "../../utils/Toast";
 import XRadioInput from "../../components/inputs/XRadioInput";
 import { XRemoteSelect } from "../../components/inputs/XRemoteSelect";
 import { Box } from "@material-ui/core";
-
 import { getDayList, getMonthsList } from "../../utils/dateHelpers";
 import { ICreatePersonDto } from "../contacts/types";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import { XMapsInput } from "../../components/inputs/XMapsInput";
 import { parseGooglePlace } from "../../components/plain-inputs/PMapsInput";
-import { isEmpty } from "lodash";
 
 interface IProps {
   data: any | null;
@@ -111,13 +109,9 @@ const RegisterForm = ({ done }: IProps) => {
       remoteRoutes.register,
       toSave,
       (data) => {
-        if (isEmpty(data)) {
-          Toast.error("This Email address is already in use");
-        } else {
-          Toast.info("Operation successful");
-          actions.resetForm();
-          if (done) done();
-        }
+        Toast.info("Operation successful");
+        actions.resetForm();
+        if (done) done();
       },
       undefined,
       () => {
