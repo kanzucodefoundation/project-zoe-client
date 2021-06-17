@@ -17,6 +17,7 @@ import UpdatePasswordConfirmation from "./login/UpdatePasswordConfirmation";
 import EventDetails from "./events/details/EventDetails";
 import Events from "./events/EventsList";
 import GroupReports from "./events/GroupReports";
+import Help from "./help/Help";
 
 const ContentSwitch = () => {
   const user = useSelector((state: IState) => state.core.user);
@@ -53,10 +54,8 @@ const ContentSwitch = () => {
 
       <Route path={localRoutes.settings} component={Settings} />
       <Route path={localRoutes.test} component={Testing} />
-      <Route
-        path={localRoutes.updatePassword}
-        component={UpdatePasswordConfirmation}
-      />
+      <Route path={localRoutes.updatePassword} component={UpdatePasswordConfirmation} />
+      <Route path={localRoutes.help} component={Help} />
       <Route component={NoMatch} />
     </Switch>
   );
