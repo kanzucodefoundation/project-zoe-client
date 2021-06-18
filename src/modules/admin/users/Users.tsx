@@ -202,6 +202,7 @@ const Users = () => {
   }
 
   const canEditUsers = hasAnyRole(user, [appRoles.roleUserEdit]);
+  const canViewUsers = hasAnyRole(user, [appRoles.roleUserView]);
 
   return (
     <Layout>
@@ -238,7 +239,7 @@ const Users = () => {
             toMobileRow={toMobile}
             columns={columns}
             onEditClick={canEditUsers ? handleEdit : undefined}
-            onViewClick={handleView}
+            onViewClick={canViewUsers ? handleView : undefined}
           />
         )}
       </Box>

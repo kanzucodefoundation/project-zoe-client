@@ -148,10 +148,12 @@ export default function Details() {
               {
                 path: localRoutes.home,
                 label: "Dashboard",
+                auth: hasAnyRole(profile, [appRoles.roleDashboard]),
               },
               {
                 path: localRoutes.events,
                 label: "Events",
+                auth: hasAnyRole(profile, [appRoles.roleEventView, appRoles.roleEventEdit]),
               },
             ]}
           />

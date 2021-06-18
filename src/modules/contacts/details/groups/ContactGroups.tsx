@@ -1,26 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { IContact, ITeamMember } from "../../types";
 import { get } from "../../../../utils/ajax";
-import { localRoutes, remoteRoutes } from "../../../../data/constants";
+import { appRoles, localRoutes, remoteRoutes } from "../../../../data/constants";
 import { useHistory } from "react-router";
 import NewGroupJoinRequestForm from "./NewGroupJoinRequestForm";
 import XList, { ListItemData } from "../../../../components/list/XList";
 import { getInitials } from "../../../../utils/stringHelpers";
 import { Alert } from "@material-ui/lab";
 import Box from "@material-ui/core/Box";
+import { hasAnyRole } from "../../../../data/appRoles";
+import { IAuthUser } from "../../../../data/types";
 
 interface IProps {
   contactId: string;
   contact: IContact;
   isOwnProfile: boolean;
+  profile: IAuthUser;
 }
 
-const ContactGroups = ({ isOwnProfile, contactId, contact }: IProps) => {
+const ContactGroups = ({ isOwnProfile, contactId, contact, profile }: IProps) => {
   const history = useHistory();
   const [data, setData] = useState<ITeamMember[]>([]);
+  const hasGroupView = hasAnyRole(profile, [appRoles.roleGroupView])
 
   const handleView = (dt: any) => {
-    history.push(localRoutes.groups + "/" + dt);
+    if (hasGroupView) {
+      history.push(localRoutes.groups + "/" + dt);
+    }
   };
 
   useEffect(() => {
