@@ -189,18 +189,14 @@ export default function Details() {
     },
   ];
   if (isLeader()) {
-    if (hasRole(profile, appRoles.roleEventView)) {
-      tabs.push({
-        name: "Reports",
-        component: (
-          <GroupEventsList
-            groupId={Number(groupId)}
-            groupName={data.name}
-            groupChildren={data.children ? data.children : []}
-          />
-        ),
-      });
-    }
+    tabs.push({
+      name: "Reports",
+      component: (
+        <GroupEventsList
+          reports = {data.reports ? data.reports : []}
+        />
+      ),
+    });
     tabs.push({
       name: "Requests",
       component: <MemberRequests group={data} />,
@@ -369,7 +365,7 @@ export default function Details() {
           onClose={handleNewEventClose}
         >
           <EventForm
-            data={{ group: { id: data.id, name: data.name } }}
+            data={{ group: { id: data.id, name: data.name, categoryId: data.categoryId } }}
             isNew={true}
             onCreated={handleNewEventClose}
             onCancel={handleNewEventClose}

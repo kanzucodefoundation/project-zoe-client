@@ -64,7 +64,7 @@ export const eventsFetchAsync = (filter: any) => {
   return (dispatch: Dispatch<any>) => {
     search(
       remoteRoutes.events,
-      filter,
+      {filter},
       (resp: any) => {
         const getFullName = (name: any) => {
           return `${name.firstName} ${

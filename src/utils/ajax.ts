@@ -21,6 +21,9 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
   } else if (res && res.badRequest) {
     const { message, errors } = res.body;
     let msg = "Invalid request format";
+    if (typeof message === "string") {
+      msg = message;
+    }
     if (Array.isArray(message)) {
       msg = message[0];
     }
@@ -54,29 +57,31 @@ export const isAuthError = (err: any = {}, res: superagent.Response) => {
   return (res && res.forbidden) || (res && res.unauthorized);
 };
 
-export const handleResponse = (
-  callBack: CallbackFunction,
-  errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback
-) => (err: any, res: superagent.Response) => {
-  try {
-    if (err || !res.ok) {
-      if (errorCallBack) {
-        errorCallBack(err, res);
+export const handleResponse =
+  (
+    callBack: CallbackFunction,
+    errorCallBack?: ErrorCallback,
+    endCallBack?: EndCallback
+  ) =>
+  (err: any, res: superagent.Response) => {
+    try {
+      if (err || !res.ok) {
+        if (errorCallBack) {
+          errorCallBack(err, res);
+        } else {
+          handleError(err, res);
+        }
       } else {
-        handleError(err, res);
+        callBack(res.body);
       }
-    } else {
-      callBack(res.body);
+    } catch (e) {
+      console.error("Failed to process response", e);
+    } finally {
+      if (endCallBack) {
+        endCallBack();
+      }
     }
-  } catch (e) {
-    console.error("Failed to process response", e);
-  } finally {
-    if (endCallBack) {
-      endCallBack();
-    }
-  }
-};
+  };
 
 export const get = (
   url: string,

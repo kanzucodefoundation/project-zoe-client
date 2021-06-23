@@ -100,26 +100,28 @@ export default function Details() {
     dispatch(eventsEdit(dt));
   }
 
-  if (loading)
+  if (loading) {
     return (
       <Layout>
         <Loading />
       </Layout>
     );
-
-  if (!data)
-    return (
-      <Layout>
-        <Box
-          p={4}
-          className={classes.root}
-          display="flex"
-          justifyContent="center"
-        >
-          <Alert severity="error">Failed to load report data</Alert>
-        </Box>
-      </Layout>
-    );
+  } else {
+    if (!data) {
+      return (
+        <Layout>
+          <Box
+            p={4}
+            className={classes.root}
+            display="flex"
+            justifyContent="center"
+          >
+            <Alert severity="error">Failed to load report data</Alert>
+          </Box>
+        </Layout>
+      );
+    }
+  }
 
   function handleDeleted() {
     history.push(localRoutes.groups);
