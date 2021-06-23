@@ -344,7 +344,7 @@ export default function Details() {
           onClose={handleNewEventClose}
         >
           <EventForm
-            data={{ group: { id: data.id, name: data.name } }}
+            data={{ group: { id: data.id, name: data.name, categoryId: data.categoryId } }}
             isNew={true}
             onCreated={handleNewEventClose}
             onCancel={handleNewEventClose}
