@@ -16,6 +16,7 @@ export interface IGroup {
   children: any[];
   totalAttendance?: number;
   percentageAttendance?: number;
+  reports?: any[];
 }
 
 export interface IGroupMembership {
