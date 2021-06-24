@@ -12,7 +12,7 @@ interface IProps {
 type MyPath = {
   path: string;
   label: string;
-  auth: boolean;
+  auth?: boolean;
 };
 
 const XBreadCrumbs = ({ paths, title }: IProps) => {
@@ -21,19 +21,20 @@ const XBreadCrumbs = ({ paths, title }: IProps) => {
       separator={<NavigateNextIcon fontSize="small" />}
       aria-label="breadcrumb"
     >
-      {paths.map(it => (
-        it.auth ? (
+      // Cater for true and undefined
+      {paths
+        .filter((it) => it.auth !== false)
+        .map((it) => (
           <Link
-          variant="body1"
-          color="inherit"
-          to={it.path}
-          component={RouterLink}
-          key={it.path}
-        >
-          {it.label}
-        </Link>
-        ) : (undefined)
-      ))}
+            variant="body1"
+            color="inherit"
+            to={it.path}
+            component={RouterLink}
+            key={it.path}
+          >
+            {it.label}
+          </Link>
+        ))}
       <Typography variant="body1" color="textPrimary">
         {title}
       </Typography>
