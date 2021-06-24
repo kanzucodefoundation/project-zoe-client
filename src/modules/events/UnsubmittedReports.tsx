@@ -134,7 +134,6 @@ const UnsubmittedReports = () => {
               data={data}
               initialRowsPerPage={10}
               initialSortBy="group"
-              //handleSelection={handleRowClick}
             />
           )}
         </Box>

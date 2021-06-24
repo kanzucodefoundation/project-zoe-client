@@ -5,3 +5,10 @@ export interface IUser {
     id?: string
     roles: string[]
 }
+
+export interface IUserRoles {
+    id:string
+    roleName: string
+    capabilities: string[]
+    activeState:Boolean
+}

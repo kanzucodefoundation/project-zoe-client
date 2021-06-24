@@ -18,6 +18,7 @@ import EventDetails from "./events/details/EventDetails";
 import Events from "./events/EventsList";
 import GroupReports from "./events/GroupReports";
 import Help from "./help/Help";
+import UserControl from "./admin/users/UserControl";
 
 const ContentSwitch = () => {
   const user = useSelector((state: IState) => state.core.user);
@@ -33,7 +34,7 @@ const ContentSwitch = () => {
       )}
 
       {hasAnyRole(user, [appRoles.roleUserEdit, appRoles.roleUserView]) && (
-        <Route path={localRoutes.users} component={Users} />
+        <Route path={localRoutes.users} component={UserControl} />
       )}
 
       {hasAnyRole(user, [appRoles.roleGroupEdit, appRoles.roleGroupView]) && (

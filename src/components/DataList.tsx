@@ -29,7 +29,7 @@ const DataList = ({
   columns,
   toMobileRow,
   onEditClick,
-  onViewClick
+  onViewClick,
 }: IProps) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -42,7 +42,12 @@ const DataList = ({
             return (
               <Fragment key={row.id}>
                 <ListItem alignItems="flex-start" disableGutters>
-                  <ListItemAvatar>{mobileRow.avatar}</ListItemAvatar>
+                  {mobileRow.avatar && (
+                    <>
+                      <ListItemAvatar>{mobileRow.avatar}</ListItemAvatar>
+                    </>
+                  )}
+
                   <ListItemText
                     disableTypography
                     primary={mobileRow.primary}
@@ -59,7 +64,7 @@ const DataList = ({
                       <VisibilityIcon />
                     </IconButton>
                   )}
-                  {onEditClick && (
+                  {onEditClick && row.roleName !== "RoleAdmin" && (
                     <IconButton
                       onClick={() => onEditClick && onEditClick(row)}
                       size="medium"
@@ -80,7 +85,7 @@ const DataList = ({
         <Table aria-label="simple table" size="small">
           <TableHead>
             <TableRow>
-              {columns.map(it => (
+              {columns.map((it) => (
                 <TableCell
                   key={it.name}
                   align={it.numeric ? "right" : "left"}
@@ -105,7 +110,7 @@ const DataList = ({
           <TableBody>
             {data.map((row: any) => (
               <TableRow key={row.id}>
-                {columns.map(it => (
+                {columns.map((it) => (
                   <TableCell
                     key={it.name}
                     align={it.numeric ? "right" : "left"}
@@ -129,15 +134,17 @@ const DataList = ({
                 )}
                 {onEditClick && (
                   <TableCell align="center">
-                    <IconButton
-                      size="medium"
-                      color="primary"
-                      aria-label="edit"
-                      component="span"
-                      onClick={() => onEditClick && onEditClick(row)}
-                    >
-                      <EditIcon />
-                    </IconButton>
+                    {row.roleName !== "RoleAdmin" && (
+                      <IconButton
+                        size="medium"
+                        color="primary"
+                        aria-label="edit"
+                        component="span"
+                        onClick={() => onEditClick && onEditClick(row)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
                   </TableCell>
                 )}
               </TableRow>
@@ -150,7 +157,7 @@ const DataList = ({
 };
 
 export interface IMobileRow {
-  avatar: any;
+  avatar?: any;
   primary: any;
   secondary: any;
 }
