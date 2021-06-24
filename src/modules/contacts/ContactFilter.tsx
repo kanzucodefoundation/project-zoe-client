@@ -80,7 +80,7 @@ const ContactFilter = ({ onFilter }: IProps) => {
             value={data["phone"]}
             onChange={(value) => handleTextChange("phone", value)}
             label="Phone"
-            type="text"
+            type="number"
             variant="outlined"
             size="small"
             fullWidth
