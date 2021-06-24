@@ -67,18 +67,7 @@ const Help = () => {
           <Grid container spacing={4}>
             {videos.map((it) => (
               <Grid item xs={12} md={6} key={it.id}>
-                <YouTube
-                  videoId={it.id}
-                  id={it.id}
-                  className={classes.video}
-                  containerClassName=""
-                  opts={{
-                    playerVars: {
-                      origin: "http://localhost:3008",
-                      mute: 1,
-                    },
-                  }}
-                />
+                <YouTube videoId={it.id} id={it.id} className={classes.video} />
                 <br />
               </Grid>
             ))}
