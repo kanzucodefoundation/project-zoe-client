@@ -4,10 +4,6 @@ import * as React from "react";
 import { useState } from "react";
 import { hasValue } from "../components/inputs/inputHelpers";
 
-const hasSingleElement = (v: any) => {
-  return Array.isArray(v) && v.length === 1;
-};
-
 export function useFilter({
   initialData,
   onFilter: rawFilter,
