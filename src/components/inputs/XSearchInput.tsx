@@ -9,24 +9,24 @@ import FilterListIcon from "@material-ui/icons/FilterList";
 import { Box } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            padding: '2px 4px',
-            display: 'flex',
-            alignItems: 'center',
-            width: '100%',
-            height: '100%'
-        },
-        input: {
-            marginLeft: theme.spacing(1),
-            flex: 1,
-        },
-        iconButton: {},
-        divider: {
-            height: 28,
-            margin: 4,
-        },
-    }),
+  createStyles({
+    root: {
+      padding: "2px 4px",
+      display: "flex",
+      alignItems: "center",
+      width: "100%",
+      height: "100%",
+    },
+    input: {
+      marginLeft: theme.spacing(1),
+      flex: 1,
+    },
+    iconButton: {},
+    divider: {
+      height: 28,
+      margin: 4,
+    },
+  })
 );
 
 interface IProps {

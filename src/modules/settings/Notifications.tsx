@@ -14,13 +14,13 @@ import {
 import XHeader from "../../components/ibox/XHeader";
 
 const useStyles = makeStyles(() => ({
-    root: {
-        borderRadius: 0,
-    },
-    item: {
-        display: 'flex',
-        flexDirection: 'column'
-    }
+  root: {
+    borderRadius: 0,
+  },
+  item: {
+    display: "flex",
+    flexDirection: "column",
+  },
 }));
 
 const Notifications = () => {

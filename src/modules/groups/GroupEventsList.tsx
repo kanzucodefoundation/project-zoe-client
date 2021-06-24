@@ -11,18 +11,16 @@ import {
   makeStyles,
   Typography,
 } from "@material-ui/core";
-import React, { Fragment, useCallback, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import { IMobileRow } from "../../components/DataList";
 import PersonAvatar from "../../components/PersonAvatar";
 import { XHeadCell } from "../../components/table/XTableHead";
 import { printDate } from "../../utils/dateHelpers";
 import EventLink from "../events/EventLink";
-import { IEvent, IGroupEvent } from "../events/types";
-import Loading from "../../components/Loading";
+import { IEvent } from "../events/types";
 import XTable from "../../components/table/XTable";
 import { useHistory } from "react-router";
-import { localRoutes, remoteRoutes } from "../../data/constants";
-import { search } from "../../utils/ajax";
+import { localRoutes } from "../../data/constants";
 import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles(() =>
@@ -34,9 +32,7 @@ const useStyles = makeStyles(() =>
 );
 
 interface IProps {
-  groupId: number;
-  groupName: string;
-  groupChildren: number[];
+  reports: any[];
 }
 
 const headCells: XHeadCell[] = [
@@ -64,45 +60,20 @@ const toMobileRow = (data: IEvent): IMobileRow => {
   };
 };
 
-const GroupEventsList = ({ groupId, groupChildren }: IProps) => {
+const GroupEventsList = ({ reports }: IProps) => {
   const classes = useStyles();
   const history = useHistory();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<IGroupEvent[]>([]);
 
   const handleItemClick = (id: string) => () => {
     history.push(`${localRoutes.events}/${id}`);
   };
-
-  const fetchGroupEvents = useCallback(() => {
-    setLoading(true);
-    search(
-      remoteRoutes.events,
-      {
-        groupIdList: groupChildren,
-      },
-      (resp) => {
-        setData(resp);
-      },
-      undefined,
-      () => {
-        setLoading(false);
-      }
-    );
-  }, [groupId]);
-
-  useEffect(() => {
-    fetchGroupEvents();
-  }, [fetchGroupEvents]);
-
-  if (loading) return <Loading />;
 
   return (
     <Grid container>
       <Box p={1} className={classes.root}>
         <Hidden smDown>
           <Box pt={1}>
-            {data.length === 0 ? (
+            {reports.length === 0 ? (
               <ListItem>
                 <Alert severity="info" style={{ width: "100%" }}>
                   No reports to display
@@ -111,7 +82,7 @@ const GroupEventsList = ({ groupId, groupChildren }: IProps) => {
             ) : (
               <XTable
                 headCells={headCells}
-                data={data}
+                data={reports}
                 initialRowsPerPage={10}
                 initialSortBy="name"
                 handleSelection={handleItemClick}
@@ -121,14 +92,14 @@ const GroupEventsList = ({ groupId, groupChildren }: IProps) => {
         </Hidden>
         <Hidden mdUp>
           <List>
-            {data.length === 0 ? (
+            {reports.length === 0 ? (
               <ListItem>
                 <Alert severity="info" style={{ width: "100%" }}>
                   No reports to display
                 </Alert>
               </ListItem>
             ) : (
-              data.map((row: any) => {
+              reports.map((row: any) => {
                 const mobileRow = toMobileRow(row);
                 return (
                   <Fragment key={row.id}>

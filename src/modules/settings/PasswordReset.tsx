@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { IState } from "../../data/types";
 import { handleSubmission, ISubmission } from "../../utils/formHelpers";
 import { remoteRoutes } from "../../data/constants";
-import * as yup from 'yup';
+import * as yup from "yup";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,7 +31,7 @@ const PasswordReset = () => {
   const lengthCheck = yup.string()
     .required("Password is required")
     .min(8, 'Password is too short - should be 8 characters minimum.');
-  
+
   const handleChangeOne = (e: any) => {
     setPasswordOne(e.target.value)
   }
@@ -74,7 +74,7 @@ const PasswordReset = () => {
           <XForm
             onSubmit={handleSubmit}
           >
-            <XTextInput 
+            <XTextInput
               label="New Password"
               name="newPassword"
               type="password"
@@ -83,7 +83,7 @@ const PasswordReset = () => {
               variant="outlined"
               style={{ marginTop: "1rem" }}
             />
-            <XTextInput 
+            <XTextInput
               label="Confirm Password"
               name="confirmPassword"
               type="password"
@@ -92,7 +92,7 @@ const PasswordReset = () => {
               variant="outlined"
               style={{ marginTop: "1rem" }}
             />
-            <Typography variant="body2" style={{color: isLength ? "green" : "red"}}>Password must be 8 characters long</Typography> 
+            <Typography variant="body2" style={{color: isLength ? "green" : "red"}}>Password must be 8 characters long</Typography>
             <Typography variant="body2" style={{color: isMatch ? "green" : "red"}}>Passwords must match</Typography>
           </XForm>
         </CenteredDiv>

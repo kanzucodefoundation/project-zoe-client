@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as yup from "yup";
 import { reqDate, reqObject, reqString } from "../../../data/validations";
 import { FormikHelpers } from "formik";
@@ -9,7 +9,7 @@ import { remoteRoutes } from "../../../data/constants";
 import { GroupPrivacy } from "../../groups/types";
 import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { del } from "../../../utils/ajax";
+import { del, search } from "../../../utils/ajax";
 import Toast from "../../../utils/Toast";
 import { cleanComboValue } from "../../../utils/dataHelpers";
 import { parseGooglePlace } from "../../../components/plain-inputs/PMapsInput";
@@ -31,7 +31,7 @@ interface IProps {
 
 const schema = yup.object().shape({
   category: reqObject,
-  name: reqString,
+  summary: reqString,
 
   venue: reqObject,
   group: reqObject,
@@ -41,7 +41,7 @@ const schema = yup.object().shape({
 });
 
 const initialData = {
-  name: "",
+  summary: "",
   privacy: GroupPrivacy.Public,
   category: null,
 
@@ -62,12 +62,32 @@ const EventForm = ({
   onCancel,
 }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [frequency, setFrequency] = useState("");
   const user = useSelector((state: IState) => state.core.user);
+  const [group, setGroup] = useState<any>();
+  const [event, setEvent] = useState<any>();
+
+  useEffect(() => {
+    if(event && group) {
+      getFrequency(event, group)
+    }
+  }, [event, group])
+
+  function getFrequency(event: any, group: any) {
+    const filter = {
+      eventCategory: event.id,
+      groupCategory: group.categoryId
+    }
+    search(remoteRoutes.groupReportFrequency, filter, resp => {
+      setFrequency(resp[0].frequency);
+    })
+  }
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: any = {
       id: values.id,
-      name: values.name,
+      name: `${frequency}-${values.group.categoryId}-${values.category.name}`,
+      summary: values.summary,
       privacy: GroupPrivacy.Public,
       categoryId: cleanComboValue(values.category),
       parentId: values.group.parentId,
@@ -83,6 +103,8 @@ const EventForm = ({
       metaData: values.metaData,
     };
 
+    actions.resetForm();
+  
     const submission: ISubmission = {
       url: remoteRoutes.events,
       values: toSave,
@@ -136,6 +158,7 @@ const EventForm = ({
               name="category"
               label="Category"
               variant="outlined"
+              onSelect ={() => setEvent(formData.category)}
             />
           </Grid>
           <Grid item xs={12} md={8}>
@@ -144,6 +167,7 @@ const EventForm = ({
               name="group"
               label="Group"
               variant="outlined"
+              onSelect ={() => setGroup(formData.group)}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -162,7 +186,7 @@ const EventForm = ({
           </Grid>
           <Grid item xs={12}>
             <XTextInput
-              name="name"
+              name="summary"
               label="Short summary"
               type="text"
               variant="outlined"

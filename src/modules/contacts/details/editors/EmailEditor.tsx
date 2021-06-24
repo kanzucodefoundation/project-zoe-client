@@ -17,10 +17,10 @@ import { handleSubmission, ISubmission } from "../../../../utils/formHelpers";
 import { useDelete } from "../../../../data/hooks/useDelete";
 
 interface IProps {
-    contactId: string
-    data: IEmail | null
-    isNew: boolean
-    done?: () => any
+  contactId: string;
+  data: IEmail | null;
+  isNew: boolean;
+  done?: () => any;
 }
 
 const schema = yup.object().shape(

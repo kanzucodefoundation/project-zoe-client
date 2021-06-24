@@ -2,12 +2,9 @@ import React from "react";
 import { createConfirmation, ReactConfirmProps } from "react-confirm";
 import LoaderDialog from "../components/LoaderDialog";
 
-
 const ConfirmDialog = (props: ReactConfirmProps) => {
-    return (
-        <LoaderDialog open={props.show} onClose={props.dismiss}/>
-    );
-}
+  return <LoaderDialog open={props.show} onClose={props.dismiss} />;
+};
 
 const defaultConfirmation = createConfirmation(ConfirmDialog);
 

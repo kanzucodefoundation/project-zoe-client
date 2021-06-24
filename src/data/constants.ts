@@ -9,17 +9,11 @@ export const appRoles = {
   roleUserView: "USER_VIEW",
   roleUserEdit: "USER_EDIT",
 
-  roleTagView: "TAG_VIEW",
-  roleTagEdit: "TAG_EDIT",
-
   roleGroupView: "GROUP_VIEW",
   roleGroupEdit: "GROUP_EDIT",
 
   roleEventView: "EVENT_VIEW",
   roleEventEdit: "EVENT_EDIT",
-
-  roleReportView: "REPORT_VIEW",
-  roleReportEdit: "REPORT_EDIT",
 };
 
 export const rolesList = Object.values(appRoles);

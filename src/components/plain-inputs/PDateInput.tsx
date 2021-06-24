@@ -16,24 +16,30 @@ interface IProps {
   inputVariant?: "standard" | "outlined" | "filled";
 }
 
-export default function PDateInput({value=null,onChange,variant,label,inputVariant}:IProps) {
-    return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-                fullWidth
-                disableToolbar
-                inputVariant={inputVariant}
-                size='small'
-                variant={variant}
-                format={dateFormat}
-                label={label}
-                value={value}
-                onChange={onChange}
-                autoComplete='off'
-                KeyboardButtonProps={{
-                    'aria-label': 'change date',
-                }}
-            />
-        </MuiPickersUtilsProvider>
-    );
+export default function PDateInput({
+  value = null,
+  onChange,
+  variant,
+  label,
+  inputVariant,
+}: IProps) {
+  return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <KeyboardDatePicker
+        fullWidth
+        disableToolbar
+        inputVariant={inputVariant}
+        size="small"
+        variant={variant}
+        format={dateFormat}
+        label={label}
+        value={value}
+        onChange={onChange}
+        autoComplete="off"
+        KeyboardButtonProps={{
+          "aria-label": "change date",
+        }}
+      />
+    </MuiPickersUtilsProvider>
+  );
 }

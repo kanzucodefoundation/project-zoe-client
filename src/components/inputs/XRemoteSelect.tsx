@@ -4,7 +4,10 @@ import { hasValue } from "./inputHelpers";
 import { IPRemoteProps, PRemoteSelect } from "../plain-inputs/PRemoteSelect";
 import { ComboValue } from "../plain-inputs/PComboInput";
 
-type XRemoteProps = Omit<IPRemoteProps, 'onChange'|'value'|'onBlur'|'helperText'|'showError'>
+type XRemoteProps = Omit<
+  IPRemoteProps,
+  "onChange" | "value" | "onBlur" | "helperText" | "showError"
+>;
 
 export const XRemoteSelect = (props: XRemoteProps) => {
     const [field, meta, helpers] = useField({name: props.name});

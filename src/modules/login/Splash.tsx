@@ -13,27 +13,31 @@ import {
 import { get, getToken } from "../../utils/ajax";
 
 export default function Splash() {
-    const dispatch = useDispatch()
-    useEffect(() => {
-        dispatch(startLoading())
-        get(remoteRoutes.profile,
-            data => {
-                dispatch(handleLogin({user: data, token: getToken()}))
-            }, (err) => {
-                console.log("Profile loading failed", err)
-                dispatch(handleLogout())
-            }, () => {
-                dispatch(stopLoading())
-            }
-        )
-    },[dispatch])
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(startLoading());
+    get(
+      remoteRoutes.profile,
+      (data) => {
+        dispatch(handleLogin({ user: data, token: getToken() }));
+      },
+      (err) => {
+        console.log("Profile loading failed", err);
+        dispatch(handleLogout());
+      },
+      () => {
+        dispatch(stopLoading());
+      }
+    );
+  }, [dispatch]);
 
-
-    return <GridWrapper>
-        <Grid container spacing={10} justify='center' alignItems="center">
-            <Grid item>
-                <CircularProgress/>
-            </Grid>
+  return (
+    <GridWrapper>
+      <Grid container spacing={10} justify="center" alignItems="center">
+        <Grid item>
+          <CircularProgress />
         </Grid>
+      </Grid>
     </GridWrapper>
+  );
 }

@@ -4,7 +4,7 @@ import Layout from "../../components/layout/Layout";
 import UnsubmittedReports from "./UnsubmittedReports";
 import EventsList from "./EventsList";
 
-export default function GroupReports() {
+export default function EventReports() {
   const tabs = [
     {
       name: "submitted",

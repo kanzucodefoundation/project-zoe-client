@@ -8,14 +8,16 @@ interface IProps {
 }
 
 const Error = (props: IProps) => {
-    return (
-        <GridWrapper>
-            <Grid container spacing={10} justify='center' alignItems="center">
-                <Grid item>
-                    <Typography color='error' variant='h5'>{props.text}</Typography>
-                </Grid>
-            </Grid>
-        </GridWrapper>
-    );
-}
+  return (
+    <GridWrapper>
+      <Grid container spacing={10} justify="center" alignItems="center">
+        <Grid item>
+          <Typography color="error" variant="h5">
+            {props.text}
+          </Typography>
+        </Grid>
+      </Grid>
+    </GridWrapper>
+  );
+};
 export default Error;

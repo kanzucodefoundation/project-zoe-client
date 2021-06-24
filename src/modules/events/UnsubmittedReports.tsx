@@ -1,6 +1,5 @@
 import Box from "@material-ui/core/Box/Box";
-import React, { Fragment, useEffect } from "react";
-import { useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import Hidden from "@material-ui/core/Hidden/Hidden";
@@ -13,7 +12,7 @@ import { IGroupReport } from "./types";
 import Typography from "@material-ui/core/Typography/Typography";
 import ListItem from "@material-ui/core/ListItem/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar/ListItemAvatar";
-import { ListItemText, Divider } from "@material-ui/core";
+import { Divider, ListItemText } from "@material-ui/core";
 import { IMobileRow } from "../../components/DataList";
 import GroupLink from "../../components/GroupLink";
 import ListHeader from "../../components/ListHeader";
@@ -144,7 +143,7 @@ const UnsubmittedReports = () => {
           {loading ? (
             <Loading />
           ) : (
-            data.map((row: any, index: number) => {
+            data.map((row: any) => {
               const mobileRow = toMobileRow(row);
               return (
                 <Fragment key={row.id}>

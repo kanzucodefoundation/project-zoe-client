@@ -25,11 +25,11 @@ function loadScript(src: string, position: HTMLElement | null, id: string) {
 
 const autocompleteService = { current: null };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   icon: {
     color: theme.palette.text.secondary,
-    marginRight: theme.spacing(2)
-  }
+    marginRight: theme.spacing(2),
+  },
 }));
 
 export interface IGPlace {
@@ -42,7 +42,7 @@ export const parseGooglePlace = (dt: GooglePlace | IGPlace): IGPlace | null => {
   if (hasValue(dt))
     return {
       placeId: data["place_id"] || data.placeId,
-      description: dt.description
+      description: dt.description,
     };
   else return null;
 };
@@ -146,8 +146,8 @@ export default function PMapsInput(props: PMapsProps) {
       input: inputValue,
       fields: ["geometry"],
       componentRestrictions: {
-        country: ["ug", "ke"] //Countries...to be updated based on the countries with MCs
-      }
+        country: ["ug", "ke"], //Countries...to be updated based on the countries with MCs
+      },
     };
     fetch(autoCompleteReq, (results?: GooglePlace[]) => {
       if (active) {
@@ -176,10 +176,10 @@ export default function PMapsInput(props: PMapsProps) {
   const { label, variant, helperText, showError, margin = "normal" } = props;
   return (
     <Autocomplete
-      getOptionLabel={option =>
+      getOptionLabel={(option) =>
         typeof option === "string" ? option : option.description
       }
-      filterOptions={x => x}
+      filterOptions={(x) => x}
       options={options}
       autoComplete
       includeInputInList
@@ -192,7 +192,7 @@ export default function PMapsInput(props: PMapsProps) {
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
       }}
-      renderInput={params => (
+      renderInput={(params) => (
         <TextField
           {...params}
           margin={margin}
@@ -205,7 +205,7 @@ export default function PMapsInput(props: PMapsProps) {
         />
       )}
       onBlur={handleTouched}
-      renderOption={option => {
+      renderOption={(option) => {
         if (option.structured_formatting) {
           const matches =
             option.structured_formatting.main_text_matched_substrings;
@@ -213,7 +213,7 @@ export default function PMapsInput(props: PMapsProps) {
             option.structured_formatting.main_text,
             matches.map((match: any) => [
               match.offset,
-              match.offset + match.length
+              match.offset + match.length,
             ])
           );
 

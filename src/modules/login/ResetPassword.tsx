@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,7 +15,6 @@ import Toast from "../../utils/Toast";
 import { useHistory, useParams } from "react-router";
 import { hasNoValue } from "../../components/inputs/inputHelpers";
 import Error from "../../components/Error";
-import { useState } from "react";
 
 function ResetPassword() {
   const classes = useLoginStyles();
@@ -26,7 +25,7 @@ function ResetPassword() {
   const [isLength, setIsLength] = useState<boolean>(false);
   const lengthCheck = yup.string()
     .min(8, 'Password is too short - should be 8 characters minimum.');
-  
+
   const handleChange = (e: any) => {
     setPassword(e.target.value)
   }
@@ -97,7 +96,7 @@ function ResetPassword() {
               </Button>
             </Form>
           )}
-          <Typography variant="body2" style={{color: isLength ? "green" : "red"}}>Password must be 8 characters long</Typography> 
+          <Typography variant="body2" style={{color: isLength ? "green" : "red"}}>Password must be 8 characters long</Typography>
         </Formik>
       </Paper>
     </main>

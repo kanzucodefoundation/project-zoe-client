@@ -8,13 +8,13 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { hasValue, IOption } from "./inputHelpers";
 
 interface IProps {
-    label: string
-    name: string
-    options: IOption[]
-    multiple?: boolean
-    variant?: 'standard' | 'outlined' | 'filled'
-    size?: 'small' | 'medium'
-    margin?: 'none' | 'dense' | 'normal'
+  label: string;
+  name: string;
+  options: IOption[];
+  multiple?: boolean;
+  variant?: "standard" | "outlined" | "filled";
+  size?: "small" | "medium";
+  margin?: "none" | "dense" | "normal";
 }
 
 const XSelectInput = (props: IProps) => {
