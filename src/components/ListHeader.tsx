@@ -9,8 +9,11 @@ import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import Grid from "@material-ui/core/Grid";
-import { localRoutes } from "../data/constants";
+import { appRoles, localRoutes } from "../data/constants";
 import XBreadCrumbs from "./XBreadCrumbs";
+import { useSelector } from "react-redux";
+import { IState } from "../data/types";
+import { hasAnyRole } from "../data/appRoles";
 
 interface IProps {
   onFilter: (data: any) => void;
@@ -25,6 +28,7 @@ interface IProps {
 const ListHeader = (props: IProps) => {
   const [showFilter, setShowFilter] = useState(false);
   const { showBreadCrumbs = true } = props;
+  const profile = useSelector((state: IState) => state.core.user);
 
   function handleFilterToggle() {
     setShowFilter(!showFilter);
@@ -40,7 +44,13 @@ const ListHeader = (props: IProps) => {
         <Box pb={1}>
           <XBreadCrumbs
             title={props.title}
-            paths={[{ path: localRoutes.home, label: "Dashboard" }]}
+            paths={[
+              { 
+                path: localRoutes.home, 
+                label: "Dashboard", 
+                auth:  hasAnyRole(profile, [appRoles.roleDashboard])
+              }
+            ]}
           />
         </Box>
       )}

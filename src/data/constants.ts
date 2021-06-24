@@ -18,8 +18,6 @@ export const appRoles = {
   roleEventView: "EVENT_VIEW",
   roleEventEdit: "EVENT_EDIT",
 
-  roleReportView: "REPORT_VIEW",
-  roleReportEdit: "REPORT_EDIT",
 };
 
 export const rolesList = Object.values(appRoles);

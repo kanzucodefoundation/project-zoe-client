@@ -12,6 +12,7 @@ interface IProps {
 type MyPath = {
   path: string;
   label: string;
+  auth: boolean;
 };
 
 const XBreadCrumbs = ({ paths, title }: IProps) => {
@@ -21,7 +22,8 @@ const XBreadCrumbs = ({ paths, title }: IProps) => {
       aria-label="breadcrumb"
     >
       {paths.map(it => (
-        <Link
+        it.auth ? (
+          <Link
           variant="body1"
           color="inherit"
           to={it.path}
@@ -30,6 +32,7 @@ const XBreadCrumbs = ({ paths, title }: IProps) => {
         >
           {it.label}
         </Link>
+        ) : (undefined)
       ))}
       <Typography variant="body1" color="textPrimary">
         {title}
