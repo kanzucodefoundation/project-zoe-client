@@ -41,11 +41,9 @@ export function useFilter({
 
   const handleComboChange = (name: string, value: ComboValue) => {
     setData({ ...data, [name]: value });
-    const filterName = hasSingleElement(value) ? `${name}[]` : name;
     const filterData = { ...data };
-    delete filterData[filterName];
     delete filterData[name];
-    const finalFilter = { ...filterData, [filterName]: cleanComboValue(value) };
+    const finalFilter = { ...filterData, [`${name}[]`]: cleanComboValue(value) };
     onFilter(finalFilter);
   };
   return {
