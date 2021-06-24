@@ -16,12 +16,13 @@ import Profile from "./info/Profile";
 import ContactGroups from "./groups/ContactGroups";
 import Info from "./info/Info";
 import { get } from "../../../utils/ajax";
-import { localRoutes, remoteRoutes } from "../../../data/constants";
+import { appRoles, localRoutes, remoteRoutes } from "../../../data/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { crmConstants } from "../../../data/contacts/reducer";
 import { IState } from "../../../data/types";
 import XBreadCrumbs from "../../../components/XBreadCrumbs";
 import PendingMemberships from "./groups/PendingMemberships";
+import { hasAnyRole } from "../../../data/appRoles";
 
 interface IProps extends RouteComponentProps {}
 
@@ -83,7 +84,7 @@ const ContactDetails = (props: IProps) => {
     getRouteParam(props, "contactId") === "me"
       ? profile.contactId
       : getRouteParam(props, "contactId");
-  const isOwnProfile = contactId === `${profile.contactId}`;
+  const isOwnProfile = contactId === profile.contactId;
   const [loading, setLoading] = useState<boolean>(true);
   const [value, setValue] = React.useState("summary");
 
@@ -113,11 +114,13 @@ const ContactDetails = (props: IProps) => {
           paths={[
             {
               path: localRoutes.home,
-              label: "Dashboard"
+              label: "Dashboard",
+              auth: hasAnyRole(profile, [appRoles.roleDashboard]),
             },
             {
               path: localRoutes.contacts,
-              label: "People"
+              label: "People",
+              auth: hasAnyRole(profile, [appRoles.roleCrmView, appRoles.roleCrmEdit]),
             }
           ]}
         />
@@ -169,6 +172,7 @@ const ContactDetails = (props: IProps) => {
                   contactId={contactId}
                   contact={data}
                   isOwnProfile={isOwnProfile}
+                  profile={profile}
                 />
               </TabPanel>
               {isOwnProfile && (

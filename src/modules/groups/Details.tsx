@@ -29,7 +29,7 @@ import { useHistory, useParams } from "react-router";
 import Layout from "../../components/layout/Layout";
 import MapLink from "../../components/MapLink";
 import { IState } from "../../data/types";
-import { hasAnyRole } from "../../data/appRoles";
+import { hasAnyRole, hasRole } from "../../data/appRoles";
 import MemberRequests from "./members/MemberRequests";
 import TabbedView from "./TabbedView";
 import XBreadCrumbs from "../../components/XBreadCrumbs";
@@ -69,19 +69,6 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const actions = [
-  {
-    icon: <EditIcon color="primary" />,
-    name: "Edit Group",
-    operation: "Edit Group",
-  },
-  {
-    icon: <EventIcon color="primary" />,
-    name: "New Event",
-    operation: "New Event",
-  },
-];
-
 export default function Details() {
   let { groupId } = useParams<any>();
   const history = useHistory();
@@ -92,6 +79,11 @@ export default function Details() {
   const [open, setOpen] = useState(false);
   const profile = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
+  const hasEventEdit = hasRole(profile, appRoles.roleEventEdit);
+  const hasGroupEdit = hasRole(profile, appRoles.roleGroupEdit);
+  const actions = [];
+
+  
 
   useEffect(() => {
     setLoading(true);
@@ -108,6 +100,9 @@ export default function Details() {
   }, [groupId]);
 
   const isLeader = () => {
+    if (data?.leaders && data?.leaders.length === 0) {
+      return false;
+    }
     const userId = `${profile.id}`;
     const _leaderIds: number[] = data?.leaders || [];
     const leaderIds: string[] = _leaderIds.map((it) => `${it}`);
@@ -208,6 +203,26 @@ export default function Details() {
     });
   }
 
+  if(hasEventEdit) {
+    actions.push(
+      {
+      icon: <EditIcon color="primary" />,
+      name: "Edit Group",
+      operation: "Edit Group",
+    }
+    )
+  }
+
+  if(hasGroupEdit) {
+    actions.push(
+      {
+        icon: <EventIcon color="primary" />,
+        name: "New Event",
+        operation: "New Event",
+      },
+    )
+  }
+
   return (
     <Layout title="Group details">
       <Box className={classes.root}>
@@ -218,10 +233,12 @@ export default function Details() {
               {
                 path: localRoutes.home,
                 label: "Dashboard",
+                auth: hasAnyRole(profile, [appRoles.roleDashboard]),
               },
               {
                 path: localRoutes.groups,
                 label: "Groups",
+                auth: hasAnyRole(profile, [appRoles.roleGroupEdit, appRoles.roleGroupView]),
               },
             ]}
           />
@@ -245,22 +262,26 @@ export default function Details() {
                   <Hidden smDown>
                     <Box pr={2}>
                       <ButtonGroup variant="contained">
-                        <Button
-                          color="primary"
-                          size="small"
-                          variant="contained"
-                          onClick={handleEdit}
-                        >
-                          Edit Group&nbsp;&nbsp;
-                        </Button>
-                        <Button
-                          color="primary"
-                          size="small"
-                          variant="contained"
-                          onClick={handleNewEvent}
-                        >
-                          Create Report&nbsp;&nbsp;
-                        </Button>
+                        {hasGroupEdit ?
+                          (<Button
+                            color="primary"
+                            size="small"
+                            variant="contained"
+                            onClick={handleEdit}
+                          >
+                            Edit Group&nbsp;&nbsp;
+                          </Button>) : (undefined) 
+                        }
+                        {hasEventEdit ? 
+                          (<Button
+                            color="primary"
+                            size="small"
+                            variant="contained"
+                            onClick={handleNewEvent}
+                          >
+                            Create Report&nbsp;&nbsp;
+                          </Button>) : (undefined)
+                        }
                       </ButtonGroup>
                     </Box>
                   </Hidden>
