@@ -4,12 +4,18 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import GridWrapper from "./GridWrapper";
 
 const Loading = () => {
-    return (
-        <GridWrapper>
-            <Grid container spacing={0} justify='center' alignItems="center" alignContent='center'>
-                <CircularProgress/>
-            </Grid>
-        </GridWrapper>
-    );
-}
+  return (
+    <GridWrapper>
+      <Grid
+        container
+        spacing={0}
+        justify="center"
+        alignItems="center"
+        alignContent="center"
+      >
+        <CircularProgress />
+      </Grid>
+    </GridWrapper>
+  );
+};
 export default Loading;

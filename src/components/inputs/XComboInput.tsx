@@ -3,7 +3,10 @@ import { hasValue } from "./inputHelpers";
 import { useField } from "formik";
 import PComboInput, { PComboProps } from "../plain-inputs/PComboInput";
 
-type XComboProps = Omit<PComboProps, 'onChange'|'value'|'onBlur'|'helperText'|'showError'>
+type XComboProps = Omit<
+  PComboProps,
+  "onChange" | "value" | "onBlur" | "helperText" | "showError"
+>;
 const XComboInput = (props: XComboProps) => {
     const [field, meta, helpers] = useField({name: props.name});
     const error = hasValue(meta.error) ? meta.error : undefined

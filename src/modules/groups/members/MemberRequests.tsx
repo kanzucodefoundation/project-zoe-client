@@ -30,7 +30,7 @@ const MemberRequests = (props: any) => {
     } else {
       filter = { groupId: props.group.id };
     }
-    search(remoteRoutes.groupsRequest, filter, resp => {
+    search(remoteRoutes.groupsRequest, filter, (resp) => {
       setData(resp);
     });
   }, [props.group.categoryId, props.group.id]);
@@ -39,18 +39,18 @@ const MemberRequests = (props: any) => {
     const toSave = {
       groupId: props.group.id,
       members: [dt.contactId],
-      role: "Member"
+      role: "Member",
     };
-    post(`${remoteRoutes.groupsMembership}`, toSave, resp => {
+    post(`${remoteRoutes.groupsMembership}`, toSave, (resp) => {
       Toast.info("USER REQUEST APPROVED");
-      del(`${remoteRoutes.groupsRequest}/${dt.id}`, resp => {
+      del(`${remoteRoutes.groupsRequest}/${dt.id}`, (resp) => {
         setTimeout(() => history.go(0), 3000);
       });
     });
   }
 
   function handleDelete(dt: any) {
-    del(`${remoteRoutes.groupsRequest}/${dt}`, resp => {
+    del(`${remoteRoutes.groupsRequest}/${dt}`, (resp) => {
       Toast.info("User Request Denied");
       setTimeout(() => history.go(0), 3000);
     });
@@ -69,7 +69,7 @@ const MemberRequests = (props: any) => {
                 </Alert>
               </ListItem>
             ) : (
-              data.map(mbr => {
+              data.map((mbr) => {
                 return (
                   <ListItem key={mbr.id}>
                     <ListItemAvatar>

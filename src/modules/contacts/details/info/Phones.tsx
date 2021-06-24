@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import { IContact, IEmail} from "../../types";
+import { IContact, IEmail } from "../../types";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import EditDialog from "../../../../components/EditDialog";
 import PhoneEditor from "../editors/PhoneEditor";

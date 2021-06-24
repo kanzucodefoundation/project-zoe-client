@@ -9,5 +9,4 @@ const DataValue = (props: any) => {
   );
 };
 
-
 export default DataValue;

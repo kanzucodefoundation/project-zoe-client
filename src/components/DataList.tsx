@@ -29,7 +29,7 @@ const DataList = ({
   columns,
   toMobileRow,
   onEditClick,
-  onViewClick
+  onViewClick,
 }: IProps) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -80,7 +80,7 @@ const DataList = ({
         <Table aria-label="simple table" size="small">
           <TableHead>
             <TableRow>
-              {columns.map(it => (
+              {columns.map((it) => (
                 <TableCell
                   key={it.name}
                   align={it.numeric ? "right" : "left"}
@@ -105,7 +105,7 @@ const DataList = ({
           <TableBody>
             {data.map((row: any) => (
               <TableRow key={row.id}>
-                {columns.map(it => (
+                {columns.map((it) => (
                   <TableCell
                     key={it.name}
                     align={it.numeric ? "right" : "left"}

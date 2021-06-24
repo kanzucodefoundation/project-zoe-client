@@ -15,8 +15,7 @@ import MembersEditor from "./groups/members/MembersEditor";
 import { hasAnyRole } from "../data/appRoles";
 import UpdatePasswordConfirmation from "./login/UpdatePasswordConfirmation";
 import EventDetails from "./events/details/EventDetails";
-import Events from "./events/EventsList";
-import GroupReports from "./events/GroupReports";
+import EventReports from "./events/EventReports";
 import Help from "./help/Help";
 
 const ContentSwitch = () => {
@@ -49,12 +48,16 @@ const ContentSwitch = () => {
       )}
 
       {hasAnyRole(user, [appRoles.roleEventView, appRoles.roleEventEdit]) && (
-        <Route path={localRoutes.events} component={GroupReports} />
+        <Route path={localRoutes.events} component={EventReports} />
       )}
 
       <Route path={localRoutes.settings} component={Settings} />
       <Route path={localRoutes.test} component={Testing} />
-      <Route path={localRoutes.updatePassword} component={UpdatePasswordConfirmation} />
+
+      <Route
+        path={localRoutes.updatePassword}
+        component={UpdatePasswordConfirmation}
+      />
       <Route path={localRoutes.help} component={Help} />
       <Route component={NoMatch} />
     </Switch>

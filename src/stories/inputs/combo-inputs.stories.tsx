@@ -10,8 +10,8 @@ import { parseXpath } from "../../utils/jsonHelpers";
 import { IOption } from "../../components/inputs/inputHelpers";
 
 export default {
-    title: 'Combo Input',
-    component: XForm,
+  title: "Combo Input",
+  component: XForm,
 };
 
 export const Input = () => {

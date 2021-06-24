@@ -7,16 +7,15 @@ interface IProps {
 }
 
 const ErrorMessage = (props: IProps) => {
-    return (
-        <Box display="flex" p={4} justifyContent="center">
-            <Paper style={{backgroundColor: colors.red[100]}} elevation={0}>
-                <Box p={3}>
-                    <Typography>{props.text}&nbsp;!</Typography>
-                </Box>
-            </Paper>
+  return (
+    <Box display="flex" p={4} justifyContent="center">
+      <Paper style={{ backgroundColor: colors.red[100] }} elevation={0}>
+        <Box p={3}>
+          <Typography>{props.text}&nbsp;!</Typography>
         </Box>
-    );
-}
-
+      </Paper>
+    </Box>
+  );
+};
 
 export default ErrorMessage;

@@ -42,8 +42,6 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
   const [addingMembers, setAddingMembers] = useState<boolean>(false);
   const [selected, setSelected] = useState<IGroupMembership | null>(null);
   const [data, setData] = useState<IGroupMembership[]>([]);
-  const [leader, setLeader] = useState<boolean>(false);
-  const profile = useSelector((state: IState) => state.core.user);
 
   const fetchMembers = useCallback(() => {
     setLoading(true);

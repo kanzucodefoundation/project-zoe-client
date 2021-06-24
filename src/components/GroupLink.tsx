@@ -7,8 +7,10 @@ interface IProps {
   name: string;
 }
 
-const GroupLink = ({id, name}: IProps) => (
-    <Link style={{textDecoration:'none'}} to={`${localRoutes.groups}/${id}`}>{name}</Link>
+const GroupLink = ({ id, name }: IProps) => (
+  <Link style={{ textDecoration: "none" }} to={`${localRoutes.groups}/${id}`}>
+    {name}
+  </Link>
 );
 
-export default GroupLink
+export default GroupLink;

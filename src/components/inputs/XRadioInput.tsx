@@ -8,12 +8,11 @@ import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import { hasValue, IOption } from "./inputHelpers";
 
-
 interface IProps {
-    label: string
-    name: string
-    options: IOption[]
-    customOnChange?:(value:any) => void|undefined
+  label: string;
+  name: string;
+  options: IOption[];
+  customOnChange?: (value: any) => void | undefined;
 }
 
 const XRadioInput = (props: IProps) => {

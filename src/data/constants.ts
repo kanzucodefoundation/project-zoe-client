@@ -2,24 +2,17 @@ export const AUTH_TOKEN_KEY = "__demo__eva__token";
 export const AUTH_USER_KEY = "__demo__eva__user";
 
 export const appRoles = {
-  roleDashboard: "DASHBOARD",
   roleCrmView: "CRM_VIEW",
   roleCrmEdit: "CRM_EDIT",
 
   roleUserView: "USER_VIEW",
   roleUserEdit: "USER_EDIT",
 
-  roleTagView: "TAG_VIEW",
-  roleTagEdit: "TAG_EDIT",
-
   roleGroupView: "GROUP_VIEW",
   roleGroupEdit: "GROUP_EDIT",
 
   roleEventView: "EVENT_VIEW",
   roleEventEdit: "EVENT_EDIT",
-
-  roleReportView: "REPORT_VIEW",
-  roleReportEdit: "REPORT_EDIT",
 };
 
 export const rolesList = Object.values(appRoles);

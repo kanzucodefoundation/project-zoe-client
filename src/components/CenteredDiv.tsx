@@ -8,24 +8,21 @@ interface IProps {
   children?: any;
 }
 
-
-const CenteredDiv = ({children, width = 500}: IProps) => {
-
-    const theme = useTheme();
-    const isXs = useMediaQuery(theme.breakpoints.down('xs'));
-    return (
-        <Box display='flex' justifyContent='center'>
-            <Box
-                style={
-                    {
-                        width: isXs ? "100%" : width,
-                        maxWidth: '100%',
-                    }
-                }
-            >{children}</Box>
-        </Box>
-    );
-}
-
+const CenteredDiv = ({ children, width = 500 }: IProps) => {
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("xs"));
+  return (
+    <Box display="flex" justifyContent="center">
+      <Box
+        style={{
+          width: isXs ? "100%" : width,
+          maxWidth: "100%",
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
+};
 
 export default CenteredDiv;

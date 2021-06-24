@@ -8,7 +8,7 @@ import AppsIcon from "@material-ui/icons/Apps";
 import PeopleIcon from "@material-ui/icons/People";
 import PersonIcon from "@material-ui/icons/Person";
 import SettingsIcon from "@material-ui/icons/Settings";
-import BubbleChartIcon from '@material-ui/icons/BubbleChart';
+import BubbleChartIcon from "@material-ui/icons/BubbleChart";
 import HelpIcon from "@material-ui/icons/Help";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { useHistory, useLocation } from "react-router-dom";

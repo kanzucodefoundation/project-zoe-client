@@ -9,12 +9,16 @@ import theme from "../theme";
 import store from "../data/store";
 import { Provider } from "react-redux";
 
-
 export default function StoryLayout(props: any) {
-    return <Provider store={store}> <ThemeProvider theme={theme}>
+  return (
+    <Provider store={store}>
+      {" "}
+      <ThemeProvider theme={theme}>
         <>
-            <CssBaseline/>
-            {props.children}
+          <CssBaseline />
+          {props.children}
         </>
-    </ThemeProvider></Provider>
+      </ThemeProvider>
+    </Provider>
+  );
 }

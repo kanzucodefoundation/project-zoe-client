@@ -10,7 +10,7 @@ import DataCard from "../../../../components/DataCard";
 import Button from "@material-ui/core/Button";
 import Hidden from "@material-ui/core/Hidden";
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import Toast from '../../../../utils/Toast';
+import Toast from "../../../../utils/Toast";
 
 interface IProps {
     data: IContact

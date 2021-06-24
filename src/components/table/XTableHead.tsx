@@ -9,18 +9,20 @@ import { Order } from "./helpers";
 import { useTableStyles } from "./tableStyles";
 import { Size } from "@material-ui/core/Table";
 
-
 export interface XTableHeadProps {
-    classes: ReturnType<typeof useTableStyles>;
-    numSelected: number;
-    onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
-    onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
-    order: Order;
-    orderBy: string;
-    rowCount: number;
-    headCells: XHeadCell[];
-    useCheckbox?: boolean
-    headerSize?: Size
+  classes: ReturnType<typeof useTableStyles>;
+  numSelected: number;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
+  onSelectAllClick: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => void;
+  order: Order;
+  orderBy: string;
+  rowCount: number;
+  headCells: XHeadCell[];
+  useCheckbox?: boolean;
+  headerSize?: Size;
 }
 
 export interface XHeadCell {

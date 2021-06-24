@@ -6,8 +6,8 @@ import { reqDate } from "../../data/validations";
 import XDateInput from "../../components/inputs/XDateInput";
 
 export default {
-    title: 'Date Input',
-    component: XForm,
+  title: "Date Input",
+  component: XForm,
 };
 
 export const Input = () => {

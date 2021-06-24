@@ -21,11 +21,11 @@ import Box from "@material-ui/core/Box";
 import { hasNoValue } from "../../../components/inputs/inputHelpers";
 
 const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            backgroundColor: theme.palette.background.paper,
-        }
-    }),
+  createStyles({
+    root: {
+      backgroundColor: theme.palette.background.paper,
+    },
+  })
 );
 const Tags = () => {
     const classes = useStyles();

@@ -20,7 +20,7 @@ const XBreadCrumbs = ({ paths, title }: IProps) => {
       separator={<NavigateNextIcon fontSize="small" />}
       aria-label="breadcrumb"
     >
-      {paths.map(it => (
+      {paths.map((it) => (
         <Link
           variant="body1"
           color="inherit"

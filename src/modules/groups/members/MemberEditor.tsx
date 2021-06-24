@@ -14,10 +14,10 @@ import { enumToArray } from "../../../utils/stringHelpers";
 import { GroupRole } from "../types";
 
 interface IProps {
-    data: any
-    done: (dt: any) => any
-    onDeleted: (dt: any) => any
-    onCancel?: () => any
+  data: any;
+  done: (dt: any) => any;
+  onDeleted: (dt: any) => any;
+  onCancel?: () => any;
 }
 
 const schema = yup.object().shape(

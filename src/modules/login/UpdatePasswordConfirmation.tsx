@@ -10,41 +10,34 @@ import { useHistory } from "react-router";
 import DoneAllIcon from "@material-ui/icons/DoneAll";
 
 function UpdatePasswordConfirmation() {
+  const classes = useLoginStyles();
+  const history = useHistory();
 
-    const classes = useLoginStyles();
-    const history = useHistory();
+  function handleUpdatePassword(e: SyntheticEvent<any>) {
+    e.preventDefault();
+    history.push(localRoutes.login);
+  }
 
-    function handleUpdatePassword(e: SyntheticEvent<any>) {
-        e.preventDefault()
-        history.push(localRoutes.login);
-    }
-
-    return (
-        <main className={classes.main}>
-            <CssBaseline/>
-            <Paper className={classes.paper}>
-                <Avatar className={classes.avatar}>
-                    <DoneAllIcon/>
-                </Avatar>
-                <Typography component="h1">
-                    Password Updated
-                </Typography>
-                <Typography component="p">
-                    <b>
-                        Your password has been successfully updated. Go back to the
-                        login page to log into your account.
-                    </b>
-                </Typography>
-                <Link
-                    className={classes.link}
-                    onClick={handleUpdatePassword}
-                >
-                    Go To Login Page
-                </Link>
-
-            </Paper>
-        </main>
-    )
+  return (
+    <main className={classes.main}>
+      <CssBaseline />
+      <Paper className={classes.paper}>
+        <Avatar className={classes.avatar}>
+          <DoneAllIcon />
+        </Avatar>
+        <Typography component="h1">Password Updated</Typography>
+        <Typography component="p">
+          <b>
+            Your password has been successfully updated. Go back to the login
+            page to log into your account.
+          </b>
+        </Typography>
+        <Link className={classes.link} onClick={handleUpdatePassword}>
+          Go To Login Page
+        </Link>
+      </Paper>
+    </main>
+  );
 }
 
 export default UpdatePasswordConfirmation

@@ -1,9 +1,14 @@
-import { createStyles, Link, makeStyles } from '@material-ui/core';
-import { Theme } from '@material-ui/core';
-import { Box, Typography } from '@material-ui/core';
-import React from 'react';
-import XBreadCrumbs from '../../components/XBreadCrumbs';
-import { localRoutes } from '../../data/constants';
+import {
+  Box,
+  createStyles,
+  Link,
+  makeStyles,
+  Theme,
+  Typography,
+} from "@material-ui/core";
+import React from "react";
+import XBreadCrumbs from "../../components/XBreadCrumbs";
+import { localRoutes } from "../../data/constants";
 import Layout from "./../../components/layout/Layout";
 
 const useStyles = makeStyles((theme: Theme) =>

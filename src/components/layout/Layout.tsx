@@ -13,9 +13,9 @@ import NavMenu from "./NavMenu";
 import { Typography } from "@material-ui/core";
 
 interface IProps {
-    title?: string
-    children?: any,
-    mobilePadding?: boolean
+  title?: string;
+  children?: any;
+  mobilePadding?: boolean;
 }
 
 function Layout(props: IProps) {
