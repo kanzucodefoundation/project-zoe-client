@@ -5,7 +5,7 @@ import ListHeader from "../../../components/ListHeader";
 import XBreadCrumbs from "../../../components/XBreadCrumbs";
 import { userRolesFetch } from "../../../data/admin/userRolesReducer";
 import { hasRole } from "../../../data/appRoles";
-import { appRoles, localRoutes, remoteRoutes } from "../../../data/constants";
+import { roleAdmin, localRoutes, remoteRoutes } from "../../../data/constants";
 import { IState } from "../../../data/types";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
@@ -163,7 +163,7 @@ const UserRoles = () => {
     handleClose();
   }
 
-  const canEditRoles = hasRole(user, appRoles.roleEdit);
+  const canEditRoles = hasRole(user, roleAdmin.roleEdit);
   return (
     <>
       <Box mb={1}>

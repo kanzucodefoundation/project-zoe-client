@@ -4,12 +4,12 @@ import UserRoles from "./UserRoles";
 import { useSelector } from "react-redux";
 import Layout from "../../../components/layout/Layout";
 import TabbedView from "../../groups/TabbedView";
-import { appRoles } from "../../../data/constants";
+import { roleAdmin } from "../../../data/constants";
 import { hasRole } from "../../../data/appRoles";
 
 export default function UserControl() {
   const user = useSelector((state: any) => state.core.user);
-  const found = hasRole(user, appRoles.roleEdit);
+  const found = hasRole(user, roleAdmin.roleEdit);
   const tabs: any[] = [
     {
       name: "Users",
