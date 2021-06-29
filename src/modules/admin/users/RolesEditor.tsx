@@ -6,10 +6,8 @@ import Grid from "@material-ui/core/Grid";
 import XForm from "../../../components/forms/XForm";
 import XTextInput from "../../../components/inputs/XTextInput";
 import XCheckBoxInput from "../../../components/inputs/XCheckBoxInput";
-import { remoteRoutes, rolesList } from "../../../data/constants";
-import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
+import { remoteRoutes, permissionsList } from "../../../data/constants";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { comboParser } from "../../../components/inputs/inputHelpers";
 import { del } from "../../../utils/ajax";
 import Toast from "../../../utils/Toast";
 import XComboInput from "../../../components/inputs/XComboInput";
@@ -24,30 +22,28 @@ interface IProps {
 }
 
 const schema = yup.object().shape({
-  roleName: reqString,
-  capabilities: reqArray,
+  role: reqString,
+  permissions: reqArray,
+  description: reqString,
 });
 
-const editSchema = yup.object().shape({
-  capabilities: reqArray,
-});
 const initialValues = {
-  roleName: null,
-  capabilities: [],
+  role: null,
+  permissions: [],
   isActive: true,
 };
-const UserRolesEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
+const RolesEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: any = {
       ...values,
       id: values.id,
-      capabilities: cleanComboValue(values.capabilities),
+      permissions: cleanComboValue(values.permissions),
       isActive: values.isActive,
     };
     const submission: ISubmission = {
-      url: remoteRoutes.userRoles,
+      url: remoteRoutes.roles,
       values: toSave,
       actions,
       isNew,
@@ -59,7 +55,7 @@ const UserRolesEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => 
   function handleDelete() {
     setLoading(true);
     del(
-      `${remoteRoutes.userRoles}/${data.id}`,
+      `${remoteRoutes.roles}/${data.id}`,
       (dt) => {
         Toast.success("Operation succeeded");
         onDeleted(data);
@@ -74,7 +70,7 @@ const UserRolesEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => 
   return (
     <XForm
       onSubmit={handleSubmit}
-      schema={isNew ? schema : editSchema}
+      schema={schema}
       initialValues={data || initialValues}
       onDelete={isNew ? undefined : handleDelete}
       loading={loading}
@@ -82,32 +78,31 @@ const UserRolesEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => 
     >
       <Grid spacing={1} container>
         <Grid item xs={12}>
-
-            <XTextInput 
-            name="roleName" 
-            label="Role Name" 
-            type="text" 
-            variant="outlined" />
-
+          <XTextInput name="role" label="Role" type="text" variant="outlined" />
+        </Grid>
+        <Grid item xs={12}>
+          <XTextInput
+            name="description"
+            label="Description"
+            type="text"
+            variant="outlined"
+          />
         </Grid>
         <Grid item xs={12}>
           <XComboInput
-            name="capabilities"
-            label="Capabilities"
-            options={rolesList}
+            name="permissions"
+            label="Permissions"
+            options={permissionsList}
             variant="outlined"
             multiple
           />
         </Grid>
         <Grid item xs={12}>
-          <XCheckBoxInput
-            name="isActive"
-            label="Activate Role?"
-          />
+          <XCheckBoxInput name="isActive" label="Activate Role?" />
         </Grid>
       </Grid>
     </XForm>
   );
 };
 
-export default UserRolesEditor;
+export default RolesEditor;

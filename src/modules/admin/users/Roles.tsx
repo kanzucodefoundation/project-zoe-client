@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ListHeader from "../../../components/ListHeader";
 import { hasRole } from "../../../data/appRoles";
-import { roleAdmin,  remoteRoutes } from "../../../data/constants";
+import { remoteRoutes, appRoles } from "../../../data/constants";
 import { IState } from "../../../data/types";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
@@ -12,10 +12,10 @@ import DataList from "../../../components/DataList";
 import Loading from "../../../components/Loading";
 import { useHistory } from "react-router";
 import { search } from "../../../utils/ajax";
-import { IUserRoles } from "./types";
+import { IRoles } from "./types";
 import Hidden from "@material-ui/core/Hidden";
 import EditDialog from "../../../components/EditDialog";
-import UserRolesEditor from "./UserRolesEditor";
+import RolesEditor from "./RolesEditor";
 import { AddFabButton } from "../../../components/EditIconButton";
 
 const columns: XHeadCell[] = [
@@ -31,14 +31,18 @@ const columns: XHeadCell[] = [
     ),
   },
   {
-    name: "roleName",
+    name: "role",
     label: "Role",
   },
   {
-    name: "capabilities",
-    label: "Capabilities",
-    render: (capabilities: string[]) =>
-      capabilities?.map((it) => (
+    name: "description",
+    label: "Description",
+  },
+  {
+    name: "permissions",
+    label: "Permissions",
+    render: (permissions: string[]) =>
+      permissions?.map((it) => (
         <Chip
           color="primary"
           variant="outlined"
@@ -62,12 +66,13 @@ const toMobile = (data: any): IMobileRow => {
   return {
     primary: (
       <>
-        {`${data.roleName}\t`}
         <Chip
           label={data.isActive ? "Active" : "Inactive"}
           color={data.isActive ? "secondary" : "default"}
           size="small"
         />
+        <strong>{`\t ${data.role}`}</strong>
+        <Box pt={0.5}>{`${data.description}`}</Box>
       </>
     ),
     secondary: (
@@ -76,7 +81,7 @@ const toMobile = (data: any): IMobileRow => {
           {data.username}
         </Typography>
         <Box pt={0.5}>
-          {data.capabilities?.map((it: any) => (
+          {data.permissions?.map((it: any) => (
             <Chip
               color="primary"
               variant="outlined"
@@ -92,7 +97,7 @@ const toMobile = (data: any): IMobileRow => {
   };
 };
 
-const UserRoles = () => {
+const Roles = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [data, setData] = useState<any[]>([]);
@@ -105,9 +110,9 @@ const UserRoles = () => {
   useEffect(() => {
     setLoading(true);
     search(
-      remoteRoutes.userRoles,
+      remoteRoutes.roles,
       filter,
-      (resp: IUserRoles[]) => {
+      (resp: IRoles[]) => {
         setData(resp);
       },
       undefined,
@@ -125,11 +130,12 @@ const UserRoles = () => {
   }
 
   const handleEdit = (dt: any) => {
-    const { id, roleName, capabilities, isActive } = dt;
+    const { id, role, description, permissions, isActive } = dt;
     const toEdit = {
       id,
-      roleName,
-      capabilities: [...capabilities],
+      role,
+      description,
+      permissions: [...permissions],
       isActive: isActive,
     };
     setSelected(toEdit);
@@ -161,7 +167,7 @@ const UserRoles = () => {
     handleClose();
   }
 
-  const canEditRoles = hasRole(user, roleAdmin.roleEdit);
+  const canEditRoles = hasRole(user, appRoles.roleEdit);
   return (
     <>
       <Box mb={1}>
@@ -207,11 +213,11 @@ const UserRoles = () => {
       )}
       {canEditRoles && (
         <EditDialog
-          title={selected ? `Edit ${selected.roleName}` : "Create Role"}
+          title={selected ? `Edit ${selected.role}` : "Create Role"}
           open={dialog}
           onClose={handleClose}
         >
-          <UserRolesEditor
+          <RolesEditor
             data={selected}
             isNew={!selected}
             done={handleComplete}
@@ -224,4 +230,4 @@ const UserRoles = () => {
   );
 };
 
-export default UserRoles;
+export default Roles;

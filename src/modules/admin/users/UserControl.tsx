@@ -1,15 +1,15 @@
 import React from "react";
 import Users from "./Users";
-import UserRoles from "./UserRoles";
+import Roles from "./Roles";
 import { useSelector } from "react-redux";
 import Layout from "../../../components/layout/Layout";
 import TabbedView from "../../groups/TabbedView";
-import { roleAdmin } from "../../../data/constants";
+import { appRoles } from "../../../data/constants";
 import { hasRole } from "../../../data/appRoles";
 
 export default function UserControl() {
   const user = useSelector((state: any) => state.core.user);
-  const found = hasRole(user, roleAdmin.roleEdit);
+  const found = hasRole(user, appRoles.roleEdit);
   const tabs: any[] = [
     {
       name: "Users",
@@ -20,7 +20,7 @@ export default function UserControl() {
   if (found) {
     tabs.push({
       name: "Manage Roles",
-      component: <UserRoles />,
+      component: <Roles />,
     });
   }
 

@@ -64,7 +64,7 @@ const DataList = ({
                       <VisibilityIcon />
                     </IconButton>
                   )}
-                  {onEditClick && row.roleName !== "RoleAdmin" && (
+                  {onEditClick && row.role !== "RoleAdmin" && (
                     <IconButton
                       onClick={() => onEditClick && onEditClick(row)}
                       size="medium"
@@ -134,7 +134,7 @@ const DataList = ({
                 )}
                 {onEditClick && (
                   <TableCell align="center">
-                    {row.roleName !== "RoleAdmin" && (
+                    {row.role !== "RoleAdmin" && (
                       <IconButton
                         size="medium"
                         color="primary"

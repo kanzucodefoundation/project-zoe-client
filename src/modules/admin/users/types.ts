@@ -1,14 +1,15 @@
 export interface IUser {
-    username: string
-    contact: any
-    avatar: string
-    id?: string
-    roles: string[]
+  username: string;
+  contact: any;
+  avatar: string;
+  id?: string;
+  roles: string[];
 }
 
-export interface IUserRoles {
-    id:string
-    roleName: string
-    capabilities: string[]
-    activeState:Boolean
+export interface IRoles {
+  id: number;
+  role: string;
+  description: string;
+  permissions: string[];
+  activeState: Boolean;
 }

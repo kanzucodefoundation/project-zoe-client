@@ -6,7 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import XForm from "../../../components/forms/XForm";
 import XTextInput from "../../../components/inputs/XTextInput";
 import XCheckBoxInput from "../../../components/inputs/XCheckBoxInput";
-import { remoteRoutes, rolesList } from "../../../data/constants";
+import { remoteRoutes, permissionsList } from "../../../data/constants";
 import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
 import { comboParser } from "../../../components/inputs/inputHelpers";
@@ -104,7 +104,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
           <XComboInput
             name="roles"
             label="Roles"
-            options={rolesList}
+            options={permissionsList}
             variant="outlined"
             multiple
           />
