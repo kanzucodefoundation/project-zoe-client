@@ -116,7 +116,7 @@ const UnsubmittedReports = () => {
   return (
     <Box p={1} className={classes.root}>
       <ListHeader
-        title="Unsubmitted Group Reports"
+        title="Missing Group Reports"
         onFilter={setFilter}
         filter={filter}
         filterComponent={<UnsubEventsFilter onFilter={setFilter} />}
@@ -133,7 +133,6 @@ const UnsubmittedReports = () => {
               data={data}
               initialRowsPerPage={10}
               initialSortBy="group"
-              //handleSelection={handleRowClick}
             />
           )}
         </Box>

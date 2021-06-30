@@ -7,6 +7,12 @@ import { IState } from "../data/types";
 import { hasAnyRole } from "../data/appRoles";
 import Loading from "../components/Loading";
 
+
+//const Events= React.lazy(() => import( "./events/EventsList"));
+//const GroupReports = React.lazy(() => import("./events/GroupReports"));
+
+const UserControl = React.lazy(() => import("./admin/users/UserControl"));
+
 const Dashboard = React.lazy(() => import("./dashboard/Dashboard"));
 const Contacts = React.lazy(() => import("./contacts/Contacts"));
 const ContactDetails = React.lazy(
@@ -25,6 +31,7 @@ const UpdatePasswordConfirmation = React.lazy(
 const EventDetails = React.lazy(() => import("./events/details/EventDetails"));
 const EventReports = React.lazy(() => import("./events/EventReports"));
 const Help = React.lazy(() => import("./help/Help"));
+
 
 const ContentSwitch = () => {
   const user = useSelector((state: IState) => state.core.user);
@@ -46,6 +53,9 @@ const ContentSwitch = () => {
         {hasAnyRole(user, [appRoles.roleGroupEdit, appRoles.roleGroupView]) && (
           <Route path={localRoutes.groupsDetails} component={GroupDetails} />
         )}
+      {hasAnyRole(user, [appRoles.roleUserEdit, appRoles.roleUserView]) && (
+        <Route path={localRoutes.users} component={UserControl} />
+      )}
 
         {hasAnyRole(user, [appRoles.roleGroupEdit, appRoles.roleGroupView]) && (
           <Route path={localRoutes.groups} component={Groups} />

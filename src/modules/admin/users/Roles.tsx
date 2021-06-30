@@ -1,28 +1,22 @@
+import { Box, Chip, Divider, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import Layout from "../../../components/layout/Layout";
-import { useHistory } from "react-router";
-import { XHeadCell } from "../../../components/table/XTableHead";
-import { Avatar } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import DataList from "../../../components/DataList";
-import { AddFabButton } from "../../../components/EditIconButton";
-import { search } from "../../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../../data/constants";
-import { hasValue } from "../../../components/inputs/inputHelpers";
-import PersonIcon from "@material-ui/icons/Person";
-import Hidden from "@material-ui/core/Hidden";
-import EditDialog from "../../../components/EditDialog";
-import UserEditor from "./UserEditor";
-import Loading from "../../../components/Loading";
-import Chip from "@material-ui/core/Chip";
+import { useDispatch, useSelector } from "react-redux";
 import ListHeader from "../../../components/ListHeader";
-import { hasAnyRole } from "../../../data/appRoles";
+import { hasRole } from "../../../data/appRoles";
+import { remoteRoutes, appRoles } from "../../../data/constants";
+import { IState } from "../../../data/types";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
-import { useSelector } from "react-redux";
-import { IState } from "../../../data/types";
-import Divider from "@material-ui/core/Divider";
+import { XHeadCell } from "../../../components/table/XTableHead";
+import DataList from "../../../components/DataList";
+import Loading from "../../../components/Loading";
+import { useHistory } from "react-router";
+import { search } from "../../../utils/ajax";
+import { IRoles } from "./types";
+import Hidden from "@material-ui/core/Hidden";
+import EditDialog from "../../../components/EditDialog";
+import RolesEditor from "./RolesEditor";
+import { AddFabButton } from "../../../components/EditIconButton";
 
 const columns: XHeadCell[] = [
   {
@@ -31,45 +25,24 @@ const columns: XHeadCell[] = [
     render: (value) => (
       <Chip
         label={value ? "Active" : "Inactive"}
-        color="secondary"
+        color={value ? "secondary" : "default"}
         size="small"
       />
     ),
   },
   {
-    name: "avatar",
-    label: "Avatar",
-    render: (data) => {
-      const hasAvatar = hasValue(data);
-      return hasAvatar ? (
-        <Avatar alt="Avatar" src={data} />
-      ) : (
-        <Avatar>
-          <PersonIcon />
-        </Avatar>
-      );
-    },
-    cellProps: {
-      width: 50,
-    },
+    name: "role",
+    label: "Role",
   },
   {
-    name: "username",
-    label: "Username",
+    name: "description",
+    label: "Description",
   },
   {
-    name: "fullName",
-    label: "Full Name",
-    cellProps: {
-      component: "th",
-      scope: "row",
-    },
-  },
-  {
-    name: "roles",
-    label: "Roles",
-    render: (roles: string[]) =>
-      roles?.map((it) => (
+    name: "permissions",
+    label: "Permissions",
+    render: (permissions: string[]) =>
+      permissions?.map((it) => (
         <Chip
           color="primary"
           variant="outlined"
@@ -82,30 +55,24 @@ const columns: XHeadCell[] = [
   },
 ];
 
+// Mobile View
 interface IMobileRow {
-  avatar: any;
+  avatar?: any;
   primary: any;
   secondary: any;
 }
 
 const toMobile = (data: any): IMobileRow => {
-  const hasAvatar = hasValue(data.avatar);
   return {
-    avatar: hasAvatar ? (
-      <Avatar alt="Avatar" src={data.avatar} />
-    ) : (
-      <Avatar>
-        <PersonIcon />
-      </Avatar>
-    ),
     primary: (
       <>
-        {`${data.fullName}\t`}
         <Chip
           label={data.isActive ? "Active" : "Inactive"}
-          color="secondary"
+          color={data.isActive ? "secondary" : "default"}
           size="small"
         />
+        <strong>{`\t ${data.role}`}</strong>
+        <Box pt={0.5}>{`${data.description}`}</Box>
       </>
     ),
     secondary: (
@@ -114,7 +81,7 @@ const toMobile = (data: any): IMobileRow => {
           {data.username}
         </Typography>
         <Box pt={0.5}>
-          {data.roles?.map((it: any) => (
+          {data.permissions?.map((it: any) => (
             <Chip
               color="primary"
               variant="outlined"
@@ -130,20 +97,22 @@ const toMobile = (data: any): IMobileRow => {
   };
 };
 
-const Users = () => {
+const Roles = () => {
   const history = useHistory();
-  const [filter, setFilter] = useState<any>({});
-  const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useDispatch();
   const [data, setData] = useState<any[]>([]);
   const [selected, setSelected] = useState<any | null>(null);
-  const [dialog, setDialog] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const user = useSelector((state: IState) => state.core.user);
+  const [dialog, setDialog] = useState<boolean>(false);
+  const [filter, setFilter] = useState<any>({ limit: 100 });
+
   useEffect(() => {
     setLoading(true);
     search(
-      remoteRoutes.users,
+      remoteRoutes.roles,
       filter,
-      (resp) => {
+      (resp: IRoles[]) => {
         setData(resp);
       },
       undefined,
@@ -161,20 +130,16 @@ const Users = () => {
   }
 
   const handleEdit = (dt: any) => {
-    const { id, username, contactId, fullName, roles, isActive } = dt;
+    const { id, role, description, permissions, isActive } = dt;
     const toEdit = {
       id,
-      username,
-      roles: [...roles],
-      contact: { id: contactId, label: fullName },
+      role,
+      description,
+      permissions: [...permissions],
       isActive: isActive,
     };
     setSelected(toEdit);
     setDialog(true);
-  };
-
-  const handleView = (dt: any) => {
-    history.push(`${localRoutes.contacts}/${dt.id}`);
   };
 
   const handleComplete = (dt: any) => {
@@ -190,6 +155,7 @@ const Users = () => {
     }
     handleClose();
   };
+
   const handleClose = () => {
     setSelected(null);
     setDialog(false);
@@ -201,20 +167,18 @@ const Users = () => {
     handleClose();
   }
 
-  const canEditUsers = hasAnyRole(user, [appRoles.roleUserEdit]);
-  const canViewUsers = hasAnyRole(user, [appRoles.roleUserView]);
-
+  const canEditRoles = hasRole(user, appRoles.roleEdit);
   return (
     <>
       <Box mb={1}>
         <ListHeader
-          title="Users"
+          title="Manage User Roles"
           onFilter={handleFilter}
           filter={filter}
           loading={loading}
           buttons={
             <>
-              {canEditUsers && (
+              {canEditRoles && (
                 <Button
                   variant="outlined"
                   color="primary"
@@ -238,23 +202,22 @@ const Users = () => {
             data={data}
             toMobileRow={toMobile}
             columns={columns}
-            onEditClick={canEditUsers ? handleEdit : undefined}
-            onViewClick={canViewUsers ? handleView : undefined}
+            onEditClick={canEditRoles ? handleEdit : undefined}
           />
         )}
       </Box>
-      {canEditUsers && (
+      {canEditRoles && (
         <Hidden mdUp>
           <AddFabButton onClick={handleNew} />
         </Hidden>
       )}
-      {canEditUsers && (
+      {canEditRoles && (
         <EditDialog
-          title={selected ? `Edit ${selected.username}` : "Create User"}
+          title={selected ? `Edit ${selected.role}` : "Create Role"}
           open={dialog}
           onClose={handleClose}
         >
-          <UserEditor
+          <RolesEditor
             data={selected}
             isNew={!selected}
             done={handleComplete}
@@ -267,4 +230,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Roles;
