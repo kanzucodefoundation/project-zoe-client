@@ -72,7 +72,7 @@ const routes: IAppRoute[] = [
     icon: SettingsIcon,
     items: [
       {
-        name: "Users",
+        name: "Manage Users",
         route: localRoutes.users,
       },
       {

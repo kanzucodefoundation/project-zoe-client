@@ -7,11 +7,11 @@ import EventsList from "./EventsList";
 export default function EventReports() {
   const tabs = [
     {
-      name: "submitted",
+      name: "Submitted",
       component: <EventsList />,
     },
     {
-      name: "Unsubmitted",
+      name: "Missing Reports",
       component: <UnsubmittedReports />,
     },
   ];
