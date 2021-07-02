@@ -7,16 +7,15 @@ interface IProps {
 }
 
 const InfoMessage = (props: IProps) => {
-    return (
-        <Box display="flex" p={1} justifyContent="center">
-            <Paper style={{backgroundColor: colors.blueGrey[50]}} elevation={0}>
-                <Box p={3}>
-                    <Typography>{props.text}&nbsp;!</Typography>
-                </Box>
-            </Paper>
+  return (
+    <Box display="flex" p={1} justifyContent="center">
+      <Paper style={{ backgroundColor: colors.blueGrey[50] }} elevation={0}>
+        <Box p={3}>
+          <Typography>{props.text}&nbsp;!</Typography>
         </Box>
-    );
-}
-
+      </Paper>
+    </Box>
+  );
+};
 
 export default InfoMessage;

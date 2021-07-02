@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -20,6 +20,7 @@ import { reqString } from "../../data/validations";
 const schema = yup.object().shape({
   password: reqString.min(8, "Password must be atleast 8 characters long"),
 });
+
 
 function ResetPassword() {
   const classes = useLoginStyles();

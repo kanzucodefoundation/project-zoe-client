@@ -7,12 +7,11 @@ interface IProps {
 }
 
 const DataLabel = (props: IProps) => {
-    return (
-        <Typography variant='body2' noWrap component='div'>
-            {props.children} {props.noColon ? '' : ':'}
-        </Typography>
-    );
-}
-
+  return (
+    <Typography variant="body2" noWrap component="div">
+      {props.children} {props.noColon ? "" : ":"}
+    </Typography>
+  );
+};
 
 export default DataLabel;

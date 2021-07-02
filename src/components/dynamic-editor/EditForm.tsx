@@ -9,76 +9,76 @@ import { del } from "../../utils/ajax";
 import Toast from "../../utils/Toast";
 
 interface IProps {
-    columns: IColumn[]
-    url: string
-    data: any | null
-    isNew: boolean
-    debug?: boolean
-    done?: () => any
-    onNew: (data: any) => any
-    onEdited: (data: any) => any
-    onDeleted: (data: any) => any
-    schema?: any
-    primaryKey?: any
-    submitParser?: (data: any) => any
-    submitResponseParser?: (data: any) => any
+  columns: IColumn[];
+  url: string;
+  data: any | null;
+  isNew: boolean;
+  debug?: boolean;
+  done?: () => any;
+  onNew: (data: any) => any;
+  onEdited: (data: any) => any;
+  onDeleted: (data: any) => any;
+  schema?: any;
+  primaryKey?: any;
+  submitParser?: (data: any) => any;
+  submitResponseParser?: (data: any) => any;
 }
 
 const EditForm = ({
-                      data,
-                      isNew,
-                      url, columns,
-                      done,
-                      debug,
-                      primaryKey = 'id',
-                      submitParser,
-                      submitResponseParser,
-                      ...props
-                  }: IProps) => {
+  data,
+  isNew,
+  url,
+  columns,
+  done,
+  debug,
+  primaryKey = "id",
+  submitParser,
+  submitResponseParser,
+  ...props
+}: IProps) => {
+  function handleSubmit(values: any, actions: FormikHelpers<any>) {
+    const toSubmit = submitParser ? submitParser(values) : values;
+    const submission: ISubmission = {
+      url,
+      values: toSubmit,
+      actions,
+      isNew,
+      onAjaxComplete: (resp: any) => {
+        const saved = submitResponseParser ? submitResponseParser(resp) : resp;
+        isNew ? props.onNew(saved) : props.onEdited(saved);
+        if (done) done();
+      },
+    };
+    handleSubmission(submission);
+  }
 
-    function handleSubmit(values: any, actions: FormikHelpers<any>) {
-        const toSubmit = submitParser ?
-            submitParser(values) :
-            values;
-        const submission: ISubmission = {
-            url, values: toSubmit, actions, isNew,
-            onAjaxComplete: (resp: any) => {
-                const saved = submitResponseParser ? submitResponseParser(resp) : resp
-                isNew ? props.onNew(saved) : props.onEdited(saved);
-                if (done)
-                    done()
-            }
-        }
-        handleSubmission(submission)
-    }
+  function handleDelete() {
+    const delUrl = `${url}/${data[primaryKey]}`;
+    del(delUrl, (resp) => {
+      Toast.success("Operation succeeded");
+      props.onDeleted(data);
+    });
+  }
 
-    function handleDelete() {
-        const delUrl = `${url}/${data[primaryKey]}`
-        del(delUrl, resp => {
-            Toast.success("Operation succeeded")
-            props.onDeleted(data)
-        })
-    }
-
-    return (
-        <XForm
-            onSubmit={handleSubmit}
-            onDelete={isNew ? undefined : handleDelete}
-            schema={props.schema}
-            initialValues={data}
-            debug={debug}
-        >
-            <Grid spacing={0} container>
-                {
-                    columns.map(it => {
-                        return <Grid item xs={12} key={it.name}>
-                            {renderInput(it)}
-                        </Grid>
-                    })
-                }
+  return (
+    <XForm
+      onSubmit={handleSubmit}
+      onDelete={isNew ? undefined : handleDelete}
+      schema={props.schema}
+      initialValues={data}
+      debug={debug}
+    >
+      <Grid spacing={0} container>
+        {columns.map((it) => {
+          return (
+            <Grid item xs={12} key={it.name}>
+              {renderInput(it)}
             </Grid>
-        </XForm>
-    );
-}
+          );
+        })}
+      </Grid>
+    </XForm>
+  );
+};
 
 export default EditForm;

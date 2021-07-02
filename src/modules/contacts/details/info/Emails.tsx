@@ -12,7 +12,7 @@ import DataCard from "../../../../components/DataCard";
 import Hidden from "@material-ui/core/Hidden";
 
 interface IProps {
-    data: IContact
+  data: IContact;
 }
 
 const useStyles = makeStyles((theme: Theme) =>

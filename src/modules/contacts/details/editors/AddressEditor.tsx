@@ -5,7 +5,6 @@ import { addressCategories } from "../../../../data/comboCategories";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../../components/forms/XForm";
-import XTextInput from "../../../../components/inputs/XTextInput";
 import XSelectInput from "../../../../components/inputs/XSelectInput";
 import { toOptions } from "../../../../components/inputs/inputHelpers";
 import XCheckBoxInput from "../../../../components/inputs/XCheckBoxInput";
@@ -34,7 +33,7 @@ const AddressEditor = ({ data, isNew, contactId, done }: IProps) => {
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     !values.isPrimary && (values.isPrimary = false);
-    const { freeForm, ...rest } = values;
+    const { freeForm } = values;
     values.freeForm = freeForm.description;
     values.placeId = freeForm.place_id;
     const submission: ISubmission = {

@@ -4,7 +4,7 @@ import { remoteRoutes } from "../../data/constants";
 import { PRemoteSelect } from "../../components/plain-inputs/PRemoteSelect";
 import PDateInput from "../../components/plain-inputs/PDateInput";
 import { useFilter } from "../../utils/fitlerUtilities";
-import { addDays, format, lastDayOfWeek, startOfWeek } from "date-fns";
+import { format, lastDayOfWeek, startOfWeek } from "date-fns";
 
 interface IProps {
   onFilter: (data: any) => any;

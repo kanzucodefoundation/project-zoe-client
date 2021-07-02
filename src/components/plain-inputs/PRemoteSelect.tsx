@@ -18,7 +18,7 @@ const filterIOptions = (options: (IOption | string)[], params: any) => {
   if (params.inputValue !== "") {
     filtered.push({
       id: params.inputValue,
-      name: `Add "${params.inputValue}"`
+      name: `Add "${params.inputValue}"`,
     });
   }
   return filtered;
@@ -179,12 +179,12 @@ export function PRemoteSelect(props: IPRemoteProps) {
       getOptionLabel={getIOptionLabel}
       getOptionSelected={getIOptionSelection}
       filterOptions={
-        props.searchOnline ? x => x : freeSolo ? filterIOptions : undefined
+        props.searchOnline ? (x) => x : freeSolo ? filterIOptions : undefined
       }
       options={options}
       autoComplete
       loading={loading}
-      renderInput={params => {
+      renderInput={(params) => {
         return (
           <TextField
             {...params}
@@ -208,7 +208,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
                   )}
                   {params.InputProps.endAdornment}
                 </React.Fragment>
-              )
+              ),
             }}
           />
         );

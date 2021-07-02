@@ -10,7 +10,7 @@ import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import theme from "./theme";
-import * as Sentry from '@sentry/react';
+import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 
 // add sentry set-up

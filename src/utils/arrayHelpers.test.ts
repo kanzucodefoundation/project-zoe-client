@@ -1,8 +1,8 @@
 import { chunkArray, createArray } from "./arrayHelpers";
 
-it('chunkArray can split an array', () => {
-    const result = chunkArray([1, 2, 3, 4, 5], 2)
-    expect(result.length).toEqual(2);
+it("chunkArray can split an array", () => {
+  const result = chunkArray([1, 2, 3, 4, 5], 2);
+  expect(result.length).toEqual(2);
 });
 
 

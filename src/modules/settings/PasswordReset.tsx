@@ -73,7 +73,7 @@ const PasswordReset = () => {
               variant="outlined"
               style={{ marginTop: "1rem" }}
             />
-            <XTextInput 
+            <XTextInput
               label="Confirm Password"
               name="confirmPassword"
               type="password"

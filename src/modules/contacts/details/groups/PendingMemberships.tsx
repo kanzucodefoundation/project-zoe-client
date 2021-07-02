@@ -1,37 +1,10 @@
-import { Button, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { XHeadCell } from "../../../../components/table/XTableHead";
 import { remoteRoutes } from "../../../../data/constants";
-import { del, get } from "../../../../utils/ajax";
-import Toast from "../../../../utils/Toast";
+import { get } from "../../../../utils/ajax";
 import XList, { ListItemData } from "../../../../components/list/XList";
 import { getInitials } from "../../../../utils/stringHelpers";
 import { Alert } from "@material-ui/lab";
-
-const headCells: XHeadCell[] = [
-  {
-    name: "groupName",
-    label: "Group Name"
-  },
-  {
-    name: "id",
-    label: "",
-    render: data => (
-      <Button
-        size="small"
-        variant="contained"
-        color="secondary"
-        onClick={() => {
-          del(`${remoteRoutes.groupsRequest}/${data}`, resp => {
-            Toast.success("Request Successfully Deleted");
-          });
-        }}
-      >
-        Delete Request
-      </Button>
-    )
-  }
-];
 
 interface IRequest {
   id: number;
@@ -46,12 +19,12 @@ const PendingMemberships = (props: any) => {
     setLoading(true);
     get(
       `${remoteRoutes.groupsRequest}/?contactId=${props.contactId}`,
-      data => {
+      (data) => {
         let requests: IRequest[] = [];
         for (let i = 0; i < data.length; i++) {
           const single = {
             id: data[i].id,
-            groupName: data[i].group.name
+            groupName: data[i].group.name,
           };
 
           requests.push(single);
@@ -69,16 +42,16 @@ const PendingMemberships = (props: any) => {
     return {
       primaryText: dt.groupName,
       secondaryText: "",
-      avatar: getInitials(dt.name)
+      avatar: getInitials(dt.name),
     };
   };
 
   // Implement this using a better approach
-  const onDelete = (id: string) => {
-    del(`${remoteRoutes.groupsRequest}/${id}`, resp => {
-      Toast.success("Request Successfully Deleted");
-    });
-  };
+  // const onDelete = (id: string) => {
+  //   del(`${remoteRoutes.groupsRequest}/${id}`, (resp) => {
+  //     Toast.success("Request Successfully Deleted");
+  //   });
+  // };
 
   return (
     <Grid container>

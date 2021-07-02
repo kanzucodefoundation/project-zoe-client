@@ -6,7 +6,7 @@ import Box from "@material-ui/core/Box";
 import { differenceInDays, format, lastDayOfWeek, startOfWeek } from "date-fns";
 import Loading from "../../components/Loading";
 import DashboardData from "./DashboardData";
-import { addDays, subDays } from "date-fns/esm";
+import { subDays } from "date-fns/esm";
 import { search } from "../../utils/ajax";
 import { remoteRoutes } from "../../data/constants";
 import DashboardFilter from "./DashboardFilter";
@@ -35,7 +35,7 @@ const Dashboard = () => {
     const d = differenceInDays(new Date(filter.to), new Date(filter.from));
     const prevTo = subDays(new Date(filter.from), 1);
     const prevFrom = subDays(prevTo, d);
-    
+
 
     const prevFilter = {
       from: format(prevFrom, "yyyy-MM-dd"),

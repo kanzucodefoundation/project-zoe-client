@@ -11,8 +11,8 @@ interface IProps {
 
 const initialData: any = {
   query: "",
-  churchLocations: [],
-  cellGroups: [],
+  "churchLocations[]": [],
+  "cellGroups[]": [],
 
   email: "",
   phone: "",
@@ -23,7 +23,7 @@ const ContactFilter = ({ onFilter }: IProps) => {
   const { data, handleTextChange, handleComboChange } = useFilter({
     initialData,
     onFilter,
-    comboFields: ["churchLocations", "cellGroups"],
+    comboFields: ["churchLocations[]", "cellGroups[]"],
   });
 
   return (
@@ -34,14 +34,14 @@ const ContactFilter = ({ onFilter }: IProps) => {
             remote={remoteRoutes.groupsCombo}
             filter={{ "categories[]": "Location" }}
             parser={({ name, id }: any) => ({ name: name, id: id })}
-            name="churchLocations"
+            name="churchLocations[]"
             label="Location"
             variant="outlined"
             size="small"
             margin="none"
             multiple
-            onChange={(value) => handleComboChange("churchLocations", value)}
-            value={data["churchLocations"]}
+            onChange={(value) => handleComboChange("churchLocations[]", value)}
+            value={data["churchLocations[]"]}
             searchOnline
           />
         </Grid>
@@ -50,14 +50,14 @@ const ContactFilter = ({ onFilter }: IProps) => {
             remote={remoteRoutes.groupsCombo}
             filter={{ "categories[]": "MC" }}
             parser={({ name, id }: any) => ({ name: name, id: id })}
-            name="cellGroups"
+            name="cellGroups[]"
             label="MC"
             variant="outlined"
             size="small"
             margin="none"
             multiple
-            onChange={(value) => handleComboChange("cellGroups", value)}
-            value={data["cellGroups"]}
+            onChange={(value) => handleComboChange("cellGroups[]", value)}
+            value={data["cellGroups[]"]}
             searchOnline
           />
         </Grid>
@@ -80,7 +80,7 @@ const ContactFilter = ({ onFilter }: IProps) => {
             value={data["phone"]}
             onChange={(value) => handleTextChange("phone", value)}
             label="Phone"
-            type="text"
+            type="number"
             variant="outlined"
             size="small"
             fullWidth

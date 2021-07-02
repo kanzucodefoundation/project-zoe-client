@@ -28,23 +28,23 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
       maxWidth: 360,
       minHeight: 300,
-      backgroundColor: theme.palette.background.paper
+      backgroundColor: theme.palette.background.paper,
     },
     details: {
       minHeight: 100,
       borderRadius: 5,
       border: "1px solid",
       backgroundColor: grey[50],
-      padding: theme.spacing(2)
+      padding: theme.spacing(2),
     },
     selBox: {
       width: 70,
-      position: "relative"
+      position: "relative",
     },
     closeIcon: {
       position: "absolute",
-      zIndex: 200
-    }
+      zIndex: 200,
+    },
   })
 );
 

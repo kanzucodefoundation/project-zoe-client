@@ -6,18 +6,20 @@ import PasswordReset from "./PasswordReset";
 import Divider from "@material-ui/core/Divider";
 
 const Settings = () => {
-    return <Navigation>
-        <Grid spacing={2} container>
-            <Grid item xs={12} md={6} xl={3}>
-                <PasswordReset/>
+  return (
+    <Navigation>
+      <Grid spacing={2} container>
+        <Grid item xs={12} md={6} xl={3}>
+          <PasswordReset />
 
-                <Divider/>
-            </Grid>
-            <Grid item xs={12} md={6} xl={4}>
-                <Tags/>
-            </Grid>
+          <Divider />
         </Grid>
+        <Grid item xs={12} md={6} xl={4}>
+          <Tags />
+        </Grid>
+      </Grid>
     </Navigation>
-}
+  );
+};
 
 export default Settings

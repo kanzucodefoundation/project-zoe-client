@@ -1,13 +1,13 @@
-import { Grid } from '@material-ui/core';
-import { lastDayOfWeek, startOfWeek } from 'date-fns/esm';
-import React from 'react';
-import PDateInput from '../../components/plain-inputs/PDateInput';
-import { PRemoteSelect } from '../../components/plain-inputs/PRemoteSelect';
-import { remoteRoutes } from '../../data/constants';
-import { useFilter } from '../../utils/fitlerUtilities';
+import { Grid } from "@material-ui/core";
+import { lastDayOfWeek, startOfWeek } from "date-fns/esm";
+import React from "react";
+import PDateInput from "../../components/plain-inputs/PDateInput";
+import { PRemoteSelect } from "../../components/plain-inputs/PRemoteSelect";
+import { remoteRoutes } from "../../data/constants";
+import { useFilter } from "../../utils/fitlerUtilities";
 
 interface IProps {
-    onFilter: (data: any) => any;
+  onFilter: (data: any) => any;
 }
 
 const initialData: any = {

@@ -15,7 +15,7 @@ import { IContact } from "../../types";
 
 const schema = yup.object().shape({
   churchLocation: reqObject,
-  residence: reqString
+  residence: reqString,
 });
 
 const initialValues = {

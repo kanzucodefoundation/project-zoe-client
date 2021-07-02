@@ -7,8 +7,10 @@ interface IProps {
   name: string;
 }
 
-const ContactLink = ({id, name}: IProps) => (
-    <Link style={{textDecoration:'none'}} to={`${localRoutes.contacts}/${id}`}>{name}</Link>
+const ContactLink = ({ id, name }: IProps) => (
+  <Link style={{ textDecoration: "none" }} to={`${localRoutes.contacts}/${id}`}>
+    {name}
+  </Link>
 );
 
-export default ContactLink
+export default ContactLink;

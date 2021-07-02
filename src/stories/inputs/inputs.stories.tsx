@@ -6,8 +6,8 @@ import StoryLayout from "../story.layout";
 import NewPersonForm from "../../modules/contacts/NewPersonForm";
 
 export default {
-    title: 'FormInputs',
-    component: XForm,
+  title: "FormInputs",
+  component: XForm,
 };
 
 export const PersonForm = () => {

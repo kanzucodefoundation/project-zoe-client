@@ -6,7 +6,10 @@ import PMapsInput, {
   PMapsProps,
 } from "../plain-inputs/PMapsInput";
 
-type XRemoteProps = Omit<PMapsProps, 'onChange'|'value'|'onBlur'|'helperText'|'showError'>
+type XRemoteProps = Omit<
+  PMapsProps,
+  "onChange" | "value" | "onBlur" | "helperText" | "showError"
+>;
 
 export const XMapsInput = (props: XRemoteProps) => {
     const [field, meta, helpers] = useField({name: props.name});

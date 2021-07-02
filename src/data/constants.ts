@@ -9,6 +9,8 @@ export const appRoles = {
   roleUserView: "USER_VIEW",
   roleUserEdit: "USER_EDIT",
 
+  roleEdit: "ROLE_EDIT",
+
   roleTagView: "TAG_VIEW",
   roleTagEdit: "TAG_EDIT",
 
@@ -17,12 +19,9 @@ export const appRoles = {
 
   roleEventView: "EVENT_VIEW",
   roleEventEdit: "EVENT_EDIT",
-
-  roleReportView: "REPORT_VIEW",
-  roleReportEdit: "REPORT_EDIT",
 };
 
-export const rolesList = Object.values(appRoles);
+export const permissionsList = Object.values(appRoles);
 
 export const eventsCategories = {
   garage: "garage",
@@ -94,6 +93,7 @@ export const remoteRoutes = {
   tags: url + "/api/tags",
   users: url + "/api/users",
   userGroups: url + "/api/user-groups",
+  roles: url + "/api/user-roles",
   contactsPhone: url + "/api/crm/phones",
   contactsAddress: url + "/api/crm/addresses",
   contactsIdentification: url + "/api/crm/identifications",
