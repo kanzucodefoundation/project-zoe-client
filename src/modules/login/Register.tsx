@@ -142,8 +142,8 @@ export default function Register() {
             {done && (
               <Box pt={2}>
                 <Alert>
-                  We have received your data, Please reach out to your
-                  administrator to have your account activated, Thank you
+                  We have received your data, Please check your 
+                  email for a link to setup a password. Thank you.
                 </Alert>
               </Box>
             )}
