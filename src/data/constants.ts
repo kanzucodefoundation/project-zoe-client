@@ -1,7 +1,7 @@
 export const AUTH_TOKEN_KEY = "__demo__eva__token";
 export const AUTH_USER_KEY = "__demo__eva__user";
 
-export const appRoles = {
+export const appPermissions = {
   roleDashboard: "DASHBOARD",
   roleCrmView: "CRM_VIEW",
   roleCrmEdit: "CRM_EDIT",
@@ -24,7 +24,7 @@ export const appRoles = {
   roleReportEdit: "REPORT_EDIT",
 };
 
-export const permissionsList = Object.values(appRoles);
+export const permissionsList = Object.values(appPermissions);
 
 export const eventsCategories = {
   garage: "garage",

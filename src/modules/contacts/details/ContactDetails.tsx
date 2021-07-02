@@ -16,7 +16,7 @@ import Profile from "./info/Profile";
 import ContactGroups from "./groups/ContactGroups";
 import Info from "./info/Info";
 import { get } from "../../../utils/ajax";
-import { localRoutes, remoteRoutes } from "../../../data/constants";
+import { appPermissions, localRoutes, remoteRoutes } from "../../../data/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { crmConstants } from "../../../data/contacts/reducer";
 import { IState } from "../../../data/types";
@@ -112,11 +112,15 @@ const ContactDetails = (props: IProps) => {
           title="Person details"
           paths={[
             {
-              path: localRoutes.home,
+              path: profile.permissions.includes(appPermissions.roleDashboard)
+                ? localRoutes.home
+                : "#",
               label: "Dashboard"
             },
             {
-              path: localRoutes.contacts,
+              path: profile.permissions.includes(appPermissions.roleDashboard)
+                ? localRoutes.contacts
+                : "#",
               label: "People"
             }
           ]}

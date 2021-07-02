@@ -12,13 +12,12 @@ import BubbleChartIcon from "@material-ui/icons/BubbleChart";
 import HelpIcon from "@material-ui/icons/Help";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { useHistory, useLocation } from "react-router-dom";
-import { appRoles, localRoutes } from "../../data/constants";
+import { appPermissions, localRoutes } from "../../data/constants";
 import appLogo from "../../assets/cool.png";
 import { navBackgroundColor } from "./styles";
 import { createStyles, makeStyles, Theme, withStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import grey from "@material-ui/core/colors/grey";
-
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -37,7 +36,7 @@ interface IAppRoute {
 
 const routes: IAppRoute[] = [
   {
-    //requiredRoles: [appRoles.roleDashboard],
+    requiredRoles: [appPermissions.roleDashboard],
     name: "Dashboard",
     route: localRoutes.dashboard,
     icon: AppsIcon,
@@ -48,25 +47,25 @@ const routes: IAppRoute[] = [
     icon: PersonIcon,
   },
   {
-    requiredRoles: [appRoles.roleCrmView, appRoles.roleCrmEdit],
+    requiredRoles: [appPermissions.roleCrmView, appPermissions.roleCrmEdit],
     name: "People",
     route: localRoutes.contacts,
     icon: PeopleIcon,
   },
   {
-    requiredRoles: [appRoles.roleGroupView, appRoles.roleGroupEdit],
+    requiredRoles: [appPermissions.roleGroupView, appPermissions.roleGroupEdit],
     name: "Groups",
     route: localRoutes.groups,
     icon: BubbleChartIcon,
   },
   {
-    requiredRoles: [appRoles.roleEventView, appRoles.roleEventView],
+    requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
     name: "Reports",
     route: localRoutes.events,
     icon: AssessmentIcon,
   },
   {
-    requiredRoles: [appRoles.roleUserEdit, appRoles.roleUserEdit],
+    requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
     name: "Admin",
     route: localRoutes.settings,
     icon: SettingsIcon,

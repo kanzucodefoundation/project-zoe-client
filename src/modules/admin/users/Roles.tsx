@@ -1,9 +1,9 @@
-import { Box, Chip, Divider, Typography } from "@material-ui/core";
+import { Avatar, Box, Chip, Divider, Typography } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ListHeader from "../../../components/ListHeader";
 import { hasRole } from "../../../data/appRoles";
-import { remoteRoutes, appRoles } from "../../../data/constants";
+import { remoteRoutes, appPermissions } from "../../../data/constants";
 import { IState } from "../../../data/types";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
@@ -17,6 +17,8 @@ import Hidden from "@material-ui/core/Hidden";
 import EditDialog from "../../../components/EditDialog";
 import RolesEditor from "./RolesEditor";
 import { AddFabButton } from "../../../components/EditIconButton";
+import { hasValue } from "../../../components/inputs/inputHelpers";
+import PersonIcon from "@material-ui/icons/Person";
 
 const columns: XHeadCell[] = [
   {
@@ -64,15 +66,21 @@ interface IMobileRow {
 
 const toMobile = (data: any): IMobileRow => {
   return {
+    avatar: (
+      <Chip
+        label={data.isActive ? "Active" : "Inactive"}
+        color={data.isActive ? "secondary" : "default"}
+        size="small"
+      />
+    ),
     primary: (
       <>
-        <Chip
-          label={data.isActive ? "Active" : "Inactive"}
-          color={data.isActive ? "secondary" : "default"}
-          size="small"
-        />
-        <strong>{`\t ${data.role}`}</strong>
-        <Box pt={0.5}>{`${data.description}`}</Box>
+        {`\t ${data.role}`}
+        <Box pt={0.5}>
+          <Typography variant="caption" color="textSecondary">
+            {`${data.description}`}
+          </Typography>
+        </Box>
       </>
     ),
     secondary: (
@@ -167,7 +175,7 @@ const Roles = () => {
     handleClose();
   }
 
-  const canEditRoles = hasRole(user, appRoles.roleEdit);
+  const canEditRoles = hasRole(user, appPermissions.roleEdit);
   return (
     <>
       <Box mb={1}>

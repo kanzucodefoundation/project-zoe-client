@@ -17,7 +17,11 @@ import EventIcon from "@material-ui/icons/Event";
 import MembersList from "./members/MembersList";
 import { grey } from "@material-ui/core/colors";
 import { get } from "../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from "../../data/constants";
 import Loading from "../../components/Loading";
 import {
   Alert,
@@ -114,7 +118,7 @@ export default function Details() {
 
     const isLeader = leaderIds.indexOf(userId) > -1;
 
-    return isLeader || hasAnyRole(profile, [appRoles.roleGroupEdit]);
+    return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
   };
 
   function handleClose() {
@@ -186,10 +190,7 @@ export default function Details() {
     {
       name: "Members",
       component: (
-        <MembersList 
-          groupId={Number(groupId)} 
-          isLeader={isLeader()} 
-        />
+        <MembersList groupId={Number(groupId)} isLeader={isLeader()} />
       ),
     },
   ];
