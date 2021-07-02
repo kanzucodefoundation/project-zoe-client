@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as yup from "yup";
 import { reqArray, reqObject, reqString } from "../../../data/validations";
 import { FormikHelpers } from "formik";
@@ -6,14 +6,15 @@ import Grid from "@material-ui/core/Grid";
 import XForm from "../../../components/forms/XForm";
 import XTextInput from "../../../components/inputs/XTextInput";
 import XCheckBoxInput from "../../../components/inputs/XCheckBoxInput";
-import { remoteRoutes, permissionsList } from "../../../data/constants";
+import { remoteRoutes } from "../../../data/constants";
 import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
 import { comboParser } from "../../../components/inputs/inputHelpers";
-import { del } from "../../../utils/ajax";
+import { del, get } from "../../../utils/ajax";
 import Toast from "../../../utils/Toast";
 import XComboInput from "../../../components/inputs/XComboInput";
 import { cleanComboValue } from "../../../utils/dataHelpers";
+import { IRoles } from "./types";
 
 interface IProps {
   data: any;
@@ -41,6 +42,13 @@ const initialValues = {
 };
 const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const userRoles: string[] = [];
+
+  useEffect(() => {
+    get(remoteRoutes.roles, (resp: IRoles[]) =>
+      resp.map((it: IRoles) => it.isActive && userRoles.push(it.role))
+    );
+  }, []);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: any = {
@@ -104,7 +112,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
           <XComboInput
             name="roles"
             label="Roles"
-            options={permissionsList}
+            options={userRoles}
             variant="outlined"
             multiple
           />
@@ -114,7 +122,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
             name="password"
             label="Password"
             type="password"
-            value="Hello"
+            value={"Hello"}
             variant="outlined"
             autoComplete="off"
           />
