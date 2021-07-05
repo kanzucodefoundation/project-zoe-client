@@ -108,7 +108,7 @@ const toMobile = (data: any): IMobileRow => {
       <>
         <Chip
           label={data.isActive ? "Active" : "Inactive"}
-          color="secondary"
+          color={data.isActive ? "secondary" : "default"}
           size="small"
         />
       </>
@@ -116,7 +116,7 @@ const toMobile = (data: any): IMobileRow => {
     secondary: (
       <Box pt={0.5}>
         <Typography variant="caption" color="textSecondary">
-          {data.username}
+          {data.fullName}
         </Typography>
         <Box pt={0.5}>
           {data.roles?.map((it: any) => (

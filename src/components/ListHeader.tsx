@@ -9,7 +9,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import TextField from "@material-ui/core/TextField";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import Grid from "@material-ui/core/Grid";
-import { appRoles, localRoutes } from "../data/constants";
+import { appPermissions, localRoutes } from "../data/constants";
 import XBreadCrumbs from "./XBreadCrumbs";
 import { useSelector } from "react-redux";
 import { IState } from "../data/types";
@@ -45,11 +45,11 @@ const ListHeader = (props: IProps) => {
           <XBreadCrumbs
             title={props.title}
             paths={[
-              { 
-                path: localRoutes.home, 
-                label: "Dashboard", 
-                auth:  hasAnyRole(profile, [appRoles.roleDashboard])
-              }
+              {
+                path: localRoutes.home,
+                label: "Dashboard",
+                auth: hasAnyRole(profile, [appPermissions.roleDashboard]),
+              },
             ]}
           />
         </Box>

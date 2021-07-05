@@ -48,7 +48,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
     get(remoteRoutes.roles, (resp: IRoles[]) =>
       resp.map((it: IRoles) => it.isActive && userRoles.push(it.role))
     );
-  }, []);
+  }, [userRoles]);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: any = {
