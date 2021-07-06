@@ -17,7 +17,11 @@ import EventIcon from "@material-ui/icons/Event";
 import MembersList from "./members/MembersList";
 import { grey } from "@material-ui/core/colors";
 import { get } from "../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from "../../data/constants";
 import Loading from "../../components/Loading";
 import {
   Alert,
@@ -79,11 +83,9 @@ export default function Details() {
   const [open, setOpen] = useState(false);
   const profile = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
-  const hasEventEdit = hasRole(profile, appRoles.roleEventEdit);
-  const hasGroupEdit = hasRole(profile, appRoles.roleGroupEdit);
+  const hasEventEdit = hasRole(profile, appPermissions.roleEventEdit);
+  const hasGroupEdit = hasRole(profile, appPermissions.roleGroupEdit);
   const actions = [];
-
-  
 
   useEffect(() => {
     setLoading(true);
@@ -109,7 +111,7 @@ export default function Details() {
 
     const isLeader = leaderIds.indexOf(userId) > -1;
 
-    return isLeader || hasAnyRole(profile, [appRoles.roleGroupEdit]);
+    return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
   };
 
   function handleClose() {
@@ -181,21 +183,14 @@ export default function Details() {
     {
       name: "Members",
       component: (
-        <MembersList 
-          groupId={Number(groupId)} 
-          isLeader={isLeader()} 
-        />
+        <MembersList groupId={Number(groupId)} isLeader={isLeader()} />
       ),
     },
   ];
   if (isLeader()) {
     tabs.push({
       name: "Reports",
-      component: (
-        <GroupEventsList
-          reports = {data.reports ? data.reports : []}
-        />
-      ),
+      component: <GroupEventsList reports={data.reports ? data.reports : []} />,
     });
     tabs.push({
       name: "Requests",
@@ -203,24 +198,20 @@ export default function Details() {
     });
   }
 
-  if(hasEventEdit) {
-    actions.push(
-      {
+  if (hasEventEdit) {
+    actions.push({
       icon: <EditIcon color="primary" />,
       name: "Edit Group",
       operation: "Edit Group",
-    }
-    )
+    });
   }
 
-  if(hasGroupEdit) {
-    actions.push(
-      {
-        icon: <EventIcon color="primary" />,
-        name: "New Event",
-        operation: "New Event",
-      },
-    )
+  if (hasGroupEdit) {
+    actions.push({
+      icon: <EventIcon color="primary" />,
+      name: "New Event",
+      operation: "New Event",
+    });
   }
 
   return (
@@ -233,12 +224,15 @@ export default function Details() {
               {
                 path: localRoutes.home,
                 label: "Dashboard",
-                auth: hasAnyRole(profile, [appRoles.roleDashboard]),
+                auth: hasAnyRole(profile, [appPermissions.roleDashboard]),
               },
               {
                 path: localRoutes.groups,
                 label: "Groups",
-                auth: hasAnyRole(profile, [appRoles.roleGroupEdit, appRoles.roleGroupView]),
+                auth: hasAnyRole(profile, [
+                  appPermissions.roleGroupEdit,
+                  appPermissions.roleGroupView,
+                ]),
               },
             ]}
           />
@@ -262,26 +256,26 @@ export default function Details() {
                   <Hidden smDown>
                     <Box pr={2}>
                       <ButtonGroup variant="contained">
-                        {hasGroupEdit ?
-                          (<Button
+                        {hasGroupEdit ? (
+                          <Button
                             color="primary"
                             size="small"
                             variant="contained"
                             onClick={handleEdit}
                           >
                             Edit Group&nbsp;&nbsp;
-                          </Button>) : (undefined) 
-                        }
-                        {hasEventEdit ? 
-                          (<Button
+                          </Button>
+                        ) : undefined}
+                        {hasEventEdit ? (
+                          <Button
                             color="primary"
                             size="small"
                             variant="contained"
                             onClick={handleNewEvent}
                           >
                             Create Report&nbsp;&nbsp;
-                          </Button>) : (undefined)
-                        }
+                          </Button>
+                        ) : undefined}
                       </ButtonGroup>
                     </Box>
                   </Hidden>
@@ -365,7 +359,13 @@ export default function Details() {
           onClose={handleNewEventClose}
         >
           <EventForm
-            data={{ group: { id: data.id, name: data.name, categoryId: data.categoryId } }}
+            data={{
+              group: {
+                id: data.id,
+                name: data.name,
+                categoryId: data.categoryId,
+              },
+            }}
             isNew={true}
             onCreated={handleNewEventClose}
             onCancel={handleNewEventClose}

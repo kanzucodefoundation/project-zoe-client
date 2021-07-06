@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ListHeader from "../../../components/ListHeader";
 import { hasRole } from "../../../data/appRoles";
-import { remoteRoutes, appRoles } from "../../../data/constants";
+import { remoteRoutes, appPermissions } from "../../../data/constants";
 import { IState } from "../../../data/types";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
@@ -66,13 +66,24 @@ const toMobile = (data: any): IMobileRow => {
   return {
     primary: (
       <>
+        {"Status: "}
         <Chip
           label={data.isActive ? "Active" : "Inactive"}
           color={data.isActive ? "secondary" : "default"}
           size="small"
         />
-        <strong>{`\t ${data.role}`}</strong>
-        <Box pt={0.5}>{`${data.description}`}</Box>
+        <Box pt={0.5}>
+          <Typography
+            variant="subtitle2"
+            color="textPrimary"
+          >{`Role: ${data.role}`}</Typography>
+        </Box>
+
+        <Box pt={0.5}>
+          <Typography variant="caption" color="textSecondary">
+            {`Description: ${data.description}`}
+          </Typography>
+        </Box>
       </>
     ),
     secondary: (
@@ -167,7 +178,7 @@ const Roles = () => {
     handleClose();
   }
 
-  const canEditRoles = hasRole(user, appRoles.roleEdit);
+  const canEditRoles = hasRole(user, appPermissions.roleEdit);
   return (
     <>
       <Box mb={1}>

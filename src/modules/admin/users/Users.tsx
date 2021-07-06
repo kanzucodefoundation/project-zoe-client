@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Layout from "../../../components/layout/Layout";
 import { useHistory } from "react-router";
 import { XHeadCell } from "../../../components/table/XTableHead";
 import { Avatar } from "@material-ui/core";
@@ -8,7 +7,11 @@ import Box from "@material-ui/core/Box";
 import DataList from "../../../components/DataList";
 import { AddFabButton } from "../../../components/EditIconButton";
 import { search } from "../../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../../data/constants";
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from "../../../data/constants";
 import { hasValue } from "../../../components/inputs/inputHelpers";
 import PersonIcon from "@material-ui/icons/Person";
 import Hidden from "@material-ui/core/Hidden";
@@ -71,7 +74,7 @@ const columns: XHeadCell[] = [
     render: (roles: string[]) =>
       roles?.map((it) => (
         <Chip
-          color="primary"
+          color={it.includes(": is disabled") ? "default" : "primary"}
           variant="outlined"
           key={it}
           style={{ margin: 5, marginLeft: 0, marginTop: 0 }}
@@ -94,16 +97,18 @@ const toMobile = (data: any): IMobileRow => {
     avatar: hasAvatar ? (
       <Avatar alt="Avatar" src={data.avatar} />
     ) : (
-      <Avatar>
-        <PersonIcon />
-      </Avatar>
+      <>
+        <Avatar>
+          <PersonIcon />
+        </Avatar>
+        <Box>{`${data.fullName}\t`}</Box>
+      </>
     ),
     primary: (
       <>
-        {`${data.fullName}\t`}
         <Chip
           label={data.isActive ? "Active" : "Inactive"}
-          color="secondary"
+          color={data.isActive ? "secondary" : "default"}
           size="small"
         />
       </>
@@ -111,7 +116,7 @@ const toMobile = (data: any): IMobileRow => {
     secondary: (
       <Box pt={0.5}>
         <Typography variant="caption" color="textSecondary">
-          {data.username}
+          {data.fullName}
         </Typography>
         <Box pt={0.5}>
           {data.roles?.map((it: any) => (
@@ -191,7 +196,7 @@ const Users = () => {
     handleClose();
   };
   const handleClose = () => {
-    setSelected(null);
+    // setSelected(null);
     setDialog(false);
   };
 
@@ -201,8 +206,8 @@ const Users = () => {
     handleClose();
   }
 
-  const canEditUsers = hasAnyRole(user, [appRoles.roleUserEdit]);
-  const canViewUsers = hasAnyRole(user, [appRoles.roleUserView]);
+  const canEditUsers = hasAnyRole(user, [appPermissions.roleUserEdit]);
+  const canViewUsers = hasAnyRole(user, [appPermissions.roleUserView]);
 
   return (
     <>
