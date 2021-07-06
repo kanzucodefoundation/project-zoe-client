@@ -11,6 +11,7 @@ import { IState } from "../../data/types";
 import { handleSubmission, ISubmission } from "../../utils/formHelpers";
 import { remoteRoutes } from "../../data/constants";
 import * as yup from "yup";
+import { put } from "../../utils/ajax";
 import { reqString } from "../../data/validations";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -22,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const schema = yup.object().shape({
-  newPassword: reqString.min(8, "Password must be atleast 8 characters long"),
+  newPassword: reqString .min(8, "Password must be atleast 8 characters long"),
   confirmPassword: reqString.test('passwords-match', 'Passwords must match', function(value){
     return this.parent.newPassword === value;
   }),
@@ -33,18 +34,18 @@ const PasswordReset = () => {
   const user = useSelector((state: IState) => state.core.user);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
-    const toSave = {
-      id: user.id,
-      roles: user.roles,
-      password: values.confirmPassword
-    }
-    const submission: ISubmission = {
-      url: remoteRoutes.users,
-      values: toSave,
-      actions,
-      isNew: false,
-    };
-    handleSubmission(submission)
+      const toSave = {
+        id: user.id,
+        roles: user.roles,
+        password: values.confirmPassword,
+        oldPassword: values.oldPassword,
+      }
+      put(remoteRoutes.users, toSave, resp => {
+        Toast.info("Update successful");
+      }, () => {
+        Toast.error("Old password is incorrect");
+      })
+    actions.resetForm();
   }
 
   return (
@@ -56,7 +57,14 @@ const PasswordReset = () => {
             onSubmit={handleSubmit}
             schema={schema}
           >
-            <XTextInput
+            <XTextInput 
+              label="Old Password"
+              name="oldPassword"
+              type="password"
+              variant="outlined"
+              style={{ marginTop: "1rem" }}
+            />
+            <XTextInput 
               label="New Password"
               name="newPassword"
               type="password"

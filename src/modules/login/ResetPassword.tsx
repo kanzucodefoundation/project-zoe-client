@@ -39,7 +39,7 @@ function ResetPassword() {
       () => {
         Toast.error("Password change was unsuccessful. Try again");
         actions.setSubmitting(false);
-        console.log(token);
+        //console.log(token);
         actions.resetForm();
       }
     );
@@ -62,12 +62,12 @@ function ResetPassword() {
           onSubmit={onSubmit}
         >
           {(formState) => (
+          
             <Form className={classes.form}>
               <XTextInput
                 type="password"
                 name="password"
                 label="Password"
-                autoComplete="off"
                 margin="normal"
               />
               <Button
