@@ -26,7 +26,6 @@ import AddIcon from "@material-ui/icons/Add";
 import { useSelector } from "react-redux";
 import { IState } from "../../../data/types";
 import Divider from "@material-ui/core/Divider";
-import Layout from "../../../components/layout/Layout";
 
 const columns: XHeadCell[] = [
   {
@@ -211,7 +210,7 @@ const Users = () => {
   const canViewUsers = hasAnyRole(user, [appPermissions.roleUserView]);
 
   return (
-    <Layout>
+    <div>
       <Box mb={1}>
         <ListHeader
           title="Users"
@@ -269,7 +268,7 @@ const Users = () => {
           />
         </EditDialog>
       )}
-    </Layout>
+    </div>
   );
 };
 
