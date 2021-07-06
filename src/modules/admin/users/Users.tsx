@@ -210,7 +210,7 @@ const Users = () => {
   const canViewUsers = hasAnyRole(user, [appPermissions.roleUserView]);
 
   return (
-    <>
+    <Layout>
       <Box mb={1}>
         <ListHeader
           title="Users"
@@ -268,7 +268,7 @@ const Users = () => {
           />
         </EditDialog>
       )}
-    </>
+    </Layout>
   );
 };
 

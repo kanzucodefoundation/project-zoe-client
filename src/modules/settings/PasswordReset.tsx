@@ -1,17 +1,16 @@
-import React, { useState } from "react";
-import { Card, CardContent, Typography } from "@material-ui/core";
+import React from "react";
+import { Card, CardContent } from "@material-ui/core";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import XHeader from "../../components/ibox/XHeader";
 import CenteredDiv from "../../components/CenteredDiv";
 import XForm from "../../components/forms/XForm";
 import XTextInput from "../../components/inputs/XTextInput";
-import Toast from "../../utils/Toast";
 import { FormikHelpers } from "formik";
 import { useSelector } from "react-redux";
 import { IState } from "../../data/types";
 import { handleSubmission, ISubmission } from "../../utils/formHelpers";
 import { remoteRoutes } from "../../data/constants";
-import * as yup from 'yup';
+import * as yup from "yup";
 import { put } from "../../utils/ajax";
 import { reqString } from "../../data/validations";
 
@@ -35,7 +34,6 @@ const PasswordReset = () => {
   const user = useSelector((state: IState) => state.core.user);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
-
       const toSave = {
         id: user.id,
         roles: user.roles,

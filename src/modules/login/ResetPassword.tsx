@@ -21,7 +21,6 @@ const schema = yup.object().shape({
   password: reqString.min(8, "Password must be atleast 8 characters long"),
 });
 
-
 function ResetPassword() {
   const classes = useLoginStyles();
   const history = useHistory();
@@ -83,7 +82,7 @@ function ResetPassword() {
               </Button>
             </Form>
           )}
-          </Formik>
+        </Formik>
       </Paper>
     </main>
   );
