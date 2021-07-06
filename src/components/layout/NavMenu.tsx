@@ -36,7 +36,6 @@ interface IAppRoute {
 
 const routes: IAppRoute[] = [
   {
-    requiredRoles: [appPermissions.roleDashboard],
     name: "Dashboard",
     route: localRoutes.dashboard,
     icon: AppsIcon,

@@ -26,15 +26,18 @@ export const backOfficeRoles = [
 export const primaryAssignRoles = [...backOfficeRoles, appRoles.User];
 export const clientAssignRoles = [...clientRoles, appRoles.User];
 
-export const hasRole = (user: IAuthUser, appPermission: string): boolean => {
-  return user.permissions.indexOf(appPermission) > -1;
+export const hasRole = (
+  { permissions = [] }: IAuthUser,
+  appPermission: string
+): boolean => {
+  return permissions?.indexOf(appPermission) > -1;
 };
 
 export const hasAnyRole = (
   user: IAuthUser,
   appPermissions: string[]
 ): boolean => {
-  return appPermissions.some((it) => hasRole(user, it));
+  return appPermissions.filter(Boolean).some((it) => hasRole(user, it));
 };
 
 export const isPrimaryUser = (user: IAuthUser) => {
