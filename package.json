@@ -35,7 +35,7 @@
     "@types/yup": "^0.26.32",
     "array-to-tree": "^3.3.2",
     "autosuggest-highlight": "^3.1.1",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "clsx": "^1.1.0",
     "csv-parser": "^3.0.0",
     "date-fns": "^2.11.0",
@@ -43,8 +43,8 @@
     "formik": "^2.1.4",
     "formik-material-ui": "^2.0.0-beta.1",
     "hex-color-regex": "^1.1.0",
-    "jsonpath": "^1.0.2",
-    "lodash": "^4.17.15",
+    "jsonpath": "^1.1.1",
+    "lodash": "^4.17.21",
     "material-ui-dropzone": "^3.5.0",
     "querystring": "^0.2.0",
     "react": "^16.13.0",
@@ -64,9 +64,10 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "superagent": "^5.2.2",
+    "tui-calendar": "^1.13.1",
     "typescript": "~3.9.5",
     "uuid": "^3.4.0",
-    "yup": "^0.27.0"
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^5.3.17",
