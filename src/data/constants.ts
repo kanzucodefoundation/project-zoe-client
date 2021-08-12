@@ -12,6 +12,8 @@ export const appRoles = {
   roleGroupView: 'GROUP_VIEW',
   roleGroupEdit: 'GROUP_EDIT',
 
+  roleMcView: 'MC_VIEW',
+
   roleEventView: 'EVENT_VIEW',
   roleEventEdit: 'EVENT_EDIT',
 };
@@ -101,8 +103,6 @@ export const remoteRoutes = {
   groupReports: url + '/api/groups/groupreports',
   groupReportFrequency: url + '/api/groups/reportfrequency',
   groupCategoriesCombo: url + '/api/groups/groupscombo',
-
-  mcRequest: url + '/api/groups/request/mc',
 
   events: url + '/api/events/event',
   eventsMetricsRaw: url + '/api/events/metrics/raw',
