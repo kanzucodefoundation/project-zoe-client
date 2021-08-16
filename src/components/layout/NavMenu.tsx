@@ -6,6 +6,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import AppsIcon from "@material-ui/icons/Apps";
 import PeopleIcon from "@material-ui/icons/People";
+import TodayIcon from '@material-ui/icons/Today';
 import PersonIcon from "@material-ui/icons/Person";
 import SettingsIcon from "@material-ui/icons/Settings";
 import BubbleChartIcon from "@material-ui/icons/BubbleChart";
@@ -42,6 +43,12 @@ const routes: IAppRoute[] = [
     route: localRoutes.dashboard,
     icon: AppsIcon,
   },
+  {
+    name: "Calendar",
+    route: localRoutes.calendar,
+    icon: TodayIcon,
+  },
+
   {
     name: "My Profile",
     route: localRoutes.profile,

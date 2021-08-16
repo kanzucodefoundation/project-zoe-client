@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { IState } from "../data/types";
 import { hasAnyRole } from "../data/appRoles";
 import Loading from "../components/Loading";
+import MembersCalendar from "./groups/members/MembersCalendar";
 
 const Dashboard = React.lazy(() => import("./dashboard/Dashboard"));
 const Contacts = React.lazy(() => import("./contacts/Contacts"));
@@ -33,6 +34,9 @@ const ContentSwitch = () => {
       <Switch>
         <Route exact={true} path="/" component={Dashboard} />
         <Route path={localRoutes.dashboard} component={Dashboard} />
+
+        
+        <Route path={localRoutes.calendar} component={MembersCalendar} />
 
         <Route path={localRoutes.contactsDetails} component={ContactDetails} />
         {hasAnyRole(user, [appRoles.roleCrmEdit, appRoles.roleCrmView]) && (
