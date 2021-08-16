@@ -35,6 +35,7 @@ import { printPrettyDate, printPrettyTime } from "../../../utils/dateHelpers";
 import GroupLink from "../../../components/GroupLink";
 import EventAttendance from "./EventAttendance";
 import EventMetadata from "./EventMetadata";
+import EventActivities from "./EventActivities";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -138,6 +139,19 @@ export default function Details() {
         <EventAttendance groupId={`${data.groupId}`} eventId={`${data.id}`} />
       ),
     },
+    {
+      name: "Activities",
+      component: (
+        <EventActivities  eventId={`${data.id}`} />
+      ),
+    },
+   
+
+
+
+
+
+
   ];
 
   return (

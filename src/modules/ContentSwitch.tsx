@@ -28,6 +28,7 @@ const UpdatePasswordConfirmation = React.lazy(
 );
 const EventDetails = React.lazy(() => import("./events/details/EventDetails"));
 const EventReports = React.lazy(() => import("./events/EventReports"));
+//const EventActivities =  React.lazy(() => import("./events/E"));
 const Help = React.lazy(() => import("./help/Help"));
 
 const ContentSwitch = () => {
