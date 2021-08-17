@@ -38,7 +38,7 @@ const calendars: ICalendarInfo[] = [
 
 interface IEvent {
     id: number;
-    groupName: string;
+    eventName: string;
     startDate: Date; 
     endDate: Date;
     venue: string;
@@ -49,9 +49,17 @@ const MembersCalendar = (props: any) => {
   
     useEffect(() => {
         get (`${remoteRoutes.events}`,
-        (event) => {let mcevent: IEvent[] = [];
-            
-            setEvent(event);
+        (data) => {let mcEvent: IEvent[] = []; {
+          const groupEvent = {
+            id: data.id,
+            eventName: data.name, 
+            startDate: data.startDate,
+            endDate: data.endDate,
+            venue:data.venue.name,
+          };
+          mcEvent.push(groupEvent);
+        }
+            setEvent(mcEvent);
     })
 },
 []);
@@ -59,18 +67,24 @@ const MembersCalendar = (props: any) => {
     return (
     <Layout>
         <h1>Worship Harvest Calendar</h1>
-        {event.map((event:ISchedule, index) => (
+        {event.map((events:ISchedule, index) => (
             <TUICalendar
-                height="1000px"
-                view="month"
+                key = {index}
                 useCreationPopup={true}
                 useDetailPopup={true}
+                height="1000px"
+                view="month"
                 calendars={calendars}
                 schedules={schedules}
+                title = {events.title}
+                //body = {events.body}
+                //location = {events.location}
+                //start = {events.start}
+                //end = {events.end}
                 />
         ))}
         </Layout>
     );
 }
   
-  export default MembersCalendar;
+export default MembersCalendar;
