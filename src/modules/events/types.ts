@@ -16,6 +16,7 @@ export interface IEvent {
   groupId: number;
   group: any;
   attendance: IAttendance[];
+  activities:IActivities[];
   leaders: any[];
   metaData?: MetaData;
 }
@@ -25,6 +26,12 @@ export interface IAttendance {
   isVisitor: boolean;
   eventId: string;
   contactId: number;
+}
+export interface IActivities{
+id:number;
+name:string;
+eventId:string;
+
 }
 
 export interface IGroupEvent {

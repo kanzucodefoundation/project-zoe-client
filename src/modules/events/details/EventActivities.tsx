@@ -3,8 +3,10 @@ import { remoteRoutes } from "../../../data/constants";
 
 
 
+
 export interface IProps{
-eventId:number;
+      
+      eventId:number;
 
 
 }
@@ -14,21 +16,26 @@ export interface IActivities {
         name:string
         eventId: number;
         
-        
-      }
+}
 
 
 export default function EventActivities({eventId}:IProps){
-        useEffect(() => {
+        // useEffect(() => {
                 
-                search(remoteRoutes.eventsAttendance, { eventId}, (resp) => { },
+        //         search(remoteRoutes.eventsAttendance, { eventId}, (resp) => { },
                
-                );
+        //         );
               
        
-        }
+        // };
 
-        return ();
+        return (
+                <div>
+
+                </div>
+
+
+        );
 
 
 

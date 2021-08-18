@@ -277,7 +277,7 @@ export default function Details() {
                             Create Report&nbsp;&nbsp;
                           </Button>
                         ) : undefined}
-                         {hasEventEdit ? (
+                         {/* {hasEventEdit ? (
                           <Button
                             color="primary"
                             size="small"
@@ -286,7 +286,7 @@ export default function Details() {
                           >
                             Add Activity&nbsp;&nbsp;
                           </Button>
-                        ) : undefined}
+                        ) : undefined} */}
                       </ButtonGroup>
                     </Box>
                   </Hidden>

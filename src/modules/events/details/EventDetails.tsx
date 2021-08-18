@@ -139,12 +139,12 @@ export default function Details() {
         <EventAttendance groupId={`${data.groupId}`} eventId={`${data.id}`} />
       ),
     },
-    {
-      name: "Activities",
-      component: (
-        <EventActivities  eventId={`${data.id}`} />
-      ),
-    },
+    // {
+    //   name: "Activities",
+    //   component: (
+    //     <EventActivities  eventId={`${data.id}`} />
+    //   ),
+    // },
    
 
 
