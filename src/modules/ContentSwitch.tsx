@@ -1,36 +1,40 @@
-import React, { Suspense } from "react";
-import { Link, Route, Switch } from "react-router-dom";
-import { appRoles, localRoutes } from "../data/constants";
-import Layout from "../components/layout/Layout";
-import { useSelector } from "react-redux";
-import { IState } from "../data/types";
-import { hasAnyRole } from "../data/appRoles";
-import Loading from "../components/Loading";
+import React, { Suspense } from 'react';
+import { Link, Route, Switch } from 'react-router-dom';
+import { appRoles, localRoutes } from '../data/constants';
+import Layout from '../components/layout/Layout';
+import { useSelector } from 'react-redux';
+import { IState } from '../data/types';
+import { hasAnyRole } from '../data/appRoles';
+import Loading from '../components/Loading';
 
-const Dashboard = React.lazy(() => import("./dashboard/Dashboard"));
-const Contacts = React.lazy(() => import("./contacts/Contacts"));
+const Dashboard = React.lazy(() => import('./dashboard/Dashboard'));
+const Contacts = React.lazy(() => import('./contacts/Contacts'));
 const ContactDetails = React.lazy(
-  () => import("./contacts/details/ContactDetails")
+  () => import('./contacts/details/ContactDetails')
 );
-const Settings = React.lazy(() => import("./settings/Settings"));
-const Groups = React.lazy(() => import("./groups/GroupTabView"));
-const GroupDetails = React.lazy(() => import("./groups/Details"));
-const Users = React.lazy(() => import("./admin/users/Users"));
+const Settings = React.lazy(() => import('./settings/Settings'));
+const Groups = React.lazy(() => import('./groups/GroupTabView'));
+const GroupDetails = React.lazy(() => import('./groups/Details'));
+const Users = React.lazy(() => import('./admin/users/Users'));
 const MembersEditor = React.lazy(
-  () => import("./groups/members/MembersEditor")
+  () => import('./groups/members/MembersEditor')
 );
 const UpdatePasswordConfirmation = React.lazy(
-  () => import("./login/UpdatePasswordConfirmation")
+  () => import('./login/UpdatePasswordConfirmation')
 );
-const EventDetails = React.lazy(() => import("./events/details/EventDetails"));
-const EventReports = React.lazy(() => import("./events/EventReports"));
-const Help = React.lazy(() => import("./help/Help"));
+const EventDetails = React.lazy(() => import('./events/details/EventDetails'));
+const EventReports = React.lazy(() => import('./events/EventReports'));
+const Help = React.lazy(() => import('./help/Help'));
+
+const MailChat = React.lazy(() => import('./messaging/MailChat'));
 
 const ContentSwitch = () => {
   const user = useSelector((state: IState) => state.core.user);
   return (
     <Suspense fallback={<Loading />}>
       <Switch>
+        <Route path={localRoutes.chat} component={MailChat} />
+
         <Route exact={true} path="/" component={Dashboard} />
         <Route path={localRoutes.dashboard} component={Dashboard} />
 

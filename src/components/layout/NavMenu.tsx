@@ -1,31 +1,32 @@
-import React, { Fragment } from "react";
-import Divider from "@material-ui/core/Divider";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import AppsIcon from "@material-ui/icons/Apps";
-import PeopleIcon from "@material-ui/icons/People";
-import PersonIcon from "@material-ui/icons/Person";
-import SettingsIcon from "@material-ui/icons/Settings";
-import BubbleChartIcon from "@material-ui/icons/BubbleChart";
-import HelpIcon from "@material-ui/icons/Help";
-import AssessmentIcon from "@material-ui/icons/Assessment";
-import { useHistory, useLocation } from "react-router-dom";
-import { appRoles, localRoutes } from "../../data/constants";
-import appLogo from "../../assets/cool.png";
-import { navBackgroundColor } from "./styles";
-import { createStyles, makeStyles, Theme, withStyles } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import grey from "@material-ui/core/colors/grey";
+import React, { Fragment } from 'react';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import AppsIcon from '@material-ui/icons/Apps';
+import PeopleIcon from '@material-ui/icons/People';
+import PersonIcon from '@material-ui/icons/Person';
+import SettingsIcon from '@material-ui/icons/Settings';
+import BubbleChartIcon from '@material-ui/icons/BubbleChart';
+import HelpIcon from '@material-ui/icons/Help';
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import ChatIcon from '@material-ui/icons/ContactMail';
+import { useHistory, useLocation } from 'react-router-dom';
+import { appRoles, localRoutes } from '../../data/constants';
+import appLogo from '../../assets/cool.png';
+import { navBackgroundColor } from './styles';
+import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import grey from '@material-ui/core/colors/grey';
 
-import Collapse from "@material-ui/core/Collapse";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import { hasAnyRole } from "../../data/appRoles";
-import { useSelector } from "react-redux";
-import { IState } from "../../data/types";
-import { hasValue } from "../inputs/inputHelpers";
+import Collapse from '@material-ui/core/Collapse';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import { hasAnyRole } from '../../data/appRoles';
+import { useSelector } from 'react-redux';
+import { IState } from '../../data/types';
+import { hasValue } from '../inputs/inputHelpers';
 
 interface IAppRoute {
   requiredRoles?: string[];
@@ -38,51 +39,56 @@ interface IAppRoute {
 const routes: IAppRoute[] = [
   {
     //requiredRoles: [appRoles.roleDashboard],
-    name: "Dashboard",
+    name: 'Dashboard',
     route: localRoutes.dashboard,
     icon: AppsIcon,
   },
   {
-    name: "My Profile",
+    name: 'My Profile',
     route: localRoutes.profile,
     icon: PersonIcon,
   },
   {
+    name: 'Chat',
+    route: localRoutes.chat,
+    icon: ChatIcon,
+  },
+  {
     requiredRoles: [appRoles.roleCrmView, appRoles.roleCrmEdit],
-    name: "People",
+    name: 'People',
     route: localRoutes.contacts,
     icon: PeopleIcon,
   },
   {
     requiredRoles: [appRoles.roleGroupView, appRoles.roleGroupEdit],
-    name: "Groups",
+    name: 'Groups',
     route: localRoutes.groups,
     icon: BubbleChartIcon,
   },
   {
     requiredRoles: [appRoles.roleEventView, appRoles.roleEventView],
-    name: "Reports",
+    name: 'Reports',
     route: localRoutes.events,
     icon: AssessmentIcon,
   },
   {
     requiredRoles: [appRoles.roleUserEdit, appRoles.roleUserEdit],
-    name: "Admin",
+    name: 'Admin',
     route: localRoutes.settings,
     icon: SettingsIcon,
     items: [
       {
-        name: "Users",
+        name: 'Users',
         route: localRoutes.users,
       },
       {
-        name: "Settings",
+        name: 'Settings',
         route: localRoutes.settings,
       },
     ],
   },
   {
-    name: "Help",
+    name: 'Help',
     route: localRoutes.help,
     icon: HelpIcon,
   },
@@ -94,18 +100,18 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 140,
     },
     logo: {
-      [theme.breakpoints.only("xs")]: {
+      [theme.breakpoints.only('xs')]: {
         height: 50,
-        width: "auto",
+        width: 'auto',
       },
       height: 58,
-      width: "auto",
+      width: 'auto',
     },
     whiteText: {
-      color: "white",
+      color: 'white',
     },
     menuItem: {
-      "&:hover": {
+      '&:hover': {
         backgroundColor: menBackgroundColor,
       },
     },
@@ -117,7 +123,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const StyledListItem = withStyles({
   root: {
-    "&$selected": {
+    '&$selected': {
       backgroundColor: menBackgroundColor,
     },
   },
