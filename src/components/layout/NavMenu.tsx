@@ -9,6 +9,7 @@ import PeopleIcon from "@material-ui/icons/People";
 import PersonIcon from "@material-ui/icons/Person";
 import SettingsIcon from "@material-ui/icons/Settings";
 import BubbleChartIcon from "@material-ui/icons/BubbleChart";
+import EventIcon from '@material-ui/icons/Event';
 import HelpIcon from "@material-ui/icons/Help";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { useHistory, useLocation } from "react-router-dom";
@@ -57,6 +58,12 @@ const routes: IAppRoute[] = [
     route: localRoutes.groups,
     icon: BubbleChartIcon,
   },
+  // {
+  // name:"Events",
+  // route:localRoutes.eventActivities,
+  // icon:EventIcon,
+
+  // },
   {
     requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
     name: "Reports",

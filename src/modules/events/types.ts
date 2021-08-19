@@ -30,7 +30,7 @@ export interface IAttendance {
 export interface IActivities{
 id:number;
 name:string;
-eventId:string;
+eventId:number;
 
 }
 

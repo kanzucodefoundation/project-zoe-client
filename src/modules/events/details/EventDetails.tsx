@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import EditDialog from "../../../components/EditDialog";
-import Box from "@material-ui/core/Box";
+import EditDialog from "../../../components/EditDialog"; import Box from "@material-ui/core/Box";
 import Avatar from "@material-ui/core/Avatar";
+import {  Button, Grid } from "@material-ui/core";
 import PinDropIcon from "@material-ui/icons/PinDrop";
 import EventIcon from "@material-ui/icons/Event";
 import PeopleIcon from "@material-ui/icons/People";
 import Typography from "@material-ui/core/Typography";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { Theme } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
+
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
+import AddIcon from "@material-ui/icons/Add";
 import { grey } from "@material-ui/core/colors";
 import { appPermissions, localRoutes } from "../../../data/constants";
 import Loading from "../../../components/Loading";
@@ -31,11 +32,12 @@ import {
   IEventState,
 } from "../../../data/events/eventsReducer";
 import EventForm from "../forms/EventForm";
+import EventActivitiesForm from "./EventActivitiesForm";
 import { printPrettyDate, printPrettyTime } from "../../../utils/dateHelpers";
 import GroupLink from "../../../components/GroupLink";
 import EventAttendance from "./EventAttendance";
 import EventMetadata from "./EventMetadata";
-import EventActivities from "./EventActivities";
+// import EventActivities from "./EventActivitiesForm";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -63,6 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+  
 export default function Details() {
   let { eventId } = useParams<any>();
   const history = useHistory();
@@ -139,12 +142,12 @@ export default function Details() {
         <EventAttendance groupId={`${data.groupId}`} eventId={`${data.id}`} />
       ),
     },
-    // {
-    //   name: "Activities",
-    //   component: (
-    //     <EventActivities  eventId={`${data.id}`} />
-    //   ),
-    // },
+    {
+      name: "Activities",
+      component: (
+        <EventActivitiesForm  eventId={`${data.id}`} />
+      ),
+    },
    
 
 
@@ -202,6 +205,18 @@ export default function Details() {
                   </IconButton>
                 </Box>
               ) : null}
+             <Box display="flex">
+        <Box pr={2}>
+                  <IconButton
+                    aria-label="Edit"
+                    color="primary"
+                    title="Add activities"
+                    onClick={handleEdit}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Box>
+      </Box>
             </Box>
             <Divider />
             <Box pl={1}>

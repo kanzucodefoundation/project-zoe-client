@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { IState } from "../data/types";
 import { hasAnyRole } from "../data/appRoles";
 import Loading from "../components/Loading";
+// import EventActivities from "./events/details/EventActivities";
 
 //const Events= React.lazy(() => import( "./events/EventsList"));
 //const GroupReports = React.lazy(() => import("./events/GroupReports"));
@@ -28,7 +29,7 @@ const UpdatePasswordConfirmation = React.lazy(
 );
 const EventDetails = React.lazy(() => import("./events/details/EventDetails"));
 const EventReports = React.lazy(() => import("./events/EventReports"));
-//const EventActivities =  React.lazy(() => import("./events/E"));
+ const EventActivitiesForm =  React.lazy(() => import("./events/details/EventActivitiesForm"));
 const Help = React.lazy(() => import("./help/Help"));
 
 const ContentSwitch = () => {
@@ -75,6 +76,7 @@ const ContentSwitch = () => {
         ]) && <Route path={localRoutes.events} component={EventReports} />}
 
         <Route path={localRoutes.settings} component={Settings} />
+        <Route path={localRoutes.eventActivities} component={EventActivitiesForm} />
         <Route path={localRoutes.test} component={Testing} />
         <Route
           path={localRoutes.updatePassword}
