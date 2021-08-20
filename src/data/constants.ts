@@ -44,6 +44,7 @@ export const localRoutes = {
   contactsDetails: "/people/contacts/:contactId",
   groups: "/people/groups",
   groupsDetails: "/people/groups/:groupId",
+  calendar: "/calendar",
 
   groupsReports: "/groups",
 
