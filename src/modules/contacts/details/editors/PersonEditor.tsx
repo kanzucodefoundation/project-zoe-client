@@ -25,7 +25,7 @@ import XRadioInput from "../../../../components/inputs/XRadioInput";
 import { IPerson } from "../../types";
 import XSelectInput from "../../../../components/inputs/XSelectInput";
 import { getDayList, getMonthsList } from "../../../../utils/dateHelpers";
-import { parseISO } from "date-fns";
+import { getDate, getMonth, parseISO } from "date-fns";
 
 interface IProps {
   data: IPerson;
@@ -42,7 +42,7 @@ const schema = yup.object().shape({
   birthMonth: reqString,
   civilStatus: reqString,
 
-  ageGroup: reqString
+  ageGroup: reqString,
 });
 
 const PersonEditor = ({ data, done }: IProps) => {
@@ -60,17 +60,17 @@ const PersonEditor = ({ data, done }: IProps) => {
       civilStatus: values.civilStatus,
       dateOfBirth: `1800-${values.birthMonth}-${values.birthDay}T00:00:00.000Z`,
       ageGroup: values.ageGroup,
-      placeOfWork: values.placeOfWork
+      placeOfWork: values.placeOfWork,
     };
     put(
       remoteRoutes.contactsPeople,
       toSave,
-      data => {
+      (data) => {
         Toast.info("Operation successful");
         actions.resetForm();
         dispatch({
           type: crmConstants.crmEditPerson,
-          payload: { ...data }
+          payload: { ...data },
         });
         if (done) done();
       },
@@ -86,8 +86,10 @@ const PersonEditor = ({ data, done }: IProps) => {
   if (hasValue(dateOfBirth)) {
     try {
       const dt: Date = parseISO(`${dateOfBirth}`);
-      initialData["birthDay"] = `${dt.getDay()}`.padStart(2, "0");
-      initialData["birthMonth"] = `${dt.getMonth()}`.padStart(2, "0");
+      initialData["birthDay"] =
+        getDate(dt) < 10 ? "0" + getDate(dt) : `${getDate(dt)}`;
+      initialData["birthMonth"] =
+        getMonth(dt) < 10 ? "0" + (getMonth(dt) + 1) : `${getMonth(dt) + 1}`;
     } catch (e) {
       console.log("invalid date");
     }
