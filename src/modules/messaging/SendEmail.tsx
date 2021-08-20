@@ -81,7 +81,7 @@ const SendEmail = () => {
               <Grid item xs={12}>
                 <XTextInput
                   name="subject"
-                  label="subject"
+                  label="Subject"
                   type="text"
                   value="Hello"
                   variant="outlined"
@@ -91,7 +91,7 @@ const SendEmail = () => {
               <Grid item xs={12}>
                 <XTextAreaInput
                   name="body"
-                  label="mailBody"
+                  label="Body"
                   type="text"
                   value="Hello"
                   variant="outlined"

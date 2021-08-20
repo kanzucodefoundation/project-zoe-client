@@ -9,6 +9,7 @@ import PeopleIcon from "@material-ui/icons/People";
 import TodayIcon from '@material-ui/icons/Today';
 import PersonIcon from "@material-ui/icons/Person";
 import SettingsIcon from "@material-ui/icons/Settings";
+import ChatIcon from "@material-ui/icons/Chat";
 import BubbleChartIcon from "@material-ui/icons/BubbleChart";
 import HelpIcon from "@material-ui/icons/Help";
 import AssessmentIcon from "@material-ui/icons/Assessment";
