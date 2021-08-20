@@ -37,20 +37,25 @@ interface IAppRoute {
 
 const routes: IAppRoute[] = [
   {
+    //requiredRoles: [appRoles.roleDashboard],
     name: "Dashboard",
     route: localRoutes.dashboard,
     icon: AppsIcon,
+  },
+  {
+    name: "My Profile",
+    route: localRoutes.profile,
+    icon: PersonIcon,
   },
   {
     name: "Calendar",
     route: localRoutes.calendar,
     icon: TodayIcon,
   },
-
   {
-    name: "My Profile",
-    route: localRoutes.profile,
-    icon: PersonIcon,
+    name: 'Chat',
+    route: localRoutes.chat,
+    icon: ChatIcon,
   },
   {
     requiredRoles: [appPermissions.roleCrmView, appPermissions.roleCrmEdit],
@@ -76,18 +81,18 @@ const routes: IAppRoute[] = [
     route: localRoutes.settings,
     icon: SettingsIcon,
     items: [
-      {
-        name: "Manage Users",
-        route: localRoutes.users,
-      },
-      {
-        name: "Settings",
-        route: localRoutes.settings,
-      },
+        {
+          name: "Manage Users",
+          route: localRoutes.users,
+        },
+        {
+          name: "Settings",
+          route: localRoutes.settings,
+        },
     ],
   },
   {
-    name: "Help",
+    name: 'Help',
     route: localRoutes.help,
     icon: HelpIcon,
   },
@@ -99,18 +104,18 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 140,
     },
     logo: {
-      [theme.breakpoints.only("xs")]: {
+      [theme.breakpoints.only('xs')]: {
         height: 50,
-        width: "auto",
+        width: 'auto',
       },
       height: 58,
-      width: "auto",
+      width: 'auto',
     },
     whiteText: {
-      color: "white",
+      color: 'white',
     },
     menuItem: {
-      "&:hover": {
+      '&:hover': {
         backgroundColor: menBackgroundColor,
       },
     },
@@ -122,7 +127,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const StyledListItem = withStyles({
   root: {
-    "&$selected": {
+    '&$selected': {
       backgroundColor: menBackgroundColor,
     },
   },
