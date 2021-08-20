@@ -50,6 +50,8 @@ export const localRoutes = {
 
   chat: '/chat/email',
 
+  calendar: '/calendar',
+
   groupsReports: '/groups',
 
   events: '/events',
@@ -98,6 +100,7 @@ export const remoteRoutes = {
   tags: url + '/api/tags',
   users: url + '/api/users',
   userGroups: url + '/api/user-groups',
+  roles: url + "/api/user-roles",
   contactsPhone: url + '/api/crm/phones',
   contactsAddress: url + '/api/crm/addresses',
   contactsIdentification: url + '/api/crm/identifications',

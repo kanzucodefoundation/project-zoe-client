@@ -115,7 +115,7 @@ export default function Details() {
   };
 
   const mcView = () => {
-    if (hasAnyRole(profile, [appRoles.roleMcView])) {
+    if (hasAnyRole(profile, [appPermissions.roleMcView])) {
       return true;
     }
   };
