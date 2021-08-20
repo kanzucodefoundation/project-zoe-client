@@ -16,6 +16,15 @@ import { hasAnyRole } from "../../data/appRoles";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import ListHeader from "../../components/ListHeader";
+import GroupMapView from "./GroupMapView";
+
+interface IGroupMarkers {
+  name: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+}
 
 const GroupTabView = () => {
   const [filter, setFilter] = useState<any>({});
@@ -24,6 +33,7 @@ const GroupTabView = () => {
   const user = useSelector((state: IState) => state.core.user);
   const [loading, setLoading] = useState<boolean>(true);
   const [dialog, setDialog] = useState<boolean>(false);
+  const [addresses, setAddresses] = useState<any[]>([]);
   const history = useHistory();
   function handleClose() {
     setDialog(false);
@@ -53,6 +63,24 @@ const GroupTabView = () => {
     setFilter({ ...filter, ...value });
   }
 
+    function extractAddressFromEachGroup(groups: any[]) {
+    const addresses = [];
+    for (let group of groups) {
+      if (group.address === null) {
+      } else {
+        const address = {
+          name: group.name,
+          location: {
+            lat: group.address.latitude,
+            lng: group.address.longitude,
+          },
+        };
+        addresses.push(address);
+      }
+    }
+    return addresses;
+  }
+
   const starterData = selected
     ? {
         parent: {
@@ -68,6 +96,8 @@ const GroupTabView = () => {
       remoteRoutes.groups,
       filter,
       data => {
+        const groupAddresses = extractAddressFromEachGroup(data);
+        setAddresses(groupAddresses);
         setData(data);
       },
       undefined,
@@ -119,7 +149,9 @@ const GroupTabView = () => {
             },
             {
               name: "Map View",
-              component: <Typography variant="h4">Coming soon</Typography>
+              component: <GroupMapView
+              data={addresses}
+              />
             }
           ]}
         />
