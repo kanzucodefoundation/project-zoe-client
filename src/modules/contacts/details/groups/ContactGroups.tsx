@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { IContact, ITeamMember } from "../../types";
 import { get } from "../../../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../../../data/constants";
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from "../../../../data/constants";
 import { useHistory } from "react-router";
 import NewGroupJoinRequestForm from "./NewGroupJoinRequestForm";
 import XList, { ListItemData } from "../../../../components/list/XList";
@@ -18,10 +22,15 @@ interface IProps {
   profile: IAuthUser;
 }
 
-const ContactGroups = ({ isOwnProfile, contactId, contact, profile }: IProps) => {
+const ContactGroups = ({
+  isOwnProfile,
+  contactId,
+  contact,
+  profile,
+}: IProps) => {
   const history = useHistory();
   const [data, setData] = useState<ITeamMember[]>([]);
-  const hasGroupView = hasAnyRole(profile, [appRoles.roleGroupView])
+  const hasGroupView = hasAnyRole(profile, [appPermissions.roleGroupView]);
 
   const handleView = (dt: any) => {
     if (hasGroupView) {
@@ -30,16 +39,16 @@ const ContactGroups = ({ isOwnProfile, contactId, contact, profile }: IProps) =>
   };
 
   useEffect(() => {
-    get(remoteRoutes.groupsMembership + `/?contactId=` + contactId, resp => {
+    get(remoteRoutes.groupsMembership + `/?contactId=` + contactId, (resp) => {
       const groups: ITeamMember[] = [];
       resp.map((it: any) => {
         groups.push({
           id: it.group.id,
           name: it.group.name,
           details: it.group.groupDetails,
-          role: it.role
-        })
-      })
+          role: it.role,
+        });
+      });
       setData(groups);
     });
   }, [contactId]);
@@ -48,7 +57,7 @@ const ContactGroups = ({ isOwnProfile, contactId, contact, profile }: IProps) =>
     return {
       primaryText: dt.name,
       secondaryText: `Role: ${dt.role}`,
-      avatar: getInitials(dt.name)
+      avatar: getInitials(dt.name),
     };
   };
 

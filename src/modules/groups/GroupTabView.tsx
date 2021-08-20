@@ -7,7 +7,11 @@ import { IGroup } from "./types";
 import { useSelector } from "react-redux";
 import { IState } from "../../data/types";
 import { search } from "../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from "../../data/constants";
 import { useHistory } from "react-router";
 import EditDialog from "../../components/EditDialog";
 import GroupEditor from "./editors/GroupEditor";
@@ -57,8 +61,8 @@ const GroupTabView = () => {
     ? {
         parent: {
           id: selected.id,
-          name: selected.name
-        }
+          name: selected.name,
+        },
       }
     : undefined;
 
@@ -67,7 +71,7 @@ const GroupTabView = () => {
     search(
       remoteRoutes.groups,
       filter,
-      data => {
+      (data) => {
         setData(data);
       },
       undefined,
@@ -87,7 +91,7 @@ const GroupTabView = () => {
             loading={loading}
             buttons={
               <>
-                {hasAnyRole(user, [appRoles.roleGroupEdit]) && (
+                {hasAnyRole(user, [appPermissions.roleGroupEdit]) && (
                   <Button
                     variant="outlined"
                     color="primary"
@@ -115,12 +119,12 @@ const GroupTabView = () => {
                   handleDetails={handleDetails}
                   selected={selected}
                 />
-              )
+              ),
             },
             {
               name: "Map View",
-              component: <Typography variant="h4">Coming soon</Typography>
-            }
+              component: <Typography variant="h4">Coming soon</Typography>,
+            },
           ]}
         />
 

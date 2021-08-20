@@ -6,7 +6,11 @@ import XTable from "../../components/table/XTable";
 import { XHeadCell } from "../../components/table/XTableHead";
 import ContactLink from "../../components/ContactLink";
 import { search } from "../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from "../../data/constants";
 import Loading from "../../components/Loading";
 import Box from "@material-ui/core/Box";
 import Hidden from "@material-ui/core/Hidden";
@@ -165,7 +169,7 @@ const Contacts = () => {
           loading={loading}
           buttons={
             <>
-              {hasAnyRole(user, [appRoles.roleCrmEdit]) && (
+              {hasAnyRole(user, [appPermissions.roleCrmEdit]) && (
                 <Button
                   variant="outlined"
                   color="primary"
@@ -176,7 +180,7 @@ const Contacts = () => {
                   Add new&nbsp;&nbsp;
                 </Button>
               )}
-              {hasAnyRole(user, [appRoles.roleCrmEdit]) && (
+              {hasAnyRole(user, [appPermissions.roleCrmEdit]) && (
                 <Button
                   variant="outlined"
                   color="primary"
@@ -232,7 +236,7 @@ const Contacts = () => {
               })
             )}
           </List>
-          {hasAnyRole(user, [appRoles.roleCrmEdit]) ? (
+          {hasAnyRole(user, [appPermissions.roleCrmEdit]) ? (
             <Fab
               aria-label="add-new"
               className={classes.fab}

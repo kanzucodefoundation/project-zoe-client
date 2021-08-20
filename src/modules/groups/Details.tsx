@@ -1,24 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { IGroup } from './types';
-import EditDialog from '../../components/EditDialog';
-import GroupEditor from './editors/GroupEditor';
-import Box from '@material-ui/core/Box';
-import Avatar from '@material-ui/core/Avatar';
-import PinDropIcon from '@material-ui/icons/PinDrop';
-import PeopleIcon from '@material-ui/icons/People';
-import Typography from '@material-ui/core/Typography';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Button, ButtonGroup, Hidden, Theme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
-import EditIcon from '@material-ui/icons/Edit';
-import EventIcon from '@material-ui/icons/Event';
-import MembersList from './members/MembersList';
-import { grey } from '@material-ui/core/colors';
-import { get } from '../../utils/ajax';
-import { appRoles, localRoutes, remoteRoutes } from '../../data/constants';
-import Loading from '../../components/Loading';
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { IGroup } from "./types";
+import EditDialog from "../../components/EditDialog";
+import GroupEditor from "./editors/GroupEditor";
+import Box from "@material-ui/core/Box";
+import Avatar from "@material-ui/core/Avatar";
+import PinDropIcon from "@material-ui/icons/PinDrop";
+import PeopleIcon from "@material-ui/icons/People";
+import Typography from "@material-ui/core/Typography";
+import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { Button, ButtonGroup, Hidden, Theme } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
+import Divider from "@material-ui/core/Divider";
+import EditIcon from "@material-ui/icons/Edit";
+import EventIcon from "@material-ui/icons/Event";
+import MembersList from "./members/MembersList";
+import { grey } from "@material-ui/core/colors";
+import { get } from "../../utils/ajax";
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from "../../data/constants";
+import Loading from "../../components/Loading";
 import {
   Alert,
   SpeedDial,
@@ -79,8 +83,8 @@ export default function Details() {
   const [open, setOpen] = useState(false);
   const profile = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
-  const hasEventEdit = hasRole(profile, appRoles.roleEventEdit);
-  const hasGroupEdit = hasRole(profile, appRoles.roleGroupEdit);
+  const hasEventEdit = hasRole(profile, appPermissions.roleEventEdit);
+  const hasGroupEdit = hasRole(profile, appPermissions.roleGroupEdit);
   const actions = [];
 
   useEffect(() => {
@@ -107,7 +111,7 @@ export default function Details() {
 
     const isLeader = leaderIds.indexOf(userId) > -1;
 
-    return isLeader || hasAnyRole(profile, [appRoles.roleGroupEdit]);
+    return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
   };
 
   const mcView = () => {
@@ -232,15 +236,15 @@ export default function Details() {
             paths={[
               {
                 path: localRoutes.home,
-                label: 'Dashboard',
-                auth: hasAnyRole(profile, [appRoles.roleDashboard]),
+                label: "Dashboard",
+                auth: hasAnyRole(profile, [appPermissions.roleDashboard]),
               },
               {
                 path: localRoutes.groups,
-                label: 'Groups',
+                label: "Groups",
                 auth: hasAnyRole(profile, [
-                  appRoles.roleGroupEdit,
-                  appRoles.roleGroupView,
+                  appPermissions.roleGroupEdit,
+                  appPermissions.roleGroupView,
                 ]),
               },
             ]}

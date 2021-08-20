@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import XTable from "../../components/table/XTable";
 import { XHeadCell } from "../../components/table/XTableHead";
-import { appRoles, localRoutes } from "../../data/constants";
+import { appPermissions, localRoutes } from "../../data/constants";
 import Loading from "../../components/Loading";
 import Box from "@material-ui/core/Box";
 import Hidden from "@material-ui/core/Hidden";
@@ -141,7 +141,7 @@ const EventsList = () => {
           loading={loading}
           buttons={
             <>
-              {hasAnyRole(user, [appRoles.roleEventEdit]) && (
+              {hasAnyRole(user, [appPermissions.roleEventEdit]) && (
                 <Button
                   variant="outlined"
                   color="primary"
@@ -197,7 +197,7 @@ const EventsList = () => {
               })
             )}
           </List>
-          {hasAnyRole(user, [appRoles.roleEventEdit]) ? (
+          {hasAnyRole(user, [appPermissions.roleEventEdit]) ? (
             <Fab
               aria-label="add-new"
               className={classes.fab}
@@ -214,7 +214,12 @@ const EventsList = () => {
         open={showDialog}
         onClose={closeCreateDialog}
       >
-        <EventForm data={{}} isNew={true} onCreated={closeCreateDialog} onCancel={handleClose} />
+        <EventForm
+          data={{}}
+          isNew={true}
+          onCreated={closeCreateDialog}
+          onCancel={handleClose}
+        />
       </EditDialog>
     </>
   );
