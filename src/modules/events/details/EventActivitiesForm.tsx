@@ -2,128 +2,137 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
 import { Formik } from "formik/dist/Formik";
 import { FormikHelpers } from "formik/dist/types";
-import React from "react";
+import React, { useState } from "react";
+
 import XForm from "../../../components/forms/XForm";
 import XTextInput from "../../../components/inputs/XTextInput";
 import { IActivities } from "../types";
 import Layout from "../../../components/layout/Layout";
 import { remoteRoutes } from "../../../data/constants";
-//import Loading from "../../../components/Loading";
+import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
 import FormFields from "../../../components/forms/FormFields";
-import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
-// import handleSubmit from "../../../components/forms/XForm";
-// // import handleDelete from "../../../components/forms/XForm";
+import Toast from "../../../utils/Toast";
+import { IEvent } from "../types";
+import { del } from "../../../utils/ajax";
 
-const initialValues = {
-  activities: "",
-  event: ""
-};
-
-const useStyles =makeStyles((theme:Theme)=>
-createStyles({
-root:{
- width:"100%",
- maxWidth:360,
- backgroundColor: theme.palette.background.paper,
-},
-fab: {
-    position: "absolute",
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-
-})
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: "100%",
+      maxWidth: 360,
+      backgroundColor: theme.palette.background.paper,
+    },
+    fab: {
+      position: "absolute",
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+  })
 );
 
+interface IProps {
+  data?: Partial<IEvent>;
+  eventId:string;
+  isNew: boolean;
+  onCreated?: () => any;
+  onUpdated?: () => any;
+  onCancel?: () => any;
+};
 
-export interface IProps {
-eventId:string;
+const EventActivitiesForm =({
+  eventId,
+  data,
+  isNew,
+  onCreated,
 
-}
-
-
-// export const  processData = (activities:IActivities[],eventId:string) => {
-//     const finalData:IActivities[]=[...activities];
-//     const actIds =activities.map((it)=> `${it.eventId}`);
-//       activities.forEach((eventId)=>{
-//         if (!actIds.includes(`${eventId}`)){
-//      finalData.push({
-//       activities,
-      
-//       id:"0",
-//       })
-
-//         }
-
-      
-//       })
-//     return finalData;
-// }
-
+  onUpdated,
+  onCancel,
+}: IProps) =>{
+  const [name, setData] = React.useState<IActivities[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [dialog, setDialog] = useState<boolean>(false);
+  const initialValues = {
+    name: "",
+    event: "",
+  };
+  
+  const classes = useStyles();
  
-function EventActivitiesForm ({eventId}:IProps) {
-// console.log({eventId});
-const handleSubmit = (values: any, actions: FormikHelpers<any>) => {
+  const handleSubmit = (values: any, actions: FormikHelpers<any>) => {
     const toSave = {
-      event:values.event,
-      activities:values.activities,
-      eventId: {eventId},
-      
-
+      event: values.event,
+      name: values.name,
+      eventId: { eventId },
     };
     console.log(toSave);
+    actions.resetForm();
+    const submission: ISubmission = {
+      url: remoteRoutes.eventsActivity,
+      values: toSave,
+      actions,
+      isNew,
+      onAjaxComplete: (data:any) => {
+        if (isNew) {
+          console.log(data);
+          //onCreated && onCreated(data);
+        } else {
+          //onUpdated && onUpdated(data);
+          console.log(data);
+        }
+        actions.resetForm();
+        actions.setSubmitting(false);
+        // handleClose();
 
-    // post(remoteRoutes.eventActivities, toSave, () => {
-    //   Toast.success("Activity added");
-    //   handleClose();
-    //   actions.resetForm();
-    // });
+      },
+    };
+    handleSubmission(submission);
   };
+  
+  // const handleDelete = () => {
+  //   setLoading(true);
+  //   // del(
+
+  //   //   `${remoteRoutes.eventsActivity}/${data?.id}`,
+
+  //   //   () => {
+  //   //     Toast.success("Delete successfull");
+  //   //     onDeleted && onDeleted(data?.id);
+  //   //   },
+  //   //   undefined,
+  //   //   () => {
+  //   //     setLoading(false);
+  //   //   }
+  //  // );
+  // };
+
+  
+  function handleEdit() {
+    setDialog(true);
+  }
 
 
-
- const classes = useStyles();
- const [activities,setData]= React.useState<IActivities[]>([]);
-
- 
- return (
- 
-        <XForm
-        onSubmit={handleSubmit}       
-        initialValues={activities}
-        // onDelete={handleDelete}
-        // loading={loading}
-        // onCancel={onCancel}
-        >
-        {(
-              <Grid spacing={1} container>
-         
+  return (
+    <XForm
+      onSubmit={handleSubmit}
+      initialValues={name}
+     
+      onCancel={onCancel}
+    >
+      {
+        <Grid spacing={1} container>
           <Grid item xs={12}>
-          <XRemoteSelect
-            remote={remoteRoutes.events}
-            name="event"
-            label="Events"           
-            variant="outlined"
-          />
+            <XTextInput
+              name="name"
+              label="Activities"
+              type="text"
+              variant="outlined"
+            />
+          </Grid>
         </Grid>
-
-               <Grid item xs={12}>
-               <XTextInput
-                 name="activities"
-                 label="Activities"
-                 type="text"
-                 variant="outlined"
-               />
-            </Grid>
-
-            
-
-        </Grid>
-        )} 
-       
-        </XForm>
-
- )
+      }
+    </XForm>
+  );
 }
 
 export default EventActivitiesForm;
+

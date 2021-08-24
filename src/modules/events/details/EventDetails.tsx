@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import EditDialog from "../../../components/EditDialog"; import Box from "@material-ui/core/Box";
+import EditDialog from "../../../components/EditDialog";
+import Box from "@material-ui/core/Box";
 import Avatar from "@material-ui/core/Avatar";
-import {  Button, Grid } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 import PinDropIcon from "@material-ui/icons/PinDrop";
 import EventIcon from "@material-ui/icons/Event";
 import PeopleIcon from "@material-ui/icons/People";
 import Typography from "@material-ui/core/Typography";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { Theme } from "@material-ui/core";
-
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
@@ -37,7 +37,6 @@ import { printPrettyDate, printPrettyTime } from "../../../utils/dateHelpers";
 import GroupLink from "../../../components/GroupLink";
 import EventAttendance from "./EventAttendance";
 import EventMetadata from "./EventMetadata";
-// import EventActivities from "./EventActivitiesForm";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -65,11 +64,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-  
 export default function Details() {
   let { eventId } = useParams<any>();
   const history = useHistory();
   const [dialog, setDialog] = useState<boolean>(false);
+  const [dialogAdd, setDialogAdd] = useState<boolean>(false);
   const { selected: data, loading }: IEventState = useSelector(
     (state: any) => state.events
   );
@@ -102,6 +101,9 @@ export default function Details() {
   function handleEdited(dt: any) {
     setDialog(false);
     dispatch(eventsEdit(dt));
+  }
+  function handleAdd() {
+    setDialogAdd(true);
   }
 
   if (loading) {
@@ -144,16 +146,8 @@ export default function Details() {
     },
     {
       name: "Activities",
-      component: (
-        <EventActivitiesForm  eventId={`${data.id}`} />
-      ),
+      component:<Event  event={data}/>,
     },
-   
-
-
-
-
-
 
   ];
 
@@ -205,18 +199,17 @@ export default function Details() {
                   </IconButton>
                 </Box>
               ) : null}
-             <Box display="flex">
-        <Box pr={2}>
-                  <IconButton
-                    aria-label="Edit"
-                    color="primary"
-                    title="Add activities"
-                    onClick={handleEdit}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </Box>
-      </Box>
+              <Box pr={2}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={handleAdd}
+                  style={{ marginLeft: 8 }}
+                >
+                  Add Activities&nbsp;&nbsp;
+                </Button>
+              </Box>
             </Box>
             <Divider />
             <Box pl={1}>
@@ -271,6 +264,18 @@ export default function Details() {
             isNew={false}
             onUpdated={handleEdited}
             onDeleted={handleDeleted}
+            onCancel={handleClose}
+          />
+        </EditDialog>
+        <EditDialog
+          open={dialogAdd}
+          onClose={handleClose}
+          title="Add Activities"
+        >
+          <EventActivitiesForm
+            eventId={eventId}
+            isNew={false}
+            //onUpdated={handleEdited}
             onCancel={handleClose}
           />
         </EditDialog>

@@ -85,7 +85,6 @@ export default function Details() {
   const classes = useStyles();
   const hasEventEdit = hasRole(profile, appPermissions.roleEventEdit);
   const hasGroupEdit = hasRole(profile, appPermissions.roleGroupEdit);
-  // const hasActvitity = hasRole(profile, appPermissions.roleActivityEdit);
   const actions = [];
 
   useEffect(() => {
@@ -277,16 +276,7 @@ export default function Details() {
                             Create Report&nbsp;&nbsp;
                           </Button>
                         ) : undefined}
-                         {/* {hasEventEdit ? (
-                          <Button
-                            color="primary"
-                            size="small"
-                            variant="contained"
-                            onClick={handleNewEvent}
-                          >
-                            Add Activity&nbsp;&nbsp;
-                          </Button>
-                        ) : undefined} */}
+                    
                       </ButtonGroup>
                     </Box>
                   </Hidden>

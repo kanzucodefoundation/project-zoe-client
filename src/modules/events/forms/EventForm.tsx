@@ -68,19 +68,19 @@ const EventForm = ({
   const [event, setEvent] = useState<any>();
 
   useEffect(() => {
-    if(event && group) {
-      getFrequency(event, group)
+    if (event && group) {
+      getFrequency(event, group);
     }
-  }, [event, group])
+  }, [event, group]);
 
   function getFrequency(event: any, group: any) {
     const filter = {
       eventCategory: event.id,
-      groupCategory: group.categoryId
-    }
-    search(remoteRoutes.groupReportFrequency, filter, resp => {
+      groupCategory: group.categoryId,
+    };
+    search(remoteRoutes.groupReportFrequency, filter, (resp) => {
       setFrequency(resp[0].frequency);
-    })
+    });
   }
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
@@ -104,7 +104,7 @@ const EventForm = ({
     };
 
     actions.resetForm();
-  
+
     const submission: ISubmission = {
       url: remoteRoutes.events,
       values: toSave,
@@ -158,7 +158,7 @@ const EventForm = ({
               name="category"
               label="Category"
               variant="outlined"
-              onSelect ={() => setEvent(formData.category)}
+              onSelect={() => setEvent(formData.category)}
             />
           </Grid>
           <Grid item xs={12} md={8}>
@@ -167,10 +167,10 @@ const EventForm = ({
               name="group"
               label="Group"
               variant="outlined"
-              onSelect ={() => setGroup(formData.group)}
+              onSelect={() => setGroup(formData.group)}
             />
           </Grid>
-          
+
           <Grid item xs={12} md={6}>
             <XDateTimeInput
               name="startDate"
