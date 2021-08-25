@@ -1,4 +1,5 @@
 export interface IEvent {
+ 
   id: string;
   privacy: string;
   name: string;

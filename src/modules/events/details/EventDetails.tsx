@@ -37,6 +37,7 @@ import { printPrettyDate, printPrettyTime } from "../../../utils/dateHelpers";
 import GroupLink from "../../../components/GroupLink";
 import EventAttendance from "./EventAttendance";
 import EventMetadata from "./EventMetadata";
+import EventActivities from "./EventActivities";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -146,12 +147,14 @@ export default function Details() {
     },
     {
       name: "Activities",
-      component:<Event  event={data}/>,
+      component:<EventActivities eventId={`${data.id}`} />,
     },
+    
 
   ];
-
+ 
   return (
+   
     <Layout title="Event details">
       <Box className={classes.root}>
         <Box pb={2}>
@@ -274,6 +277,7 @@ export default function Details() {
         >
           <EventActivitiesForm
             eventId={eventId}
+            data={data}
             isNew={false}
             //onUpdated={handleEdited}
             onCancel={handleClose}
