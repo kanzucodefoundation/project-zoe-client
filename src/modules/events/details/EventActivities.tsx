@@ -10,21 +10,65 @@ import XAvatar from "../../../components/XAvatar";
 import { remoteRoutes } from '../../../data/constants';
 import { get } from '../../../utils/ajax';
 import Toast from '../../../utils/Toast';
-import { IActivities } from "../types";
+import { IActivities, IEvent } from "../types";
 import Loading from "../../../components/Loading";
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import { makeStyles, Theme, createStyles } from "@material-ui/core";
 
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: "100%",
+      maxWidth: 360,
+      backgroundColor: theme.palette.background.paper,
+    },
+    fab: {
+      position: "absolute",
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+  })
+);
 
 export interface IProps{
-    eventId:number;
+    eventId:string;
 }
 
+export interface IActivities{
+id:number;
+name:string;
+eventId:number;
 
+}
+
+export const processData=(
+    activities:IActivities[],
+    event:IEvent[],
+    eventId:number
+)=>{
+    const finalData:IActivities[] =[...activities];
+    const actIds =activities.map((it)=>`${it.eventId}`);
+    event.forEach(({eventId})=>{
+        if(!actIds.includes(`${eventId}`)){
+            finalData.push({
+               id:"0",
+               name,
+               eventId,
+            });
+
+        }
+
+    });
+    return finalData;
+
+
+};
 
 function EventActivities ({eventId}:IProps){
-
+   const classes = useStyles();
    const [data,setData]= React.useState<IActivities[]>([]);
    const[loading,setLoading] = React.useState<boolean>(true);
     
@@ -67,13 +111,22 @@ function EventActivities ({eventId}:IProps){
 
 
   };
-  
+  const handleManualAdd=()=>{};
+  data.sort((a,b) => {
+ var nameA=a.name.name;
+ var nameB=b.name.name;
+ if(nameA<nameB){
+     return -1;
+    }
+    return 0; 
+  });
    
     return (
         <Box>
-         <List> 
+         <List dense className={classes.root}> 
         {loading?(
-            <Loading/>):(
+            <Loading/>
+        )  :   (
                 data.map((it)=>{
                     return (
                         <ListItem key ={it.eventId} button>
@@ -90,7 +143,7 @@ function EventActivities ({eventId}:IProps){
                                <Checkbox
                                edge="end"
                                onChange={handleToggle(it.eventId)}
-                               checked ={Boolean(it.activities)}
+                               checked ={Boolean(it.name)}
                                inputProps={{"aria-labelledby":it.name}}
                                />  
                             </ListItemSecondaryAction>  
@@ -102,10 +155,8 @@ function EventActivities ({eventId}:IProps){
 
 
                         </ListItem>
-                    )
-
-
-                });
+                    );
+                })
 
         )}      
        
@@ -115,7 +166,7 @@ function EventActivities ({eventId}:IProps){
        className={classes.fab}
        color="primary"
        onClick={handleManualAdd}>
-        <AddIcon></AddIcon> 
+        <AddIcon/>
         </Fab> 
 
        </Box>
