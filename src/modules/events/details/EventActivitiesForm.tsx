@@ -4,124 +4,86 @@ import { Formik } from "formik/dist/Formik";
 import { FormikHelpers } from "formik/dist/types";
 import React, { useState,useEffect } from "react";
 import XForm from "../../../components/forms/XForm";
+import EditDialog from "../../../components/EditDialog";
 import XTextInput from "../../../components/inputs/XTextInput";
 import { IActivities } from "../types";
+import { Box, Button } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
 import Layout from "../../../components/layout/Layout";
 import { remoteRoutes } from "../../../data/constants";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
 import FormFields from "../../../components/forms/FormFields";
 import Toast from "../../../utils/Toast";
 import { IEvent } from "../types";
-import { del } from "../../../utils/ajax";
+import { post } from "../../../utils/ajax";
 import { get } from "../../../utils/ajax";
 
-// const useStyles = makeStyles((theme: Theme) =>
-//   createStyles({
-//     root: {
-//       width: "100%",
-//       maxWidth: 360,
-//       backgroundColor: theme.palette.background.paper,
-//     },
-//     fab: {
-//       position: "absolute",
-//       bottom: theme.spacing(2),
-//       right: theme.spacing(2),
-//     },
-//   })
-// );
+
 
 interface IProps {
-  data?: Partial<IEvent>;
-  eventId:string;
-  isNew: boolean;
-  onCreated?: (g: any) => any;
-  onUpdated?: (g: any) => any;
-  onDeleted?: (g: any) => any;
-  onCancel: () => any;
+   eventId:string;
+  
 };
+
 const initialValues = {
-  name: "",
-  event: "",
+  name: "", 
 };
-
-const EventActivitiesForm =({
-  data,
-  isNew,
-  eventId,
-  onCreated,
-  onDeleted,
-  onUpdated,
-  onCancel,
-}: IProps) =>{
-  //const [name, setData] = React.useState<IActivities[]>([]);
+//EventActivities component to submit activities.
+const EventActivitiesForm =( 
+  props: IProps) =>{  
   const [loading, setLoading] = useState<boolean>(false);
- 
-  const handleSubmit = (values: any, actions: FormikHelpers<any>) => {
-    const toSave = {
-      event: values.event,
+  const [dialogAdd, setDialogAdd] = useState<boolean>(false);
+   
+    const handleClose = () => {
+     setDialogAdd(false);
+
+    };
+    function handleAdd() {
+    setDialogAdd(true);
+  }
+ //Handle submit function with to const to save form data api call to post data.
+  const handleSubmit = (values: any, actions: FormikHelpers<any>) => {   
+  const toSave: any = {      
       name: values.name,
-      eventId: { eventId },
+      eventId:props.eventId ,
     };
-    console.log(toSave);
-    actions.resetForm();
-    const submission: ISubmission = {
-      url: remoteRoutes.eventsActivity,
-      values: toSave,
-      actions,
-      isNew,
-      onAjaxComplete: (data:any) => {
-        if (isNew) {
-          console.log(data);
-          onCreated && onCreated(data);
-        } else {
-          onUpdated && onUpdated(data);
-          console.log(data);
-        }
+    //console.log(toSave);
+    actions.resetForm();    
+    post(remoteRoutes.eventsActivity,toSave,()=>{
+        Toast.success("Added activity successfully")
+        handleClose();
         actions.resetForm();
-        actions.setSubmitting(false);
-      
+    });
 
-      },
-    };
-    handleSubmission(submission);
   };
-  
-  function handleDelete () {
-    setLoading(true);
-    del(
-
-      `${remoteRoutes.eventsActivity}/${data?.id}`,
-
-      () => {
-        Toast.success("Delete successfull");
-        onDeleted && onDeleted(data?.id);
-      },
-      undefined,
-      () => {
-        setLoading(false);
-      }
-   );
-  };
-
-  
-  // function handleEdit() {
-  //   setDialog(true);
-  // }
-
-
   return (
+    <>
+          <Box display = "flex">  <Box pr={2}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={handleAdd}
+                  
+                >
+                  Add Activities&nbsp;&nbsp;
+                </Button>
+              </Box>  </Box>
+        <EditDialog
+          open={dialogAdd}
+          onClose={handleClose}
+          title="Add Activity"
+      >      
     <XForm
       onSubmit={handleSubmit}
-      initialValues={{data}}
-      onDelete={handleDelete}
-      onCancel={onCancel}
+      initialValues={initialValues}       
     >
       {
         <Grid spacing={1} container>
           <Grid item xs={12}>
             <XTextInput
               name="name"
-              label="Activities"
+              label="Activity"
               type="text"
               variant="outlined"
             />
@@ -129,6 +91,8 @@ const EventActivitiesForm =({
         </Grid>
       }
     </XForm>
+     </EditDialog>
+    </>
   );
 }
 

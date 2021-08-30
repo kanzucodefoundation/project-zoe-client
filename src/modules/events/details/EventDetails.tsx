@@ -87,7 +87,6 @@ export default function Details() {
     const leaderIds: string[] = _leaderIds.map((it) => `${it}`);
 
     const isLeader = leaderIds.indexOf(userId) > -1;
-
     return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
   };
 
@@ -103,9 +102,8 @@ export default function Details() {
     setDialog(false);
     dispatch(eventsEdit(dt));
   }
-  function handleAdd() {
-    setDialogAdd(true);
-  }
+  
+  
 
   if (loading) {
     return (
@@ -146,8 +144,9 @@ export default function Details() {
       ),
     },
     {
+      //Tabview for eventactivies.
       name: "Activities",
-      component:<EventActivities eventId={`${data.id}`} />,
+      component:<EventActivities eventId={Number(data.id)} />,
     },
     
 
@@ -189,30 +188,21 @@ export default function Details() {
                 <Typography variant="h6">{data.name}</Typography>
                 <Typography variant="body2">{`${data.privacy}, ${data.category.name}`}</Typography>
               </Box>
-
+              
               {isLeader() ? (
                 <Box pr={2}>
                   <IconButton
                     aria-label="Edit"
                     color="primary"
                     title="Edit Report"
-                    onClick={handleEdit}
-                  >
+                    onClick={handleEdit}                  >
                     <EditIcon />
                   </IconButton>
                 </Box>
               ) : null}
-              <Box pr={2}>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                  onClick={handleAdd}
-                  style={{ marginLeft: 8 }}
-                >
-                  Add Activities&nbsp;&nbsp;
-                </Button>
-              </Box>
+              {/* Component is returning data of variable data id */}
+             <EventActivitiesForm eventId={`${data.id}`}/>
+              
             </Box>
             <Divider />
             <Box pl={1}>
@@ -270,19 +260,16 @@ export default function Details() {
             onCancel={handleClose}
           />
         </EditDialog>
-        <EditDialog
+        {/* <EditDialog
           open={dialogAdd}
           onClose={handleClose}
-          title="Add Activities"
+          title="Add Activity"
         >
           <EventActivitiesForm
-            eventId={eventId}
-            data={data}
-            isNew={false}
-            //onUpdated={handleEdited}
-            onCancel={handleClose}
+            eventId={eventId}            
+          //onCancel={handleClose} 
           />
-        </EditDialog>
+        </EditDialog> */}
       </Box>
     </Layout>
   );
