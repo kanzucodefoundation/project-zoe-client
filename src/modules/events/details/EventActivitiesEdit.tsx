@@ -4,20 +4,26 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
-import React, { useEffect } from 'react';
-import { post } from 'superagent';
+import React, { useEffect, useState } from "react";
+import { post } from "superagent";
 import XAvatar from "../../../components/XAvatar";
-import { remoteRoutes } from '../../../data/constants';
-import { get,search } from '../../../utils/ajax';
-import Toast from '../../../utils/Toast';
+import { remoteRoutes } from "../../../data/constants";
+import { get, search } from "../../../utils/ajax";
+import Toast from "../../../utils/Toast";
 import EditDialog from "../../../components/EditDialog";
 //import { IActivities, IEvent } from "../types";
 import Loading from "../../../components/Loading";
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import Grid from "@material-ui/core/Grid";
+import { del } from "../../../utils/ajax";
+import XForm from "../../../components/forms/XForm";
 import { makeStyles, Theme, createStyles } from "@material-ui/core";
-
+import { FormikHelpers } from "formik";
+import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
+import XComboInput from "../../../components/inputs/XComboInput";
+import XTextInput from "../../../components/inputs/XTextInput";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,103 +40,81 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export interface IProps{
-    eventId:number;
+ interface IProps {
+   data:any;
+   done:(dt:any)=>any;
+   onDeleted:(dt:any)=>any;
+   onCancel?:()=>any;
+
 }
 
-export interface IActivities{
-id:number;
-name:string;
-eventId:number;
+// export interface IActivities {
+//   id: number;
+//   name: string;
+//   eventId: number;
+// }
+
+function EventActivitiesEditor({data,done,onDeleted,onCancel }: IProps) {
+  //const classes = useStyles();
+  //const [data, setData] = React.useState<IActivities[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  // const [editActivitiy, setEditingActivity] = React.useState<boolean>(false);
+  // const [selected, setSelected] = React.useState<IActivities | null>(null);
+function handleSubmit(values:any,actions:FormikHelpers<any>){
+ const toSave:any ={
+   ...values,
+ }
+ const submission:ISubmission = {
+   url:remoteRoutes.eventsActivity,
+   values:toSave,actions,isNew:false,
+   onAjaxComplete:done
+ }
+ handleSubmission(submission)
 }
- 
-function EventActivities ({eventId}:IProps){
-   const classes = useStyles();
-   const [data,setData]= React.useState<IActivities[]>([]);
-   const[loading,setLoading] = React.useState<boolean>(true);
-   const [editActivitiy,setEditingActivity]= React.useState<boolean>(false);
-   const[selected,setSelected] = React.useState<IActivities | null> (null);
-    
-   useEffect(()=>{
-        setLoading(true);
-        get(
-          `${remoteRoutes.eventsActivity}/?eventId=${eventId}`,
-            (data)=>{
-            setData(data);
-            },
-            undefined,
-         ()=>{
-            setLoading(false);
-            }
 
-        );
-    },[eventId]);
-    const handleSelected = (it: IActivities) => () => {
-    setSelected(it);
-      };
-
-       const handleEdited = (it: IActivities) => {
-    setSelected(null);
-
-    const newData = data.map((it: any) => {
-      if (it.id === it.id) return it;
-      else return it;
-    });
-    setData(newData);
-  };
-
-    function handleCloseDialog() {
-    setEditingActivity(false);
-    }
-
-       return (
-        <Box>
-         <List dense className={classes.root}> 
-        {loading?(
-             <Loading/>
-
-        )  :   (
-          
-                data.map((it)=>{
-                    return (
-                        <ListItem key ={it.id} button onClick={handleSelected(it)}>
-                            <ListItemAvatar>
-                                <XAvatar value = {it.name}/>
-                            </ListItemAvatar>
-                            <ListItemText
-                             //id={it.id}
-                             primary={it.name}
-                            >
-                             
-                            </ListItemText>
-                        </ListItem>
-                    );
-                })
-
-             )}      
-       
-       </List>
-       <EditDialog
-         open={selected}
-         onClose={()=>setSelected(null)}
-         title="Edit Activity"         
-        >
-       <EditActivity
-       data={selected}
-       onDeleted={handleActivityDeleted}
-       done={handleActivityEdited}
-       />
-       </EditDialog>
-      
-
-       </Box>
-    )
+function handleDelete(){
+setLoading(true)
+del(
+  `${remoteRoutes.eventsActivity}/${data.id}`,
+  dt=>{
+    Toast.success("Operation succeeded")
+    onDeleted(data)
+  },
+  undefined,
+  ()=>{
+    setLoading(false)
+  })
+}
 
 
+  
 
-};
-export default EventActivities;
+  return (
+    <XForm
+    onSubmit={handleSubmit}
+    initialValues={data}
+    onDelete={handleDelete}
+    loading={loading}
+    onCancel={onCancel}
+    >
+      <Grid spacing={1}container>
+        <Grid item xs ={12}>
+        <XTextInput
+                  name="name"
+                  label="Activity"
+                  type="text"
+                  variant="outlined"
+                />
+
+        </Grid>
+
+      </Grid>
 
 
 
 
+
+    </XForm>
+  );
+}
+export default EventActivitiesEditor;
