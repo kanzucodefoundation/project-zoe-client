@@ -44,22 +44,17 @@ const useStyles = makeStyles((theme: Theme) =>
    data:any;
    done:(dt:any)=>any;
    onDeleted:(dt:any)=>any;
+   onUpdated?: (dt: any) => any;
    onCancel?:()=>any;
 
 }
 
-// export interface IActivities {
-//   id: number;
-//   name: string;
-//   eventId: number;
-// }
 
 function EventActivitiesEditor({data,done,onDeleted,onCancel }: IProps) {
-  //const classes = useStyles();
-  //const [data, setData] = React.useState<IActivities[]>([]);
+  
   const [loading, setLoading] = useState<boolean>(false);
-  // const [editActivitiy, setEditingActivity] = React.useState<boolean>(false);
-  // const [selected, setSelected] = React.useState<IActivities | null>(null);
+  const [editActivitiy, setEditingActivity] = React.useState<boolean>(false);
+ 
 function handleSubmit(values:any,actions:FormikHelpers<any>){
  const toSave:any ={
    ...values,
@@ -87,6 +82,9 @@ del(
 }
 
 
+function handleEdit() {
+  setEditingActivity(true);
+}
   
 
   return (
@@ -95,6 +93,7 @@ del(
     initialValues={data}
     onDelete={handleDelete}
     loading={loading}
+  
     onCancel={onCancel}
     >
       <Grid spacing={1}container>

@@ -50,7 +50,7 @@ function EventActivities({ eventId }: IProps) {
       setLoading(true);
       console.log("fetchActivities",eventId);
      search(
-      `${remoteRoutes.eventsActivity}/?eventId=${eventId}`,
+      remoteRoutes.eventsActivity,
       {
         eventId:eventId,
       },
@@ -70,19 +70,7 @@ function EventActivities({ eventId }: IProps) {
   },[fetchActivities]);
  
  
-  // useEffect(() => {
-  //   setLoading(true);
-  //   get(
-  //     `${remoteRoutes.eventsActivity}/?eventId=${eventId}`,
-  //     (data) => {
-  //       setData(data);
-  //     },
-  //     undefined,
-  //     () => {
-  //       setLoading(false);
-  //     }
-  //   );
-  // }, [eventId]);
+  
 
   const handleSelected = (it: IActivities) => () => {
     setSelected(it);
@@ -138,11 +126,13 @@ function EventActivities({ eventId }: IProps) {
         open={Boolean(selected)}
         onClose={() => setSelected(null)}
         title={`Edit Activity ${selected?.name}`}
+       
       >
         <EventActivitiesEditor
           data={selected}
           onDeleted={handleActivityDeleted}
-          done={handleActivityEdited}
+          done={handleActivityEdited}        
+        
         />
       </EditDialog>  
     </Box>
