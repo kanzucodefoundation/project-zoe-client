@@ -4,15 +4,13 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
-import React, { useCallback,useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import EditDialog from "../../../components/EditDialog";
 import EventActivitiesEditor from "./EventActivitiesEdit";
-//import { IActivities, IEvent } from "../types";
 import Loading from "../../../components/Loading";
 import XAvatar from "../../../components/XAvatar";
 import { remoteRoutes } from "../../../data/constants";
 import { get, search } from "../../../utils/ajax";
-//import { useCallback } from "react";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,31 +44,27 @@ function EventActivities({ eventId }: IProps) {
   const [editActivitiy, setEditingActivity] = React.useState<boolean>(false);
   const [selected, setSelected] = React.useState<IActivities | null>(null);
 
-    const fetchActivities = useCallback(()=>{
-      setLoading(true);
-      console.log("fetchActivities",eventId);
-     search(
+  const fetchActivities = useCallback(() => {
+    setLoading(true);
+    console.log("fetchActivities", eventId);
+    search(
       remoteRoutes.eventsActivity,
       {
-        eventId:eventId,
+        eventId: eventId,
       },
-      (data)=>{
+      (data) => {
         setData(data);
       },
       undefined,
-      ()=>{
+      () => {
         setLoading(false);
       }
-  );
-},[eventId]);
+    );
+  }, [eventId]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchActivities();
-
-  },[fetchActivities]);
- 
- 
-  
+  }, [fetchActivities]);
 
   const handleSelected = (it: IActivities) => () => {
     setSelected(it);
@@ -85,18 +79,17 @@ function EventActivities({ eventId }: IProps) {
     });
     setData(newData);
   };
-//
-   const handleActivityDeleted=(it:IActivities)=>{
+  //
+  const handleActivityDeleted = (it: IActivities) => {
     setSelected(null);
-    const newData= data.filter((it:any)=>it.id !== it.id);
+    const newData = data.filter((it: any) => it.id !== it.id);
     setData(newData);
-
-   }
-   //
-   function handleDone(){
+  };
+  //
+  function handleDone() {
     fetchActivities();
     setEditingActivity(false);
-   }
+  }
   function handleCloseDialog() {
     setEditingActivity(false);
   }
@@ -113,28 +106,23 @@ function EventActivities({ eventId }: IProps) {
                 <ListItemAvatar>
                   <XAvatar value={it.name} />
                 </ListItemAvatar>
-                <ListItemText
-                  //id={it.id}
-                  primary={it.name}
-                ></ListItemText>
+                <ListItemText primary={it.name}></ListItemText>
               </ListItem>
             );
           })
         )}
-      </List>   
+      </List>
       <EditDialog
         open={Boolean(selected)}
         onClose={() => setSelected(null)}
         title={`Edit Activity ${selected?.name}`}
-       
       >
         <EventActivitiesEditor
           data={selected}
           onDeleted={handleActivityDeleted}
-          done={handleActivityEdited}        
-        
+          done={handleActivityEdited}
         />
-      </EditDialog>  
+      </EditDialog>
     </Box>
   );
 }

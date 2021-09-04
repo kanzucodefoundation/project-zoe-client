@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import EditDialog from "../../../components/EditDialog";
 import Box from "@material-ui/core/Box";
 import Avatar from "@material-ui/core/Avatar";
-import { Button, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import PinDropIcon from "@material-ui/icons/PinDrop";
 import EventIcon from "@material-ui/icons/Event";
 import PeopleIcon from "@material-ui/icons/People";
@@ -13,7 +13,6 @@ import { Theme } from "@material-ui/core";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
-import AddIcon from "@material-ui/icons/Add";
 import { grey } from "@material-ui/core/colors";
 import { appPermissions, localRoutes } from "../../../data/constants";
 import Loading from "../../../components/Loading";
@@ -102,8 +101,6 @@ export default function Details() {
     setDialog(false);
     dispatch(eventsEdit(dt));
   }
-  
-  
 
   if (loading) {
     return (
@@ -146,14 +143,11 @@ export default function Details() {
     {
       //Tabview for eventactivies.
       name: "Activities",
-      component:<EventActivities eventId={Number(data.id)} />,
+      component: <EventActivities eventId={Number(data.id)} />,
     },
-    
-
   ];
- 
+
   return (
-   
     <Layout title="Event details">
       <Box className={classes.root}>
         <Box pb={2}>
@@ -188,21 +182,21 @@ export default function Details() {
                 <Typography variant="h6">{data.name}</Typography>
                 <Typography variant="body2">{`${data.privacy}, ${data.category.name}`}</Typography>
               </Box>
-              
+
               {isLeader() ? (
                 <Box pr={2}>
                   <IconButton
                     aria-label="Edit"
                     color="primary"
                     title="Edit Report"
-                    onClick={handleEdit}                  >
+                    onClick={handleEdit}
+                  >
                     <EditIcon />
                   </IconButton>
                 </Box>
               ) : null}
               {/* Component is returning data of variable data id */}
-             <EventActivitiesForm eventId={`${data.id}`}/>
-              
+              <EventActivitiesForm eventId={`${data.id}`} />
             </Box>
             <Divider />
             <Box pl={1}>
@@ -260,16 +254,6 @@ export default function Details() {
             onCancel={handleClose}
           />
         </EditDialog>
-        {/* <EditDialog
-          open={dialogAdd}
-          onClose={handleClose}
-          title="Add Activity"
-        >
-          <EventActivitiesForm
-            eventId={eventId}            
-          //onCancel={handleClose} 
-          />
-        </EditDialog> */}
       </Box>
     </Layout>
   );

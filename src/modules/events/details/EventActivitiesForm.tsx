@@ -1,22 +1,14 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Grid } from "@material-ui/core";
-import { Formik } from "formik/dist/Formik";
 import { FormikHelpers } from "formik/dist/types";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import XForm from "../../../components/forms/XForm";
 import EditDialog from "../../../components/EditDialog";
 import XTextInput from "../../../components/inputs/XTextInput";
-import { IActivities } from "../types";
 import { Box, Button } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import Layout from "../../../components/layout/Layout";
 import { remoteRoutes } from "../../../data/constants";
-import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import FormFields from "../../../components/forms/FormFields";
 import Toast from "../../../utils/Toast";
-import { IEvent } from "../types";
 import { post } from "../../../utils/ajax";
-import { get } from "../../../utils/ajax";
 
 interface IProps {
   eventId: string;
@@ -42,7 +34,7 @@ const EventActivitiesForm = (props: IProps) => {
       name: values.name,
       eventId: props.eventId,
     };
-    //console.log(toSave);
+   
     actions.resetForm();
     post(remoteRoutes.eventsActivity, toSave, () => {
       Toast.success("Added activity successfully");
