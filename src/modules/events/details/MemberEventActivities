@@ -1,0 +1,114 @@
+// import XForm from "../../../components/forms/XForm";
+
+// import { handleSubmission, ISubmission } from './../../../utils/formHelpers';
+// import { FormikHelpers } from 'formik';
+// import { action } from '@storybook/addon-actions';
+// import React, { useCallback, useEffect, useState } from "react";
+// import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+// import List from "@material-ui/core/List";
+// import ListItem from "@material-ui/core/ListItem";
+// import { remoteRoutes } from '../../../data/constants';
+// import Toast from '../../../utils/Toast';
+// import { del } from '../../../utils/ajax';
+// import { GridListProps } from '@material-ui/core';
+// import XTextInput from '../../../components/inputs/XTextInput';
+
+
+
+
+
+// const useStyles = makeStyles((theme: Theme) =>
+//   createStyles({
+//     root: {
+//       width: "100%",
+//       maxWidth: 360,
+//       backgroundColor: theme.palette.background.paper,
+//     },
+//   })
+// );
+
+
+// interface IProps {
+//     data: any;
+//     done: (dt: any) => any;
+//     onDeleted: (dt: any) => any;
+//     onUpdated?: (dt: any) => any;
+//     onCancel?: () => any;
+// }
+  
+// function MemberEventActivities({data,done,onDeleted,onCancel}:IProps) {
+
+//     const [loading, setLoading] = useState<boolean>(false);
+//     const [editAssignedMember, setEditingAssignedMember] = React.useState<boolean>(false);
+
+//     function handleSubmit(values:any,actions:FormikHelpers<any>){
+//         const toSave: any = {
+//             ...values,
+//         };
+//         const submission: ISubmission = {
+//             url: remoteRoutes.eventsActivity,
+//             values: toSave,
+//             actions,
+//             isNew: false,
+//             onAjaxComplete: done,
+//           };
+//           handleSubmission(submission);
+
+//     }
+//         function handleUnassign(){
+//             setLoading(true);
+//             del(
+//                 `${remoteRoutes.eventsActivity}/${data.id}`,
+//                     (dt) => {
+//                         Toast.success("Operation succeeded");
+//                         onDeleted(data);
+//                     },
+//                     undefined,
+//                     () => {
+//                         setLoading(false);
+//                     }
+
+
+
+
+
+//             );
+//         }
+
+//     return (
+//       <XForm> 
+//       <Grid spacing={1} container>
+//       <Grid item xs={12}>
+//         <XTextInput
+//           name="name"
+//           label="Member"
+//           type="text"
+//           variant="outlined"
+//         />
+//         <Grid item xs={12}>
+//         <XTextInput
+//           name="name"
+//           label="Activity"
+//           type="text"
+//           variant="outlined"
+//         />
+//       </Grid>
+//     </Grid>
+                
+//         </XForm>               
+
+
+// )
+
+
+
+
+
+
+
+
+
+// }
+
+
+// export  default MemberEventActivities;

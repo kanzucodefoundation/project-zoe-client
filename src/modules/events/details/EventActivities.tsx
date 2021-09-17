@@ -11,7 +11,8 @@ import Loading from "../../../components/Loading";
 import XAvatar from "../../../components/XAvatar";
 import { remoteRoutes } from "../../../data/constants";
 import { get, search } from "../../../utils/ajax";
-
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -42,8 +43,9 @@ function EventActivities({ eventId }: IProps) {
   const [data, setData] = React.useState<IActivities[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [editActivitiy, setEditingActivity] = React.useState<boolean>(false);
+  const [addingMembers, setAddingMembers] = React.useState <boolean>(false);
   const [selected, setSelected] = React.useState<IActivities | null>(null);
-
+  
   const fetchActivities = useCallback(() => {
     setLoading(true);
     console.log("fetchActivities", eventId);
@@ -93,21 +95,41 @@ function EventActivities({ eventId }: IProps) {
   function handleCloseDialog() {
     setEditingActivity(false);
   }
-
+  function handleAddNew() {
+    setAddingMembers(false);
+  }
   return (
     <Box>
+       <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleAddNew}
+                size="small"
+              >
+                Assign Member(s)&nbsp;&nbsp;
+              </Button>
       <List dense className={classes.root}>
         {loading ? (
           <Loading />
         ) : (
           data.map((it) => {
-            return (
-              <ListItem key={it.id} button onClick={handleSelected(it)}>
-                <ListItemAvatar>
+            return (             
+              <ListItem key={it.id} button onClick={handleSelected(it)}>               
+               
+               <ListItemAvatar>
                   <XAvatar value={it.name} />
                 </ListItemAvatar>
                 <ListItemText primary={it.name}></ListItemText>
               </ListItem>
+
+            //   <ListItem key={it.id} button onClick={handleSelected(it)}>               
+               
+            //   <ListItemAvatar>
+            //      <XAvatar value={it.name} />
+            //    </ListItemAvatar>
+            //    <ListItemText primary={it.name}></ListItemText>
+            //  </ListItem>
             );
           })
         )}
@@ -123,6 +145,7 @@ function EventActivities({ eventId }: IProps) {
           done={handleActivityEdited}
         />
       </EditDialog>
+
     </Box>
   );
 }
