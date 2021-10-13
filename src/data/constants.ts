@@ -58,6 +58,7 @@ export const localRoutes = {
 
   reports: '/reports',
   reportsDetails: '/reports/:reportId',
+  reportCategories: '/admin/report-categories',
 
   users: '/admin/users',
   usersGroups: '/admin/user-groups',
