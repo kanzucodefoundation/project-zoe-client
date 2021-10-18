@@ -6,7 +6,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import AppsIcon from "@material-ui/icons/Apps";
 import PeopleIcon from "@material-ui/icons/People";
-import TodayIcon from '@material-ui/icons/Today';
+import TodayIcon from "@material-ui/icons/Today";
 import PersonIcon from "@material-ui/icons/Person";
 import SettingsIcon from "@material-ui/icons/Settings";
 import ChatIcon from "@material-ui/icons/Chat";
@@ -54,7 +54,7 @@ const routes: IAppRoute[] = [
     icon: TodayIcon,
   },
   {
-    name: 'Chat',
+    name: "Chat",
     route: localRoutes.chat,
     icon: ChatIcon,
   },
@@ -82,18 +82,22 @@ const routes: IAppRoute[] = [
     route: localRoutes.settings,
     icon: SettingsIcon,
     items: [
-        {
-          name: "Manage Users",
-          route: localRoutes.users,
-        },
-        {
-          name: "Settings",
-          route: localRoutes.settings,
-        },
+      {
+        name: "Manage Users",
+        route: localRoutes.users,
+      },
+      {
+        name: "Group Categories",
+        route: localRoutes.groupsCategories,
+      },
+      {
+        name: "Settings",
+        route: localRoutes.settings,
+      },
     ],
   },
   {
-    name: 'Help',
+    name: "Help",
     route: localRoutes.help,
     icon: HelpIcon,
   },
@@ -105,18 +109,18 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 140,
     },
     logo: {
-      [theme.breakpoints.only('xs')]: {
+      [theme.breakpoints.only("xs")]: {
         height: 50,
-        width: 'auto',
+        width: "auto",
       },
       height: 58,
-      width: 'auto',
+      width: "auto",
     },
     whiteText: {
-      color: 'white',
+      color: "white",
     },
     menuItem: {
-      '&:hover': {
+      "&:hover": {
         backgroundColor: menBackgroundColor,
       },
     },
@@ -128,7 +132,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const StyledListItem = withStyles({
   root: {
-    '&$selected': {
+    "&$selected": {
       backgroundColor: menBackgroundColor,
     },
   },
