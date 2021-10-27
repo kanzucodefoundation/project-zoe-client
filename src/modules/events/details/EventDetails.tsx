@@ -37,6 +37,8 @@ import GroupLink from "../../../components/GroupLink";
 import EventAttendance from "./EventAttendance";
 import EventMetadata from "./EventMetadata";
 import EventActivities from "./EventActivities";
+import MemberEventActivitiesEditor from "./MemberEventActivitiesEditor";
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -145,6 +147,17 @@ export default function Details() {
       name: "Activities",
       component: <EventActivities eventId={Number(data.id)} />,
     },
+    {
+      //Tabview for Assigning /Unassigning MemberEventActivities.
+      name: "Assign Member(s) ",
+      component:<MemberEventActivitiesEditor/>,
+    },
+    
+
+ 
+
+  
+    
   ];
 
   return (
@@ -195,8 +208,9 @@ export default function Details() {
                   </IconButton>
                 </Box>
               ) : null}
-              {/* Component is returning data of variable data id */}
+              {/* Passing prop to eventactivities component */}
               <EventActivitiesForm eventId={`${data.id}`} />
+             
             </Box>
             <Divider />
             <Box pl={1}>
