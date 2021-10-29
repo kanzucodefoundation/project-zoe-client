@@ -19,7 +19,11 @@ export interface IEvent {
   group: any;
   attendance: IAttendance[];
   activities:IActivities[];
+<<<<<<< HEAD
   // memberActivities:IMemberActivities[];
+=======
+  memberActivities:IMemberActivities[];
+>>>>>>> 567afbfa293df175fba1901aef2342f088e77faa
   leaders: any[];
   metaData?: MetaData;
 }
@@ -36,6 +40,15 @@ name:string;
 eventId:number; 
 }
 
+<<<<<<< HEAD
+=======
+export interface IMemberActivities{
+  id:number;
+  activityId:number;
+  contactId:number; 
+  }
+  
+>>>>>>> 567afbfa293df175fba1901aef2342f088e77faa
 
 export interface IGroupEvent {
   id: string;

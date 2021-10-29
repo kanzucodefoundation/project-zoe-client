@@ -21,7 +21,6 @@ interface IProps {
 
 
 
-
 const MemberEventActivitiesUnAssignForm = ({
   isNew, done, onUpdated,onCancel,data,
  
