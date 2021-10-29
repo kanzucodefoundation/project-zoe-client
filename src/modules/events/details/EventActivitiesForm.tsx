@@ -19,6 +19,13 @@ const initialValues = {
 };
 //EventActivities component to submit activities.
 const EventActivitiesForm = (props: IProps) => {
+  
+function toLowerCase(s: string) {
+  return s[0].toUpperCase() + s.slice(1);
+}
+function removeStringSpaces(s: string) {
+  return s.replace(/\s+/g, '');
+}
   const [loading, setLoading] = useState<boolean>(false);
   const [dialogAdd, setDialogAdd] = useState<boolean>(false);
 
@@ -30,6 +37,8 @@ const EventActivitiesForm = (props: IProps) => {
   }
   //Handle submit function with to const to save form data api call to post data.
   const handleSubmit = (values: any, actions: FormikHelpers<any>) => {
+    const removeAllSpaces = removeStringSpaces(values.name);
+    const eventId= toLowerCase(removeAllSpaces)
     const toSave: any = {
       name: values.name,
       eventId: props.eventId,
