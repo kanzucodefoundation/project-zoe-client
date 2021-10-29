@@ -49,8 +49,7 @@ function EventActivities({ eventId }: IProps) {
   const fetchActivities = useCallback(() => {
     setLoading(true);
     console.log("fetchActivities", eventId);
-    search(
-      remoteRoutes.eventsActivity,
+    search(remoteRoutes.eventsActivity,
       {
         eventId: eventId,
       },
@@ -68,7 +67,7 @@ function EventActivities({ eventId }: IProps) {
     fetchActivities();
   }, [fetchActivities]);
 
-  const handleSelected = (it: IActivities) => () => {
+  const handleSelected = (it:IActivities) => () => {
     setSelected(it);
   };
 
@@ -100,21 +99,14 @@ function EventActivities({ eventId }: IProps) {
   }
   return (
     <Box>
-       <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={handleAddNew}
-                size="small"
-              >
-                Assign Member(s)&nbsp;&nbsp;
-              </Button>
+      
       <List dense className={classes.root}>
         {loading ? (
           <Loading />
         ) : (
           data.map((it) => {
-            return (             
+            return (  
+            
               <ListItem key={it.id} button onClick={handleSelected(it)}>               
                
                <ListItemAvatar>
@@ -123,17 +115,11 @@ function EventActivities({ eventId }: IProps) {
                 <ListItemText primary={it.name}></ListItemText>
               </ListItem>
 
-            //   <ListItem key={it.id} button onClick={handleSelected(it)}>               
-               
-            //   <ListItemAvatar>
-            //      <XAvatar value={it.name} />
-            //    </ListItemAvatar>
-            //    <ListItemText primary={it.name}></ListItemText>
-            //  </ListItem>
             );
           })
         )}
       </List>
+      
       <EditDialog
         open={Boolean(selected)}
         onClose={() => setSelected(null)}

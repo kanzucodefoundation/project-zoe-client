@@ -1,3 +1,4 @@
+
 export interface IEvent {
  
   id: string;
@@ -18,6 +19,7 @@ export interface IEvent {
   group: any;
   attendance: IAttendance[];
   activities:IActivities[];
+  // memberActivities:IMemberActivities[];
   leaders: any[];
   metaData?: MetaData;
 }
@@ -31,9 +33,9 @@ export interface IAttendance {
 export interface IActivities{
 id:number;
 name:string;
-eventId:number;
-
+eventId:number; 
 }
+
 
 export interface IGroupEvent {
   id: string;

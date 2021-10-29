@@ -176,7 +176,7 @@ const EventForm = ({
               name="startDate"
               label="Start Date"
               variant="outlined"
-            />
+            />    
           </Grid>
           <Grid item xs={12} md={6}>
             <XDateTimeInput
