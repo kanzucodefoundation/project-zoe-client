@@ -66,10 +66,9 @@ const MemberEventActivitiesUnAssignForm = ({
       isNew: false,
       onAjaxComplete: done,
     };
-    handleSubmission(submission);
+    handleSubmission(submission)
+
   }
-
-
   return (
     <XForm
       onSubmit={handleSubmit}
