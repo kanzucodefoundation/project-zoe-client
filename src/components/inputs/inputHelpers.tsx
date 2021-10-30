@@ -15,7 +15,10 @@ export interface IOption {
 export const toOptions = (data: string[]): IOption[] => {
   return data.map((it) => ({ name: it, id: it }));
 };
+export const toOption = (data: any[]): IOption[] => {
+ return data.map((it:any) => ({name: it["name"], id: it["id"]}));
 
+};
 export const comboParser = ({ id, name }: any): IOption => ({ id, name });
 
 export const hasValue = (text: any) => {

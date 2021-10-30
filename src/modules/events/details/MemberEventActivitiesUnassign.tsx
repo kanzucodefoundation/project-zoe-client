@@ -104,7 +104,8 @@ const MemberEventActivitiesUnassign = (props: any) => {
       </Box>
       {canEditUsers && (
         <EditDialog
-          title={`Edit Activity ${selected?.members}`}
+          // title={`Edit Activity ${selected?.members}`}
+           title={createTitle}
           open={Boolean(selected)}
           onClose={() => setSelected(null)}
         >

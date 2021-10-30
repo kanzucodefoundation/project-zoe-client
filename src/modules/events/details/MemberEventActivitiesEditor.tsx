@@ -20,6 +20,7 @@ import { XHeadCell } from "../../../components/table/XTableHead";
 import MemberEventActivitiesForm from "./MemberEventActivitiesAssignForm";
 import XTable from "../../../components/table/XTable";
 import MemberEventActivitiesUnassign from "./MemberEventActivitiesUnassign";
+import { id } from "date-fns/locale";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,7 +60,7 @@ const headCells: XHeadCell[] = [
   {
     name: "members",
     label: "Unassign ",
-    render: (members: string[]) => <MemberEventActivitiesUnassign  members= {members}   />,
+    render: (members: string[],activityId:any) => <MemberEventActivitiesUnassign  members= {members} activityId={id}  />,
   },
  
 ];

@@ -48,6 +48,7 @@ function EventActivitiesEditor({ data, done, onDeleted, onCancel }: IProps) {
       onAjaxComplete: done,
     };
     handleSubmission(submission);
+    window.location.reload();
   }
 
   function handleDelete() {

@@ -38,7 +38,7 @@ function removeStringSpaces(s: string) {
   //Handle submit function with to const to save form data api call to post data.
   const handleSubmit = (values: any, actions: FormikHelpers<any>) => {
     const removeAllSpaces = removeStringSpaces(values.name);
-    const eventId= toLowerCase(removeAllSpaces)
+    const name= toLowerCase(removeAllSpaces)
     const toSave: any = {
       name: values.name,
       eventId: props.eventId,
@@ -49,6 +49,7 @@ function removeStringSpaces(s: string) {
       Toast.success("Added activity successfully");
       handleClose();
       actions.resetForm();
+      window.location.reload();
     });
   };
   return (

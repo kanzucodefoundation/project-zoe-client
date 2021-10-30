@@ -4,11 +4,12 @@ import { remoteRoutes } from "../../../data/constants";
 import XForm from "../../../components/forms/XForm";
 import { FormikHelpers } from "formik";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { toOptions } from "../../../components/inputs/inputHelpers";
+import { toOption } from "../../../components/inputs/inputHelpers";
 import XSelectInput from "../../../components/inputs/XSelectInput";
 
 import { Grid } from "@material-ui/core";
 import { get, search } from "../../../utils/ajax";
+import XComboInput from "../../../components/inputs/XComboInput";
 
 interface IProps {
   data: any ;
@@ -38,9 +39,11 @@ const MemberEventActivitiesUnAssignForm = ({
   };
 
   const initialValues = {
-    members:data,
-  
+    person:members,
+   
   };
+
+  
   useEffect(() => {
     if (data){
       let person:any= []
@@ -78,12 +81,14 @@ const MemberEventActivitiesUnAssignForm = ({
       <Grid spacing={1} container>
         <Grid item xs={12}>
           {console.log(members,"dialog")}
-          <XSelectInput
+          <XComboInput
             name="person"
             label="Members"
-            options={toOptions(members)}
+            options={toOption(members)}
+            //value={toOption(members)}
             variant="outlined"
             margin="none"
+            multiple
           />
         </Grid>
       </Grid>
