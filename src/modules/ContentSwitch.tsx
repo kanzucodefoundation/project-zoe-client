@@ -22,7 +22,8 @@ const ContactDetails = React.lazy(
 const Settings = React.lazy(() => import('./settings/Settings'));
 const Groups = React.lazy(() => import('./groups/GroupTabView'));
 const GroupDetails = React.lazy(() => import('./groups/Details'));
-const Users = React.lazy(() => import('./admin/users/Users'));
+//const Users = React.lazy(() => import('./admin/users/Users'));
+
 
 const MembersEditor = React.lazy(
   () => import('./groups/members/MembersEditor')
@@ -33,6 +34,7 @@ const UpdatePasswordConfirmation = React.lazy(
 const EventDetails = React.lazy(() => import('./events/details/EventDetails'));
 const EventReports = React.lazy(() => import('./events/EventReports'));
 const Help = React.lazy(() => import('./help/Help'));
+//const ManageHelp = React.lazy(() => import('./admin/manageHelp/HelpFileDisplay'));
 
 const MailChat = React.lazy(() => import('./messaging/MailChat'));
 
@@ -83,6 +85,10 @@ const ContentSwitch = () => {
           appPermissions.roleEventView,
           appPermissions.roleEventEdit,
         ]) && <Route path={localRoutes.events} component={EventReports} />}
+
+        {/* {hasAnyRole(user, [
+          appPermissions.manageHelp,
+        ]) && <Route path={localRoutes.manageHelp} component={ManageHelp} />} */}
 
         <Route path={localRoutes.settings} component={Settings} />
         <Route path={localRoutes.test} component={Testing} />
