@@ -8,14 +8,17 @@ import { toOption } from "../../../components/inputs/inputHelpers";
 import XSelectInput from "../../../components/inputs/XSelectInput";
 
 import { Grid } from "@material-ui/core";
-import { get, search } from "../../../utils/ajax";
+import { get, post, put, search } from "../../../utils/ajax";
 import XComboInput from "../../../components/inputs/XComboInput";
+import Toast from "../../../utils/Toast";
+import { id } from "date-fns/locale";
+
 
 interface IProps {
   data: any ;
   isNew: boolean;
   onUpdated?: (g: any) => any;
-  onCancel?: (g: any) => any;
+  onCancel?: () => any;
   done: any;
 }
 
@@ -33,17 +36,27 @@ const MemberEventActivitiesUnAssignForm = ({
   const [selected, setSelected] = useState<any | null>(null);
   const [members, setMembers] = useState<any[]>([]);
   
-  console.log(members, "###");
+  console.log(members, "###new");
   const handleEdit = () => {
+    // for(let i= 0;i <members.length;i++){
+    //   if(members[i]){
+    //     members.push(members[i]);
+    //   }
+      
+    // }
+    
    setCreateDialog(true);
   };
 
+ 
   const initialValues = {
     person:members,
    
   };
-
-  
+  const handleClose = () => {
+    setCreateDialog(false);
+  };
+ 
   useEffect(() => {
     if (data){
       let person:any= []
@@ -56,19 +69,38 @@ const MemberEventActivitiesUnAssignForm = ({
     }
   }, []);
  
+ 
+
+
+
   
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
+    console.log(values, "### values")
     const toSave: any = {
       ...values,
     }
+   
     const submission: ISubmission = {
       url: remoteRoutes.memberEventActivities,
+
       values: toSave,
       actions,
       isNew: false,
       onAjaxComplete: done,
+
+      
     };
-    handleSubmission(submission)
+    const person:any = members.map((it:any) => it.contactId);
+    const memberValues:any = values[0].map((it:any) => it.contactId) ;
+    const result = person.filter((it:any)=> !memberValues.includes(it));
+    console.log(result, "### values")
+    // put(remoteRoutes.memberEventActivities, toSave, () => {
+      
+    //   Toast.success(" Member unassigned successfully");
+    //   handleClose();
+    //   actions.resetForm();
+    //   window.location.reload();
+    // });
 
   }
   return (
@@ -76,7 +108,7 @@ const MemberEventActivitiesUnAssignForm = ({
       onSubmit={handleSubmit}
       initialValues={{initialValues }}
       loading={loading}
-      onCancel={done}
+      onCancel={onCancel}
     >
       <Grid spacing={1} container>
         <Grid item xs={12}>
@@ -85,7 +117,7 @@ const MemberEventActivitiesUnAssignForm = ({
             name="person"
             label="Members"
             options={toOption(members)}
-            //value={toOption(members)}
+            //options={members}
             variant="outlined"
             margin="none"
             multiple

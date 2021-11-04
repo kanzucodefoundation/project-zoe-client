@@ -110,7 +110,7 @@ const MemberEventActivitiesUnassign = (props: any) => {
           onClose={() => setSelected(null)}
         >
           <MemberEventActivitiesUnAssignForm
-            //onUpdated={handleEdit}
+            onUpdated={handleEdit}
             done={handleEdit}
             data={selected}
             isNew={!selected}
