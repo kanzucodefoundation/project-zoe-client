@@ -43,13 +43,14 @@ function EventActivities({ eventId }: IProps) {
   const [data, setData] = React.useState<IActivities[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [editActivitiy, setEditingActivity] = React.useState<boolean>(false);
-  const [addingMembers, setAddingMembers] = React.useState <boolean>(false);
+  const [addingMembers, setAddingMembers] = React.useState<boolean>(false);
   const [selected, setSelected] = React.useState<IActivities | null>(null);
-  
+
   const fetchActivities = useCallback(() => {
     setLoading(true);
     console.log("fetchActivities", eventId);
-    search(remoteRoutes.eventsActivity,
+    search(
+      remoteRoutes.eventsActivity,
       {
         eventId: eventId,
       },
@@ -67,7 +68,7 @@ function EventActivities({ eventId }: IProps) {
     fetchActivities();
   }, [fetchActivities]);
 
-  const handleSelected = (it:IActivities) => () => {
+  const handleSelected = (it: IActivities) => () => {
     setSelected(it);
   };
 
@@ -80,13 +81,13 @@ function EventActivities({ eventId }: IProps) {
     });
     setData(newData);
   };
-  //
+
   const handleActivityDeleted = (it: IActivities) => {
     setSelected(null);
     const newData = data.filter((it: any) => it.id !== it.id);
     setData(newData);
   };
-  //
+
   function handleDone() {
     fetchActivities();
     setEditingActivity(false);
@@ -99,27 +100,23 @@ function EventActivities({ eventId }: IProps) {
   }
   return (
     <Box>
-      
       <List dense className={classes.root}>
         {loading ? (
           <Loading />
         ) : (
           data.map((it) => {
-            return (  
-            
-              <ListItem key={it.id} button onClick={handleSelected(it)}>               
-               
-               <ListItemAvatar>
+            return (
+              <ListItem key={it.id} button onClick={handleSelected(it)}>
+                <ListItemAvatar>
                   <XAvatar value={it.name} />
                 </ListItemAvatar>
                 <ListItemText primary={it.name}></ListItemText>
               </ListItem>
-
             );
           })
         )}
       </List>
-      
+
       <EditDialog
         open={Boolean(selected)}
         onClose={() => setSelected(null)}
@@ -131,7 +128,6 @@ function EventActivities({ eventId }: IProps) {
           done={handleActivityEdited}
         />
       </EditDialog>
-
     </Box>
   );
 }

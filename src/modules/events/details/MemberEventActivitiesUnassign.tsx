@@ -40,41 +40,13 @@ const MemberEventActivitiesUnassign = (props: any) => {
   const user = useSelector((state: IState) => state.core.user);
 
   const handleEdit = () => {
-    // const { activityName,members} = dt;
     const members = props.members;
-    //console.log(members, "###");
-    // const toEdit = {
 
-    //   activityName,
-    //   members,
-    // };
     setSelected(members);
     setCreateDialog(true);
   };
 
-  const handleComplete = (dt: any) => {
-    if (selected) {
-      const newData = data.map((it: any) => {
-        if (it.id === dt.id) return dt;
-        else return it;
-      });
-      setData(newData);
-    } else {
-      const newData = [...data, dt];
-      setData(newData);
-    }
-    closeCreateDialog();
-  };
-
-  // function handleDelete() {
-  //   del(`${remoteRoutes.memberEventActivities}`, (resp) => {
-  //     console.log(resp);
-  //   window.location.reload();
-  //   Toast.success('Deleted successfully');
-  //   });
-  // }
   function closeCreateDialog() {
-    setSelected(null);
     setCreateDialog(false);
   }
   const createTitle = "Unassign  Members ";
@@ -93,28 +65,20 @@ const MemberEventActivitiesUnassign = (props: any) => {
             <EditIcon />
           </IconButton>
         )}
-        {/* <IconButton
-          aria-label="Delete"
-          color="primary"
-          title="Delete activity and member"
-          onClick={handleDelete}
-        >
-          <DeleteIcon />
-        </IconButton> */}
       </Box>
       {canEditUsers && (
         <EditDialog
-          // title={`Edit Activity ${selected?.members}`}
-           title={createTitle}
-          open={Boolean(selected)}
-          onClose={() => setSelected(null)}
+          open={createDialog}
+          onClose={closeCreateDialog}
+          title={createTitle}
         >
           <MemberEventActivitiesUnAssignForm
             onUpdated={handleEdit}
-            done={handleEdit}
             data={selected}
-            isNew={!selected}
-            onCancel={closeCreateDialog} />
+            onCancel={closeCreateDialog}
+            isNew={true}
+            done={closeCreateDialog}
+          />
         </EditDialog>
       )}
     </Box>

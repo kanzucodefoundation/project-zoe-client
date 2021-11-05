@@ -3,13 +3,9 @@ import { remoteRoutes } from "../../../data/constants";
 import XForm from "../../../components/forms/XForm";
 import { FormikHelpers } from "formik";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { toOptions } from "../../../components/inputs/inputHelpers";
-import XSelectInput from "../../../components/inputs/XSelectInput";
 import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
-import { cleanComboValue } from "../../../utils/dataHelpers";
 import { comboParser } from "../../../components/inputs/inputHelpers";
 import { Grid } from "@material-ui/core";
-import XComboInput from "../../../components/inputs/XComboInput";
 
 interface IProps {
   data?: any | null;
@@ -80,29 +76,17 @@ const MemberEventActivitiesForm = ({
             variant="outlined"
           />
         </Grid>
-        {/* <Grid item xs={12}>
-          <XSelectInput
-            name="contact"
-            label="Members"
-            options={toOptions(data)}
-            variant="outlined"
-            margin="none"
-          />
-           </Grid> */}
+
         <Grid item xs={12}>
-          < XRemoteSelect
+          <XRemoteSelect
             name="contact"
             label="Members"
-            remote={remoteRoutes.contactsPeopleCombo}           
+            remote={remoteRoutes.contactsPeopleCombo}
             parser={comboParser}
             variant="outlined"
-            multiple       
-
-
+            multiple
           />
         </Grid>
-        
-       
       </Grid>
     </XForm>
   );

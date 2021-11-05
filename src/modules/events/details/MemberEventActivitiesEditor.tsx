@@ -60,9 +60,10 @@ const headCells: XHeadCell[] = [
   {
     name: "members",
     label: "Unassign ",
-    render: (members: string[],activityId:any) => <MemberEventActivitiesUnassign  members= {members} activityId={id}  />,
+    render: (members: string[], activityId: any) => (
+      <MemberEventActivitiesUnassign members={members} activityId={id} />
+    ),
   },
- 
 ];
 
 const MemberEventActivitiesEditor = () => {
@@ -70,7 +71,7 @@ const MemberEventActivitiesEditor = () => {
   const [createDialog, setCreateDialog] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<any[]>([]);
-  // const [filter, setFilter] = useState<any>({ limit: 100 });
+ 
 
   function handleNew() {
     setCreateDialog(true);
@@ -100,35 +101,35 @@ const MemberEventActivitiesEditor = () => {
   return (
     <Box>
       <Box p={1} className={classes.root}>
-          <Grid item xs={12}>
-            <Box display="flex" pt={1} style={{ paddingBottom: 20 }}>
-              <Box display="flex" justifyContent="flex-end">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                  onClick={handleNew}
-                  size="small"
-                >
-                  Assign &nbsp;&nbsp;
-                </Button>
-              </Box>
+        <Grid item xs={12}>
+          <Box display="flex" pt={1} style={{ paddingBottom: 20 }}>
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleNew}
+                size="small"
+              >
+                Assign &nbsp;&nbsp;
+              </Button>
             </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <EditDialog
-              open={createDialog}
-              onClose={closeCreateDialog}
-              title={createTitle}
-            >
-              <MemberEventActivitiesForm
-                data={{}}
-                isNew={true}
-                done={closeCreateDialog}
-              />
-            </EditDialog>
-          </Grid>
-           <Divider />
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <EditDialog
+            open={createDialog}
+            onClose={closeCreateDialog}
+            title={createTitle}
+          >
+            <MemberEventActivitiesForm
+              data={{}}
+              isNew={true}
+              done={closeCreateDialog}
+            />
+          </EditDialog>
+        </Grid>
+        <Divider />
       </Box>
       <Box>
         <Hidden smDown>

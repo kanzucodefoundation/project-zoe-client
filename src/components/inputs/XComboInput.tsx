@@ -11,7 +11,7 @@ const XComboInput = (props: XComboProps) => {
     const [field, meta, helpers] = useField({name: props.name});
     const error = hasValue(meta.error) ? meta.error : undefined
     const showError = Boolean(error && meta.touched)
-    console.log(field.value ,"FieldValue")
+   
     return (
         <PComboInput
             {...props}
