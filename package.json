@@ -69,14 +69,19 @@
     "yup": "^0.27.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^14.1.0",
+    "@commitlint/config-conventional": "^14.1.0",
     "@storybook/addon-actions": "^5.3.17",
     "@storybook/addon-links": "^5.3.17",
     "@storybook/addons": "^5.3.17",
     "@storybook/preset-create-react-app": "^2.0.0",
     "@storybook/react": "^5.3.17",
     "@types/multer": "^1.4.5",
-    "cz-conventional-changelog": "^3.3.0",
-    "husky": "^7.0.4",
+    "commitizen": "4.2.4",
+    "cz-conventional-changelog": "3.3.0",
+    "husky": "^7.0.0",
+    "init": "0.1.2",
+    "lint-staged": "^11.2.6",
     "validate-commit-msg": "^2.14.0"
   },
   "scripts": {
@@ -86,7 +91,9 @@
     "test": "react-scripts test",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
-    "commit": "cz"
+    "commit": "cz",
+    "pre-commit": " npm test",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -110,6 +117,8 @@
   },
   "husky": {
     "hooks": {
+      "pre-commit": "npm run",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
     }
   }
