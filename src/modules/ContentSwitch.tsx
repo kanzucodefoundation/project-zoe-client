@@ -1,3 +1,4 @@
+
 import React, { Suspense } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import { appPermissions, localRoutes } from "../data/constants";
@@ -8,37 +9,65 @@ import { hasAnyRole } from "../data/appRoles";
 import Loading from "../components/Loading";
 // import EventActivities from "./events/details/EventActivities";
 
+import React, { Suspense } from 'react';
+import { Link, Route, Switch } from 'react-router-dom';
+import { appPermissions, localRoutes } from '../data/constants';
+import Layout from '../components/layout/Layout';
+import { useSelector } from 'react-redux';
+import { IState } from '../data/types';
+import { hasAnyRole } from '../data/appRoles';
+import Loading from '../components/Loading';
+import MembersCalendar from './groups/members/MembersCalendar';
+
+
 //const Events= React.lazy(() => import( "./events/EventsList"));
 //const GroupReports = React.lazy(() => import("./events/GroupReports"));
 
-const UserControl = React.lazy(() => import("./admin/users/UserControl"));
+const UserControl = React.lazy(() => import('./admin/users/UserControl'));
 
-const Dashboard = React.lazy(() => import("./dashboard/Dashboard"));
-const Contacts = React.lazy(() => import("./contacts/Contacts"));
+const Dashboard = React.lazy(() => import('./dashboard/Dashboard'));
+const Contacts = React.lazy(() => import('./contacts/Contacts'));
 const ContactDetails = React.lazy(
-  () => import("./contacts/details/ContactDetails")
+  () => import('./contacts/details/ContactDetails')
 );
-const Settings = React.lazy(() => import("./settings/Settings"));
-const Groups = React.lazy(() => import("./groups/GroupTabView"));
-const GroupDetails = React.lazy(() => import("./groups/Details"));
+
+const Settings = React.lazy(() => import('./settings/Settings'));
+const Groups = React.lazy(() => import('./groups/GroupTabView'));
+const GroupDetails = React.lazy(() => import('./groups/Details'));
+const Users = React.lazy(() => import('./admin/users/Users'));
+
 const MembersEditor = React.lazy(
-  () => import("./groups/members/MembersEditor")
+  () => import('./groups/members/MembersEditor')
 );
 const UpdatePasswordConfirmation = React.lazy(
-  () => import("./login/UpdatePasswordConfirmation")
+  () => import('./login/UpdatePasswordConfirmation')
 );
+const EventDetails = React.lazy(() => import('./events/details/EventDetails'));
+const EventReports = React.lazy(() => import('./events/EventReports'));
+const Help = React.lazy(() => import('./help/Help'));
+
+const MailChat = React.lazy(() => import('./messaging/MailChat'));
+const ReportFields = React.lazy(
+  () => import('../modules/admin/reports/reportCategories')
+);
+
 const EventDetails = React.lazy(() => import("./events/details/EventDetails"));
 const EventReports = React.lazy(() => import("./events/EventReports"));
  const EventActivitiesForm =  React.lazy(() => import("./events/details/EventActivitiesForm"));
 const Help = React.lazy(() => import("./help/Help"));
+
 
 const ContentSwitch = () => {
   const user = useSelector((state: IState) => state.core.user);
   return (
     <Suspense fallback={<Loading />}>
       <Switch>
+        <Route path={localRoutes.chat} component={MailChat} />
+
         <Route exact={true} path="/" component={Dashboard} />
         <Route path={localRoutes.dashboard} component={Dashboard} />
+
+        <Route path={localRoutes.calendar} component={MembersCalendar} />
 
         <Route path={localRoutes.contactsDetails} component={ContactDetails} />
         {hasAnyRole(user, [
@@ -76,7 +105,11 @@ const ContentSwitch = () => {
         ]) && <Route path={localRoutes.events} component={EventReports} />}
 
         <Route path={localRoutes.settings} component={Settings} />
+
         <Route path={localRoutes.eventActivities} component={EventActivitiesForm} />
+
+        <Route path={localRoutes.reportCategories} component={ReportFields} />
+
         <Route path={localRoutes.test} component={Testing} />
         <Route
           path={localRoutes.updatePassword}
