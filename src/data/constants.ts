@@ -59,6 +59,7 @@ export const localRoutes = {
 
   reports: '/reports',
   reportsDetails: '/reports/:reportId',
+  reportCategories: '/admin/report-categories',
 
   users: '/admin/users',
   usersGroups: '/admin/user-groups',
@@ -122,6 +123,7 @@ export const remoteRoutes = {
   eventsCategories: url + '/api/events/category',
   eventsAttendance: url + '/api/events/attendance',
   eventsField: url + '/api/events/fields',
+  eventsRegistration: url + '/api/events/registration',
 
   reports: url + '/api/reports/report',
   reportsCategories: url + 'api/reports/category',
