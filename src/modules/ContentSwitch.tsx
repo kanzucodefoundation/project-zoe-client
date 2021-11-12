@@ -1,17 +1,17 @@
-import React, { Suspense } from "react";
-import { Link, Route, Switch } from "react-router-dom";
-import { appPermissions, localRoutes } from "../data/constants";
-import Layout from "../components/layout/Layout";
-import { useSelector } from "react-redux";
-import { IState } from "../data/types";
-import { hasAnyRole } from "../data/appRoles";
-import Loading from "../components/Loading";
-import MembersCalendar from "./groups/members/MembersCalendar";
+import React, { Suspense } from 'react';
+import { Link, Route, Switch } from 'react-router-dom';
+import { appPermissions, localRoutes } from '../data/constants';
+import Layout from '../components/layout/Layout';
+import { useSelector } from 'react-redux';
+import { IState } from '../data/types';
+import { hasAnyRole } from '../data/appRoles';
+import Loading from '../components/Loading';
+import MembersCalendar from './groups/members/MembersCalendar';
 
 //const Events= React.lazy(() => import( "./events/EventsList"));
 //const GroupReports = React.lazy(() => import("./events/GroupReports"));
 
-const UserControl = React.lazy(() => import("./admin/users/UserControl"));
+const UserControl = React.lazy(() => import('./admin/users/UserControl'));
 
 const Dashboard = React.lazy(() => import('./dashboard/Dashboard'));
 const Contacts = React.lazy(() => import('./contacts/Contacts'));
@@ -38,6 +38,10 @@ const Help = React.lazy(() => import('./help/Help'));
 
 const MailChat = React.lazy(() => import('./messaging/MailChat'));
 
+const GroupCategories = React.lazy(
+  () => import('../modules/admin/groupCategories/groupCategories')
+);
+
 const ContentSwitch = () => {
   const user = useSelector((state: IState) => state.core.user);
   return (
@@ -48,7 +52,6 @@ const ContentSwitch = () => {
         <Route exact={true} path="/" component={Dashboard} />
         <Route path={localRoutes.dashboard} component={Dashboard} />
 
-        
         <Route path={localRoutes.calendar} component={MembersCalendar} />
 
         <Route path={localRoutes.contactsDetails} component={ContactDetails} />
@@ -91,6 +94,10 @@ const ContentSwitch = () => {
         ]) && <Route path={localRoutes.manageHelp} component={ManageHelp} />} */}
 
         <Route path={localRoutes.settings} component={Settings} />
+        <Route
+          path={localRoutes.groupsCategories}
+          component={GroupCategories}
+        />
         <Route path={localRoutes.test} component={Testing} />
         <Route
           path={localRoutes.updatePassword}
