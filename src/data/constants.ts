@@ -52,6 +52,7 @@ export const localRoutes = {
   calendar: '/calendar',
 
   groupsReports: '/groups',
+  groupsCategories: '/admin/group-categories',
 
   events: '/events',
   eventsDetails: '/events/:eventId',
