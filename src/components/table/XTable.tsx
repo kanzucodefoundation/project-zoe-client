@@ -228,7 +228,7 @@ export default function XTable(props: XTableProps) {
             nextIconButtonProps={{
               "aria-label": "next page",
             }}
-            onChangePage={handleChangePage}
+            onPageChange={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         )}

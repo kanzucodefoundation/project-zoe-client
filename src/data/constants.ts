@@ -21,6 +21,8 @@ export const appPermissions = {
 
   roleEventView: 'EVENT_VIEW',
   roleEventEdit: 'EVENT_EDIT',
+
+  manageHelp: 'MANAGE_HELP',
 };
 
 export const permissionsList = Object.values(appPermissions);
@@ -66,6 +68,7 @@ export const localRoutes = {
   tags: '/admin/tags',
   settings: '/admin/settings',
   test: '/test',
+  manageHelp: '/admin/manageHelp',
 
   updatePassword: '/update-password',
   resetPassword: '/reset-password/:token',
@@ -130,4 +133,6 @@ export const remoteRoutes = {
 
   contactsCompany: url + '/api/crm/contact/company',
   contactsAvatar: url + '/api/crm/contact/avatar',
+
+  help: url + '/api/help',
 };

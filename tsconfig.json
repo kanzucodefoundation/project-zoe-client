@@ -6,6 +6,13 @@
       "dom.iterable",
       "esnext"
     ],
+    "types": [
+      "node",
+      "gapi",
+      "gapi.auth2",
+      "gapi.client",
+      "gapi.client.calendar"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -17,7 +24,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react"
+    "jsx": "react",
+    "noFallthroughCasesInSwitch": true
   },
   "include": [
     "src"
