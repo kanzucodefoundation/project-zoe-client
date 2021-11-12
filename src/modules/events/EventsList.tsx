@@ -1,36 +1,37 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
-import XTable from "../../components/table/XTable";
-import { XHeadCell } from "../../components/table/XTableHead";
-import { appPermissions, localRoutes } from "../../data/constants";
-import Loading from "../../components/Loading";
-import Box from "@material-ui/core/Box";
-import Hidden from "@material-ui/core/Hidden";
-import EditDialog from "../../components/EditDialog";
-import AddIcon from "@material-ui/icons/Add";
-import Fab from "@material-ui/core/Fab";
-import Typography from "@material-ui/core/Typography";
-import { IMobileRow } from "../../components/DataList";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
-import { useHistory } from "react-router";
-import { hasValue } from "../../components/inputs/inputHelpers";
-import { useDispatch, useSelector } from "react-redux";
-import { printDate, printDateTime } from "../../utils/dateHelpers";
-import GroupLink from "../../components/GroupLink";
-import PersonAvatar from "../../components/PersonAvatar";
-import { hasAnyRole } from "../../data/appRoles";
-import { IState } from "../../data/types";
-import ListHeader from "../../components/ListHeader";
-import Button from "@material-ui/core/Button";
-import EventsFilter from "./EventsFilter";
-import EventForm from "./forms/EventForm";
-import EventLink from "./EventLink";
-import { IEvent } from "./types";
-import { eventsFetchAsync, IEventState } from "../../data/events/eventsReducer";
+import React, { Fragment, useEffect, useState } from 'react';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import XTable from '../../components/table/XTable';
+import { XHeadCell } from '../../components/table/XTableHead';
+import { appPermissions, localRoutes } from '../../data/constants';
+import Loading from '../../components/Loading';
+import Box from '@material-ui/core/Box';
+import Hidden from '@material-ui/core/Hidden';
+import EditDialog from '../../components/EditDialog';
+import AddIcon from '@material-ui/icons/Add';
+import Fab from '@material-ui/core/Fab';
+import Typography from '@material-ui/core/Typography';
+import { IMobileRow } from '../../components/DataList';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import { useHistory } from 'react-router';
+import { hasValue } from '../../components/inputs/inputHelpers';
+import { useDispatch, useSelector } from 'react-redux';
+import { printDate, printDateTime } from '../../utils/dateHelpers';
+import GroupLink from '../../components/GroupLink';
+import PersonAvatar from '../../components/PersonAvatar';
+import { hasAnyRole } from '../../data/appRoles';
+import { IState } from '../../data/types';
+import ListHeader from '../../components/ListHeader';
+import Button from '@material-ui/core/Button';
+import EventsFilter from './EventsFilter';
+import EventForm from './forms/EventForm';
+import EventLink from './EventLink';
+import { IEvent } from './types';
+import { eventsFetchAsync, IEventState } from '../../data/events/eventsReducer';
+import EventRegisterButton from './EventRegister';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(2),
     },
     fab: {
-      position: "absolute",
+      position: 'absolute',
       bottom: theme.spacing(2),
       right: theme.spacing(2),
     },
@@ -51,28 +52,33 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const headCells: XHeadCell[] = [
   {
-    name: "id",
-    label: "Name",
+    name: 'id',
+    label: 'Name',
     render: (value, rec) => <EventLink id={value} name={rec.name} />,
   },
   {
-    name: "category.name",
-    label: "Category",
+    name: 'category.name',
+    label: 'Category',
   },
   {
-    name: "startDate",
-    label: "Start Date",
+    name: 'startDate',
+    label: 'Start Date',
     render: printDate,
   },
   {
-    name: "group",
-    label: "Group",
+    name: 'group',
+    label: 'Group',
     render: (value) =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-",
+      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
   },
   {
-    name: "submittedBy",
-    label: "Leader",
+    name: 'submittedBy',
+    label: 'Leader',
+  },
+  {
+    name: 'id',
+    render: (value, rec) => <EventRegisterButton id={value} />,
+    label: 'Registration',
   },
 ];
 
@@ -129,7 +135,7 @@ const EventsList = () => {
     setShowDialog(false);
   }
 
-  const createTitle = "New Event";
+  const createTitle = 'New Event';
   return (
     <>
       <Box p={1} className={classes.root}>
