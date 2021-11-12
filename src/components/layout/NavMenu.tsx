@@ -90,6 +90,10 @@ const routes: IAppRoute[] = [
           name: "Settings",
           route: localRoutes.settings,
         },
+        {
+          name: "Manage Help",
+          route: localRoutes.manageHelp,
+        },
     ],
   },
   {
