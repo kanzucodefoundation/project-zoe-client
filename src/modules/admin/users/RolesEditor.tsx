@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import * as yup from "yup";
 import { reqArray, reqObject, reqString } from "../../../data/validations";
 import { FormikHelpers } from "formik";
@@ -6,15 +6,12 @@ import Grid from "@material-ui/core/Grid";
 import XForm from "../../../components/forms/XForm";
 import XTextInput from "../../../components/inputs/XTextInput";
 import XCheckBoxInput from "../../../components/inputs/XCheckBoxInput";
-import { remoteRoutes } from "../../../data/constants";
-import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
+import { remoteRoutes, permissionsList } from "../../../data/constants";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { comboParser } from "../../../components/inputs/inputHelpers";
-import { del, get } from "../../../utils/ajax";
+import { del } from "../../../utils/ajax";
 import Toast from "../../../utils/Toast";
 import XComboInput from "../../../components/inputs/XComboInput";
 import { cleanComboValue } from "../../../utils/dataHelpers";
-import { IRoles } from "./types";
 
 interface IProps {
   data: any;
@@ -25,41 +22,28 @@ interface IProps {
 }
 
 const schema = yup.object().shape({
-  password: reqString.min(8),
-  contact: reqObject,
-  roles: reqArray,
+  role: reqString,
+  permissions: reqArray,
+  description: reqString,
 });
 
-const editSchema = yup.object().shape({
-  password: yup.string().min(8),
-  roles: reqArray,
-});
 const initialValues = {
-  contact: null,
-  password: null,
-  roles: [],
+  role: null,
+  permissions: [],
   isActive: true,
 };
-const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
+const RolesEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const userRoles: string[] = [];
-
-  useEffect(() => {
-    get(remoteRoutes.roles, (resp: IRoles[]) =>
-      resp.map((it: IRoles) => it.isActive && userRoles.push(it.role))
-    );
-  }, [userRoles]);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: any = {
       ...values,
-      contactId: values.contact.id,
-      password: values.password,
-      roles: cleanComboValue(values.roles),
+      id: values.id,
+      permissions: cleanComboValue(values.permissions),
       isActive: values.isActive,
     };
     const submission: ISubmission = {
-      url: remoteRoutes.users,
+      url: remoteRoutes.roles,
       values: toSave,
       actions,
       isNew,
@@ -71,9 +55,8 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
   function handleDelete() {
     setLoading(true);
     del(
-      `${remoteRoutes.users}/${data.id}`,
+      `${remoteRoutes.roles}/${data.id}`,
       (dt) => {
-        console.log("Delete response", dt);
         Toast.success("Operation succeeded");
         onDeleted(data);
       },
@@ -87,7 +70,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
   return (
     <XForm
       onSubmit={handleSubmit}
-      schema={isNew ? schema : editSchema}
+      schema={schema}
       initialValues={data || initialValues}
       onDelete={isNew ? undefined : handleDelete}
       loading={loading}
@@ -95,47 +78,31 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
     >
       <Grid spacing={1} container>
         <Grid item xs={12}>
-          {isNew && (
-            <XRemoteSelect
-              name="contact"
-              label="Person"
-              filter={{
-                skipUsers: true,
-              }}
-              remote={remoteRoutes.contactsPeopleCombo}
-              parser={comboParser}
-              variant="outlined"
-            />
-          )}
+          <XTextInput name="role" label="Role" type="text" variant="outlined" />
+        </Grid>
+        <Grid item xs={12}>
+          <XTextInput
+            name="description"
+            label="Description"
+            type="text"
+            variant="outlined"
+          />
         </Grid>
         <Grid item xs={12}>
           <XComboInput
-            name="roles"
-            label="Roles"
-            options={userRoles}
+            name="permissions"
+            label="Permissions"
+            options={permissionsList}
             variant="outlined"
             multiple
           />
         </Grid>
         <Grid item xs={12}>
-          <XTextInput
-            name="password"
-            label="Password"
-            type="password"
-            value={"Hello"}
-            variant="outlined"
-            autoComplete="off"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <XCheckBoxInput
-            name="isActive"
-            label="Do you want to activate this user?"
-          />
+          <XCheckBoxInput name="isActive" label="Activate Role?" />
         </Grid>
       </Grid>
     </XForm>
   );
 };
 
-export default UserEditor;
+export default RolesEditor;

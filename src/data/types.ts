@@ -13,6 +13,7 @@ export interface IAuthUser {
   email: string;
   fullName: string;
   roles: string[];
+  permissions: string[];
 }
 
 export interface ILoginResponse {

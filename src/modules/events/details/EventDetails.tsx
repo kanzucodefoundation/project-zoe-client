@@ -14,7 +14,7 @@ import DateRangeIcon from "@material-ui/icons/DateRange";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
 import { grey } from "@material-ui/core/colors";
-import { appRoles, localRoutes } from "../../../data/constants";
+import { appPermissions, localRoutes } from "../../../data/constants";
 import Loading from "../../../components/Loading";
 import { Alert } from "@material-ui/lab";
 import { useHistory, useParams } from "react-router";
@@ -84,7 +84,7 @@ export default function Details() {
 
     const isLeader = leaderIds.indexOf(userId) > -1;
 
-    return isLeader || hasAnyRole(profile, [appRoles.roleGroupEdit]);
+    return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
   };
 
   function handleClose() {
@@ -150,12 +150,15 @@ export default function Details() {
               {
                 path: localRoutes.home,
                 label: "Dashboard",
-                auth: hasAnyRole(profile, [appRoles.roleDashboard]),
+                auth: hasAnyRole(profile, [appPermissions.roleDashboard]),
               },
               {
                 path: localRoutes.events,
                 label: "Events",
-                auth: hasAnyRole(profile, [appRoles.roleEventView, appRoles.roleEventEdit]),
+                auth: hasAnyRole(profile, [
+                  appPermissions.roleEventView,
+                  appPermissions.roleEventEdit,
+                ]),
               },
             ]}
           />

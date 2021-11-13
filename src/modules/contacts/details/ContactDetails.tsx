@@ -16,7 +16,11 @@ import Profile from "./info/Profile";
 import ContactGroups from "./groups/ContactGroups";
 import Info from "./info/Info";
 import { get } from "../../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../../data/constants";
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from "../../../data/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { crmConstants } from "../../../data/contacts/reducer";
 import { IState } from "../../../data/types";
@@ -32,14 +36,14 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(1),
       borderRadius: 0,
       minHeight: "100%",
-      overflow: "show"
+      overflow: "show",
     },
     divider: {
-      marginTop: theme.spacing(2)
+      marginTop: theme.spacing(2),
     },
     noPadding: {
-      padding: 0
-    }
+      padding: 0,
+    },
   })
 );
 
@@ -69,7 +73,7 @@ function TabPanel(props: TabPanelProps) {
 function a11yProps(index: any) {
   return {
     id: `wrapped-tab-${index}`,
-    "aria-controls": `wrapped-tabpanel-${index}`
+    "aria-controls": `wrapped-tabpanel-${index}`,
   };
 }
 
@@ -96,10 +100,10 @@ const ContactDetails = (props: IProps) => {
     setLoading(true);
     get(
       `${remoteRoutes.contacts}/${contactId}`,
-      resp =>
+      (resp) =>
         dispatch({
           type: crmConstants.crmFetchOne,
-          payload: resp
+          payload: resp,
         }),
       undefined,
       () => setLoading(false)
@@ -115,13 +119,16 @@ const ContactDetails = (props: IProps) => {
             {
               path: localRoutes.home,
               label: "Dashboard",
-              auth: hasAnyRole(profile, [appRoles.roleDashboard]),
+              auth: hasAnyRole(profile, [appPermissions.roleDashboard]),
             },
             {
               path: localRoutes.contacts,
               label: "People",
-              auth: hasAnyRole(profile, [appRoles.roleCrmView, appRoles.roleCrmEdit]),
-            }
+              auth: hasAnyRole(profile, [
+                appPermissions.roleCrmView,
+                appPermissions.roleCrmEdit,
+              ]),
+            },
           ]}
         />
       </Box>

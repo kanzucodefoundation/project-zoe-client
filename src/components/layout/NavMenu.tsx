@@ -6,19 +6,20 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import AppsIcon from "@material-ui/icons/Apps";
 import PeopleIcon from "@material-ui/icons/People";
+import TodayIcon from '@material-ui/icons/Today';
 import PersonIcon from "@material-ui/icons/Person";
 import SettingsIcon from "@material-ui/icons/Settings";
+import ChatIcon from "@material-ui/icons/Chat";
 import BubbleChartIcon from "@material-ui/icons/BubbleChart";
 import HelpIcon from "@material-ui/icons/Help";
 import AssessmentIcon from "@material-ui/icons/Assessment";
 import { useHistory, useLocation } from "react-router-dom";
-import { appRoles, localRoutes } from "../../data/constants";
+import { appPermissions, localRoutes } from "../../data/constants";
 import appLogo from "../../assets/cool.png";
 import { navBackgroundColor } from "./styles";
 import { createStyles, makeStyles, Theme, withStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import grey from "@material-ui/core/colors/grey";
-
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
@@ -48,41 +49,51 @@ const routes: IAppRoute[] = [
     icon: PersonIcon,
   },
   {
-    requiredRoles: [appRoles.roleCrmView, appRoles.roleCrmEdit],
+    name: "Calendar",
+    route: localRoutes.calendar,
+    icon: TodayIcon,
+  },
+  {
+    name: 'Chat',
+    route: localRoutes.chat,
+    icon: ChatIcon,
+  },
+  {
+    requiredRoles: [appPermissions.roleCrmView, appPermissions.roleCrmEdit],
     name: "People",
     route: localRoutes.contacts,
     icon: PeopleIcon,
   },
   {
-    requiredRoles: [appRoles.roleGroupView, appRoles.roleGroupEdit],
+    requiredRoles: [appPermissions.roleGroupView, appPermissions.roleGroupEdit],
     name: "Groups",
     route: localRoutes.groups,
     icon: BubbleChartIcon,
   },
   {
-    requiredRoles: [appRoles.roleEventView, appRoles.roleEventView],
+    requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
     name: "Reports",
     route: localRoutes.events,
     icon: AssessmentIcon,
   },
   {
-    requiredRoles: [appRoles.roleUserEdit, appRoles.roleUserEdit],
+    requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
     name: "Admin",
     route: localRoutes.settings,
     icon: SettingsIcon,
     items: [
-      {
-        name: "Users",
-        route: localRoutes.users,
-      },
-      {
-        name: "Settings",
-        route: localRoutes.settings,
-      },
+        {
+          name: "Manage Users",
+          route: localRoutes.users,
+        },
+        {
+          name: "Settings",
+          route: localRoutes.settings,
+        },
     ],
   },
   {
-    name: "Help",
+    name: 'Help',
     route: localRoutes.help,
     icon: HelpIcon,
   },
@@ -94,18 +105,18 @@ const useStyles = makeStyles((theme: Theme) =>
       height: 140,
     },
     logo: {
-      [theme.breakpoints.only("xs")]: {
+      [theme.breakpoints.only('xs')]: {
         height: 50,
-        width: "auto",
+        width: 'auto',
       },
       height: 58,
-      width: "auto",
+      width: 'auto',
     },
     whiteText: {
-      color: "white",
+      color: 'white',
     },
     menuItem: {
-      "&:hover": {
+      '&:hover': {
         backgroundColor: menBackgroundColor,
       },
     },
@@ -117,7 +128,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const StyledListItem = withStyles({
   root: {
-    "&$selected": {
+    '&$selected': {
       backgroundColor: menBackgroundColor,
     },
   },

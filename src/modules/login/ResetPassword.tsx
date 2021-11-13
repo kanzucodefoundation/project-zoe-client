@@ -15,46 +15,34 @@ import Toast from "../../utils/Toast";
 import { useHistory, useParams } from "react-router";
 import { hasNoValue } from "../../components/inputs/inputHelpers";
 import Error from "../../components/Error";
+import { reqString } from "../../data/validations";
+
+const schema = yup.object().shape({
+  password: reqString.min(8, "Password must be atleast 8 characters long"),
+});
 
 function ResetPassword() {
   const classes = useLoginStyles();
   const history = useHistory();
   const { token } = useParams<any>();
-  const [password, setPassword] = useState("");
-  const [isValid, setIsValid] = useState<boolean>(false);
-  const [isLength, setIsLength] = useState<boolean>(false);
-  const lengthCheck = yup.string()
-    .min(8, 'Password is too short - should be 8 characters minimum.');
-
-  const handleChange = (e: any) => {
-    setPassword(e.target.value)
-  }
-
-  async function validation() {
-    setIsLength(await lengthCheck.isValid(password))
-  }
 
   const onSubmit = (data: any, actions: FormikHelpers<any>) => {
-    if (isLength) {
-      put(
-        remoteRoutes.resetPassword + "/" + token,
-        data,
-        (resp) => {
-          actions.resetForm();
-          localStorage.removeItem("password_token");
-          history.push(localRoutes.updatePassword);
-        },
-        () => {
-          Toast.error("Password change was unsuccessful. Try again");
-          actions.setSubmitting(false);
-          console.log(token);
-          actions.resetForm();
-        }
-      );
-    } else {
-      Toast.error("Password does not meet criteria. Try again");
-      actions.resetForm();
-    }
+    
+    put(
+      remoteRoutes.resetPassword + "/" + token,
+      data,
+      (resp) => {
+        actions.resetForm();
+        localStorage.removeItem("password_token");
+        history.push(localRoutes.updatePassword);
+      },
+      () => {
+        Toast.error("Password change was unsuccessful. Try again");
+        actions.setSubmitting(false);
+        //console.log(token);
+        actions.resetForm();
+      }
+    );
   };
   if (hasNoValue(token)) return <Error text="Invalid password reset link" />;
 
@@ -74,15 +62,13 @@ function ResetPassword() {
           onSubmit={onSubmit}
         >
           {(formState) => (
+          
             <Form className={classes.form}>
               <XTextInput
                 type="password"
                 name="password"
                 label="Password"
-                autoComplete="off"
                 margin="normal"
-                onChangeCapture={handleChange}
-                onKeyUp={validation}
               />
               <Button
                 type="submit"
@@ -96,15 +82,10 @@ function ResetPassword() {
               </Button>
             </Form>
           )}
-          <Typography variant="body2" style={{color: isLength ? "green" : "red"}}>Password must be 8 characters long</Typography>
         </Formik>
       </Paper>
     </main>
   );
 }
-
-export const schema = yup.object().shape({
-  password: yup.string().required("Password is required"),
-});
 
 export default ResetPassword;

@@ -17,31 +17,35 @@ import EventIcon from "@material-ui/icons/Event";
 import MembersList from "./members/MembersList";
 import { grey } from "@material-ui/core/colors";
 import { get } from "../../utils/ajax";
-import { appRoles, localRoutes, remoteRoutes } from "../../data/constants";
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from "../../data/constants";
 import Loading from "../../components/Loading";
 import {
   Alert,
   SpeedDial,
   SpeedDialAction,
   SpeedDialIcon,
-} from "@material-ui/lab";
-import { useHistory, useParams } from "react-router";
-import Layout from "../../components/layout/Layout";
-import MapLink from "../../components/MapLink";
-import { IState } from "../../data/types";
-import { hasAnyRole, hasRole } from "../../data/appRoles";
-import MemberRequests from "./members/MemberRequests";
-import TabbedView from "./TabbedView";
-import XBreadCrumbs from "../../components/XBreadCrumbs";
-import GroupEventsList from "./GroupEventsList";
-import EventForm from "../events/forms/EventForm";
+} from '@material-ui/lab';
+import { useHistory, useParams } from 'react-router';
+import Layout from '../../components/layout/Layout';
+import MapLink from '../../components/MapLink';
+import { IState } from '../../data/types';
+import { hasAnyRole, hasRole } from '../../data/appRoles';
+import MemberRequests from './members/MemberRequests';
+import TabbedView from './TabbedView';
+import XBreadCrumbs from '../../components/XBreadCrumbs';
+import GroupEventsList from './GroupEventsList';
+import EventForm from '../events/forms/EventForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      width: "100%",
+      width: '100%',
       padding: theme.spacing(2),
-      [theme.breakpoints.up("sm")]: {
+      [theme.breakpoints.up('sm')]: {
         padding: theme.spacing(1),
       },
     },
@@ -60,8 +64,8 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: grey[100],
     },
     speedDial: {
-      position: "fixed",
-      "&.MuiSpeedDial-directionDown": {
+      position: 'fixed',
+      '&.MuiSpeedDial-directionDown': {
         top: theme.spacing(15),
         right: theme.spacing(4),
       },
@@ -79,11 +83,9 @@ export default function Details() {
   const [open, setOpen] = useState(false);
   const profile = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
-  const hasEventEdit = hasRole(profile, appRoles.roleEventEdit);
-  const hasGroupEdit = hasRole(profile, appRoles.roleGroupEdit);
+  const hasEventEdit = hasRole(profile, appPermissions.roleEventEdit);
+  const hasGroupEdit = hasRole(profile, appPermissions.roleGroupEdit);
   const actions = [];
-
-  
 
   useEffect(() => {
     setLoading(true);
@@ -109,7 +111,13 @@ export default function Details() {
 
     const isLeader = leaderIds.indexOf(userId) > -1;
 
-    return isLeader || hasAnyRole(profile, [appRoles.roleGroupEdit]);
+    return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
+  };
+
+  const mcView = () => {
+    if (hasAnyRole(profile, [appPermissions.roleMcView])) {
+      return true;
+    }
   };
 
   function handleClose() {
@@ -133,7 +141,7 @@ export default function Details() {
     setOpen(true);
   };
 
-  const createEventTitle = "New Event";
+  const createEventTitle = 'New Event';
 
   function handleNewEvent() {
     setNewEvent(true);
@@ -144,9 +152,9 @@ export default function Details() {
   }
 
   const handleIconClick = (operation: any) => {
-    if (operation === "Edit Group") {
+    if (operation === 'Edit Group') {
       handleEdit();
-    } else if (operation === "New Event") {
+    } else if (operation === 'New Event') {
       handleNewEvent();
     }
     setOpen(!open);
@@ -179,48 +187,44 @@ export default function Details() {
 
   const tabs = [
     {
-      name: "Members",
+      name: 'Members',
       component: (
-        <MembersList 
-          groupId={Number(groupId)} 
-          isLeader={isLeader()} 
-        />
+        <MembersList groupId={Number(groupId)} isLeader={isLeader()} />
       ),
     },
   ];
   if (isLeader()) {
     tabs.push({
-      name: "Reports",
-      component: (
-        <GroupEventsList
-          reports = {data.reports ? data.reports : []}
-        />
-      ),
+      name: 'Reports',
+      component: <GroupEventsList reports={data.reports ? data.reports : []} />,
     });
     tabs.push({
-      name: "Requests",
+      name: 'Requests',
       component: <MemberRequests group={data} />,
     });
   }
 
-  if(hasEventEdit) {
-    actions.push(
-      {
-      icon: <EditIcon color="primary" />,
-      name: "Edit Group",
-      operation: "Edit Group",
-    }
-    )
+  if (mcView()) {
+    tabs.push({
+      name: 'Requests',
+      component: <MemberRequests group={data} />,
+    });
   }
 
-  if(hasGroupEdit) {
-    actions.push(
-      {
-        icon: <EventIcon color="primary" />,
-        name: "New Event",
-        operation: "New Event",
-      },
-    )
+  if (hasEventEdit) {
+    actions.push({
+      icon: <EditIcon color="primary" />,
+      name: 'Edit Group',
+      operation: 'Edit Group',
+    });
+  }
+
+  if (hasGroupEdit) {
+    actions.push({
+      icon: <EventIcon color="primary" />,
+      name: 'New Event',
+      operation: 'New Event',
+    });
   }
 
   return (
@@ -233,12 +237,15 @@ export default function Details() {
               {
                 path: localRoutes.home,
                 label: "Dashboard",
-                auth: hasAnyRole(profile, [appRoles.roleDashboard]),
+                auth: hasAnyRole(profile, [appPermissions.roleDashboard]),
               },
               {
                 path: localRoutes.groups,
                 label: "Groups",
-                auth: hasAnyRole(profile, [appRoles.roleGroupEdit, appRoles.roleGroupView]),
+                auth: hasAnyRole(profile, [
+                  appPermissions.roleGroupEdit,
+                  appPermissions.roleGroupView,
+                ]),
               },
             ]}
           />
@@ -262,26 +269,26 @@ export default function Details() {
                   <Hidden smDown>
                     <Box pr={2}>
                       <ButtonGroup variant="contained">
-                        {hasGroupEdit ?
-                          (<Button
+                        {hasGroupEdit ? (
+                          <Button
                             color="primary"
                             size="small"
                             variant="contained"
                             onClick={handleEdit}
                           >
                             Edit Group&nbsp;&nbsp;
-                          </Button>) : (undefined) 
-                        }
-                        {hasEventEdit ? 
-                          (<Button
+                          </Button>
+                        ) : undefined}
+                        {hasEventEdit ? (
+                          <Button
                             color="primary"
                             size="small"
                             variant="contained"
                             onClick={handleNewEvent}
                           >
                             Create Report&nbsp;&nbsp;
-                          </Button>) : (undefined)
-                        }
+                          </Button>
+                        ) : undefined}
                       </ButtonGroup>
                     </Box>
                   </Hidden>
@@ -297,7 +304,7 @@ export default function Details() {
                       direction="down"
                       color="primary"
                       FabProps={{
-                        size: "small",
+                        size: 'small',
                       }}
                     >
                       {actions.map((action) => (
@@ -337,7 +344,7 @@ export default function Details() {
           <Grid item xs={12}>
             <Box display="flex" flexDirection="column">
               <Box pb={1}>
-                <Typography variant="h6" style={{ fontSize: "0.92rem" }}>
+                <Typography variant="h6" style={{ fontSize: '0.92rem' }}>
                   About:
                 </Typography>
               </Box>
@@ -365,7 +372,13 @@ export default function Details() {
           onClose={handleNewEventClose}
         >
           <EventForm
-            data={{ group: { id: data.id, name: data.name, categoryId: data.categoryId } }}
+            data={{
+              group: {
+                id: data.id,
+                name: data.name,
+                categoryId: data.categoryId,
+              },
+            }}
             isNew={true}
             onCreated={handleNewEventClose}
             onCancel={handleNewEventClose}
