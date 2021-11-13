@@ -94,7 +94,10 @@ const routes: IAppRoute[] = [
         name: 'Manage Users',
         route: localRoutes.users,
       },
-      { name: 'Report Fields', route: localRoutes.reportCategories },
+      {
+        name: 'Group Categories',
+        route: localRoutes.groupsCategories,
+      },
       {
         name: 'Settings',
         route: localRoutes.settings,

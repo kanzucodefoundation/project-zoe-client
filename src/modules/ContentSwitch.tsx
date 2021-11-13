@@ -40,8 +40,9 @@ const EventReports = React.lazy(() => import('./events/EventReports'));
 const Help = React.lazy(() => import('./help/Help'));
 
 const MailChat = React.lazy(() => import('./messaging/MailChat'));
-const ReportFields = React.lazy(
-  () => import('../modules/admin/reports/reportCategories')
+
+const GroupCategories = React.lazy(
+  () => import('../modules/admin/groupCategories/groupCategories')
 );
 
 
@@ -101,6 +102,11 @@ const ContentSwitch = () => {
         <Route path={localRoutes.eventActivities} component={EventActivitiesForm} />
 
         <Route path={localRoutes.reportCategories} component={ReportFields} />
+
+        <Route
+          path={localRoutes.groupsCategories}
+          component={GroupCategories}
+        />
 
         <Route path={localRoutes.test} component={Testing} />
         <Route
