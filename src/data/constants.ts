@@ -1,43 +1,46 @@
-export const AUTH_TOKEN_KEY = "__demo__eva__token";
-export const AUTH_USER_KEY = "__demo__eva__user";
+export const AUTH_TOKEN_KEY = '__demo__eva__token';
+export const AUTH_USER_KEY = '__demo__eva__user';
 
 export const appPermissions = {
-  roleDashboard: "DASHBOARD",
-  roleCrmView: "CRM_VIEW",
-  roleCrmEdit: "CRM_EDIT",
+  roleDashboard: 'DASHBOARD',
+  roleCrmView: 'CRM_VIEW',
+  roleCrmEdit: 'CRM_EDIT',
 
-  roleUserView: "USER_VIEW",
-  roleUserEdit: "USER_EDIT",
+  roleUserView: 'USER_VIEW',
+  roleUserEdit: 'USER_EDIT',
 
-  roleEdit: "ROLE_EDIT",
+  roleEdit: 'ROLE_EDIT',
 
-  roleTagView: "TAG_VIEW",
-  roleTagEdit: "TAG_EDIT",
+  roleTagView: 'TAG_VIEW',
+  roleTagEdit: 'TAG_EDIT',
 
-  roleGroupView: "GROUP_VIEW",
-  roleGroupEdit: "GROUP_EDIT",
+  roleGroupView: 'GROUP_VIEW',
+  roleGroupEdit: 'GROUP_EDIT',
 
-  roleEventView: "EVENT_VIEW",
-  roleEventEdit: "EVENT_EDIT",
+  roleMcView: 'MC_VIEW',
+
+  roleEventView: 'EVENT_VIEW',
+  roleEventEdit: 'EVENT_EDIT',
 };
 
 export const permissionsList = Object.values(appPermissions);
 
 export const eventsCategories = {
-  garage: "garage",
-  evangelism: "evangelism",
-  wedding: "wedding",
-  baptism: "baptism",
-  mc: "mc",
+  garage: 'garage',
+  evangelism: 'evangelism',
+  wedding: 'wedding',
+  baptism: 'baptism',
+  mc: 'mc',
 };
 
 export const redux = {
-  doLogin: "DO_LOGIN",
-  doLogout: "DO_LOGOUT",
-  doSearch: "DO_SEARCH",
+  doLogin: 'DO_LOGIN',
+  doLogout: 'DO_LOGOUT',
+  doSearch: 'DO_SEARCH',
 };
 
 export const localRoutes = {
+
   dashboard: "/dashboard",
   contacts: "/people/contacts",
   profile: "/people/contacts/me",
@@ -66,16 +69,33 @@ export const localRoutes = {
   help: "/help",
   login: "/login",
   home: "/",
+
+ 
+
+  chat: '/chat/email',
+
+  calendar: '/calendar',
+
+ 
+
+  
+  reportCategories: '/admin/report-categories',
+
+  
+
+  
+
 };
 
-export const isDebug = process.env.NODE_ENV !== "production";
-const debug = process.env.NODE_ENV !== "production";
+export const isDebug = process.env.NODE_ENV !== 'production';
+const debug = process.env.NODE_ENV !== 'production';
 export const url = debug
-  ? "http://localhost:4002"
-  : "https://app.worshipharvest.org/server";
+  ? 'http://localhost:4002'
+  : 'https://app.worshipharvest.org/server';
 
 export const remoteRoutes = {
   authServer: url,
+
   login: url + "/api/auth/login",
   profile: url + "/api/auth/profile",
   register: url + "/api/register",
@@ -122,4 +142,18 @@ export const remoteRoutes = {
 
   contactsCompany: url + "/api/crm/contact/company",
   contactsAvatar: url + "/api/crm/contact/avatar",
+
+  
+
+ 
+
+ 
+
+  chat: url + '/api/chat/email',
+
+  
+  eventsRegistration: url + '/api/events/registration',
+
+ 
+
 };
