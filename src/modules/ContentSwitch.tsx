@@ -37,6 +37,9 @@ const Help = React.lazy(() => import('./help/Help'));
 const ManageHelp = React.lazy(() => import('./admin/manageHelp/HelpFileDisplay'));
 
 const MailChat = React.lazy(() => import('./messaging/MailChat'));
+const ReportFields = React.lazy(
+  () => import('../modules/admin/reports/reportCategories')
+);
 
 const GroupCategories = React.lazy(
   () => import('../modules/admin/groupCategories/groupCategories')
@@ -98,6 +101,7 @@ const ContentSwitch = () => {
           path={localRoutes.groupsCategories}
           component={GroupCategories}
         />
+        <Route path={localRoutes.reportCategories} component={ReportFields} />
         <Route path={localRoutes.test} component={Testing} />
         <Route
           path={localRoutes.updatePassword}

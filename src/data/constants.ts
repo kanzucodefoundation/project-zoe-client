@@ -69,6 +69,7 @@ export const localRoutes = {
   settings: '/admin/settings',
   test: '/test',
   manageHelp: '/admin/manageHelp',
+  reportCategories: '/admin/report-categories',
 
   updatePassword: '/update-password',
   resetPassword: '/reset-password/:token',
