@@ -86,11 +86,13 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^6.3.12",
+    "@commitlint/cli": "^14.1.0",
+    "@commitlint/config-conventional": "^14.1.0",
+    "@storybook/addon-actions": "^5.3.17",
     "@storybook/addon-links": "^5.3.17",
     "@storybook/addons": "^5.3.17",
     "@storybook/preset-create-react-app": "^2.0.0",
-    "@storybook/react": "^6.0.28",
+    "@storybook/react": "^5.3.17",
     "@types/multer": "^1.4.5",
     "@types/node": "^16.11.6"
   },
@@ -101,6 +103,7 @@
     "test": "react-scripts test",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"
+   
   },
   "eslintConfig": {
     "extends": "react-app"

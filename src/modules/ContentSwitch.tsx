@@ -1,3 +1,7 @@
+
+
+
+
 import React, { Suspense } from 'react';
 import { Link, Route, Switch } from 'react-router-dom';
 import { appPermissions, localRoutes } from '../data/constants';
@@ -7,6 +11,7 @@ import { IState } from '../data/types';
 import { hasAnyRole } from '../data/appRoles';
 import Loading from '../components/Loading';
 import MembersCalendar from './groups/members/MembersCalendar';
+
 
 //const Events= React.lazy(() => import( "./events/EventsList"));
 //const GroupReports = React.lazy(() => import("./events/GroupEvents"));
@@ -44,6 +49,11 @@ const ReportFields = React.lazy(
 const GroupCategories = React.lazy(
   () => import('../modules/admin/groupCategories/groupCategories')
 );
+
+
+ const EventActivitiesForm =  React.lazy(() => import("./events/details/EventActivitiesForm"));
+
+
 
 const ContentSwitch = () => {
   const user = useSelector((state: IState) => state.core.user);
@@ -102,6 +112,11 @@ const ContentSwitch = () => {
           component={GroupCategories}
         />
         <Route path={localRoutes.reportCategories} component={ReportFields} />
+
+        <Route path={localRoutes.eventActivities} component={EventActivitiesForm} />
+
+        <Route path={localRoutes.reportCategories} component={ReportFields} />
+
         <Route path={localRoutes.test} component={Testing} />
         <Route
           path={localRoutes.updatePassword}
