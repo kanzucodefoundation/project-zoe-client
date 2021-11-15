@@ -23,7 +23,10 @@ const GroupMapView = ({ data }: IProps) => {
     },
   });
 
-  const [currentPosition, setCurrentPosition] = useState({});
+  const [currentPosition, setCurrentPosition] = useState({
+    lat: '',
+    lng: '',
+  });
 
   const success = (position: any) => {
     const currentPosition = {
@@ -53,7 +56,7 @@ const GroupMapView = ({ data }: IProps) => {
       <GoogleMap
         mapContainerStyle={mapStyles}
         zoom={13}
-        center={currentPosition}
+        // center={currentPosition}
       >
         {data.map((address) => {
           return (

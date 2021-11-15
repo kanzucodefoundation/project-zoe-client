@@ -12,7 +12,6 @@
     "type": "git",
     "url": "git+ssh://git@github.com:kisakyekenneth/project-zoe-client.git"
   },
-  
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
     "@material-ui/core": "^4.10.2",
@@ -50,8 +49,8 @@
     "@types/yup": "^0.26.32",
     "array-to-tree": "^3.3.2",
     "autosuggest-highlight": "^3.1.1",
-    "chart.js": "^2.9.4",
     "axios": "^0.21.1",
+    "chart.js": "^2.9.4",
     "clsx": "^1.1.0",
     "csv-parser": "^3.0.0",
     "date-fns": "^2.11.0",
@@ -72,7 +71,7 @@
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-router-redux": "^4.0.8",
-    "react-scripts": "^3.4.4",
+    "react-scripts": "^4.0.3",
     "react-sortable-tree": "^2.7.1",
     "react-toastify": "^5.5.0",
     "react-youtube": "^7.13.1",
@@ -92,7 +91,7 @@
     "@storybook/addon-links": "^5.3.17",
     "@storybook/addons": "^5.3.17",
     "@storybook/preset-create-react-app": "^2.0.0",
-    "@storybook/react": "^5.3.17",
+    "@storybook/react": "^6.3.12",
     "@types/multer": "^1.4.5",
     "@types/node": "^16.11.6"
   },
@@ -103,7 +102,6 @@
     "test": "react-scripts test",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public"
-   
   },
   "eslintConfig": {
     "extends": "react-app"

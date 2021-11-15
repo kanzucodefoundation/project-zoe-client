@@ -21,10 +21,10 @@ const AvailabilityButtons = ({ data }: IProps) => {
     };
     console.log(disable);
 
-    post(remoteRoutes.dayOff, disable, () => {
-      Toast.info("Operation successful");
-      window.location.reload();
-    });
+    // post(remoteRoutes.dayOff, disable, () => {
+    //   Toast.info("Operation successful");
+    //   window.location.reload();
+    // });
   }
 
   return (

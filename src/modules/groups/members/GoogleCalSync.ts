@@ -12,7 +12,7 @@ const SCOPES = process.env.REACT_APP_SCOPES;
             gapi.client.init({
                 apiKey: CALENDAR_API_KEY,
                 clientId: CLIENT_ID,
-                discoveryDocs: DISCOVERY_DOCS,
+                // discoveryDocs: DISCOVERY_DOCS,
                 scope: SCOPES
             }).then(function (resolution) {
                 if (typeof(callback)==='function'){
