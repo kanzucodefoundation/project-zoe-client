@@ -85,15 +85,15 @@ const CalendarEvents = () => {
 	}, [])
 
 	const onBeforeUpdateSchedule = (e: any) => {
-		
-		    setDialog(true)
-		setIsNew(false)
-		for (let i = 0; i < events.length; i++) {
-			if (events[i].id === e.schedule.id) {
-				setSelectedEvent({ ...events[i] })
-			}
-		
-		}
+		// if(user){
+		//     setDialog(true)
+		// setIsNew(false)
+		// for (let i = 0; i < events.length; i++) {
+		// 	if (events[i].id === e.schedule.id) {
+		// 		setSelectedEvent({ ...events[i] })
+		// 	}
+		// }
+		// }
 	}
 
 	function handleNew() {

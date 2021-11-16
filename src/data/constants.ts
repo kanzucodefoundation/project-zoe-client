@@ -128,4 +128,5 @@ export const remoteRoutes = {
 
   contactsCompany: url + '/api/crm/contact/company',
   contactsAvatar: url + '/api/crm/contact/avatar',
+  membersActivity: url + "/api/events/memberactivities",
 };
