@@ -27,6 +27,9 @@ interface IProps {
   onUpdated?: (g: any) => any;
   onDeleted?: (g: any) => any;
   onCancel?: () => any;
+  cal?: any
+  scheduleData?: any
+
 }
 
 const schema = yup.object().shape({
@@ -60,6 +63,8 @@ const EventForm = ({
   onUpdated,
   onDeleted,
   onCancel,
+  cal,
+	scheduleData,
 }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [frequency, setFrequency] = useState("");
