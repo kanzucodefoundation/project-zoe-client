@@ -89,7 +89,7 @@ export const publishTheCalenderEvent = (googleCalEvent: any) => {
           console.log(request, 'inserted event')
           request.execute(function(event) {
             console.log(event)
-            window.open('Event created: ' + event.result.htmlLink);
+            window.open('Event created: ' + event)
           })
       })   
   }  catch (error) {
