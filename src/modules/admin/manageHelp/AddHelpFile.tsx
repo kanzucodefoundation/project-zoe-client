@@ -5,8 +5,11 @@ import { FormikHelpers } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import XForm from '../../../components/forms/XForm';
 import XTextInput from '../../../components/inputs/XTextInput';
+import XSelectInput from "../../../components/inputs/XSelectInput";
+import { toOptions } from "../../../components/inputs/inputHelpers";
 import { remoteRoutes } from '../../../data/constants';
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
+import {helpFileCategories} from "../../../data/comboCategories";
 
 interface IProps {
   data?: any | null;
@@ -108,10 +111,10 @@ const AddHelpFileButton = ({data, isNew, onCreated, onUpdated, done}: IProps) =>
         />
       </Grid>
       <Grid item xs={12}>
-        <XTextInput
+        <XSelectInput
           name="category"
           label = "Category"
-          type="text"
+          options = {toOptions(helpFileCategories)}
           variant="outlined"
           margin="none"
         />
