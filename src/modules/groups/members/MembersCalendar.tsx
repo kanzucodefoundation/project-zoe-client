@@ -170,11 +170,11 @@ for (let i = 0; i < events.length; i++) {
 
 
 useEffect(()=>{
-  initClient((success: any)=>{
-      if (success){
-          getGoogleAuthorizedEmail();
-          } 
-  });
+  // initClient((success: any)=>{
+  //     if (success){
+  //         getGoogleAuthorizedEmail();
+  //         } 
+  // });
 },[]);
 
 const getGoogleAuthorizedEmail =async ()=>{
