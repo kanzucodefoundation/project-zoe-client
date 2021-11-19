@@ -129,6 +129,7 @@ export const remoteRoutes = {
   eventsField: url + "/api/events/fields",
   eventsActivity: url + "/api/events/activities",
   memberEventActivities:url + "/api/events/member",
+  dayOff: url + '/api/events/dayoff',
 
   reports: url + "/api/reports/report",
   reportsCategories: url + "api/reports/category",
