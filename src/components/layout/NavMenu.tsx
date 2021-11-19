@@ -102,6 +102,10 @@ const routes: IAppRoute[] = [
         name: 'Group Categories',
         route: localRoutes.groupsCategories,
       },
+      {
+        name: 'Event Categories',
+        route: localRoutes.eventCategories,
+      },
       { name: 'Report Fields', route: localRoutes.reportCategories },
       {
         name: 'Settings',

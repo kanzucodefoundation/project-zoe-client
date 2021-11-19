@@ -52,6 +52,9 @@ const GroupCategories = React.lazy(
 
 
  const EventActivitiesForm =  React.lazy(() => import("./events/details/EventActivitiesForm"));
+ const EventCategories = React.lazy(
+  () => import('./admin/eventsCategories/EventCategories')
+);
 
 
 
@@ -102,9 +105,7 @@ const ContentSwitch = () => {
           appPermissions.roleEventEdit,
         ]) && <Route path={localRoutes.events} component={EventReports} />}
 
-        {hasAnyRole(user, [
-          appPermissions.manageHelp,
-        ]) && <Route path={localRoutes.manageHelp} component={ManageHelp} />}
+         <Route path={localRoutes.manageHelp} component={ManageHelp} />
 
         <Route path={localRoutes.settings} component={Settings} />
         <Route
@@ -115,7 +116,7 @@ const ContentSwitch = () => {
 
         <Route path={localRoutes.eventActivities} component={EventActivitiesForm} />
 
-        <Route path={localRoutes.reportCategories} component={ReportFields} />
+        <Route path={localRoutes.eventCategories} component={EventCategories} />
 
         <Route path={localRoutes.test} component={Testing} />
         <Route
