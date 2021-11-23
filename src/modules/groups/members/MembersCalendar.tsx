@@ -55,7 +55,6 @@ const MembersCalendar = () => {
 		get(remoteRoutes.events, (data) => {
 			setEvents(data)
 			let myEvents: ISchedule[] = []
-
 			for (let i = 0; i < data.length; i++) {
 				const calEvent = {
 					category: "time",
@@ -88,17 +87,26 @@ const MembersCalendar = () => {
         };
         myDayOff.push(disableDay);
       }
-      console.log(myDayOff, "hey!")
-      setDay(myDayOff);
+      setSchedules(myDayOff);
     });
 
 	}, [dialog, profile])
 
+  const user = useSelector((state: IState) => state.core.user);
+
+  console.log(user.roles, 'display roles');
 	const onBeforeCreateSchedule = useCallback(
 		(scheduleData) => {
 			setValue(scheduleData)
+      if(!user.roles.includes('RoleAdmin')){
+      setDialog(true)
 
-			setDialog(true)
+      }else{
+        console.log("day off")
+      setDay(true)
+      }
+			
+      
 		},
 		[dialog]
 	)
@@ -138,6 +146,10 @@ for (let i = 0; i < events.length; i++) {
 	function handleCreated() {
 		setDialog(false)
 	}
+
+  function closeCreateDialog(){
+    setDialog(false)
+  }
 
 	function onClickTodayBtn() {
 		cal.current.calendarInst.today()
@@ -275,10 +287,10 @@ const handleClick = (calEvent: any | "") => {
 								onCreated={handleCreated}
 							/>
 						</EditDialog>
-            {/* 
+            
                   <EditDialog
               title="Event day off."
-              open={showDialog}
+              open={day}
               onClose={closeCreateDialog}
             >
               <DisableDayOff
@@ -289,7 +301,7 @@ const handleClick = (calEvent: any | "") => {
                 e={value}
               />
             </EditDialog>
-            */}
+           
 					</Grid>
 
           <Grid item xs={12}>
