@@ -22,14 +22,13 @@ import { eventsEdit } from "../../../data/events/eventsReducer"
 import { IEvent } from "../../events/types"
 import AddIcon from "@material-ui/icons/Add"
 import { IState } from "../../../data/types"
-
-
 import TUICalendar from "@toast-ui/react-calendar"
 import { ISchedule } from "tui-calendar"
 import "tui-calendar/dist/tui-calendar.css"
 import "tui-date-picker/dist/tui-date-picker.css"
 import "tui-time-picker/dist/tui-time-picker.css"
 import Layout from "../../../components/layout/Layout"
+import DisableDayOff from "./DisableDayOff"
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -49,14 +48,13 @@ const MembersCalendar = () => {
 	const [events, setEvents] = useState<IEvent[]>([])
 	const [isNew, setIsNew] = useState<boolean>(true)
 	const profile = useSelector((state: IState) => state.core.user)
+  const [day, setDay] = useState<any>();
 
 	useEffect(() => {
 		console.log(profile)
 		get(remoteRoutes.events, (data) => {
-			console.log("====mydata===", data)
 			setEvents(data)
 			let myEvents: ISchedule[] = []
-
 			for (let i = 0; i < data.length; i++) {
 				const calEvent = {
 					category: "time",
@@ -73,13 +71,42 @@ const MembersCalendar = () => {
 			}
 			setSchedules(myEvents)
 		})
+
+    get(remoteRoutes.dayOff, (data) => {
+      setEvent(data);
+      console.log(data, "hello");
+      let myDayOff: any[] = [];
+      for (let i = 0; i < data.length; i++) {
+        const disableDay = {
+          category: "time",
+          isVisible: true,
+          id: data[i].id,
+          body: data[i].reason,
+          start: data[i].startDate,
+          end: data[i].endDate,
+        };
+        myDayOff.push(disableDay);
+      }
+      setSchedules(myDayOff);
+    });
+
 	}, [dialog, profile])
 
+  const user = useSelector((state: IState) => state.core.user);
+
+  console.log(user.roles, 'display roles');
 	const onBeforeCreateSchedule = useCallback(
 		(scheduleData) => {
 			setValue(scheduleData)
+      if(!user.roles.includes('RoleAdmin')){
+      setDialog(true)
 
-			setDialog(true)
+      }else{
+        console.log("day off")
+      setDay(true)
+      }
+			
+      
 		},
 		[dialog]
 	)
@@ -119,6 +146,10 @@ for (let i = 0; i < events.length; i++) {
 	function handleCreated() {
 		setDialog(false)
 	}
+
+  function closeCreateDialog(){
+    setDialog(false)
+  }
 
 	function onClickTodayBtn() {
 		cal.current.calendarInst.today()
@@ -256,6 +287,21 @@ const handleClick = (calEvent: any | "") => {
 								onCreated={handleCreated}
 							/>
 						</EditDialog>
+            
+                  <EditDialog
+              title="Event day off."
+              open={day}
+              onClose={closeCreateDialog}
+            >
+              <DisableDayOff
+                data={{}}
+                isNew={true}
+                onCreated={closeCreateDialog}
+                onCancel={handleClose}
+                e={value}
+              />
+            </EditDialog>
+           
 					</Grid>
 
           <Grid item xs={12}>
@@ -294,7 +340,8 @@ const handleClick = (calEvent: any | "") => {
               view='month'
               useCreationPopup={false}
               useDetailPopup={true}
-              schedules={schedules}
+              //schedules={schedules}
+              schedules={day}
               onBeforeCreateSchedule={onBeforeCreateSchedule}
               onBeforeDeleteSchedule={onBeforeDeleteSchedule}
               onBeforeUpdateSchedule={onBeforeUpdateSchedule}
