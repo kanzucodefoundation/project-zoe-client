@@ -5,6 +5,11 @@ const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const DISCOVERY_DOCS = process.env.REACT_APP_DISCOVERY_DOCS;
 const SCOPES = process.env.REACT_APP_SCOPES;
 
+const DISCOVERY_DOCS_RESPONSE = (DISCOVERY_DOCS)? DISCOVERY_DOCS : ""
+
+let DOCS_ARRAY:string[] = [];
+DOCS_ARRAY.push(DISCOVERY_DOCS_RESPONSE);
+
   export function initClient(callback: (arg0: boolean) => void) {
     console.log(process.env.REACT_APP_CALENDAR_API_KEY);
     gapi.load('client:auth2',()=>{ 
@@ -12,7 +17,7 @@ const SCOPES = process.env.REACT_APP_SCOPES;
             gapi.client.init({
                 apiKey: CALENDAR_API_KEY,
                 clientId: CLIENT_ID,
-                discoveryDocs: DISCOVERY_DOCS,
+                discoveryDocs: DOCS_ARRAY,
                 scope: SCOPES
             }).then(function (resolution) {
                 if (typeof(callback)==='function'){
