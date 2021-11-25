@@ -50,8 +50,7 @@ const MembersCalendar = () => {
 	const profile = useSelector((state: IState) => state.core.user)
   const [day, setDay] = useState<any>();
 
-	useEffect(() => {
-		console.log(profile)
+	useEffect(() => {	
 		get(remoteRoutes.events, (data) => {
 			setEvents(data)
 			let myEvents: ISchedule[] = []
@@ -73,8 +72,7 @@ const MembersCalendar = () => {
 		})
 
     get(remoteRoutes.dayOff, (data) => {
-      setEvent(data);
-      console.log(data, "hello");
+      setEvent(data);     
       let myDayOff: any[] = [];
       for (let i = 0; i < data.length; i++) {
         const disableDay = {
@@ -93,8 +91,7 @@ const MembersCalendar = () => {
 	}, [dialog, profile])
 
   const user = useSelector((state: IState) => state.core.user);
-
-  console.log(user.roles, 'display roles');
+  
 	const onBeforeCreateSchedule = useCallback(
 		(scheduleData) => {
 			setValue(scheduleData)
@@ -114,7 +111,7 @@ const MembersCalendar = () => {
 	const onBeforeDeleteSchedule = useCallback((res) => {
 		const { id, calendarId, title } = res.schedule
 
-		cal.current.calendarInst.deleteSchedule(id, calendarId)
+	//	if(cal){ cal.current.calendarInst.deleteSchedule(id, calendarId)}
 		del(`${remoteRoutes.events}/${id}`, (response) => {
 			Toast.success(`${title} has been deleted successfully`)
 		})
@@ -152,33 +149,41 @@ for (let i = 0; i < events.length; i++) {
   }
 
 	function onClickTodayBtn() {
-		cal.current.calendarInst.today()
-		cal.current.calendarInst.changeView("day", true)
+		if(cal){
+      console.log("*****---", cal)
+      //cal.current.calendarInst.today()
+		//cal.current.calendarInst.changeView("day", true)
+    }
 		forceUpdate()
 	}
 
 	const moveToPrev = () => {
-		cal.current.calendarInst.prev()
+		if(cal){
+      console.log("moveToPrev*****---", cal)
+      //cal.current.calendarInst.prev()
+    }
 		forceUpdate()
 	}
 	const moveToNext = () => {
-		cal.current.calendarInst.next()
+		if(cal){
+      //cal.current.calendarInst.next()
+    }
 		forceUpdate()
 	}
 	useEffect(() => {
 		if (cal) {
-			const rangeStart = cal.current.calendarInst.getDateRangeStart().getTime()
-			const rangeEnd = cal.current.calendarInst.getDateRangeEnd().getTime()
+      console.log("*****^^^^", cal)
+		//	const rangeStart = cal.current.calendarInst.getDateRangeStart().getTime()
+		//	const rangeEnd = cal.current.calendarInst.getDateRangeEnd().getTime()
 
-			setCurrentRange(`${intl.format(rangeStart)} ~ ${intl.format(rangeEnd)}`)
+			//setCurrentRange(`${intl.format(rangeStart)} ~ ${intl.format(rangeEnd)}`)
 		}
 	}, [updateCount, cal])
 
   
   useEffect(() => {
         get (`${remoteRoutes.events}`,
-        (data) => { let events: ISchedule[] = [];
-          console.log(events);
+        (data) => { let events: ISchedule[] = []          
           for (let i = 0; i < data.length; i++) {
             const mce = {
               //calendarId: data[i].id,
