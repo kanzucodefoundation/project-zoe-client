@@ -37,7 +37,7 @@ const intl = new Intl.DateTimeFormat("en-US")
 
 const MembersCalendar = () => {
     const [event, setEvent] = useState<any>([]);
-    const cal = useRef(null) // this will store the `Calendar` instance.
+    const cal = useRef<any>(null)  // this will store the `Calendar` instance.
 	const [updateCount, forceUpdate] = useReducer((c) => c + 1, 0)
 	const [currentRange, setCurrentRange] = useState("")
 	const [dialog, setDialog] = useState(false)
@@ -111,7 +111,7 @@ const MembersCalendar = () => {
 	const onBeforeDeleteSchedule = useCallback((res) => {
 		const { id, calendarId, title } = res.schedule
 
-	//	if(cal){ cal.current.calendarInst.deleteSchedule(id, calendarId)}
+		if(cal){ cal.current.calendarInst.deleteSchedule(id, calendarId)}
 		del(`${remoteRoutes.events}/${id}`, (response) => {
 			Toast.success(`${title} has been deleted successfully`)
 		})
@@ -150,33 +150,33 @@ for (let i = 0; i < events.length; i++) {
 
 	function onClickTodayBtn() {
 		if(cal){
-      console.log("*****---", cal)
-      //cal.current.calendarInst.today()
-		//cal.current.calendarInst.changeView("day", true)
+      
+      cal.current.calendarInst.today()
+		cal.current.calendarInst.changeView("day", true)
     }
 		forceUpdate()
 	}
 
 	const moveToPrev = () => {
 		if(cal){
-      console.log("moveToPrev*****---", cal)
-      //cal.current.calendarInst.prev()
+     
+      cal.current.calendarInst.prev()
     }
 		forceUpdate()
 	}
 	const moveToNext = () => {
 		if(cal){
-      //cal.current.calendarInst.next()
+      cal.current.calendarInst.next()
     }
 		forceUpdate()
 	}
 	useEffect(() => {
 		if (cal) {
-      console.log("*****^^^^", cal)
-		//	const rangeStart = cal.current.calendarInst.getDateRangeStart().getTime()
-		//	const rangeEnd = cal.current.calendarInst.getDateRangeEnd().getTime()
+     
+			const rangeStart = cal.current.calendarInst.getDateRangeStart().getTime()
+			const rangeEnd = cal.current.calendarInst.getDateRangeEnd().getTime()
 
-			//setCurrentRange(`${intl.format(rangeStart)} ~ ${intl.format(rangeEnd)}`)
+			setCurrentRange(`${intl.format(rangeStart)} ~ ${intl.format(rangeEnd)}`)
 		}
 	}, [updateCount, cal])
 
