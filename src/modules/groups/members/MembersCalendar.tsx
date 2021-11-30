@@ -68,6 +68,7 @@ const MembersCalendar = () => {
 				}
 				myEvents.push(calEvent)
 			}
+      myEvents.concat(schedules);
 			setSchedules(myEvents)
 		})
 
@@ -85,6 +86,7 @@ const MembersCalendar = () => {
         };
         myDayOff.push(disableDay);
       }
+      myDayOff.concat(schedules);
       setSchedules(myDayOff);
     });
 
@@ -345,8 +347,8 @@ const handleClick = (calEvent: any | "") => {
               view='month'
               useCreationPopup={false}
               useDetailPopup={true}
-              //schedules={schedules}
-              schedules={day}
+              schedules={schedules}
+              //schedules={day}
               onBeforeCreateSchedule={onBeforeCreateSchedule}
               onBeforeDeleteSchedule={onBeforeDeleteSchedule}
               onBeforeUpdateSchedule={onBeforeUpdateSchedule}
