@@ -8,6 +8,7 @@ export const idCategories = [
   'Nssf',
   'Other',
 ];
+export const helpFileCategories = ['video', 'doc'];
 export const genderCategories = ['Male', 'Female'];
 export const responseCategories = ['Yes', 'No'];
 export const ageCategories = [

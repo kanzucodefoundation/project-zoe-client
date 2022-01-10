@@ -94,6 +94,7 @@ const toMobileRow = (data: IEvent): IMobileRow => {
         <Typography variant="caption" color="textSecondary" display="block">
           {data.category.name}: {printDateTime(data.startDate)}
         </Typography>
+        <EventRegisterButton id={data.id} />
       </>
     ),
   };

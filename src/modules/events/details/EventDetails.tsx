@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import EditDialog from "../../../components/EditDialog";
 import Box from "@material-ui/core/Box";
 import Avatar from "@material-ui/core/Avatar";
+import { Grid } from "@material-ui/core";
 import PinDropIcon from "@material-ui/icons/PinDrop";
 import EventIcon from "@material-ui/icons/Event";
 import PeopleIcon from "@material-ui/icons/People";
 import Typography from "@material-ui/core/Typography";
 import { createStyles, makeStyles } from "@material-ui/core/styles";
 import { Theme } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Divider from "@material-ui/core/Divider";
 import EditIcon from "@material-ui/icons/Edit";
@@ -31,10 +31,14 @@ import {
   IEventState,
 } from "../../../data/events/eventsReducer";
 import EventForm from "../forms/EventForm";
+import EventActivitiesForm from "./EventActivitiesForm";
 import { printPrettyDate, printPrettyTime } from "../../../utils/dateHelpers";
 import GroupLink from "../../../components/GroupLink";
 import EventAttendance from "./EventAttendance";
 import EventMetadata from "./EventMetadata";
+import EventActivities from "./EventActivities";
+import MemberEventActivitiesEditor from "./MemberEventActivitiesEditor";
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -66,6 +70,7 @@ export default function Details() {
   let { eventId } = useParams<any>();
   const history = useHistory();
   const [dialog, setDialog] = useState<boolean>(false);
+  const [dialogAdd, setDialogAdd] = useState<boolean>(false);
   const { selected: data, loading }: IEventState = useSelector(
     (state: any) => state.events
   );
@@ -83,7 +88,6 @@ export default function Details() {
     const leaderIds: string[] = _leaderIds.map((it) => `${it}`);
 
     const isLeader = leaderIds.indexOf(userId) > -1;
-
     return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
   };
 
@@ -138,6 +142,22 @@ export default function Details() {
         <EventAttendance groupId={`${data.groupId}`} eventId={`${data.id}`} />
       ),
     },
+    {
+      //Tabview for eventactivies.
+      name: "Activities",
+      component: <EventActivities eventId={Number(data.id)} />,
+    },
+    {
+      //Tabview for Assigning /Unassigning MemberEventActivities.
+      name: "Assign Member(s) ",
+      component:<MemberEventActivitiesEditor/>,
+    },
+    
+
+ 
+
+  
+    
   ];
 
   return (
@@ -188,6 +208,9 @@ export default function Details() {
                   </IconButton>
                 </Box>
               ) : null}
+              {/* Passing prop to eventactivities component */}
+              <EventActivitiesForm eventId={`${data.id}`} />
+             
             </Box>
             <Divider />
             <Box pl={1}>

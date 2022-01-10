@@ -27,6 +27,7 @@ import { IState } from "../../../data/types";
 import XBreadCrumbs from "../../../components/XBreadCrumbs";
 import PendingMemberships from "./groups/PendingMemberships";
 import { hasAnyRole } from "../../../data/appRoles";
+import MemberActivityList from "../../groups/members/MembersActivities";
 
 interface IProps extends RouteComponentProps {}
 
@@ -168,6 +169,12 @@ const ContactDetails = (props: IProps) => {
                       {...a11yProps("requests")}
                     />
                   )}
+                  <Tab
+                  key='Activity'
+                  value='activities'
+                  label='My Activities'
+                  {...a11yProps("activities")}
+                />
                 </Tabs>
               </AppBar>
               <Divider />
@@ -181,12 +188,16 @@ const ContactDetails = (props: IProps) => {
                   isOwnProfile={isOwnProfile}
                   profile={profile}
                 />
+              
               </TabPanel>
               {isOwnProfile && (
                 <TabPanel value={value} index="requests">
                   <PendingMemberships contactId={contactId} />
                 </TabPanel>
               )}
+              <TabPanel value={value} index='activities'>
+								<MemberActivityList />
+							</TabPanel>
             </Grid>
           </Grid>
         </div>

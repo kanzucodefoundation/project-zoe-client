@@ -1,82 +1,74 @@
 import React, { useEffect, useState } from "react";
 import * as yup from "yup";
-import { reqDate, reqObject, reqString } from "../../../data/validations";
+import { reqDate, reqString } from "../../../data/validations";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../components/forms/XFormHC";
 import XTextInput from "../../../components/inputs/XTextInput";
 import { remoteRoutes } from "../../../data/constants";
-import { GroupPrivacy } from "../../groups/types";
-import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
 import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { del, search } from "../../../utils/ajax";
+import { del, get, post, search } from "../../../utils/ajax";
 import Toast from "../../../utils/Toast";
 import { cleanComboValue } from "../../../utils/dataHelpers";
 import { parseGooglePlace } from "../../../components/plain-inputs/PMapsInput";
 import { XMapsInput } from "../../../components/inputs/XMapsInput";
-import { IEvent } from "../types";
+import { IEvent } from "../../events/types";
 import XDateTimeInput from "../../../components/inputs/XDateTimeInput";
 import { useSelector } from "react-redux";
 import { IState } from "../../../data/types";
-import EventMetadataForm from "../details/EventMetadataForm";
+import XRadioInput from "../../../components/inputs/XRadioInput";
+import { Box } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { Button } from "@material-ui/core";
+import { responseCategories } from "../../../data/comboCategories";
+import { toOptions } from "../../../components/inputs/inputHelpers";
+// import EventDayOff from "../../events/details/EventDayOff";
+import { hasAnyRole } from "../../../data/appRoles";
+import { appPermissions } from "../../../data/constants";
+import { ISchedule } from "tui-calendar";
 
 interface IProps {
-  data?: Partial<IEvent>;
+  data?: any | null;
   isNew: boolean;
   onCreated?: (g: any) => any;
   onUpdated?: (g: any) => any;
   onDeleted?: (g: any) => any;
   onCancel?: () => any;
-  cal?: any
-  scheduleData?: any
-
+  e?: any;
 }
 
 const schema = yup.object().shape({
-  category: reqObject,
-  summary: reqString,
-
-  venue: reqObject,
-  group: reqObject,
-
+  reason: reqString,
   startDate: reqDate,
   endDate: reqDate,
 });
 
 const initialData = {
-  summary: "",
-  privacy: GroupPrivacy.Public,
-  category: null,
-
-  venue: null,
-  group: null,
-
+  reason: "",
   startDate: new Date(),
   endDate: new Date(),
-  metaData: {},
 };
 
-const EventForm = ({
+const DisableDayOff = ({
   data,
   isNew,
+  e,
   onCreated,
   onUpdated,
   onDeleted,
   onCancel,
-  cal,
-	scheduleData,
 }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [frequency, setFrequency] = useState("");
   const user = useSelector((state: IState) => state.core.user);
-  const [group, setGroup] = useState<any>();
+  const profile = useSelector((state: IState) => state.core.user);
+  const [dialog, setDialog] = useState<boolean>(true);
   const [event, setEvent] = useState<any>();
-
-  useEffect(() => {
-    if (event && group) {
-      getFrequency(event, group);
-    }
-  }, [event, group]);
+  const [day, setDay] = useState<any>();
+  const [selectDay, setSelectedDay] = useState<any>();
+  const [value, setValue] = useState<any[]>([]);
+  const [eventDate, setEventDate] = useState<any>();
+  const [load, setLoad] = useState<boolean>(true);
 
   function getFrequency(event: any, group: any) {
     const filter = {
@@ -89,31 +81,17 @@ const EventForm = ({
   }
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
+    console.log(values, "Heyyyyy");
     const toSave: any = {
-      id: values.id,
-      // name: `${frequency}-${values.group.categoryId}-${values.category.name}`,
-      name: values.name,
-      summary: values.summary,
-      privacy: GroupPrivacy.Public,
-      // categoryId: cleanComboValue(values.category),
-      categoryId: values.category,
-      parentId: values.group.parentId,
-
+      contactId: user.contactId,
+      reason: values.reason,
       startDate: values.startDate,
       endDate: values.endDate,
-
-      submittedAt: new Date(),
-      submittedById: user.contactId,
-
-      venue: parseGooglePlace(values.venue),
-      groupId: cleanComboValue(values.group),
-      metaData: values.metaData,
+      eventId: values.eventId,
     };
 
-    actions.resetForm();
-
     const submission: ISubmission = {
-      url: remoteRoutes.events,
+      url: remoteRoutes.dayOff,
       values: toSave,
       actions,
       isNew,
@@ -130,12 +108,33 @@ const EventForm = ({
     handleSubmission(submission);
   }
 
+  useEffect(() => {
+    setLoad(true);
+    // get(remoteRoutes.dayOff, (data) => {
+    //   setEvent(data);
+    //   console.log(data, "hello");
+    //   let myEvents: any[] = [];
+    //   for (let i = 0; i < data.length; i++) {
+    //     const calEvent = {
+    //       category: "time",
+    //       isVisible: true,
+    //       id: data[i].id,
+    //       body: data[i].reason,
+    //       start: data[i].startDate,
+    //       end: data[i].endDate,
+    //     };
+    //     myEvents.push(calEvent);
+    //   }
+    //   setDay(myEvents);
+    // });
+  }, [dialog]);
+
   const handleDelete = () => {
     setLoading(true);
     del(
-      `${remoteRoutes.events}/${data?.id}`,
+      `${remoteRoutes.dayOff}/${data?.id}`,
       () => {
-        Toast.success("Operation succeeded");
+        Toast.success("Operation successful");
         onDeleted && onDeleted(data?.id);
       },
       undefined,
@@ -152,38 +151,19 @@ const EventForm = ({
     <XForm
       onSubmit={handleSubmit}
       schema={schema}
-      initialValues={{ ...initialData, ...data, venue }}
+      initialValues={{ initialData }}
       onDelete={handleDelete}
       loading={loading}
       onCancel={onCancel}
     >
       {(formData: any) => (
         <Grid spacing={1} container>
-          <Grid item xs={12} md={4}>
-            <XRemoteSelect
-              remote={remoteRoutes.eventsCategories}
-              name="category"
-              label="Category"
-              variant="outlined"
-              onSelect={() => setEvent(formData.category)}
-            />
-          </Grid>
-          <Grid item xs={12} md={8}>
-            <XRemoteSelect
-              remote={remoteRoutes.groupsCombo}
-              name="group"
-              label="Group"
-              variant="outlined"
-              onSelect={() => setGroup(formData.group)}
-            />
-          </Grid>
-
           <Grid item xs={12} md={6}>
             <XDateTimeInput
               name="startDate"
               label="Start Date"
               variant="outlined"
-            />    
+            />
           </Grid>
           <Grid item xs={12} md={6}>
             <XDateTimeInput
@@ -192,25 +172,13 @@ const EventForm = ({
               variant="outlined"
             />
           </Grid>
+
           <Grid item xs={12}>
             <XTextInput
-              name="summary"
-              label="Short summary"
+              name="reason"
+              label="Reason"
               type="text"
               variant="outlined"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <XMapsInput
-              name="venue"
-              label="Venue"
-              variant="outlined"
-              placeholder="Type to search"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <EventMetadataForm
-              eventCategory={cleanComboValue(formData.category)}
             />
           </Grid>
         </Grid>
@@ -219,4 +187,4 @@ const EventForm = ({
   );
 };
 
-export default EventForm;
+export default DisableDayOff;

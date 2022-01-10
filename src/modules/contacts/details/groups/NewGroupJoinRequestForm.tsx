@@ -4,27 +4,21 @@ import { Box, Button, Grid } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import EditDialog from '../../../../components/EditDialog';
 import XForm from '../../../../components/forms/XForm';
-import { reqEmail, reqObject, reqString } from '../../../../data/validations';
+import {  reqObject } from '../../../../data/validations';
 import { XMapsInput } from '../../../../components/inputs/XMapsInput';
 import { XRemoteSelect } from '../../../../components/inputs/XRemoteSelect';
 import { remoteRoutes } from '../../../../data/constants';
 import { FormikHelpers } from 'formik';
-import { post, handleError } from '../../../../utils/ajax';
+import { post } from '../../../../utils/ajax';
 import Toast from '../../../../utils/Toast';
 import { IContact } from '../../types';
-import XTextInput from '../../../../components/inputs/XTextInput';
 
 const schema = yup.object().shape({
   churchLocation: reqObject,
-  residence: reqString,
+  residence: reqObject,
 });
 
-//MC JOIN
-const mcSchema = yup.object().shape({
-  email: reqEmail,
-  residence: reqString,
-  contact: reqString,
-});
+
 
 const initialValues = {
   churchLocation: '',
@@ -38,9 +32,7 @@ interface IProps {
 const NewGroupJoinRequestForm = (props: IProps) => {
   const [dialog, setDialog] = useState<boolean>(false);
 
-  //Join MC state Hook
-  const [joinMC, setJoinMC] = useState<boolean>(false);
-
+  
   const handleAddNew = () => {
     setDialog(true);
   };
@@ -49,14 +41,7 @@ const NewGroupJoinRequestForm = (props: IProps) => {
     setDialog(false);
   };
 
-  //Join MC
-  const handleJoinMc = () => {
-    setJoinMC(true);
-  };
-
-  const closeDialog = () => {
-    setJoinMC(false);
-  };
+  
 
   const getPrimaryEmail = () => {
     const emailList = props.contact.emails;
@@ -110,17 +95,7 @@ const NewGroupJoinRequestForm = (props: IProps) => {
           </Button>
         </Box>
 
-        <Box pr={1}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            startIcon={<AddIcon />}
-            onClick={handleJoinMc}
-          >
-            Join MC &nbsp;&nbsp;
-          </Button>
-        </Box>
+       
       </Box>
       <EditDialog
         open={dialog}
