@@ -10,8 +10,7 @@ const DISCOVERY_DOCS_RESPONSE = (DISCOVERY_DOCS)? DISCOVERY_DOCS : ""
 let DOCS_ARRAY:string[] = [];
 DOCS_ARRAY.push(DISCOVERY_DOCS_RESPONSE);
 
-  export function initClient(callback: (arg0: boolean) => void) {
-    console.log(process.env.REACT_APP_CALENDAR_API_KEY);
+  export function initClient(callback: (arg0: boolean) => void) {   
     gapi.load('client:auth2',()=>{ 
         try {
             gapi.client.init({
@@ -94,7 +93,7 @@ export const publishTheCalenderEvent = (googleCalEvent: any) => {
           console.log(request, 'inserted event')
           request.execute(function(event) {
             console.log(event)
-            window.open('Event created: ' + event)
+            //window.open('Event created: ' + event)
           })
       })   
   }  catch (error) {

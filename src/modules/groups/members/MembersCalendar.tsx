@@ -207,13 +207,13 @@ for (let i = 0; i < events.length; i++) {
 []);
 
 
-useEffect(()=>{
-  // initClient((success: any)=>{
-  //     if (success){
-  //         getGoogleAuthorizedEmail();
-  //         } 
-  // });
-},[]);
+// useEffect(()=>{
+//   /initClient((success: any)=>{
+//       if (success){
+//           getGoogleAuthorizedEmail();
+//           } 
+//   });
+// },[]);
 
 const getGoogleAuthorizedEmail =async ()=>{
   let email = await getSignedInUserEmail();
@@ -271,7 +271,7 @@ const handleClick = (calEvent: any | "") => {
      </Grid>
      <Grid item xs={6} md={6}>
         <Button
-          onClick={()=>handleClick(event? event[5]:"")}
+          onClick={()=>handleClick(schedules? schedules[6]:"")}
         >
           Add to Google Calendar
      </Button>
@@ -340,7 +340,6 @@ const handleClick = (calEvent: any | "") => {
                 Next Month{">"}
               </Button>
             </div>
-
             <TUICalendar
               ref={cal}
               height='1000px'
