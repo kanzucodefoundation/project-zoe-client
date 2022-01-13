@@ -42,7 +42,7 @@ const schema = yup.object().shape({
   civilStatus: reqString,
 
   ageGroup: reqString,
-  residence: reqString,
+  residence: reqObject,
 
   churchLocation: reqObject,
 

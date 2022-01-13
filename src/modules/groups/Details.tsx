@@ -289,6 +289,7 @@ export default function Details() {
                             Create Report&nbsp;&nbsp;
                           </Button>
                         ) : undefined}
+                    
                       </ButtonGroup>
                     </Box>
                   </Hidden>

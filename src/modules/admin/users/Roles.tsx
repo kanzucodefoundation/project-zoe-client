@@ -1,46 +1,46 @@
-import { Box, Chip, Divider, Typography } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import ListHeader from "../../../components/ListHeader";
-import { hasRole } from "../../../data/appRoles";
-import { remoteRoutes, appPermissions } from "../../../data/constants";
-import { IState } from "../../../data/types";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-import { XHeadCell } from "../../../components/table/XTableHead";
-import DataList from "../../../components/DataList";
-import Loading from "../../../components/Loading";
-import { useHistory } from "react-router";
-import { search } from "../../../utils/ajax";
-import { IRoles } from "./types";
-import Hidden from "@material-ui/core/Hidden";
-import EditDialog from "../../../components/EditDialog";
-import RolesEditor from "./RolesEditor";
-import { AddFabButton } from "../../../components/EditIconButton";
+import { Box, Chip, Divider, Typography } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import ListHeader from '../../../components/ListHeader';
+import { hasRole } from '../../../data/appRoles';
+import { remoteRoutes, appPermissions } from '../../../data/constants';
+import { IState } from '../../../data/types';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import { XHeadCell } from '../../../components/table/XTableHead';
+import DataList from '../../../components/DataList';
+import Loading from '../../../components/Loading';
+import { useHistory } from 'react-router';
+import { search } from '../../../utils/ajax';
+import { IRoles } from './types';
+import Hidden from '@material-ui/core/Hidden';
+import EditDialog from '../../../components/EditDialog';
+import RolesEditor from './RolesEditor';
+import { AddFabButton } from '../../../components/EditIconButton';
 
 const columns: XHeadCell[] = [
   {
-    name: "isActive",
-    label: "Status",
+    name: 'isActive',
+    label: 'Status',
     render: (value) => (
       <Chip
-        label={value ? "Active" : "Inactive"}
-        color={value ? "secondary" : "default"}
+        label={value ? 'Active' : 'Inactive'}
+        color={value ? 'secondary' : 'default'}
         size="small"
       />
     ),
   },
   {
-    name: "role",
-    label: "Role",
+    name: 'role',
+    label: 'Role',
   },
   {
-    name: "description",
-    label: "Description",
+    name: 'description',
+    label: 'Description',
   },
   {
-    name: "permissions",
-    label: "Permissions",
+    name: 'permissions',
+    label: 'Permissions',
     render: (permissions: string[]) =>
       permissions?.map((it) => (
         <Chip
@@ -66,10 +66,10 @@ const toMobile = (data: any): IMobileRow => {
   return {
     primary: (
       <>
-        {"Status: "}
+        {'Status: '}
         <Chip
-          label={data.isActive ? "Active" : "Inactive"}
-          color={data.isActive ? "secondary" : "default"}
+          label={data.isActive ? 'Active' : 'Inactive'}
+          color={data.isActive ? 'secondary' : 'default'}
           size="small"
         />
         <Box pt={0.5}>
@@ -224,7 +224,7 @@ const Roles = () => {
       )}
       {canEditRoles && (
         <EditDialog
-          title={selected ? `Edit ${selected.role}` : "Create Role"}
+          title={selected ? `Edit ${selected.role}` : 'Create Role'}
           open={dialog}
           onClose={handleClose}
         >

@@ -1,3 +1,4 @@
+
 import React, { Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
@@ -27,6 +28,7 @@ import { hasAnyRole } from '../../data/appRoles';
 import { useSelector } from 'react-redux';
 import { IState } from '../../data/types';
 import { hasValue } from '../inputs/inputHelpers';
+
 
 interface IAppRoute {
   requiredRoles?: string[];
@@ -70,6 +72,12 @@ const routes: IAppRoute[] = [
     route: localRoutes.groups,
     icon: BubbleChartIcon,
   },
+  // {
+  // name:"Events",
+  // route:localRoutes.eventActivities,
+  // icon:EventIcon,
+
+  // },
   {
     requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
     name: 'Reports',
@@ -82,9 +90,21 @@ const routes: IAppRoute[] = [
     route: localRoutes.settings,
     icon: SettingsIcon,
     items: [
+        {
+          name: "Manage Users",
+          route: localRoutes.users,
+        },
+        {
+          name: "Manage Help",
+          route: localRoutes.manageHelp,
+        },
       {
-        name: 'Manage Users',
-        route: localRoutes.users,
+        name: 'Group Categories',
+        route: localRoutes.groupsCategories,
+      },
+      {
+        name: 'Event Categories',
+        route: localRoutes.eventCategories,
       },
       { name: 'Report Fields', route: localRoutes.reportCategories },
       {

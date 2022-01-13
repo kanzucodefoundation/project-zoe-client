@@ -5,12 +5,14 @@ import {
   Theme,
   Typography,
 } from "@material-ui/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { get } from "../../utils/ajax";
 import XBreadCrumbs from "../../components/XBreadCrumbs";
 import { localRoutes } from "../../data/constants";
 import Layout from "./../../components/layout/Layout";
 import YouTube from "react-youtube";
 import Grid from "@material-ui/core/Grid";
+import { remoteRoutes } from "../../data/constants";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,29 +27,44 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "100%",
     },
   })
-);
+); 
+
+interface IFile {
+      id?: string;
+      title?: string;
+    }
 
 const Help = () => {
   const classes = useStyles();
-  const videos = [
-    {
-      id: "q0G3pAVD2Zg",
-      title:
-        "How to register as a visitor and approve members as an administrator.",
-    },
-    {
-      id: "PtRNvkcFBP0",
-      title: "How to manage your personal details",
-    },
-    {
-      id: "gqKYO5XAb38",
-      title: "How to manage group details and add, edit and remove members",
-    },
-    {
-      id: "yvDth5gPrxk",
-      title: "How to upload a list of members using a csv file",
-    },
-  ];
+
+  const [file, setFile] = useState<IFile[]>([]);
+
+  const getHelp = async () => {
+    try {
+    await get (`${remoteRoutes.help}`, 
+    (data) => { let files: IFile[] = [];
+    //console.log(files, 'help files');
+    for (let i = 0; i < data.length; i++) {
+      const doc = {
+        id: data[i].url,
+        title: data[i].title,
+      };
+      files.push(doc);
+  } 
+  setFile(files);
+  console.log(files, 'help files');
+  return new Promise((data) => setTimeout(data, 5000));
+  },)
+  return new Promise((data) => setTimeout(data, 5000));
+  } catch (error) {
+    console.log(error);
+  }
+}
+  useEffect(() => {
+    getHelp();
+ }, 
+ []);
+
   return (
     <Layout>
       <Box className={classes.root}>
@@ -65,7 +82,7 @@ const Help = () => {
         <Typography variant="h5">Tutorial Videos</Typography>
         <Box pt={2}>
           <Grid container spacing={4}>
-            {videos.map((it) => (
+            {file.map((it) => (
               <Grid item xs={12} md={6} key={it.id}>
                 <YouTube videoId={it.id} id={it.id} className={classes.video} />
                 <br />

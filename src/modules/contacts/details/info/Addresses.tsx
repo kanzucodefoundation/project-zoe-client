@@ -56,7 +56,7 @@ const Addresses = (props: IProps) => {
                 <Button size="small" color="primary" onClick={
                     () =>
                       addresses.length >= 4 ? Toast.info("You can only enter up to four addresses") : handleNew()}>
-                    Add New
+                    Add New 
                 </Button>
             }
         >
