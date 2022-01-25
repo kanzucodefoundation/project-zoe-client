@@ -42,40 +42,43 @@ export const redux = {
 };
 
 export const localRoutes = {
-  dashboard: '/dashboard',
-  contacts: '/people/contacts',
-  profile: '/people/contacts/me',
-  contactsDetails: '/people/contacts/:contactId',
-  groups: '/people/groups',
-  groupsDetails: '/people/groups/:groupId',
 
+  dashboard: "/dashboard",
+  contacts: "/people/contacts",
+  profile: "/people/contacts/me",
+  contactsDetails: "/people/contacts/:contactId",
+  groups: "/people/groups",
+  groupsDetails: "/people/groups/:groupId",
+
+  groupsReports: "/groups",
+
+  events: "/events",
+  eventsDetails: "/events/:eventId",
+  eventActivities:"/events/:activitiesId",  
+
+  reports: "/reports",
+  reportsDetails: "/reports/:reportId",
+
+  users: "/admin/users",
+  usersGroups: "/admin/user-groups",
+  tags: "/admin/tags",
+  settings: "/admin/settings",
+  test: "/test",
+
+  updatePassword: "/update-password",
+  resetPassword: "/reset-password/:token",
+  forgotPassword: "/forgot-password",
+  help: "/help",
+  login: "/login",
+  home: "/",
+  manageHelp: '/admin/manageHelp',
   chat: '/chat/email',
 
   calendar: '/calendar',
-
-  groupsReports: '/groups',
-  groupsCategories: '/admin/group-categories',
-
-  events: '/events',
-  eventsDetails: '/events/:eventId',
-
-  reports: '/reports',
-  reportsDetails: '/reports/:reportId',
   reportCategories: '/admin/report-categories',
+  groupsCategories: '/admin/group-categories',
+  eventCategories: '/admin/event-categories',
 
-  users: '/admin/users',
-  usersGroups: '/admin/user-groups',
-  tags: '/admin/tags',
-  settings: '/admin/settings',
-  test: '/test',
-  manageHelp: '/admin/manageHelp',
-
-  updatePassword: '/update-password',
-  resetPassword: '/reset-password/:token',
-  forgotPassword: '/forgot-password',
-  help: '/help',
-  login: '/login',
-  home: '/',
 };
 
 export const isDebug = process.env.NODE_ENV !== 'production';
@@ -86,53 +89,56 @@ export const url = debug
 
 export const remoteRoutes = {
   authServer: url,
-  login: url + '/api/auth/login',
-  profile: url + '/api/auth/profile',
-  register: url + '/api/register',
-  forgotPassword: url + '/api/auth/forgot-password',
-  resetPassword: url + '/api/auth/reset-password',
-  contacts: url + '/api/crm/contacts',
-  contactSearch: url + '/api/crm/contact/search',
-  contactById: url + '/api/crm/contacts/id',
-  contactsPeople: url + '/api/crm/people',
-  contactsPeopleCombo: url + '/api/crm/people/combo',
 
-  contactsPeopleSample: url + '/api/crm/import',
-  contactsPeopleUpload: url + '/api/crm/import',
-  contactsChc: url + '/api/crm/person/chc',
-  contactsEmail: url + '/api/crm/emails',
-  tags: url + '/api/tags',
-  users: url + '/api/users',
-  userGroups: url + '/api/user-groups',
-  roles: url + '/api/user-roles',
-  contactsPhone: url + '/api/crm/phones',
-  contactsAddress: url + '/api/crm/addresses',
-  contactsIdentification: url + '/api/crm/identifications',
-  contactsRequests: url + '/api/crm/requests',
+  login: url + "/api/auth/login",
+  profile: url + "/api/auth/profile",
+  register: url + "/api/register",
+  forgotPassword: url + "/api/auth/forgot-password",
+  resetPassword: url + "/api/auth/reset-password",
+  contacts: url + "/api/crm/contacts",
+  contactSearch: url + "/api/crm/contact/search",
+  contactById: url + "/api/crm/contacts/id",
+  contactsPeople: url + "/api/crm/people",
+  contactsPeopleCombo: url + "/api/crm/people/combo",
 
-  groups: url + '/api/groups/group',
-  groupsCombo: url + '/api/groups/combo',
-  groupsCategories: url + '/api/groups/category',
-  groupsMembership: url + '/api/groups/member',
-  groupsRequest: url + '/api/groups/request',
-  groupReports: url + '/api/groups/groupreports',
-  groupReportFrequency: url + '/api/groups/reportfrequency',
-  groupCategoriesCombo: url + '/api/groups/groupscombo',
+  contactsPeopleSample: url + "/api/crm/import",
+  contactsPeopleUpload: url + "/api/crm/import",
+  contactsChc: url + "/api/crm/person/chc",
+  contactsEmail: url + "/api/crm/emails",
+  tags: url + "/api/tags",
+  users: url + "/api/users",
+  userGroups: url + "/api/user-groups",
+  roles: url + "/api/user-roles",
+  contactsPhone: url + "/api/crm/phones",
+  contactsAddress: url + "/api/crm/addresses",
+  contactsIdentification: url + "/api/crm/identifications",
+  contactsRequests: url + "/api/crm/requests",
 
+  groups: url + "/api/groups/group",
+  groupsCombo: url + "/api/groups/combo",
+  groupsCategories: url + "/api/groups/category",
+  groupsMembership: url + "/api/groups/member",
+  groupsRequest: url + "/api/groups/request",
+  groupReports: url + "/api/groups/groupreports",
+  groupReportFrequency: url + "/api/groups/reportfrequency",
+  groupCategoriesCombo: url + "/api/groups/groupscombo",
+
+  events: url + "/api/events/event",
+  eventsMetricsRaw: url + "/api/events/metrics/raw",
+  eventsCategories: url + "/api/events/category",
+  eventsAttendance: url + "/api/events/attendance",
+  eventsField: url + "/api/events/fields",
+  eventsActivity: url + "/api/events/activities",
+  memberEventActivities:url + "/api/events/member",
+  dayOff: url + '/api/events/dayoff',
+
+  reports: url + "/api/reports/report",
+  reportsCategories: url + "api/reports/category",
+
+  contactsCompany: url + "/api/crm/contact/company",
+  contactsAvatar: url + "/api/crm/contact/avatar",
   chat: url + '/api/chat/email',
-
-  events: url + '/api/events/event',
-  eventsMetricsRaw: url + '/api/events/metrics/raw',
-  eventsCategories: url + '/api/events/category',
-  eventsAttendance: url + '/api/events/attendance',
-  eventsField: url + '/api/events/fields',
   eventsRegistration: url + '/api/events/registration',
-
-  reports: url + '/api/reports/report',
-  reportsCategories: url + 'api/reports/category',
-
-  contactsCompany: url + '/api/crm/contact/company',
-  contactsAvatar: url + '/api/crm/contact/avatar',
-
   help: url + '/api/help',
+ 
 };

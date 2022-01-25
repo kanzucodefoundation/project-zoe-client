@@ -100,7 +100,7 @@ const HelpFilesDisplay = () => {
               loading={loading}
               buttons={
                 <>
-                  {hasAnyRole(user, [appPermissions.manageHelp]) && (
+                  {hasAnyRole(user, [appPermissions.roleEventEdit]) && (
                     <Button
                       variant="outlined"
                       color="primary"
