@@ -77,13 +77,13 @@ const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => 
 
   const data = [
     {
-      title: "MC Attendance",
+      title: "Small Group Attendance",
       value: printInteger(totalMcAttendance),
       percentage: getPercentage(totalMcAttendance, totalMcAttendancePrev),
       icon: Grain,
     },
     {
-      title: "Salvation",
+      title: "Salvations",
       value: printInteger(currentData.noOfSalvations),
       percentage: getPercentage(
         previousData.noOfSalvations,
@@ -92,7 +92,7 @@ const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => 
       icon: Info,
     },
     {
-      title: "No. of Mechanics",
+      title: "No. of Volunteers",
       value: printInteger(currentData.noOfMechanics),
       percentage: getPercentage(
         previousData.noOfMechanics,
@@ -119,7 +119,7 @@ const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => 
       icon: Restore,
     },
     {
-      title: "Garage Attendance",
+      title: "Church Service Attendance",
       value: printInteger(currentData.totalGarageAttendance),
       percentage: getPercentage(
         previousData.totalGarageAttendance,
