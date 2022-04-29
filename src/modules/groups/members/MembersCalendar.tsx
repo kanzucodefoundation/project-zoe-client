@@ -17,7 +17,7 @@ import { get, del } from "../../../utils/ajax"
 import Toast from "../../../utils/Toast"
 import { useDispatch, useSelector } from "react-redux"
 import EditDialog from "../../../components/EditDialog"
-import EventForm from "../../events/forms/EventForm"
+import AddEventForm from "../../events/forms/AddEventForm";
 import { eventsEdit } from "../../../data/events/eventsReducer"
 import { IEvent } from "../../events/types"
 import AddIcon from "@material-ui/icons/Add"
@@ -283,7 +283,7 @@ const handleClick = (calEvent: any | "") => {
 							onClose={handleClose}
 							title={isNew ? "Add Event" : "Edit Event"}
 						>
-							<EventForm
+							<AddEventForm
 								data={selectedEvent}
 								cal={cal}
 								scheduleData={value}
