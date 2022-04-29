@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import * as yup from "yup";
-import { reqDate, reqObject, reqString } from "../../../data/validations";
 import { FormikHelpers } from "formik";
 import Grid from "@material-ui/core/Grid";
-import XForm from "../../../components/forms/XFormHC";
-import XTextInput from "../../../components/inputs/XTextInput";
+import { useSelector } from "react-redux";
+
 import { remoteRoutes } from "../../../data/constants";
 import { GroupPrivacy } from "../../groups/types";
 import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
@@ -16,8 +15,10 @@ import { parseGooglePlace } from "../../../components/plain-inputs/PMapsInput";
 import { XMapsInput } from "../../../components/inputs/XMapsInput";
 import { IEvent } from "../types";
 import XDateTimeInput from "../../../components/inputs/XDateTimeInput";
-import { useSelector } from "react-redux";
+import XTextInput from "../../../components/inputs/XTextInput";
+import XForm from "../../../components/forms/XFormHC";
 import { IState } from "../../../data/types";
+import { reqDate, reqObject, reqString } from "../../../data/validations";
 import EventMetadataForm from "../details/EventMetadataForm";
 
 interface IProps {
