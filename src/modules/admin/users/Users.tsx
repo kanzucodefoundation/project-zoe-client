@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import { useSelector } from 'react-redux';
 import Divider from '@material-ui/core/Divider';
-import { XHeadCell } from "../../../components/table/XTableHead";
+import { XHeadCell } from '../../../components/table/XTableHead';
 import DataList from '../../../components/DataList';
 import { AddFabButton } from '../../../components/EditIconButton';
 import { search } from '../../../utils/ajax';

@@ -14,14 +14,5 @@ module.exports = {
       'airbnb-base',
       'airbnb-typescript',
     ],
-    rules: {
-        "@typescript-eslint/quotes": [
-            "error",
-            "single",
-            {
-            "avoidEscape": true,
-            "allowTemplateLiterals": true
-            }
-        ]
-    }
+    rules: {}
   };

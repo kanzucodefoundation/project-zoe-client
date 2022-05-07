@@ -8,6 +8,14 @@ export const standardDateFormat = 'dd-MM-yyyy';
 export const prettyDateFormat = 'MMM d, yyyy';
 export const prettyTime = 'p';
 
+export const strToDate = (str: string): Date | null => {
+  try {
+    return parseISO(str);
+  } catch (e) {
+    return null;
+  }
+};
+
 export const getMonthsList = () => {
   const monthsList = [];
   for (let i = 1; i <= 12; i++) {
@@ -120,10 +128,4 @@ export const printPrettyTime = (value: any): string => {
   return '';
 };
 
-export const strToDate = (str: string): Date | null => {
-  try {
-    return parseISO(str);
-  } catch (e) {
-    return null;
-  }
-};
+
