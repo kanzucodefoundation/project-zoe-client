@@ -70,6 +70,7 @@ export const localRoutes = {
   forgotPassword: '/forgot-password',
   help: '/help',
   login: '/login',
+  register: '/register',
   home: '/',
   manageHelp: '/admin/manageHelp',
   chat: '/chat/email',

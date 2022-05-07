@@ -9,8 +9,8 @@ import { Box } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import { useHistory } from 'react-router';
 import { Alert } from '@material-ui/lab';
-import image from '../../assets/WH-11-1920w.webp';
-import logo from '../../assets/WHLogo3.svg';
+import image from '../../assets/landing-page-cross.jpg';
+import logo from '../../assets/Project Zoe-logos_transparent.png';
 import RegisterForm from './RegisterForm';
 import { localRoutes } from '../../data/constants';
 
@@ -18,8 +18,8 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://www.worshipharvest.org/">
-        Worship Harvest Ministries
+      <Link color="inherit" href="https://www.projectzoe.kanzucodefoundation.org/">
+        Project Zoe
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -112,15 +112,15 @@ export default function Register() {
       <CssBaseline />
       <AppBar position="relative" color="transparent">
         <Toolbar>
-          <Avatar alt="Logo" src={logo} className={classes.icon} />
-          <Typography
-            variant="h5"
-            color="inherit"
-            noWrap
-            className={classes.toolbarTitle}
-          >
-            Worship Harvest
-          </Typography>
+            <Avatar alt="Logo" src={logo} className={classes.icon} />
+              <Typography
+                variant="h5"
+                color="inherit"
+                noWrap
+                className={classes.toolbarTitle}
+              >
+                Project Zoe
+              </Typography>
           <nav>
             <Link
               variant="button"
@@ -142,7 +142,7 @@ export default function Register() {
             {done && (
               <Box pt={2}>
                 <Alert>
-                  We have received your data, Please check your
+                  We have received your data. Please check your
                   email for a link to setup a password. Thank you.
                 </Alert>
               </Box>
@@ -156,7 +156,7 @@ export default function Register() {
 
       <footer className={classes.footer}>
         <Typography variant="h6" align="center" gutterBottom color="inherit">
-          Worship Harvest is a Movement of the Gospel, Discipleship and Mission.
+          Project Zoe is a church management centered on what's at the heart of all ministry - people. 
         </Typography>
         <Typography
           variant="subtitle1"
@@ -164,10 +164,6 @@ export default function Register() {
           color="inherit"
           component="p"
         >
-          <b>
-            We exist to catalyze Spiritual, Social and Economic Renewal in our
-            immediate communities and as a result, the world.
-          </b>
         </Typography>
         <Copyright />
       </footer>

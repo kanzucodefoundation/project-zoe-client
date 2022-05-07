@@ -40,8 +40,8 @@ const App: React.FC = () => {
                 path={localRoutes.forgotPassword}
                 component={ForgotPassword}
               />
-              <Route path={localRoutes.login} component={Login} />
-              <Route component={Register} />
+              <Route path={localRoutes.register}  component={Register} />
+              <Route component={Login} />
             </Switch>
           )}
         </>

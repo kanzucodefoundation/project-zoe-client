@@ -16,6 +16,7 @@ import { isDebug, localRoutes, remoteRoutes } from '../../data/constants';
 import Toast from '../../utils/Toast';
 import XTextInput from '../../components/inputs/XTextInput';
 import { useLoginStyles } from './loginStyles';
+import image from '../../assets/landing-page-cross.jpg';
 
 function Login() {
   const classes = useLoginStyles();
@@ -42,8 +43,19 @@ function Login() {
     history.push(localRoutes.forgotPassword);
   }
 
+  function handleRegister(e: SyntheticEvent<any>) {
+    e.preventDefault();
+    history.push(localRoutes.register);
+  }
+
   return (
-    <main className={classes.main}>
+    <div     style={{
+      backgroundImage: `url(${image})`,
+      backgroundSize: 'cover',
+      height: '100%',
+      backgroundPosition: 'top center',
+    }}>
+    <main className={classes.main}>       
       <CssBaseline />
       <Paper className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -97,11 +109,15 @@ function Login() {
               <Link className={classes.link} onClick={handleForgotPassword}>
                 Forgot Password?
               </Link>
+              <Link className={classes.link}  onClick={handleRegister}>
+              {' '}Sign-up
+              </Link>
             </Form>
           )}
         </Formik>
       </Paper>
     </main>
+    </div>
   );
 }
 
