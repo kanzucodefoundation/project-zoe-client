@@ -1,12 +1,9 @@
-# This is a basic workflow to help you get started with Actions
-
-name: Automatic Deploy of Zoe Client APP
+name: Continuous Deployment of Zoe Client APP
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the develop branch
   push:
-    branches: [ refactoryDemo ]
+    branches: [ master, develop, feat/upgrade-react-scripts-5 ]
  
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -14,17 +11,21 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+
       - name: run npm install
         run: |
           npm install   
-     
           
       - name: run tests
         run: |
@@ -33,11 +34,6 @@ jobs:
       - name: run build
         run: |
           npm run build
-      # Runs a single command using the runners shell
-      - name: Add a remote origin
-        run: |
-          git remote add heroku https://heroku:${{secrets.HEROKU_API_KEY}}@git.heroku.com/${{secrets.HEROKU_APP_NAME}}.git
-      # Runs a set of commands using the runners shell
-      - name: Deploy to Heroku
-        run: |
-          git push heroku HEAD:master -r.
+
+      - name: Restart server application
+        run: pm2 restart ProjectZoeClient
