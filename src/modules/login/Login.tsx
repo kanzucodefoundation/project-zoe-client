@@ -61,6 +61,14 @@ function Login() {
           {(formState) => (
             <Form className={classes.form}>
               <XTextInput
+                type="text"
+                name="churchName"
+                label="Church Name"
+                autoComplete="off"
+                autoFocus
+                margin="normal"
+              />
+              <XTextInput
                 type="email"
                 name="username"
                 label="Email"
@@ -100,6 +108,7 @@ function Login() {
 export const schema = yup.object().shape({
   username: yup.string().email('Invalid email').required('Email is required'),
   password: yup.string().required('Password is required'),
+  churchName: yup.string().required('Church Name is required'),
 });
 
 export default Login;
