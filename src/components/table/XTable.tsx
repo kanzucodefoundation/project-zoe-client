@@ -195,7 +195,6 @@ export default function XTable(props: XTableProps) {
         {
           usePagination && <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
-            component="div"
             count={data.length}
             rowsPerPage={rowsPerPage}
             page={page}
@@ -206,6 +205,7 @@ export default function XTable(props: XTableProps) {
               'aria-label': 'next page',
             }}
             onChangePage={handleChangePage}
+            onPageChange={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         }
