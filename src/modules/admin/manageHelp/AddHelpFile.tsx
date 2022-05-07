@@ -1,15 +1,15 @@
 import React from 'react';
 import * as yup from 'yup';
-import { reqString } from '../../../data/validations';
 import { FormikHelpers } from 'formik';
 import Grid from '@material-ui/core/Grid';
+import { reqString } from '../../../data/validations';
 import XForm from '../../../components/forms/XForm';
 import XTextInput from '../../../components/inputs/XTextInput';
-import XSelectInput from "../../../components/inputs/XSelectInput";
-import { toOptions } from "../../../components/inputs/inputHelpers";
+import XSelectInput from '../../../components/inputs/XSelectInput';
+import { toOptions } from '../../../components/inputs/inputHelpers';
 import { remoteRoutes } from '../../../data/constants';
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
-import {helpFileCategories} from "../../../data/comboCategories";
+import { helpFileCategories } from '../../../data/comboCategories';
 
 interface IProps {
   data?: any | null;
@@ -31,27 +31,27 @@ const initialValues = {
   category: '',
 };
 
-function checkUrl(str: string){
-  if (str.startsWith('https')){
-    let resp = str.split('=');
-    return resp[1]
+function checkUrl(str: string) {
+  if (str.startsWith('https')) {
+    const resp = str.split('=');
+    return resp[1];
   }
-  else if (str.startsWith('www')){
-    let resp = str.split('=');
-    return resp[1]
+  if (str.startsWith('www')) {
+    const resp = str.split('=');
+    return resp[1];
   }
-  else if(str.startsWith('//')) {
-    let resp = str.split('=');
-    return resp[1]
+  if (str.startsWith('//')) {
+    const resp = str.split('=');
+    return resp[1];
   }
-  return str 
+  return str;
 }
 
-
-const AddHelpFileButton = ({data, isNew, onCreated, onUpdated, done}: IProps) => {
-
-  //Function to handle submissions
-  function handleSubmit(values: any, actions: FormikHelpers<any>){
+const AddHelpFileButton = ({
+  data, isNew, onCreated, onUpdated, done,
+}: IProps) => {
+  // Function to handle submissions
+  function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const editUrl = checkUrl(values.url);
 
     const toSave = {
@@ -63,8 +63,8 @@ const AddHelpFileButton = ({data, isNew, onCreated, onUpdated, done}: IProps) =>
     console.log(toSave);
 
     const submission: ISubmission = {
-      url: remoteRoutes.help, 
-      values: toSave, 
+      url: remoteRoutes.help,
+      values: toSave,
       actions,
       isNew,
       onAjaxComplete: (data: any) => {
@@ -122,6 +122,6 @@ const AddHelpFileButton = ({data, isNew, onCreated, onUpdated, done}: IProps) =>
     </Grid>
   </XForm>
   );
-}; 
+};
 
 export default AddHelpFileButton;

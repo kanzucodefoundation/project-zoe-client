@@ -1,17 +1,16 @@
-import { Grid } from "@material-ui/core";
-import Emails from "./Emails";
-import Phones from "./Phones";
-import Addresses from "./Addresses";
-import React from "react";
-import { IContact } from "../../types";
-import BasicData from "./BasicData";
+import { Grid } from '@material-ui/core';
+import React from 'react';
+import Emails from './Emails';
+import Phones from './Phones';
+import Addresses from './Addresses';
+import { IContact } from '../../types';
+import BasicData from './BasicData';
 
 interface IProps {
   data: IContact;
 }
 
-const Info = ({data}: IProps) => {
-    return (
+const Info = ({ data }: IProps) => (
         <Grid container spacing={2}>
             <Grid item xs={12} lg={4} md={6} sm={6} xl={3}>
                 <Grid container spacing={2}>
@@ -25,7 +24,7 @@ const Info = ({data}: IProps) => {
                     <Grid item xs={12} lg={6} xl={4} >
                         <Emails data={data}/>
                     </Grid>
-                    <Grid item xs={12} lg={6}  xl={4}>
+                    <Grid item xs={12} lg={6} xl={4}>
                         <Phones data={data}/>
                     </Grid>
                     <Grid item xs={12} lg={6} xl={4}>
@@ -34,7 +33,6 @@ const Info = ({data}: IProps) => {
                 </Grid>
             </Grid>
         </Grid>
-    );
-}
+);
 
 export default Info;

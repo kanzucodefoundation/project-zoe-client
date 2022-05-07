@@ -1,61 +1,59 @@
-import React, { Fragment } from "react";
-import clsx from "clsx";
+import React, { Fragment } from 'react';
+import clsx from 'clsx';
 import {
   createStyles,
   lighten,
   makeStyles,
   Theme,
-} from "@material-ui/core/styles";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import DeleteIcon from "@material-ui/icons/Delete";
-import BackspaceIcon from "@material-ui/icons/Backspace";
-import FilterListIcon from "@material-ui/icons/FilterList";
+} from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import DeleteIcon from '@material-ui/icons/Delete';
+import BackspaceIcon from '@material-ui/icons/Backspace';
+import FilterListIcon from '@material-ui/icons/FilterList';
 
-const useToolbarStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-    },
-    highlight:
-      theme.palette.type === "light"
+const useToolbarStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(1),
+  },
+  highlight:
+      theme.palette.type === 'light'
         ? {
-            color: theme.palette.secondary.main,
-            backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-          }
+          color: theme.palette.secondary.main,
+          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+        }
         : {
-            color: theme.palette.text.primary,
-            backgroundColor: theme.palette.secondary.dark,
-          },
-    spacer: {
-      flex: "1 1 100%",
-    },
-    actions: {
-      color: theme.palette.text.secondary,
-    },
-    title: {
-      flex: "0 0 auto",
-    },
-  })
-);
+          color: theme.palette.text.primary,
+          backgroundColor: theme.palette.secondary.dark,
+        },
+  spacer: {
+    flex: '1 1 100%',
+  },
+  actions: {
+    color: theme.palette.text.secondary,
+  },
+  title: {
+    flex: '0 0 auto',
+  },
+}));
 
 interface XToolbarProps {
-    numSelected: number;
-    title: string
-    onFilterToggle?: () => any
+  numSelected: number;
+  title: string
+  onFilterToggle?: () => any
 }
 
 const XToolbar = (props: XToolbarProps) => {
-    const classes = useToolbarStyles();
-    const {numSelected} = props;
+  const classes = useToolbarStyles();
+  const { numSelected } = props;
 
-    return (
+  return (
         <Toolbar
             className={clsx(classes.root, {
-                [classes.highlight]: numSelected > 0,
+              [classes.highlight]: numSelected > 0,
             })}
         >
             <div className={classes.title}>
@@ -97,7 +95,7 @@ const XToolbar = (props: XToolbarProps) => {
                 )}
             </div>
         </Toolbar>
-    );
+  );
 };
 
-export default XToolbar
+export default XToolbar;

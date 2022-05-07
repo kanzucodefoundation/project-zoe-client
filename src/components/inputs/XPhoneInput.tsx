@@ -1,7 +1,7 @@
-import * as React from "react";
-import { useField } from "formik";
-import TextField, { TextFieldProps } from "@material-ui/core/TextField";
-import { hasValue } from "./inputHelpers";
+import * as React from 'react';
+import { useField } from 'formik';
+import TextField, { TextFieldProps } from '@material-ui/core/TextField';
+import { hasValue } from './inputHelpers';
 
 interface IProps {
   name: string;
@@ -9,7 +9,7 @@ interface IProps {
 
 const XPhoneInput = ({
   name,
-  margin = "normal",
+  margin = 'normal',
   ...props
 }: TextFieldProps & IProps) => {
   const [field, meta] = useField({ name });
@@ -24,7 +24,7 @@ const XPhoneInput = ({
       fullWidth
       error={showError}
       helperText={showError && error}
-      value={field.value || ""}
+      value={field.value || ''}
       autoComplete="nope"
     />
   );

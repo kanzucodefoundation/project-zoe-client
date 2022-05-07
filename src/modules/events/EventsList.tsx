@@ -1,21 +1,21 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import XTable from '../../components/table/XTable';
-import { XHeadCell } from '../../components/table/XTableHead';
-import { appPermissions, localRoutes } from '../../data/constants';
-import Loading from '../../components/Loading';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
-import EditDialog from '../../components/EditDialog';
 import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
 import Typography from '@material-ui/core/Typography';
-import { IMobileRow } from '../../components/DataList';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
+import XTable from '../../components/table/XTable';
+import { XHeadCell } from '../../components/table/XTableHead';
+import { appPermissions, localRoutes } from '../../data/constants';
+import Loading from '../../components/Loading';
+import EditDialog from '../../components/EditDialog';
+import { IMobileRow } from '../../components/DataList';
 import { useHistory } from 'react-router';
 import { hasValue } from '../../components/inputs/inputHelpers';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,22 +33,20 @@ import { IEvent } from './types';
 import { eventsFetchAsync, IEventState } from '../../data/events/eventsReducer';
 import EventRegisterButton from './EventRegister';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    filterPaper: {
-      borderRadius: 0,
-      padding: theme.spacing(2),
-    },
-    fab: {
-      position: 'absolute',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    flexGrow: 1,
+  },
+  filterPaper: {
+    borderRadius: 0,
+    padding: theme.spacing(2),
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 const headCells: XHeadCell[] = [
   {
@@ -68,8 +66,7 @@ const headCells: XHeadCell[] = [
   {
     name: 'group',
     label: 'Group',
-    render: (value) =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
+    render: (value) => (hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-'),
   },
   {
     name: 'submittedBy',
@@ -82,11 +79,10 @@ const headCells: XHeadCell[] = [
   },
 ];
 
-const toMobileRow = (data: IEvent): IMobileRow => {
-  return {
-    avatar: <PersonAvatar data={data} />,
-    primary: data.name,
-    secondary: (
+const toMobileRow = (data: IEvent): IMobileRow => ({
+  avatar: <PersonAvatar data={data} />,
+  primary: data.name,
+  secondary: (
       <>
         <Typography variant="caption" color="textSecondary" display="block">
           Group: {data.group.name}
@@ -96,16 +92,15 @@ const toMobileRow = (data: IEvent): IMobileRow => {
         </Typography>
         <EventRegisterButton id={data.id} />
       </>
-    ),
-  };
-};
+  ),
+});
 
 const EventsList = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [showDialog, setShowDialog] = useState(false);
   const { data, loading }: IEventState = useSelector(
-    (state: any) => state.events
+    (state: any) => state.events,
   );
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const user = useSelector((state: IState) => state.core.user);

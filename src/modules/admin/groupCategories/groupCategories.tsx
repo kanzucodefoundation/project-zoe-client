@@ -1,46 +1,46 @@
-import React, { useEffect, useState } from "react";
-import { Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import Hidden from "@material-ui/core/Hidden";
-import { XHeadCell } from "../../../components/table/XTableHead";
-import { appPermissions, remoteRoutes } from "../../../data/constants";
-import ListHeader from "../../../components/ListHeader";
-import AddIcon from "@material-ui/icons/Add";
-import XTable from "../../../components/table/XTable";
-import EditDialog from "../../../components/EditDialog";
-import Loading from "../../../components/Loading";
-import NewReportCategories from "./NewGroupCategories";
-import EventsFilter from "../../events/EventsFilter";
-import { useDispatch, useSelector } from "react-redux";
-import { eventsFetchAsync } from "../../../data/events/eventsReducer";
-import { hasAnyRole } from "../../../data/appRoles";
-import { IState } from "../../../data/types";
-import EditReportCategories from "./editGroupCategories";
-import { get } from "../../../utils/ajax";
-import Navigation from "../../../components/layout/Layout";
+import React, { useEffect, useState } from 'react';
+import {
+  Button, createStyles, makeStyles, Theme,
+} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Hidden from '@material-ui/core/Hidden';
+import AddIcon from '@material-ui/icons/Add';
+import { useDispatch, useSelector } from 'react-redux';
+import { XHeadCell } from '../../../components/table/XTableHead';
+import { appPermissions, remoteRoutes } from '../../../data/constants';
+import ListHeader from '../../../components/ListHeader';
+import XTable from '../../../components/table/XTable';
+import EditDialog from '../../../components/EditDialog';
+import Loading from '../../../components/Loading';
+import NewReportCategories from './NewGroupCategories';
+import EventsFilter from '../../events/EventsFilter';
+import { eventsFetchAsync } from '../../../data/events/eventsReducer';
+import { hasAnyRole } from '../../../data/appRoles';
+import { IState } from '../../../data/types';
+import EditReportCategories from './editGroupCategories';
+import { get } from '../../../utils/ajax';
+import Navigation from '../../../components/layout/Layout';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    filterPaper: {
-      borderRadius: 0,
-      padding: theme.spacing(2),
-    },
-    fab: {
-      position: "absolute",
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    flexGrow: 1,
+  },
+  filterPaper: {
+    borderRadius: 0,
+    padding: theme.spacing(2),
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 const headCells: XHeadCell[] = [
-  { name: "name", label: "Category Name" },
+  { name: 'name', label: 'Category Name' },
   {
-    name: "_id",
-    label: "",
+    name: '_id',
+    label: '',
     render: (value, rec) => <EditReportCategories value={rec} />,
   },
 ];
@@ -80,11 +80,11 @@ const ReportCategories = () => {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, [createDialog]);
 
-  const createTitle = "Group Categories";
+  const createTitle = 'Group Categories';
   return (
     <Navigation>
       <Box>

@@ -1,4 +1,3 @@
-
 import React, { Fragment } from 'react';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
@@ -15,20 +14,21 @@ import BubbleChartIcon from '@material-ui/icons/BubbleChart';
 import HelpIcon from '@material-ui/icons/Help';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import { useHistory, useLocation } from 'react-router-dom';
-import { appPermissions, localRoutes } from '../../data/constants';
-import appLogo from '../../assets/cool.png';
-import { navBackgroundColor } from './styles';
-import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core';
+import {
+  createStyles, makeStyles, Theme, withStyles,
+} from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import grey from '@material-ui/core/colors/grey';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import { hasAnyRole } from '../../data/appRoles';
 import { useSelector } from 'react-redux';
+import { hasAnyRole } from '../../data/appRoles';
+import { navBackgroundColor } from './styles';
+import appLogo from '../../assets/cool.png';
+import { appPermissions, localRoutes } from '../../data/constants';
 import { IState } from '../../data/types';
 import { hasValue } from '../inputs/inputHelpers';
-
 
 interface IAppRoute {
   requiredRoles?: string[];
@@ -40,7 +40,7 @@ interface IAppRoute {
 
 const routes: IAppRoute[] = [
   {
-    //requiredRoles: [appRoles.roleDashboard],
+    // requiredRoles: [appRoles.roleDashboard],
     name: 'Dashboard',
     route: localRoutes.dashboard,
     icon: AppsIcon,
@@ -90,14 +90,14 @@ const routes: IAppRoute[] = [
     route: localRoutes.settings,
     icon: SettingsIcon,
     items: [
-        {
-          name: "Manage Users",
-          route: localRoutes.users,
-        },
-        {
-          name: "Manage Help",
-          route: localRoutes.manageHelp,
-        },
+      {
+        name: 'Manage Users',
+        route: localRoutes.users,
+      },
+      {
+        name: 'Manage Help',
+        route: localRoutes.manageHelp,
+      },
       {
         name: 'Group Categories',
         route: localRoutes.groupsCategories,
@@ -120,32 +120,30 @@ const routes: IAppRoute[] = [
   },
 ];
 const menBackgroundColor = grey[800];
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    logoHolder: {
-      height: 140,
-    },
-    logo: {
-      [theme.breakpoints.only('xs')]: {
-        height: 50,
-        width: 'auto',
-      },
-      height: 58,
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  logoHolder: {
+    height: 140,
+  },
+  logo: {
+    [theme.breakpoints.only('xs')]: {
+      height: 50,
       width: 'auto',
     },
-    whiteText: {
-      color: 'white',
+    height: 58,
+    width: 'auto',
+  },
+  whiteText: {
+    color: 'white',
+  },
+  menuItem: {
+    '&:hover': {
+      backgroundColor: menBackgroundColor,
     },
-    menuItem: {
-      '&:hover': {
-        backgroundColor: menBackgroundColor,
-      },
-    },
-    nested: {
-      paddingLeft: theme.spacing(4),
-    },
-  })
-);
+  },
+  nested: {
+    paddingLeft: theme.spacing(4),
+  },
+}));
 
 const StyledListItem = withStyles({
   root: {
@@ -179,14 +177,12 @@ const NavMenu = (props: any) => {
     return pathMatches(pathname, pathStr);
   };
 
-  const cleanRoutes = (r: IAppRoute[]) => {
-    return r.filter((it) => {
-      if (it.items && hasValue(it.items)) {
-        it.items = cleanRoutes(it.items);
-      }
-      return it.requiredRoles ? hasAnyRole(user, it.requiredRoles) : true;
-    });
-  };
+  const cleanRoutes = (r: IAppRoute[]) => r.filter((it) => {
+    if (it.items && hasValue(it.items)) {
+      it.items = cleanRoutes(it.items);
+    }
+    return it.requiredRoles ? hasAnyRole(user, it.requiredRoles) : true;
+  });
 
   const finalRoutes = cleanRoutes(routes);
 

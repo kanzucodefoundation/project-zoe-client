@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import * as yup from "yup";
-import { reqArray, reqObject, reqString } from "../../../data/validations";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../../components/forms/XForm";
-import XTextInput from "../../../components/inputs/XTextInput";
-import XCheckBoxInput from "../../../components/inputs/XCheckBoxInput";
-import { remoteRoutes, permissionsList } from "../../../data/constants";
-import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { del } from "../../../utils/ajax";
-import Toast from "../../../utils/Toast";
-import XComboInput from "../../../components/inputs/XComboInput";
-import { cleanComboValue } from "../../../utils/dataHelpers";
+import React, { useState } from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { reqArray, reqObject, reqString } from '../../../data/validations';
+import XForm from '../../../components/forms/XForm';
+import XTextInput from '../../../components/inputs/XTextInput';
+import XCheckBoxInput from '../../../components/inputs/XCheckBoxInput';
+import { remoteRoutes, permissionsList } from '../../../data/constants';
+import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
+import { del } from '../../../utils/ajax';
+import Toast from '../../../utils/Toast';
+import XComboInput from '../../../components/inputs/XComboInput';
+import { cleanComboValue } from '../../../utils/dataHelpers';
 
 interface IProps {
   data: any;
@@ -32,7 +32,9 @@ const initialValues = {
   permissions: [],
   isActive: true,
 };
-const RolesEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
+const RolesEditor = ({
+  data, isNew, done, onDeleted, onCancel,
+}: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
@@ -57,13 +59,13 @@ const RolesEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
     del(
       `${remoteRoutes.roles}/${data.id}`,
       (dt) => {
-        Toast.success("Operation succeeded");
+        Toast.success('Operation succeeded');
         onDeleted(data);
       },
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }
 

@@ -1,21 +1,21 @@
-import * as React from "react";
-import Grid from "@material-ui/core/Grid";
-import { remoteRoutes } from "../../data/constants";
-import { TextField } from "@material-ui/core";
-import { PRemoteSelect } from "../../components/plain-inputs/PRemoteSelect";
-import { useFilter } from "../../utils/fitlerUtilities";
+import * as React from 'react';
+import Grid from '@material-ui/core/Grid';
+import { TextField } from '@material-ui/core';
+import { remoteRoutes } from '../../data/constants';
+import { PRemoteSelect } from '../../components/plain-inputs/PRemoteSelect';
+import { useFilter } from '../../utils/fitlerUtilities';
 
 interface IProps {
   onFilter: (data: any) => any;
 }
 
 const initialData: any = {
-  query: "",
-  "churchLocations[]": [],
-  "cellGroups[]": [],
+  query: '',
+  'churchLocations[]': [],
+  'cellGroups[]': [],
 
-  email: "",
-  phone: "",
+  email: '',
+  phone: '',
   limit: 100,
   skip: 0,
 };
@@ -23,7 +23,7 @@ const ContactFilter = ({ onFilter }: IProps) => {
   const { data, handleTextChange, handleComboChange } = useFilter({
     initialData,
     onFilter,
-    comboFields: ["churchLocations[]", "cellGroups[]"],
+    comboFields: ['churchLocations[]', 'cellGroups[]'],
   });
 
   return (
@@ -32,32 +32,32 @@ const ContactFilter = ({ onFilter }: IProps) => {
         <Grid item xs={12} md>
           <PRemoteSelect
             remote={remoteRoutes.groupsCombo}
-            filter={{ "categories[]": "Location" }}
-            parser={({ name, id }: any) => ({ name: name, id: id })}
+            filter={{ 'categories[]': 'Location' }}
+            parser={({ name, id }: any) => ({ name, id })}
             name="churchLocations[]"
             label="Location"
             variant="outlined"
             size="small"
             margin="none"
             multiple
-            onChange={(value) => handleComboChange("churchLocations[]", value)}
-            value={data["churchLocations[]"]}
+            onChange={(value) => handleComboChange('churchLocations[]', value)}
+            value={data['churchLocations[]']}
             searchOnline
           />
         </Grid>
         <Grid item xs={12} md>
           <PRemoteSelect
             remote={remoteRoutes.groupsCombo}
-            filter={{ "categories[]": "MC" }}
-            parser={({ name, id }: any) => ({ name: name, id: id })}
+            filter={{ 'categories[]': 'MC' }}
+            parser={({ name, id }: any) => ({ name, id })}
             name="cellGroups[]"
             label="MC"
             variant="outlined"
             size="small"
             margin="none"
             multiple
-            onChange={(value) => handleComboChange("cellGroups[]", value)}
-            value={data["cellGroups[]"]}
+            onChange={(value) => handleComboChange('cellGroups[]', value)}
+            value={data['cellGroups[]']}
             searchOnline
           />
         </Grid>
@@ -65,8 +65,8 @@ const ContactFilter = ({ onFilter }: IProps) => {
         <Grid item xs={12} md>
           <TextField
             name="email"
-            value={data["email"]}
-            onChange={(value) => handleTextChange("email", value)}
+            value={data.email}
+            onChange={(value) => handleTextChange('email', value)}
             label="Email"
             type="email"
             variant="outlined"
@@ -77,8 +77,8 @@ const ContactFilter = ({ onFilter }: IProps) => {
         <Grid item xs={12} md>
           <TextField
             name="phone"
-            value={data["phone"]}
-            onChange={(value) => handleTextChange("phone", value)}
+            value={data.phone}
+            onChange={(value) => handleTextChange('phone', value)}
             label="Phone"
             type="number"
             variant="outlined"

@@ -1,4 +1,4 @@
-import { IOption } from "../../components/inputs/inputHelpers";
+import { IOption } from '../../components/inputs/inputHelpers';
 
 export interface IGroup {
   id: string;
@@ -35,21 +35,21 @@ export interface ICreateBatchMembership {
 }
 
 export enum GroupPrivacy {
-  Private = "Private",
-  Public = "Public",
+  Private = 'Private',
+  Public = 'Public',
 }
 
 export enum GroupRole {
-  Member = "Member",
-  Leader = "Leader",
+  Member = 'Member',
+  Leader = 'Leader',
 }
 
 export enum GroupCategory {
-  Cohort = "Cohort",
-  MC = "MC",
-  GarageTeam = "GarageTeam",
-  Huddle = "Huddle",
-  Location = "Loaction",
+  Cohort = 'Cohort',
+  MC = 'MC',
+  GarageTeam = 'GarageTeam',
+  Huddle = 'Huddle',
+  Location = 'Loaction',
 }
 
 export interface IStats {

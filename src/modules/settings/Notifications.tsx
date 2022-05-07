@@ -1,5 +1,5 @@
-import React from "react";
-import { makeStyles } from "@material-ui/styles";
+import React from 'react';
+import { makeStyles } from '@material-ui/styles';
 import {
   Button,
   Card,
@@ -10,22 +10,22 @@ import {
   FormControlLabel,
   Grid,
   Typography,
-} from "@material-ui/core";
-import XHeader from "../../components/ibox/XHeader";
+} from '@material-ui/core';
+import XHeader from '../../components/ibox/XHeader';
 
 const useStyles = makeStyles(() => ({
   root: {
     borderRadius: 0,
   },
   item: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));
 
 const Notifications = () => {
-    const classes = useStyles();
-    return (
+  const classes = useStyles();
+  return (
         <Card className={classes.root} elevation={0}>
             <XHeader title='Notifications'/>
             <form>
@@ -128,8 +128,7 @@ const Notifications = () => {
                 </CardActions>
             </form>
         </Card>
-    );
+  );
 };
-
 
 export default Notifications;

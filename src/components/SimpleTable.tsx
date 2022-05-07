@@ -1,7 +1,7 @@
-import React from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
-import DataLabel from "./DataLabel";
-import DataValue from "./DataValue";
+import React from 'react';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import DataLabel from './DataLabel';
+import DataValue from './DataValue';
 
 export interface ITitle {
   name: string;
@@ -13,17 +13,15 @@ interface IProps {
   data: any[];
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-    },
-    row: {},
-    col: {
-      paddingTop: theme.spacing(1),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+  },
+  row: {},
+  col: {
+    paddingTop: theme.spacing(1),
+  },
+}));
 
 const SimpleTable = ({ titles, data }: IProps) => {
   const classes = useStyles();

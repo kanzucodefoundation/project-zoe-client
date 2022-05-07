@@ -1,11 +1,11 @@
-import React from "react";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import { Box } from "@material-ui/core";
+import React from 'react';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import { Box } from '@material-ui/core';
 
 interface IProps {
   useActionContent: boolean;
@@ -14,8 +14,7 @@ interface IProps {
   buttons: any;
 }
 
-const DataCard = (props: IProps) => {
-  return (
+const DataCard = (props: IProps) => (
     <Card elevation={0}>
       <CardHeader
         title={
@@ -39,7 +38,6 @@ const DataCard = (props: IProps) => {
         </Box>
       </CardActions>
     </Card>
-  );
-};
+);
 
 export default DataCard;

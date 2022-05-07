@@ -1,12 +1,12 @@
-import React from "react";
-import { IColumn } from "./types";
-import { FormikHelpers } from "formik/dist/types";
-import { handleSubmission, ISubmission } from "../../utils/formHelpers";
-import XForm from "../forms/XForm";
-import Grid from "@material-ui/core/Grid";
-import { renderInput } from "../inputs/inputHelpers";
-import { del } from "../../utils/ajax";
-import Toast from "../../utils/Toast";
+import React from 'react';
+import { FormikHelpers } from 'formik/dist/types';
+import Grid from '@material-ui/core/Grid';
+import { IColumn } from './types';
+import { handleSubmission, ISubmission } from '../../utils/formHelpers';
+import XForm from '../forms/XForm';
+import { renderInput } from '../inputs/inputHelpers';
+import { del } from '../../utils/ajax';
+import Toast from '../../utils/Toast';
 
 interface IProps {
   columns: IColumn[];
@@ -31,7 +31,7 @@ const EditForm = ({
   columns,
   done,
   debug,
-  primaryKey = "id",
+  primaryKey = 'id',
   submitParser,
   submitResponseParser,
   ...props
@@ -55,7 +55,7 @@ const EditForm = ({
   function handleDelete() {
     const delUrl = `${url}/${data[primaryKey]}`;
     del(delUrl, (resp) => {
-      Toast.success("Operation succeeded");
+      Toast.success('Operation succeeded');
       props.onDeleted(data);
     });
   }
@@ -69,13 +69,11 @@ const EditForm = ({
       debug={debug}
     >
       <Grid spacing={0} container>
-        {columns.map((it) => {
-          return (
+        {columns.map((it) => (
             <Grid item xs={12} key={it.name}>
               {renderInput(it)}
             </Grid>
-          );
-        })}
+        ))}
       </Grid>
     </XForm>
   );

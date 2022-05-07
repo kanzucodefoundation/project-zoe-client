@@ -1,12 +1,12 @@
-import React, { ChangeEvent, useCallback, useEffect } from "react";
-import { search } from "../../utils/ajax";
+import React, { ChangeEvent, useCallback, useEffect } from 'react';
 import Autocomplete, {
   createFilterOptions,
-} from "@material-ui/lab/Autocomplete";
-import TextField from "@material-ui/core/TextField";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import { hasNoValue, IOption } from "../inputs/inputHelpers";
-import { ComboValue, PComboProps } from "./PComboInput";
+} from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { search } from '../../utils/ajax';
+import { hasNoValue, IOption } from '../inputs/inputHelpers';
+import { ComboValue, PComboProps } from './PComboInput';
 
 const filter = createFilterOptions<IOption | string>();
 
@@ -15,7 +15,7 @@ const FakeProgress = () => <div style={{ height: 20, width: 20 }}>&nbsp;</div>;
 const filterIOptions = (options: (IOption | string)[], params: any) => {
   const filtered = filter(options, params) as IOption[];
   // Suggest the creation of a new value
-  if (params.inputValue !== "") {
+  if (params.inputValue !== '') {
     filtered.push({
       id: params.inputValue,
       name: `Add "${params.inputValue}"`,
@@ -24,7 +24,7 @@ const filterIOptions = (options: (IOption | string)[], params: any) => {
   return filtered;
 };
 
-export interface IPRemoteProps extends Omit<PComboProps, "options"> {
+export interface IPRemoteProps extends Omit<PComboProps, 'options'> {
   remote: string;
   filter?: any;
   searchOnline?: boolean;
@@ -35,21 +35,20 @@ export interface IPRemoteProps extends Omit<PComboProps, "options"> {
 
 function hashCode(str: string): number {
   return str
-    .split("")
+    .split('')
     .reduce(
-      (prevHash, currVal) =>
-        ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0,
-      0
+      (prevHash, currVal) => ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0,
+      0,
     );
 }
 
 export function PRemoteSelect(props: IPRemoteProps) {
   const [loading, setLoading] = React.useState(false);
   const [options, setIOptions] = React.useState<IOption[] | string[]>(
-    props.defaultIOptions || []
+    props.defaultIOptions || [],
   );
-  const [query, setQuery] = React.useState<string>("");
-  const [inputValue, setInputValue] = React.useState("");
+  const [query, setQuery] = React.useState<string>('');
+  const [inputValue, setInputValue] = React.useState('');
 
   const [dataCache, setDataCache] = React.useState<any>({});
 
@@ -60,7 +59,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
         return dataCache[key];
       }
     },
-    [dataCache]
+    [dataCache],
   );
 
   const addToCache = useCallback(
@@ -69,7 +68,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
       const newData = { ...dataCache, [key]: resp };
       setDataCache(newData);
     },
-    [dataCache]
+    [dataCache],
   );
 
   const fetch = useCallback(
@@ -89,7 +88,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
         newFilter,
         (resp: any[] = []) => {
           if (!Array.isArray(resp)) {
-            console.error("Invalid response for remote select", resp);
+            console.error('Invalid response for remote select', resp);
           } else if (props.parser) {
             const data: any[] = resp.map(props.parser);
             setIOptions(data);
@@ -102,10 +101,10 @@ export function PRemoteSelect(props: IPRemoteProps) {
         undefined,
         () => {
           setLoading(false);
-        }
+        },
       );
     },
-    [props.parser, props.filter, props.remote, isInCache, addToCache]
+    [props.parser, props.filter, props.remote, isInCache, addToCache],
   );
 
   useEffect(() => {
@@ -121,10 +120,10 @@ export function PRemoteSelect(props: IPRemoteProps) {
   }
 
   function getIOptionSelection(o: IOption | string, v: IOption | string) {
-    if (typeof o === "string") {
+    if (typeof o === 'string') {
       return o === v;
     }
-    if (typeof o === "object") {
+    if (typeof o === 'object') {
       const obj = o as IOption;
       const val = v as IOption;
       return obj?.id === val?.id;
@@ -133,14 +132,14 @@ export function PRemoteSelect(props: IPRemoteProps) {
   }
 
   function getIOptionLabel(o: string | IOption) {
-    if (typeof o === "string") {
+    if (typeof o === 'string') {
       return o;
     }
-    if (typeof o === "object") {
+    if (typeof o === 'object') {
       const obj = o as IOption;
       return obj?.name;
     }
-    return "";
+    return '';
   }
 
   const {
@@ -155,7 +154,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
     parser: i,
     defaultIOptions,
     searchOnline = true,
-    margin = "normal",
+    margin = 'normal',
     freeSolo,
     textFieldProps,
     defaultValue,
@@ -184,8 +183,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
       options={options}
       autoComplete
       loading={loading}
-      renderInput={(params) => {
-        return (
+      renderInput={(params) => (
           <TextField
             {...params}
             {...textFieldProps}
@@ -211,8 +209,7 @@ export function PRemoteSelect(props: IPRemoteProps) {
               ),
             }}
           />
-        );
-      }}
+      )}
     />
   );
 }

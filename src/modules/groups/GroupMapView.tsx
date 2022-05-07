@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
-import { IGroup } from "./types";
+import {
+  GoogleMap, InfoWindow, LoadScript, Marker,
+} from '@react-google-maps/api';
+import { IGroup } from './types';
 
 interface IGroupMarkers {
   name: string;
@@ -25,7 +27,7 @@ const GroupMapView = ({ data }: IProps) => {
 
   const [currentPosition, setCurrentPosition] = useState({
     lat: 0.3132008,
-    lng: 32.5290855
+    lng: 32.5290855,
   });
 
   const success = (position: any) => {
@@ -58,16 +60,14 @@ const GroupMapView = ({ data }: IProps) => {
         zoom={13}
         center={currentPosition}
       >
-        {data.map((address) => {
-          return (
+        {data.map((address) => (
             <Marker
               key={address.name}
               clickable={true}
               position={address.location}
               onClick={() => onSelect(address)}
             />
-          );
-        })}
+        ))}
         {selected.location && (
           <InfoWindow position={selected.location}>
             <p>{selected.name}</p>

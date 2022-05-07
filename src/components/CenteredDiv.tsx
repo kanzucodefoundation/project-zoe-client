@@ -1,7 +1,7 @@
-import React from "react";
-import { Box } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import React from 'react';
+import { Box } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 interface IProps {
   width?: any;
@@ -10,13 +10,13 @@ interface IProps {
 
 const CenteredDiv = ({ children, width = 500 }: IProps) => {
   const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("xs"));
+  const isXs = useMediaQuery(theme.breakpoints.down('xs'));
   return (
     <Box display="flex" justifyContent="center">
       <Box
         style={{
-          width: isXs ? "100%" : width,
-          maxWidth: "100%",
+          width: isXs ? '100%' : width,
+          maxWidth: '100%',
         }}
       >
         {children}

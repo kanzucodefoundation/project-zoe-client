@@ -1,19 +1,19 @@
-import React, { SyntheticEvent } from "react";
-import { Button } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import { useLoginStyles } from "./loginStyles";
-import { Form, Formik, FormikHelpers } from "formik";
-import Link from "@material-ui/core/Link";
-import XTextInput from "../../components/inputs/XTextInput";
-import HelpIcon from "@material-ui/icons/Help";
-import { post } from "../../utils/ajax";
-import { isDebug, remoteRoutes } from "../../data/constants";
-import * as yup from "yup";
-import Toast from "../../utils/Toast";
-import { useHistory } from "react-router";
+import React, { SyntheticEvent } from 'react';
+import { Button } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import { Form, Formik, FormikHelpers } from 'formik';
+import Link from '@material-ui/core/Link';
+import HelpIcon from '@material-ui/icons/Help';
+import * as yup from 'yup';
+import { useHistory } from 'react-router';
+import { useLoginStyles } from './loginStyles';
+import XTextInput from '../../components/inputs/XTextInput';
+import { post } from '../../utils/ajax';
+import { isDebug, remoteRoutes } from '../../data/constants';
+import Toast from '../../utils/Toast';
 
 export default function ForgotPassword() {
   const classes = useLoginStyles();
@@ -25,8 +25,8 @@ export default function ForgotPassword() {
       data,
       (resp) => {
         Toast.success(`Reset Password Link Sent to Email`);
-        const token = resp.token;
-        localStorage.setItem("password_token", token);
+        const { token } = resp;
+        localStorage.setItem('password_token', token);
         console.log(resp);
         actions.resetForm();
       },
@@ -34,7 +34,7 @@ export default function ForgotPassword() {
         Toast.error(`Error: Message Not Set. Try Again Later`);
         actions.setSubmitting(false);
         actions.resetForm();
-      }
+      },
     );
   };
 
@@ -53,8 +53,8 @@ export default function ForgotPassword() {
         <Typography component="h1">Recover Password</Typography>
         <Formik
           initialValues={{
-            username: isDebug ? "ekastimo@gmail.com" : "",
-            //"username": ""
+            username: isDebug ? 'ekastimo@gmail.com' : '',
+            // "username": ""
           }}
           validationSchema={schema}
           onSubmit={onSubmit}
@@ -91,5 +91,5 @@ export default function ForgotPassword() {
 }
 
 export const schema = yup.object().shape({
-  username: yup.string().email("Invalid Email").required("Email is required"),
+  username: yup.string().email('Invalid Email').required('Email is required'),
 });

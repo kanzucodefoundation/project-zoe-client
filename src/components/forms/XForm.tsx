@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { Form, Formik, FormikHelpers } from "formik";
+import React, { useState } from 'react';
+import { Form, Formik, FormikHelpers } from 'formik';
 
-import { Grid } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import Box from "@material-ui/core/Box";
-import { Alert } from "@material-ui/lab";
-import { hasValue } from "../inputs/inputHelpers";
-import { makeStyles } from "@material-ui/core/styles";
+import { Grid } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import { Alert } from '@material-ui/lab';
+import { makeStyles } from '@material-ui/core/styles';
+import { hasValue } from '../inputs/inputHelpers';
 
 interface IProps {
   schema?: any;
@@ -22,8 +22,8 @@ interface IProps {
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 350,
-    [theme.breakpoints.down("sm")]: {
-      minWidth: "100%",
+    [theme.breakpoints.down('sm')]: {
+      minWidth: '100%',
     },
   },
 }));
@@ -49,7 +49,9 @@ const XForm = (props: IProps) => {
       validateOnBlur
       enableReinitialize
     >
-      {({ submitForm, isSubmitting, values, errors, touched, submitCount }) => (
+      {({
+        submitForm, isSubmitting, values, errors, touched, submitCount,
+      }) => (
         <Form autoComplete="food">
           <Grid container spacing={0} className={classes.root}>
             {submitCount > 0 && hasValue(errors) && (
@@ -80,7 +82,7 @@ const XForm = (props: IProps) => {
                         onClick={handleDelete}
                         disabled={isSubmitting}
                       >
-                        {count === 1 ? "! Confirm" : "Delete"}
+                        {count === 1 ? '! Confirm' : 'Delete'}
                       </Button>
                     </Grid>
                   )}
@@ -111,7 +113,7 @@ const XForm = (props: IProps) => {
             </Grid>
             {props.debug && (
               <Grid item xs={12}>
-                <pre style={{ width: "100%", height: "100%" }}>
+                <pre style={{ width: '100%', height: '100%' }}>
                   {JSON.stringify({ values, errors, touched }, null, 2)}
                 </pre>
               </Grid>

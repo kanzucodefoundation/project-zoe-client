@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { IContact, ITeamMember } from "../../types";
-import { get } from "../../../../utils/ajax";
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
+import { Alert } from '@material-ui/lab';
+import Box from '@material-ui/core/Box';
+import { IContact, ITeamMember } from '../../types';
+import { get } from '../../../../utils/ajax';
 import {
   appPermissions,
   localRoutes,
   remoteRoutes,
-} from "../../../../data/constants";
-import { useHistory } from "react-router";
-import NewGroupJoinRequestForm from "./NewGroupJoinRequestForm";
-import XList, { ListItemData } from "../../../../components/list/XList";
-import { getInitials } from "../../../../utils/stringHelpers";
-import { Alert } from "@material-ui/lab";
-import Box from "@material-ui/core/Box";
-import { hasAnyRole } from "../../../../data/appRoles";
-import { IAuthUser } from "../../../../data/types";
+} from '../../../../data/constants';
+import NewGroupJoinRequestForm from './NewGroupJoinRequestForm';
+import XList, { ListItemData } from '../../../../components/list/XList';
+import { getInitials } from '../../../../utils/stringHelpers';
+import { hasAnyRole } from '../../../../data/appRoles';
+import { IAuthUser } from '../../../../data/types';
 
 interface IProps {
   contactId: string;
@@ -34,12 +34,12 @@ const ContactGroups = ({
 
   const handleView = (dt: any) => {
     if (hasGroupView) {
-      history.push(localRoutes.groups + "/" + dt);
+      history.push(`${localRoutes.groups}/${dt}`);
     }
   };
 
   useEffect(() => {
-    get(remoteRoutes.groupsMembership + `/?contactId=` + contactId, (resp) => {
+    get(`${remoteRoutes.groupsMembership}/?contactId=${contactId}`, (resp) => {
       const groups: ITeamMember[] = [];
       resp.map((it: any) => {
         groups.push({
@@ -53,13 +53,11 @@ const ContactGroups = ({
     });
   }, [contactId]);
 
-  const dataParser = (dt: any): ListItemData => {
-    return {
-      primaryText: dt.name,
-      secondaryText: `Role: ${dt.role}`,
-      avatar: getInitials(dt.name),
-    };
-  };
+  const dataParser = (dt: any): ListItemData => ({
+    primaryText: dt.name,
+    secondaryText: `Role: ${dt.role}`,
+    avatar: getInitials(dt.name),
+  });
 
   return (
     <Box>

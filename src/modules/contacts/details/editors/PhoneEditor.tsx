@@ -1,20 +1,20 @@
-import React from "react";
-import * as yup from "yup";
-import { reqString } from "../../../../data/validations";
-import { phoneCategories } from "../../../../data/comboCategories";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../../../components/forms/XForm";
-import XPhoneInput from "../../../../components/inputs/XPhoneInput";
-import XSelectInput from "../../../../components/inputs/XSelectInput";
-import { toOptions } from "../../../../components/inputs/inputHelpers";
-import XCheckBoxInput from "../../../../components/inputs/XCheckBoxInput";
-import { IPhone } from "../../types";
-import { remoteRoutes } from "../../../../data/constants";
-import { useDispatch } from "react-redux";
-import { crmConstants } from "../../../../data/contacts/reducer";
-import { handleSubmission, ISubmission } from "../../../../utils/formHelpers";
-import { useDelete } from "../../../../data/hooks/useDelete";
+import React from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { useDispatch } from 'react-redux';
+import { reqString } from '../../../../data/validations';
+import { phoneCategories } from '../../../../data/comboCategories';
+import XForm from '../../../../components/forms/XForm';
+import XPhoneInput from '../../../../components/inputs/XPhoneInput';
+import XSelectInput from '../../../../components/inputs/XSelectInput';
+import { toOptions } from '../../../../components/inputs/inputHelpers';
+import XCheckBoxInput from '../../../../components/inputs/XCheckBoxInput';
+import { IPhone } from '../../types';
+import { remoteRoutes } from '../../../../data/constants';
+import { crmConstants } from '../../../../data/contacts/reducer';
+import { handleSubmission, ISubmission } from '../../../../utils/formHelpers';
+import { useDelete } from '../../../../data/hooks/useDelete';
 
 interface IProps {
   contactId: string;
@@ -28,7 +28,9 @@ const schema = yup.object().shape({
   category: reqString.oneOf(phoneCategories),
 });
 
-const PhoneEditor = ({ data, isNew, contactId, done }: IProps) => {
+const PhoneEditor = ({
+  data, isNew, contactId, done,
+}: IProps) => {
   const dispatch = useDispatch();
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {

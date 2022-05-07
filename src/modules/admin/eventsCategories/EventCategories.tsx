@@ -1,38 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
+import {
+  Button, createStyles, makeStyles, Theme,
+} from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
+import AddIcon from '@material-ui/icons/Add';
+import { useSelector } from 'react-redux';
 import { XHeadCell } from '../../../components/table/XTableHead';
 import { appPermissions, remoteRoutes } from '../../../data/constants';
 import ListHeader from '../../../components/ListHeader';
-import AddIcon from '@material-ui/icons/Add';
 import XTable from '../../../components/table/XTable';
 import EditDialog from '../../../components/EditDialog';
 import Loading from '../../../components/Loading';
 import NewReportCategories from './NewEventCategories';
-import { useSelector } from 'react-redux';
 import { hasAnyRole } from '../../../data/appRoles';
 import { IState } from '../../../data/types';
 import EditEventCategories from './editEventCategories';
 import { get } from '../../../utils/ajax';
 import Navigation from '../../../components/layout/Layout';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    filterPaper: {
-      borderRadius: 0,
-      padding: theme.spacing(2),
-    },
-    fab: {
-      position: 'absolute',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    flexGrow: 1,
+  },
+  filterPaper: {
+    borderRadius: 0,
+    padding: theme.spacing(2),
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 const headCells: XHeadCell[] = [
   {
@@ -78,7 +78,7 @@ const EventCategories = () => {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, [createDialog]);
 

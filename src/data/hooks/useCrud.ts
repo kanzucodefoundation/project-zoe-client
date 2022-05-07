@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { search } from "../../utils/ajax";
+import { useEffect, useState } from 'react';
+import { search } from '../../utils/ajax';
 
 export interface Props {
   url: string;
@@ -21,7 +21,7 @@ export function useCrud<T extends { id: any }>(props: Props) {
         setData(resp);
       },
       undefined,
-      () => setLoading(false)
+      () => setLoading(false),
     );
   }, [filter, props.url]);
 
@@ -48,7 +48,7 @@ export function useCrud<T extends { id: any }>(props: Props) {
     if (selected) {
       const newData = data.map((it: T) => {
         if (it.id === dt.id) return dt;
-        else return it;
+        return it;
       });
       setData(newData);
     } else {
@@ -74,6 +74,6 @@ export function useCrud<T extends { id: any }>(props: Props) {
     data,
     loading,
     selected,
-    dialog
+    dialog,
   };
 }

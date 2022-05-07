@@ -1,8 +1,8 @@
-import { ComboValue } from "../components/plain-inputs/PComboInput";
-import { cleanComboValue } from "./dataHelpers";
-import * as React from "react";
-import { useState } from "react";
-import { hasValue } from "../components/inputs/inputHelpers";
+import * as React from 'react';
+import { useState } from 'react';
+import { ComboValue } from '../components/plain-inputs/PComboInput';
+import { cleanComboValue } from './dataHelpers';
+import { hasValue } from '../components/inputs/inputHelpers';
 
 export function useFilter({
   initialData,

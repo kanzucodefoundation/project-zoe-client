@@ -33,7 +33,7 @@ const ReportFieldsFilter = ({ onFilter }: IProps) => {
             size="small"
             margin="none"
             onChange={(value) => handleComboChange('categoryId', value)}
-            value={data['categoryId']}
+            value={data.categoryId}
             searchOnline
           />
         </Grid>

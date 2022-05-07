@@ -1,4 +1,4 @@
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify';
 
 export const positions = {
   TOP_LEFT: toast.POSITION.TOP_LEFT,
@@ -9,31 +9,31 @@ export const positions = {
   BOTTOM_CENTER: toast.POSITION.BOTTOM_CENTER,
 };
 
-const defPosition = positions.TOP_CENTER
+const defPosition = positions.TOP_CENTER;
 
 export default class Toast {
-    public static success(message: string, position = defPosition) {
-        toast.success(message, {
-            position
-        });
-    }
+  public static success(message: string, position = defPosition) {
+    toast.success(message, {
+      position,
+    });
+  }
 
-    public static error(message: string, toastId?: number, position = defPosition) {
-        toast.error(message, {
-            toastId,
-            position
-        });
-    }
+  public static error(message: string, toastId?: number, position = defPosition) {
+    toast.error(message, {
+      toastId,
+      position,
+    });
+  }
 
-    public static warn(message: string, position = defPosition) {
-        toast.warn(message, {
-            position
-        });
-    }
+  public static warn(message: string, position = defPosition) {
+    toast.warn(message, {
+      position,
+    });
+  }
 
-    public static info(message: string, position = defPosition) {
-        toast.info(message, {
-            position
-        });
-    }
+  public static info(message: string, position = defPosition) {
+    toast.info(message, {
+      position,
+    });
+  }
 }

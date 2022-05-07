@@ -1,47 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router";
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
+import { Avatar } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import PersonIcon from '@material-ui/icons/Person';
+import Hidden from '@material-ui/core/Hidden';
+import Chip from '@material-ui/core/Chip';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import { useSelector } from 'react-redux';
+import Divider from '@material-ui/core/Divider';
 import { XHeadCell } from "../../../components/table/XTableHead";
-import { Avatar } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import DataList from "../../../components/DataList";
-import { AddFabButton } from "../../../components/EditIconButton";
-import { search } from "../../../utils/ajax";
+import DataList from '../../../components/DataList';
+import { AddFabButton } from '../../../components/EditIconButton';
+import { search } from '../../../utils/ajax';
 import {
   appPermissions,
   localRoutes,
   remoteRoutes,
-} from "../../../data/constants";
-import { hasValue } from "../../../components/inputs/inputHelpers";
-import PersonIcon from "@material-ui/icons/Person";
-import Hidden from "@material-ui/core/Hidden";
-import EditDialog from "../../../components/EditDialog";
-import UserEditor from "./UserEditor";
-import Loading from "../../../components/Loading";
-import Chip from "@material-ui/core/Chip";
-import ListHeader from "../../../components/ListHeader";
-import { hasAnyRole } from "../../../data/appRoles";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-import { useSelector } from "react-redux";
-import { IState } from "../../../data/types";
-import Divider from "@material-ui/core/Divider";
+} from '../../../data/constants';
+import { hasValue } from '../../../components/inputs/inputHelpers';
+import EditDialog from '../../../components/EditDialog';
+import UserEditor from './UserEditor';
+import Loading from '../../../components/Loading';
+import ListHeader from '../../../components/ListHeader';
+import { hasAnyRole } from '../../../data/appRoles';
+import { IState } from '../../../data/types';
 
 const columns: XHeadCell[] = [
   {
-    name: "isActive",
-    label: "Status",
+    name: 'isActive',
+    label: 'Status',
     render: (value) => (
       <Chip
-        label={value ? "Active" : "Inactive"}
+        label={value ? 'Active' : 'Inactive'}
         color="secondary"
         size="small"
       />
     ),
   },
   {
-    name: "avatar",
-    label: "Avatar",
+    name: 'avatar',
+    label: 'Avatar',
     render: (data) => {
       const hasAvatar = hasValue(data);
       return hasAvatar ? (
@@ -57,31 +57,30 @@ const columns: XHeadCell[] = [
     },
   },
   {
-    name: "username",
-    label: "Username",
+    name: 'username',
+    label: 'Username',
   },
   {
-    name: "fullName",
-    label: "Full Name",
+    name: 'fullName',
+    label: 'Full Name',
     cellProps: {
-      component: "th",
-      scope: "row",
+      component: 'th',
+      scope: 'row',
     },
   },
   {
-    name: "roles",
-    label: "Roles",
-    render: (roles: string[]) =>
-      roles?.map((it) => (
+    name: 'roles',
+    label: 'Roles',
+    render: (roles: string[]) => roles?.map((it) => (
         <Chip
-          color={it.includes(": is disabled") ? "default" : "primary"}
+          color={it.includes(': is disabled') ? 'default' : 'primary'}
           variant="outlined"
           key={it}
           style={{ margin: 5, marginLeft: 0, marginTop: 0 }}
           size="small"
           label={it}
         />
-      )),
+    )),
   },
 ];
 
@@ -107,8 +106,8 @@ const toMobile = (data: any): IMobileRow => {
     primary: (
       <>
         <Chip
-          label={data.isActive ? "Active" : "Inactive"}
-          color={data.isActive ? "secondary" : "default"}
+          label={data.isActive ? 'Active' : 'Inactive'}
+          color={data.isActive ? 'secondary' : 'default'}
           size="small"
         />
       </>
@@ -152,7 +151,7 @@ const Users = () => {
         setData(resp);
       },
       undefined,
-      () => setLoading(false)
+      () => setLoading(false),
     );
   }, [filter]);
 
@@ -166,13 +165,15 @@ const Users = () => {
   }
 
   const handleEdit = (dt: any) => {
-    const { id, username, contactId, fullName, roles, isActive } = dt;
+    const {
+      id, username, contactId, fullName, roles, isActive,
+    } = dt;
     const toEdit = {
       id,
       username,
       roles: [...roles],
       contact: { id: contactId, label: fullName },
-      isActive: isActive,
+      isActive,
     };
     setSelected(toEdit);
     setDialog(true);
@@ -186,7 +187,7 @@ const Users = () => {
     if (selected) {
       const newData = data.map((it: any) => {
         if (it.id === dt.id) return dt;
-        else return it;
+        return it;
       });
       setData(newData);
     } else {
@@ -255,7 +256,7 @@ const Users = () => {
       )}
       {canEditUsers && (
         <EditDialog
-          title={selected ? `Edit ${selected.username}` : "Create User"}
+          title={selected ? `Edit ${selected.username}` : 'Create User'}
           open={dialog}
           onClose={handleClose}
         >

@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import * as yup from 'yup';
 import { Box, Button, Grid } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import { FormikHelpers } from 'formik';
 import EditDialog from '../../../../components/EditDialog';
 import XForm from '../../../../components/forms/XForm';
-import {  reqObject } from '../../../../data/validations';
+import { reqObject } from '../../../../data/validations';
 import { XMapsInput } from '../../../../components/inputs/XMapsInput';
 import { XRemoteSelect } from '../../../../components/inputs/XRemoteSelect';
 import { remoteRoutes } from '../../../../data/constants';
-import { FormikHelpers } from 'formik';
 import { post } from '../../../../utils/ajax';
 import Toast from '../../../../utils/Toast';
 import { IContact } from '../../types';
@@ -17,8 +17,6 @@ const schema = yup.object().shape({
   churchLocation: reqObject,
   residence: reqObject,
 });
-
-
 
 const initialValues = {
   churchLocation: '',
@@ -32,7 +30,6 @@ interface IProps {
 const NewGroupJoinRequestForm = (props: IProps) => {
   const [dialog, setDialog] = useState<boolean>(false);
 
-  
   const handleAddNew = () => {
     setDialog(true);
   };
@@ -40,8 +37,6 @@ const NewGroupJoinRequestForm = (props: IProps) => {
   const handleClose = () => {
     setDialog(false);
   };
-
-  
 
   const getPrimaryEmail = () => {
     const emailList = props.contact.emails;
@@ -95,7 +90,6 @@ const NewGroupJoinRequestForm = (props: IProps) => {
           </Button>
         </Box>
 
-       
       </Box>
       <EditDialog
         open={dialog}

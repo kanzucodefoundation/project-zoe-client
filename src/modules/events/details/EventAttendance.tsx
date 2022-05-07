@@ -1,35 +1,33 @@
-import React, { useEffect } from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Checkbox from "@material-ui/core/Checkbox";
-import XAvatar from "../../../components/XAvatar";
-import { post, search } from "../../../utils/ajax";
-import { remoteRoutes } from "../../../data/constants";
-import Toast from "../../../utils/Toast";
-import { IGroupMembership } from "../../groups/types";
-import Loading from "../../../components/Loading";
-import Box from "@material-ui/core/Box";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from "@material-ui/icons/Add";
+import React, { useEffect } from 'react';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Checkbox from '@material-ui/core/Checkbox';
+import Box from '@material-ui/core/Box';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import XAvatar from '../../../components/XAvatar';
+import { post, search } from '../../../utils/ajax';
+import { remoteRoutes } from '../../../data/constants';
+import Toast from '../../../utils/Toast';
+import { IGroupMembership } from '../../groups/types';
+import Loading from '../../../components/Loading';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-      maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
-    },
-    fab: {
-      position: "absolute",
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 export interface IProps {
   groupId: string;
@@ -49,7 +47,7 @@ export interface IAttendance {
 export const processData = (
   attendance: IAttendance[],
   memberships: IGroupMembership[],
-  eventId: string
+  eventId: string,
 ) => {
   const finalData: IAttendance[] = [...attendance];
   const atIds = attendance.map((it) => `${it.contactId}`);
@@ -59,7 +57,7 @@ export const processData = (
         contactId,
         contact,
         groupId,
-        id: "0",
+        id: '0',
         attended: false,
         eventId,
         isVisitor: false,
@@ -85,15 +83,15 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, [eventId, groupId]);
 
   const handleToggle = (contactId: string) => () => {
     const [member]: IAttendance[] = data.filter(
-      (it) => it.contactId === contactId
+      (it) => it.contactId === contactId,
     );
-    let toUpdate = { ...member, attended: !member.attended };
+    const toUpdate = { ...member, attended: !member.attended };
     post(
       remoteRoutes.eventsAttendance,
       toUpdate,
@@ -107,15 +105,15 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
         setData(newList);
       },
       () => {
-        Toast.error("Update failed");
-      }
+        Toast.error('Update failed');
+      },
     );
   };
 
   const handleManualAdd = () => {};
   data.sort((a, b) => {
-    var nameA = a.contact.name;
-    var nameB = b.contact.name;
+    const nameA = a.contact.name;
+    const nameB = b.contact.name;
     if (nameA < nameB) {
       return -1;
     }
@@ -132,8 +130,7 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
         {loading ? (
           <Loading />
         ) : (
-          data.map((it) => {
-            return (
+          data.map((it) => (
               <ListItem key={it.contactId} button>
                 <ListItemAvatar>
                   <XAvatar value={it.contact.name} />
@@ -148,12 +145,11 @@ export default function EventAttendance({ eventId, groupId }: IProps) {
                     edge="end"
                     onChange={handleToggle(it.contactId)}
                     checked={Boolean(it.attended)}
-                    inputProps={{ "aria-labelledby": it.contact.name }}
+                    inputProps={{ 'aria-labelledby': it.contact.name }}
                   />
                 </ListItemSecondaryAction>
               </ListItem>
-            );
-          })
+          ))
         )}
       </List>
       <Fab

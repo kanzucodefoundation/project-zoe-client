@@ -1,11 +1,9 @@
-import * as superagent from "superagent";
-import Toast from "./Toast";
-import { AUTH_TOKEN_KEY } from "../data/constants";
-import { hasNoValue, hasValue } from "../components/inputs/inputHelpers";
+import * as superagent from 'superagent';
+import Toast from './Toast';
+import { AUTH_TOKEN_KEY } from '../data/constants';
+import { hasNoValue, hasValue } from '../components/inputs/inputHelpers';
 
-export const getToken = (): string | null => {
-  return localStorage.getItem(AUTH_TOKEN_KEY);
-};
+export const getToken = (): string | null => localStorage.getItem(AUTH_TOKEN_KEY);
 
 type CallbackFunction = (data?: any) => void;
 type ErrorCallback = (err: any, res: superagent.Response) => void;
@@ -14,14 +12,14 @@ type EndCallback = (data?: any) => void;
 export const handleError = (err: any = {}, res: superagent.Response) => {
   const authError = 22000987;
   const ajaxError = 22000987;
-  const defaultMessage = "Invalid request, please contact admin";
+  const defaultMessage = 'Invalid request, please contact admin';
   if ((res && res.forbidden) || (res && res.unauthorized)) {
-    Toast.error("Authentication Error", authError);
+    Toast.error('Authentication Error', authError);
     window.location.reload();
   } else if (res && res.badRequest) {
     const { message, errors } = res.body;
-    let msg = "Invalid request format";
-    if (typeof message === "string") {
+    let msg = 'Invalid request format';
+    if (typeof message === 'string') {
       msg = message;
     }
     if (Array.isArray(message)) {
@@ -32,18 +30,17 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
     }
     Toast.error(msg || defaultMessage, ajaxError);
   } else if (
-    (res && res.clientError) ||
-    (res && res.notAcceptable) ||
-    (res && res.error)
+    (res && res.clientError)
+    || (res && res.notAcceptable)
+    || (res && res.error)
   ) {
     const { message } = res.body || {};
     Toast.error(message || defaultMessage, ajaxError);
   } else {
-    const message = err.message || "Unknown error, contact admin";
-    const finalMessage =
-      message.indexOf("offline") !== -1
-        ? "Can't reach server, Check connectivity"
-        : message;
+    const message = err.message || 'Unknown error, contact admin';
+    const finalMessage = message.indexOf('offline') !== -1
+      ? "Can't reach server, Check connectivity"
+      : message;
     Toast.error(finalMessage, ajaxError);
   }
 };
@@ -57,64 +54,60 @@ export const isAuthError = (err: any = {}, res: superagent.Response) => {
   return (res && res.forbidden) || (res && res.unauthorized);
 };
 
-export const handleResponse =
-  (
-    callBack: CallbackFunction,
-    errorCallBack?: ErrorCallback,
-    endCallBack?: EndCallback
-  ) =>
-  (err: any, res: superagent.Response) => {
-    try {
-      if (err || !res.ok) {
-        if (errorCallBack) {
-          errorCallBack(err, res);
-        } else {
-          handleError(err, res);
-        }
+export const handleResponse = (
+  callBack: CallbackFunction,
+  errorCallBack?: ErrorCallback,
+  endCallBack?: EndCallback,
+) => (err: any, res: superagent.Response) => {
+  try {
+    if (err || !res.ok) {
+      if (errorCallBack) {
+        errorCallBack(err, res);
       } else {
-        callBack(res.body);
+        handleError(err, res);
       }
-    } catch (e) {
-      console.error("Failed to process response", e);
-    } finally {
-      if (endCallBack) {
-        endCallBack();
-      }
+    } else {
+      callBack(res.body);
     }
-  };
+  } catch (e) {
+    console.error('Failed to process response', e);
+  } finally {
+    if (endCallBack) {
+      endCallBack();
+    }
+  }
+};
 
 export const get = (
   url: string,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback
+  endCallBack?: EndCallback,
 ) => {
   superagent
     .get(url)
-    .set("Authorization", `Bearer ${getToken()}`)
-    .set("Accept", "application/json")
+    .set('Authorization', `Bearer ${getToken()}`)
+    .set('Accept', 'application/json')
     .timeout(timeout)
     .end(handleResponse(callBack, errorCallBack, endCallBack));
 };
-const cleanUp = (data: any = {}) => {
-  return Object.fromEntries(
-    Object.entries(data).filter(([_, v]) => v !== undefined)
-  );
-};
+const cleanUp = (data: any = {}) => Object.fromEntries(
+  Object.entries(data).filter(([_, v]) => v !== undefined),
+);
 
 export const search = (
   url: string,
   data: any,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback
+  endCallBack?: EndCallback,
 ) => {
   const searchData = cleanUp(data);
-  console.log("searchData", searchData);
+  console.log('searchData', searchData);
   superagent
     .get(url)
-    .set("Authorization", `Bearer ${getToken()}`)
-    .set("Accept", "application/json")
+    .set('Authorization', `Bearer ${getToken()}`)
+    .set('Accept', 'application/json')
     .query(searchData)
     .timeout(timeout)
     .end(handleResponse(callBack, errorCallBack, endCallBack));
@@ -125,13 +118,13 @@ export const post = (
   data: any,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback
+  endCallBack?: EndCallback,
 ) => {
   superagent
     .post(url)
-    .set("Authorization", `Bearer ${getToken()}`)
-    .set("Accept", "application/json")
-    .set("Content-Type", "application/json")
+    .set('Authorization', `Bearer ${getToken()}`)
+    .set('Accept', 'application/json')
+    .set('Content-Type', 'application/json')
     .send(data)
     .timeout(timeout)
     .end(handleResponse(callBack, errorCallBack, endCallBack));
@@ -142,12 +135,12 @@ export const postFile = (
   data: any,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback
+  endCallBack?: EndCallback,
 ) => {
   superagent
     .post(url)
-    .set("Authorization", `Bearer ${getToken()}`)
-    .set("Accept", "application/json")
+    .set('Authorization', `Bearer ${getToken()}`)
+    .set('Accept', 'application/json')
     .send(data)
     .timeout(timeout)
     .end(handleResponse(callBack, errorCallBack, endCallBack));
@@ -158,13 +151,13 @@ export const put = (
   data: any,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback
+  endCallBack?: EndCallback,
 ) => {
   superagent
     .put(url)
-    .set("Authorization", `Bearer ${getToken()}`)
-    .set("Content-Type", "application/json")
-    .set("Accept", "application/json")
+    .set('Authorization', `Bearer ${getToken()}`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
     .send(data)
     .timeout(timeout)
     .end(handleResponse(callBack, errorCallBack, endCallBack));
@@ -174,12 +167,12 @@ export const del = (
   url: string,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback
+  endCallBack?: EndCallback,
 ) => {
   superagent
     .delete(url)
-    .set("Authorization", `Bearer ${getToken()}`)
-    .set("Accept", "application/json")
+    .set('Authorization', `Bearer ${getToken()}`)
+    .set('Accept', 'application/json')
     .timeout(timeout)
     .end(handleResponse(callBack, errorCallBack, endCallBack));
 };
@@ -188,17 +181,17 @@ export const downLoad = (
   url: string,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback
+  endCallBack?: EndCallback,
 ) => {
   superagent
     .get(url)
-    .set("Authorization", `Bearer ${getToken()}`)
-    .responseType("blob")
+    .set('Authorization', `Bearer ${getToken()}`)
+    .responseType('blob')
     .end(handleResponse(callBack, errorCallBack, endCallBack));
 };
 
-export const triggerDownLoad = (data: Blob, fileName = "export.csv") => {
-  const a = document.createElement("a");
+export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
+  const a = document.createElement('a');
   a.href = window.URL.createObjectURL(data);
   a.download = fileName;
   a.click();

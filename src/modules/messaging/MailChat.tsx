@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Layout from '../../components/layout/Layout';
 import ListHeader from '../../components/ListHeader';
 import ContactFilter from '../contacts/ContactFilter';
 import { IContactsFilter } from '../contacts/types';
-import { useSelector } from 'react-redux';
 import { ICrmState } from '../../data/contacts/reducer';
 import SendEmail from './SendEmail';
 

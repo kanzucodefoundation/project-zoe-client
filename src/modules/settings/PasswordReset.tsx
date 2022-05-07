@@ -1,36 +1,34 @@
-import React from "react";
-import { Card, CardContent } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import XHeader from "../../components/ibox/XHeader";
-import CenteredDiv from "../../components/CenteredDiv";
-import XForm from "../../components/forms/XForm";
-import XTextInput from "../../components/inputs/XTextInput";
-import { FormikHelpers } from "formik";
-import { useSelector } from "react-redux";
-import { IState } from "../../data/types";
-import { handleSubmission, ISubmission } from "../../utils/formHelpers";
-import { remoteRoutes } from "../../data/constants";
-import * as yup from "yup";
-import { put } from "../../utils/ajax";
-import { reqString } from "../../data/validations";
-import Toast from "../../utils/Toast";
+import React from 'react';
+import { Card, CardContent } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { FormikHelpers } from 'formik';
+import { useSelector } from 'react-redux';
+import * as yup from 'yup';
+import XHeader from '../../components/ibox/XHeader';
+import CenteredDiv from '../../components/CenteredDiv';
+import XForm from '../../components/forms/XForm';
+import XTextInput from '../../components/inputs/XTextInput';
+import { IState } from '../../data/types';
+import { handleSubmission, ISubmission } from '../../utils/formHelpers';
+import { remoteRoutes } from '../../data/constants';
+import { put } from '../../utils/ajax';
+import { reqString } from '../../data/validations';
+import Toast from '../../utils/Toast';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      borderRadius: 0,
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    borderRadius: 0,
+  },
+}));
 
 const schema = yup.object().shape({
-  newPassword: reqString.min(8, "Password must be atleast 8 characters long"),
+  newPassword: reqString.min(8, 'Password must be atleast 8 characters long'),
   confirmPassword: reqString.test(
-    "passwords-match",
-    "Passwords must match",
+    'passwords-match',
+    'Passwords must match',
     function (value) {
       return this.parent.newPassword === value;
-    }
+    },
   ),
 });
 
@@ -49,11 +47,11 @@ const PasswordReset = () => {
       remoteRoutes.users,
       toSave,
       (resp) => {
-        Toast.info("Update successful");
+        Toast.info('Update successful');
       },
       () => {
-        Toast.error("Old password is incorrect");
-      }
+        Toast.error('Old password is incorrect');
+      },
     );
     actions.resetForm();
   }
@@ -69,21 +67,21 @@ const PasswordReset = () => {
               name="oldPassword"
               type="password"
               variant="outlined"
-              style={{ marginTop: "1rem" }}
+              style={{ marginTop: '1rem' }}
             />
             <XTextInput
               label="New Password"
               name="newPassword"
               type="password"
               variant="outlined"
-              style={{ marginTop: "1rem" }}
+              style={{ marginTop: '1rem' }}
             />
             <XTextInput
               label="Confirm Password"
               name="confirmPassword"
               type="password"
               variant="outlined"
-              style={{ marginTop: "1rem" }}
+              style={{ marginTop: '1rem' }}
             />
           </XForm>
         </CenteredDiv>

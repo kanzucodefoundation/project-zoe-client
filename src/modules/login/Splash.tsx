@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
-import Grid from "@material-ui/core/Grid";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import GridWrapper from "../../components/GridWrapper";
-import { remoteRoutes } from "../../data/constants";
-import { useDispatch } from "react-redux";
+import React, { useEffect } from 'react';
+import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { useDispatch } from 'react-redux';
+import GridWrapper from '../../components/GridWrapper';
+import { remoteRoutes } from '../../data/constants';
 import {
   handleLogin,
   handleLogout,
   startLoading,
   stopLoading,
-} from "../../data/coreActions";
-import { get, getToken } from "../../utils/ajax";
+} from '../../data/coreActions';
+import { get, getToken } from '../../utils/ajax';
 
 export default function Splash() {
   const dispatch = useDispatch();
@@ -22,12 +22,12 @@ export default function Splash() {
         dispatch(handleLogin({ user: data, token: getToken() }));
       },
       (err) => {
-        console.log("Profile loading failed", err);
+        console.log('Profile loading failed', err);
         dispatch(handleLogout());
       },
       () => {
         dispatch(stopLoading());
-      }
+      },
     );
   }, [dispatch]);
 

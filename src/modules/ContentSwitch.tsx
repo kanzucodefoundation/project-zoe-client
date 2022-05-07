@@ -1,27 +1,22 @@
-
-
-
-
 import React, { Suspense } from 'react';
 import { Link, Route, Switch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { appPermissions, localRoutes } from '../data/constants';
 import Layout from '../components/layout/Layout';
-import { useSelector } from 'react-redux';
 import { IState } from '../data/types';
 import { hasAnyRole } from '../data/appRoles';
 import Loading from '../components/Loading';
 import MembersCalendar from './groups/members/MembersCalendar';
 
-
-//const Events= React.lazy(() => import( "./events/EventsList"));
-//const GroupReports = React.lazy(() => import("./events/GroupEvents"));
+// const Events= React.lazy(() => import( "./events/EventsList"));
+// const GroupReports = React.lazy(() => import("./events/GroupEvents"));
 
 const UserControl = React.lazy(() => import('./admin/users/UserControl'));
 
 const Dashboard = React.lazy(() => import('./dashboard/Dashboard'));
 const Contacts = React.lazy(() => import('./contacts/Contacts'));
 const ContactDetails = React.lazy(
-  () => import('./contacts/details/ContactDetails')
+  () => import('./contacts/details/ContactDetails'),
 );
 
 const Settings = React.lazy(() => import('./settings/Settings'));
@@ -29,12 +24,11 @@ const Groups = React.lazy(() => import('./groups/GroupTabView'));
 const GroupDetails = React.lazy(() => import('./groups/Details'));
 const Users = React.lazy(() => import('./admin/users/Users'));
 
-
 const MembersEditor = React.lazy(
-  () => import('./groups/members/MembersEditor')
+  () => import('./groups/members/MembersEditor'),
 );
 const UpdatePasswordConfirmation = React.lazy(
-  () => import('./login/UpdatePasswordConfirmation')
+  () => import('./login/UpdatePasswordConfirmation'),
 );
 const EventDetails = React.lazy(() => import('./events/details/EventDetails'));
 const EventReports = React.lazy(() => import('./events/EventReports'));
@@ -43,20 +37,17 @@ const ManageHelp = React.lazy(() => import('./admin/manageHelp/HelpFileDisplay')
 
 const MailChat = React.lazy(() => import('./messaging/MailChat'));
 const ReportFields = React.lazy(
-  () => import('../modules/admin/reports/reportCategories')
+  () => import('./admin/reports/reportCategories'),
 );
 
 const GroupCategories = React.lazy(
-  () => import('../modules/admin/groupCategories/groupCategories')
+  () => import('./admin/groupCategories/groupCategories'),
 );
 
-
- const EventActivitiesForm =  React.lazy(() => import("./events/details/EventActivitiesForm"));
- const EventCategories = React.lazy(
-  () => import('./admin/eventsCategories/EventCategories')
+const EventActivitiesForm = React.lazy(() => import('./events/details/EventActivitiesForm'));
+const EventCategories = React.lazy(
+  () => import('./admin/eventsCategories/EventCategories'),
 );
-
-
 
 const ContentSwitch = () => {
   const user = useSelector((state: IState) => state.core.user);

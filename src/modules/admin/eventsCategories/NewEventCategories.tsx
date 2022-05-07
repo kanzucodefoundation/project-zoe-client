@@ -1,8 +1,8 @@
 import React from 'react';
 import * as yup from 'yup';
-import { reqString } from '../../../data/validations';
 import { FormikHelpers } from 'formik';
 import Grid from '@material-ui/core/Grid';
+import { reqString } from '../../../data/validations';
 import XForm from '../../../components/forms/XForm';
 import XTextInput from '../../../components/inputs/XTextInput';
 import { remoteRoutes } from '../../../data/constants';

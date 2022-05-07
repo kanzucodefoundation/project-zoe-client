@@ -1,52 +1,50 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { post, search } from "../../../utils/ajax";
-import { remoteRoutes } from "../../../data/constants";
-import { Grid } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import PersonAvatar from "../../../components/PersonAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { IPersonComboValue } from "../../contacts/types";
-import XSearchInput from "../../../components/inputs/XSearchInput";
-import { grey } from "@material-ui/core/colors";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import AddIcon from "@material-ui/icons/Add";
-import red from "@material-ui/core/colors/red";
-import Button from "@material-ui/core/Button";
-import { hasNoValue } from "../../../components/inputs/inputHelpers";
-import { GroupRole, ICreateBatchMembership, IGroupMembership } from "../types";
-import Toast from "../../../utils/Toast";
+import React, { useCallback, useEffect, useState } from 'react';
+import { Grid } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { grey } from '@material-ui/core/colors';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import AddIcon from '@material-ui/icons/Add';
+import red from '@material-ui/core/colors/red';
+import Button from '@material-ui/core/Button';
+import XSearchInput from '../../../components/inputs/XSearchInput';
+import { IPersonComboValue } from '../../contacts/types';
+import PersonAvatar from '../../../components/PersonAvatar';
+import { remoteRoutes } from '../../../data/constants';
+import { post, search } from '../../../utils/ajax';
+import { hasNoValue } from '../../../components/inputs/inputHelpers';
+import { GroupRole, ICreateBatchMembership, IGroupMembership } from '../types';
+import Toast from '../../../utils/Toast';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-      maxWidth: 360,
-      minHeight: 300,
-      backgroundColor: theme.palette.background.paper,
-    },
-    details: {
-      minHeight: 100,
-      borderRadius: 5,
-      border: "1px solid",
-      backgroundColor: grey[50],
-      padding: theme.spacing(2),
-    },
-    selBox: {
-      width: 70,
-      position: "relative",
-    },
-    closeIcon: {
-      position: "absolute",
-      zIndex: 200,
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    minHeight: 300,
+    backgroundColor: theme.palette.background.paper,
+  },
+  details: {
+    minHeight: 100,
+    borderRadius: 5,
+    border: '1px solid',
+    backgroundColor: grey[50],
+    padding: theme.spacing(2),
+  },
+  selBox: {
+    width: 70,
+    position: 'relative',
+  },
+  closeIcon: {
+    position: 'absolute',
+    zIndex: 200,
+  },
+}));
 
 interface IProps {
   group: any;
@@ -62,22 +60,22 @@ const MembersEditor = (props: IProps) => {
   const [selectedIdList, setSelectedIdList] = useState<string[]>([]);
   const [peopleData, setPeopleData] = useState<IPersonComboValue[]>([]);
   const [membership, setMembership] = useState<IGroupMembership[]>([]);
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useState<string>('');
 
   const fetchData = useCallback((query: string) => {
     setFetchingPeople(true);
     search(
       remoteRoutes.contactsPeopleCombo,
       {
-        query
+        query,
       },
-      data => {
+      (data) => {
         setPeopleData(data);
       },
       undefined,
       () => {
         setFetchingPeople(false);
-      }
+      },
     );
   }, []);
 
@@ -86,15 +84,15 @@ const MembersEditor = (props: IProps) => {
     search(
       remoteRoutes.groupsMembership,
       {
-        groupId: props.group.id
+        groupId: props.group.id,
       },
-      data => {
+      (data) => {
         setMembership(data);
       },
       undefined,
       () => {
         setFetchingMembers(false);
-      }
+      },
     );
   }, [props.group.id]);
 
@@ -103,7 +101,7 @@ const MembersEditor = (props: IProps) => {
   }, [fetchData, query]);
 
   const isAlreadyAdded = (psn: IPersonComboValue): boolean => {
-    const mbr = membership.find(it => it.contactId === psn.id);
+    const mbr = membership.find((it) => it.contactId === psn.id);
     return !!mbr || selectedIdList.indexOf(psn.id) > -1;
   };
 
@@ -119,18 +117,18 @@ const MembersEditor = (props: IProps) => {
   };
 
   const handleDelete = (id: string) => () => {
-    setSelected([...selected.filter(it => it.id !== id)]);
-    setSelectedIdList([...selectedIdList.filter(it => it !== id)]);
+    setSelected([...selected.filter((it) => it.id !== id)]);
+    setSelectedIdList([...selectedIdList.filter((it) => it !== id)]);
   };
 
   function handleAddMembers() {
     const toSave: ICreateBatchMembership = {
       groupId: props.group.id,
       members: selectedIdList,
-      role: GroupRole.Member
+      role: GroupRole.Member,
     };
     setAddingMembers(true);
-    post(remoteRoutes.groupsMembership, toSave, resp => {
+    post(remoteRoutes.groupsMembership, toSave, (resp) => {
       Toast.success(`${resp?.inserted} Members Added`);
       props.done();
     });
@@ -148,8 +146,7 @@ const MembersEditor = (props: IProps) => {
         <Box width="100%" display="flex">
           <Box flexGrow={1} mr={3}>
             <Box className={classes.details} width="100%" display="flex">
-              {selected.map(it => {
-                return (
+              {selected.map((it) => (
                   <Box className={classes.selBox} mr={1} key={it.id}>
                     <Box
                       width="100%"
@@ -164,7 +161,7 @@ const MembersEditor = (props: IProps) => {
                         className={classes.closeIcon}
                       >
                         <CloseIcon
-                          style={{ fontSize: "0.9rem", color: red[900] }}
+                          style={{ fontSize: '0.9rem', color: red[900] }}
                         />
                       </IconButton>
                     </Box>
@@ -176,8 +173,7 @@ const MembersEditor = (props: IProps) => {
                       {it.name}
                     </Typography>
                   </Box>
-                );
-              })}
+              ))}
             </Box>
           </Box>
           <Box pt={2}>
@@ -196,8 +192,7 @@ const MembersEditor = (props: IProps) => {
       </Grid>
       <Grid item xs={12}>
         <List dense className={classes.root}>
-          {peopleData.map(person => {
-            return (
+          {peopleData.map((person) => (
               <ListItem
                 disabled={isAlreadyAdded(person) || isLoading}
                 key={person.id}
@@ -209,11 +204,10 @@ const MembersEditor = (props: IProps) => {
                 </ListItemAvatar>
                 <ListItemText
                   primary={person.name}
-                  secondary={isAlreadyAdded(person) ? <i>Already added</i> : ""}
+                  secondary={isAlreadyAdded(person) ? <i>Already added</i> : ''}
                 />
               </ListItem>
-            );
-          })}
+          ))}
         </List>
       </Grid>
     </Grid>

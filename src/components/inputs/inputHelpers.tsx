@@ -1,29 +1,22 @@
-import React from "react";
-import { isEmpty, isNumber } from "lodash";
-import XTextInput from "./XTextInput";
-import { IColumn, InputType } from "../dynamic-editor/types";
-import XDateInput from "./XDateInput";
-import XRadioInput from "./XRadioInput";
-import XSelectInput from "./XSelectInput";
-import XTextAreaInput from "./XTextAreaInput";
+import React from 'react';
+import { isEmpty, isNumber } from 'lodash';
+import XTextInput from './XTextInput';
+import { IColumn, InputType } from '../dynamic-editor/types';
+import XDateInput from './XDateInput';
+import XRadioInput from './XRadioInput';
+import XSelectInput from './XSelectInput';
+import XTextAreaInput from './XTextAreaInput';
 
 export interface IOption {
   name: string;
   id: any;
 }
 
-export const toOptions = (data: string[]): IOption[] => {
-  return data.map((it) => ({ name: it, id: it }));
-};
-export const toOption = (data: any[]): IOption[] => {
- return data.map((it:any) => ({name: it["name"], id: it["id"]}));
-
-};
+export const toOptions = (data: string[]): IOption[] => data.map((it) => ({ name: it, id: it }));
+export const toOption = (data: any[]): IOption[] => data.map((it:any) => ({ name: it.name, id: it.id }));
 export const comboParser = ({ id, name }: any): IOption => ({ id, name });
 
-export const hasValue = (text: any) => {
-  return !hasNoValue(text);
-};
+export const hasValue = (text: any) => !hasNoValue(text);
 
 export const hasNoValue = (text: any) => {
   if (isNumber(text)) return false;

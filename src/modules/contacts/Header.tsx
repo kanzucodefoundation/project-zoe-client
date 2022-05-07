@@ -1,12 +1,12 @@
-import React from "react";
-import { Grid } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
-import XSearchInput from "../../components/inputs/XSearchInput";
-import Hidden from "@material-ui/core/Hidden";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-import theme from "../../theme";
+import React from 'react';
+import { Grid } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import Hidden from '@material-ui/core/Hidden';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import XSearchInput from '../../components/inputs/XSearchInput';
+import theme from '../../theme';
 
 interface IProps {
   title?: string;
@@ -15,8 +15,9 @@ interface IProps {
   onChange?: (v: string) => any;
 }
 
-const Header = ({ onAddNew, onFilterToggle, onChange, title }: IProps) => {
-  return (
+const Header = ({
+  onAddNew, onFilterToggle, onChange, title,
+}: IProps) => (
     <Grid container spacing={0}>
       {title && (
         <Grid item xs={12}>
@@ -27,7 +28,7 @@ const Header = ({ onAddNew, onFilterToggle, onChange, title }: IProps) => {
       )}
       <Grid item xs={12}>
         <Box mb={2} display="flex" style={{ height: 40 }}>
-          <Box width="100%" style={{ height: "100%" }}>
+          <Box width="100%" style={{ height: '100%' }}>
             <XSearchInput onFilterToggle={onFilterToggle} onChange={onChange} />
           </Box>
           <Hidden xsDown>
@@ -48,7 +49,6 @@ const Header = ({ onAddNew, onFilterToggle, onChange, title }: IProps) => {
         </Box>
       </Grid>
     </Grid>
-  );
-};
+);
 
 export default Header;

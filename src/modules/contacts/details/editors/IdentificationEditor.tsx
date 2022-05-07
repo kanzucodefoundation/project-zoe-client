@@ -1,21 +1,21 @@
-import React from "react";
-import * as yup from "yup";
-import { reqDate, reqString } from "../../../../data/validations";
-import { idCategories } from "../../../../data/comboCategories";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../../../components/forms/XForm";
-import XTextInput from "../../../../components/inputs/XTextInput";
-import XDateInput from "../../../../components/inputs/XDateInput";
-import XSelectInput from "../../../../components/inputs/XSelectInput";
-import { toOptions } from "../../../../components/inputs/inputHelpers";
-import XCheckBoxInput from "../../../../components/inputs/XCheckBoxInput";
-import { IIdentification } from "../../types";
-import { remoteRoutes } from "../../../../data/constants";
-import { useDispatch } from "react-redux";
-import { crmConstants } from "../../../../data/contacts/reducer";
-import { handleSubmission, ISubmission } from "../../../../utils/formHelpers";
-import { useDelete } from "../../../../data/hooks/useDelete";
+import React from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { useDispatch } from 'react-redux';
+import { reqDate, reqString } from '../../../../data/validations';
+import { idCategories } from '../../../../data/comboCategories';
+import XForm from '../../../../components/forms/XForm';
+import XTextInput from '../../../../components/inputs/XTextInput';
+import XDateInput from '../../../../components/inputs/XDateInput';
+import XSelectInput from '../../../../components/inputs/XSelectInput';
+import { toOptions } from '../../../../components/inputs/inputHelpers';
+import XCheckBoxInput from '../../../../components/inputs/XCheckBoxInput';
+import { IIdentification } from '../../types';
+import { remoteRoutes } from '../../../../data/constants';
+import { crmConstants } from '../../../../data/contacts/reducer';
+import { handleSubmission, ISubmission } from '../../../../utils/formHelpers';
+import { useDelete } from '../../../../data/hooks/useDelete';
 
 interface IProps {
   contactId: string;
@@ -25,42 +25,45 @@ interface IProps {
 }
 
 const schema = yup.object().shape(
-    {
-        category: reqString.oneOf(idCategories),
-        value: reqString,
-        issuingCountry: reqString,
-        startDate: reqDate,
-        expiryDate: reqDate
-    }
-)
+  {
+    category: reqString.oneOf(idCategories),
+    value: reqString,
+    issuingCountry: reqString,
+    startDate: reqDate,
+    expiryDate: reqDate,
+  },
+);
 
-const IdentificationEditor = ({data, isNew, contactId, done}: IProps) => {
-    const dispatch = useDispatch();
+const IdentificationEditor = ({
+  data, isNew, contactId, done,
+}: IProps) => {
+  const dispatch = useDispatch();
 
-    function handleSubmit(values: any, actions: FormikHelpers<any>) {
-        const submission: ISubmission = {
-            url: remoteRoutes.contactsIdentification,
-            values:{...values,contactId}, actions, isNew,
-            onAjaxComplete: (data: any) => {
-                dispatch({
-                    type: isNew ? crmConstants.crmAddIdentification : crmConstants.crmEditIdentification,
-                    payload: {...data},
-                })
-                if (done)
-                    done()
-            }
-        }
-        handleSubmission(submission)
-    }
+  function handleSubmit(values: any, actions: FormikHelpers<any>) {
+    const submission: ISubmission = {
+      url: remoteRoutes.contactsIdentification,
+      values: { ...values, contactId },
+      actions,
+      isNew,
+      onAjaxComplete: (data: any) => {
+        dispatch({
+          type: isNew ? crmConstants.crmAddIdentification : crmConstants.crmEditIdentification,
+          payload: { ...data },
+        });
+        if (done) done();
+      },
+    };
+    handleSubmission(submission);
+  }
 
-    const deleteActions = useDelete({
-        url: `${remoteRoutes.contactsIdentification}/${data?.id}`,
-        onDone: done,
-        id: data?.id!,
-        action: crmConstants.crmDeleteIdentification
-    })
+  const deleteActions = useDelete({
+    url: `${remoteRoutes.contactsIdentification}/${data?.id}`,
+    onDone: done,
+    id: data?.id!,
+    action: crmConstants.crmDeleteIdentification,
+  });
 
-    return (
+  return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
@@ -116,8 +119,7 @@ const IdentificationEditor = ({data, isNew, contactId, done}: IProps) => {
                 </Grid>
             </Grid>
         </XForm>
-    );
-}
-
+  );
+};
 
 export default IdentificationEditor;

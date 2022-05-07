@@ -1,12 +1,12 @@
-import { Typography } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import { Box } from "@material-ui/core";
-import { Button } from "@material-ui/core";
-import { useSelector } from "react-redux";
-import { IState } from "../../../data/types";
-import { remoteRoutes } from "../../../data/constants";
-import Toast from "../../../utils/Toast";
-import { del, get, post, search } from "../../../utils/ajax";
+import { Typography, Box, Button } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { IState } from '../../../data/types';
+import { remoteRoutes } from '../../../data/constants';
+import Toast from '../../../utils/Toast';
+import {
+  del, get, post, search,
+} from '../../../utils/ajax';
 
 interface IProps {
   data?: any;
@@ -54,5 +54,3 @@ const AvailabilityButtons = ({ data }: IProps) => {
   );
 };
 export default AvailabilityButtons;
-
-

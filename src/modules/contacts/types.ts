@@ -1,8 +1,8 @@
-import * as faker from "faker";
-import { getRandomStr } from "../../utils/stringHelpers";
-import { ageCategories } from "../../data/comboCategories";
+import * as faker from 'faker';
+import { getRandomStr } from '../../utils/stringHelpers';
+import { ageCategories } from '../../data/comboCategories';
 
-const uuid = require("uuid/v4");
+const uuid = require('uuid/v4');
 
 export interface ICreatePersonDto {
   email: string;
@@ -50,54 +50,54 @@ export interface IEmail {
 }
 
 export enum IdentificationCategory {
-  Nin = "Nin",
-  Passport = "Passport",
-  DrivingPermit = "DrivingPermit",
-  VillageCard = "VillageCard",
-  Nssf = "Nssf",
-  Other = "Other"
+  Nin = 'Nin',
+  Passport = 'Passport',
+  DrivingPermit = 'DrivingPermit',
+  VillageCard = 'VillageCard',
+  Nssf = 'Nssf',
+  Other = 'Other',
 }
 
 export enum CivilStatus {
-  Other = "Other",
-  Single = "Single",
-  Married = "Married",
-  Divorced = "Divorced"
+  Other = 'Other',
+  Single = 'Single',
+  Married = 'Married',
+  Divorced = 'Divorced',
 }
 
 export enum Gender {
-  Male = "Male",
-  Female = "Female"
+  Male = 'Male',
+  Female = 'Female',
 }
 
 export enum PhoneCategory {
-  Mobile = "Mobile",
-  Office = "Office",
-  Home = "Home",
-  Fax = "Fax",
-  Other = "Other"
+  Mobile = 'Mobile',
+  Office = 'Office',
+  Home = 'Home',
+  Fax = 'Fax',
+  Other = 'Other',
 }
 
 export enum EmailCategory {
-  Work = "Work",
-  Personal = "Personal",
-  Other = "Other"
+  Work = 'Work',
+  Personal = 'Personal',
+  Other = 'Other',
 }
 
 export enum RelationshipCategory {
-  Mother = "Mother",
-  Father = "Father",
-  Daughter = "Daughter",
-  Son = "Son",
-  Fiancee = "Fiancee",
-  Sister = "Sister",
-  Brother = "Brother",
-  Other = "Other"
+  Mother = 'Mother',
+  Father = 'Father',
+  Daughter = 'Daughter',
+  Son = 'Son',
+  Fiancee = 'Fiancee',
+  Sister = 'Sister',
+  Brother = 'Brother',
+  Other = 'Other',
 }
 
 export enum UserResponse {
-  Yes = "Yes",
-  No = "No"
+  Yes = 'Yes',
+  No = 'No',
 }
 
 export interface IPhone {
@@ -184,8 +184,8 @@ export interface IContactQuery {
 }
 
 enum TeamRole {
-  Leader = "Leader",
-  Member = "Member"
+  Leader = 'Leader',
+  Member = 'Member',
 }
 
 export interface ITeamMember {
@@ -223,126 +223,124 @@ export interface IContactsFilter {
   limit?: number;
 }
 
-export const fakeTeam = (): ITeamMember => {
-  return {
-    id: uuid(),
-    name: faker.company.companyName(),
-    details: faker.company.catchPhrase(),
-    role: TeamRole.Member
-  };
-};
+export const fakeTeam = (): ITeamMember => ({
+  id: uuid(),
+  name: faker.company.companyName(),
+  details: faker.company.catchPhrase(),
+  role: TeamRole.Member,
+});
 
 export const fakeContact = (): IContact => {
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
   return {
     id: uuid(),
-    category: "Person",
+    category: 'Person',
     person: {
       id: uuid(),
-      firstName: firstName,
+      firstName,
       middleName: faker.name.lastName(),
-      lastName: lastName,
-      civilStatus: "Single",
-      salutation: "Mr",
+      lastName,
+      civilStatus: 'Single',
+      salutation: 'Mr',
       dateOfBirth: faker.date.past(),
       age: faker.random.arrayElement(ageCategories),
       placeOfWork: faker.random.arrayElement(ageCategories),
       avatar: faker.image.avatar(),
-      gender: "Male"
+      gender: 'Male',
     },
     phones: [
       {
         id: uuid(),
-        category: "Mobile",
+        category: 'Mobile',
         isPrimary: false,
-        value: faker.phone.phoneNumber("077#######")
+        value: faker.phone.phoneNumber('077#######'),
       },
       {
         id: uuid(),
-        category: "Office",
+        category: 'Office',
         isPrimary: false,
-        value: faker.phone.phoneNumber("031#######")
-      }
+        value: faker.phone.phoneNumber('031#######'),
+      },
     ],
 
     emails: [
       {
         id: uuid(),
-        category: "Personal",
+        category: 'Personal',
         isPrimary: false,
-        value: faker.internet.email(firstName, lastName)
-      }
+        value: faker.internet.email(firstName, lastName),
+      },
     ],
     addresses: [
       {
         id: uuid(),
-        category: "Home",
+        category: 'Home',
         isPrimary: false,
         country: faker.address.country(),
         district: faker.address.city(),
         county: faker.address.city(),
-        freeForm: faker.address.streetName()
-      }
+        freeForm: faker.address.streetName(),
+      },
     ],
     identifications: [
       {
         id: uuid(),
-        category: "Nin",
+        category: 'Nin',
         value: getRandomStr(),
         cardNumber: getRandomStr(5),
         issueDate: faker.date.past(),
         expiryDate: faker.date.future(),
-        issuingCountry: "Uganda",
-        isPrimary: true
-      }
+        issuingCountry: 'Uganda',
+        isPrimary: true,
+      },
     ],
     events: [],
     metaData: {
-      cellGroup: "",
-      churchLocation: ""
-    }
+      cellGroup: '',
+      churchLocation: '',
+    },
   };
 };
 
 export const renderName = (person: IPerson, salutation?: boolean): string => {
   const name: string = salutation
-    ? `${person.salutation || ""} ${person.firstName ||
-        ""} ${person.middleName || ""} ${person.lastName || ""}`
-    : `${person.firstName || ""} ${person.middleName || ""} ${person.lastName ||
-        ""}`;
+    ? `${person.salutation || ''} ${person.firstName
+        || ''} ${person.middleName || ''} ${person.lastName || ''}`
+    : `${person.firstName || ''} ${person.middleName || ''} ${person.lastName
+        || ''}`;
 
-  return name.trim().replace(/\s+/g, " ");
+  return name.trim().replace(/\s+/g, ' ');
 };
 
 export const renderName1 = (person: IPerson): string => {
-  const name = `${person.firstName || ""} ${person.middleName ||
-    ""} ${person.lastName || ""}`;
-  return name.trim().replace(/\s+/g, " ");
+  const name = `${person.firstName || ''} ${person.middleName
+    || ''} ${person.lastName || ''}`;
+  return name.trim().replace(/\s+/g, ' ');
 };
 
 export const printAddress = (data: IAddress): string => {
-  const address: string = `${data.street || ""} ${data.parish ||
-    ""} ${data.district || ""} ${data.country || ""}`;
-  return address.trim().replace(/\s+/g, " ");
+  const address = `${data.street || ''} ${data.parish
+    || ''} ${data.district || ''} ${data.country || ''}`;
+  return address.trim().replace(/\s+/g, ' ');
 };
 
 export const getPhone = (data: IContact): string => {
   const { phones } = data;
   if (phones && phones.length > 0) {
-    const pri = phones.find(it => it.isPrimary);
+    const pri = phones.find((it) => it.isPrimary);
     if (pri) return pri.value;
-    else return phones[0].value;
+    return phones[0].value;
   }
-  return "";
+  return '';
 };
 
 export const getPhoneObj = (data: IContact): IPhone => {
   const { phones } = data;
   if (phones && phones.length > 0) {
-    const pri = phones.find(it => it.isPrimary);
+    const pri = phones.find((it) => it.isPrimary);
     if (pri) return pri;
-    else return phones[0];
+    return phones[0];
   }
   return {} as IPhone;
 };
@@ -350,19 +348,19 @@ export const getPhoneObj = (data: IContact): IPhone => {
 export const getEmail = (data: IContact): string => {
   const { emails } = data;
   if (emails && emails.length > 0) {
-    const pri = emails.find(it => it.isPrimary);
+    const pri = emails.find((it) => it.isPrimary);
     if (pri) return pri.value;
-    else return emails[0].value;
+    return emails[0].value;
   }
-  return "";
+  return '';
 };
 
 export const getEmailObj = (data: IContact): IEmail => {
   const { emails } = data;
   if (emails && emails.length > 0) {
-    const pri = emails.find(it => it.isPrimary);
+    const pri = emails.find((it) => it.isPrimary);
     if (pri) return pri;
-    else return emails[0];
+    return emails[0];
   }
   return {} as IEmail;
 };
@@ -370,28 +368,28 @@ export const getEmailObj = (data: IContact): IEmail => {
 export const getNinObj = (data: IContact): IIdentification => {
   const { identifications } = data;
   if (identifications && identifications.length > 0) {
-    const pri = identifications.find(it => it.isPrimary);
+    const pri = identifications.find((it) => it.isPrimary);
     if (pri) return pri;
-    else return identifications[0];
+    return identifications[0];
   }
   return {} as IIdentification;
 };
 export const getNin = (data: IContact): string => {
   const { identifications } = data;
   if (identifications && identifications.length > 0) {
-    const pri = identifications.find(it => it.isPrimary);
+    const pri = identifications.find((it) => it.isPrimary);
     if (pri) return pri.value;
-    else return identifications[0].value;
+    return identifications[0].value;
   }
-  return "";
+  return '';
 };
 
 export const getAddress = (data: IContact): IAddress | {} => {
   const { addresses } = data;
   if (addresses && addresses.length > 1) {
-    const pri = addresses.find(it => it.isPrimary);
+    const pri = addresses.find((it) => it.isPrimary);
     if (pri) return pri;
-    else return addresses[0];
+    return addresses[0];
   }
   return {};
 };

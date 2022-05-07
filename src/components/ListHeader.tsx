@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import Box from "@material-ui/core/Box";
-import Hidden from "@material-ui/core/Hidden";
-import Button from "@material-ui/core/Button";
-import Collapse from "@material-ui/core/Collapse";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import SearchIcon from "@material-ui/icons/Search";
-import TextField from "@material-ui/core/TextField";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import Grid from "@material-ui/core/Grid";
-import { appPermissions, localRoutes } from "../data/constants";
-import XBreadCrumbs from "./XBreadCrumbs";
-import { useSelector } from "react-redux";
-import { IState } from "../data/types";
-import { hasAnyRole } from "../data/appRoles";
+import Box from '@material-ui/core/Box';
+import Hidden from '@material-ui/core/Hidden';
+import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
+import TextField from '@material-ui/core/TextField';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import Grid from '@material-ui/core/Grid';
+import { useSelector } from 'react-redux';
+import { appPermissions, localRoutes } from '../data/constants';
+import XBreadCrumbs from './XBreadCrumbs';
+import { IState } from '../data/types';
+import { hasAnyRole } from '../data/appRoles';
 
 interface IProps {
   onFilter: (data: any) => void;
@@ -47,7 +47,7 @@ const ListHeader = (props: IProps) => {
             paths={[
               {
                 path: localRoutes.home,
-                label: "Dashboard",
+                label: 'Dashboard',
                 auth: hasAnyRole(profile, [appPermissions.roleDashboard]),
               },
             ]}

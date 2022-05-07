@@ -11,5 +11,5 @@ export interface IRoles {
   role: string;
   description: string;
   permissions: string[];
-  isActive: Boolean;
+  isActive: boolean;
 }

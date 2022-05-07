@@ -1,10 +1,10 @@
-import { Grid } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import { remoteRoutes } from "../../../../data/constants";
-import { get } from "../../../../utils/ajax";
-import XList, { ListItemData } from "../../../../components/list/XList";
-import { getInitials } from "../../../../utils/stringHelpers";
-import { Alert } from "@material-ui/lab";
+import { Grid } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Alert } from '@material-ui/lab';
+import { remoteRoutes } from '../../../../data/constants';
+import { get } from '../../../../utils/ajax';
+import XList, { ListItemData } from '../../../../components/list/XList';
+import { getInitials } from '../../../../utils/stringHelpers';
 
 interface IRequest {
   id: number;
@@ -20,7 +20,7 @@ const PendingMemberships = (props: any) => {
     get(
       `${remoteRoutes.groupsRequest}/?contactId=${props.contactId}`,
       (data) => {
-        let requests: IRequest[] = [];
+        const requests: IRequest[] = [];
         for (let i = 0; i < data.length; i++) {
           const single = {
             id: data[i].id,
@@ -34,17 +34,15 @@ const PendingMemberships = (props: any) => {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, [props.contactId]);
 
-  const dataParser = (dt: any): ListItemData => {
-    return {
-      primaryText: dt.groupName,
-      secondaryText: "",
-      avatar: getInitials(dt.name),
-    };
-  };
+  const dataParser = (dt: any): ListItemData => ({
+    primaryText: dt.groupName,
+    secondaryText: '',
+    avatar: getInitials(dt.name),
+  });
 
   // Implement this using a better approach
   // const onDelete = (id: string) => {

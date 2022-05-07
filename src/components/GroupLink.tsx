@@ -1,6 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { localRoutes } from "../data/constants";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { localRoutes } from '../data/constants';
 
 interface IProps {
   id: string;
@@ -8,7 +8,7 @@ interface IProps {
 }
 
 const GroupLink = ({ id, name }: IProps) => (
-  <Link style={{ textDecoration: "none" }} to={`${localRoutes.groups}/${id}`}>
+  <Link style={{ textDecoration: 'none' }} to={`${localRoutes.groups}/${id}`}>
     {name}
   </Link>
 );

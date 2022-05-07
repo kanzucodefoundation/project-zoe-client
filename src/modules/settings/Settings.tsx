@@ -1,13 +1,12 @@
 import * as React from 'react';
-import Navigation from '../../components/layout/Layout';
 import Grid from '@material-ui/core/Grid';
+import Divider from '@material-ui/core/Divider';
+import Navigation from '../../components/layout/Layout';
 import Tags from './tags/Tags';
 import PasswordReset from './PasswordReset';
-import Divider from '@material-ui/core/Divider';
 import ReportCategories from '../admin/reports/reportCategories';
 
-const Settings = () => {
-  return (
+const Settings = () => (
     <Navigation>
       <Grid spacing={2} container>
         {/* <Grid item xs={12} md={12}>
@@ -23,7 +22,6 @@ const Settings = () => {
         </Grid>
       </Grid>
     </Navigation>
-  );
-};
+);
 
 export default Settings;

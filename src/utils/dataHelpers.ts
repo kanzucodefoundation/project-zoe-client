@@ -1,4 +1,4 @@
-import { hasValue } from "../components/inputs/inputHelpers";
+import { hasValue } from '../components/inputs/inputHelpers';
 
 export const removeEmptyFields = (data: any): any => {
   if (hasValue(data)) {
@@ -16,9 +16,9 @@ export const removeEmptyFields = (data: any): any => {
 export const cleanComboValue = (value: any): any => {
   if (Array.isArray(value)) {
     return value.map(cleanComboValue);
-  } else if (value && typeof value === "object") {
+  } if (value && typeof value === 'object') {
     return value.id;
-  } else if (typeof value === "string" || typeof value === "number") {
+  } if (typeof value === 'string' || typeof value === 'number') {
     return value;
   }
   return null;

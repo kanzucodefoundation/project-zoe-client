@@ -1,5 +1,5 @@
-import React from "react";
-import { Avatar } from "@material-ui/core";
+import React from 'react';
+import { Avatar } from '@material-ui/core';
 
 interface IProps {
   value: string;
@@ -13,12 +13,10 @@ const isUrl = (str: string) => {
   }
 };
 
-const XAvatar = ({ value }: IProps) => {
-  return isUrl(value) ? (
+const XAvatar = ({ value }: IProps) => (isUrl(value) ? (
     <Avatar alt="Avatar" src={value} />
-  ) : (
+) : (
     <Avatar>{value[0]}</Avatar>
-  );
-};
+));
 
 export default XAvatar;

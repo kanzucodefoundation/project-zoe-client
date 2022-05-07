@@ -1,8 +1,8 @@
 import React from 'react';
 import * as yup from 'yup';
-import { reqObject, reqString } from '../../../data/validations';
 import { FormikHelpers } from 'formik';
 import Grid from '@material-ui/core/Grid';
+import { reqObject, reqString } from '../../../data/validations';
 import XForm from '../../../components/forms/XForm';
 import XTextInput from '../../../components/inputs/XTextInput';
 import XSelectInput from '../../../components/inputs/XSelectInput';
@@ -52,10 +52,10 @@ const NewReportCategories = ({
   }
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
-    //Checking if response to convert it to boolean
-    let isRequire = `${values.isRequired}` === 'Yes' ? true : false;
+    // Checking if response to convert it to boolean
+    const isRequire = `${values.isRequired}` === 'Yes';
 
-    //Remove Spaces and convert to lowerCase the first Letter
+    // Remove Spaces and convert to lowerCase the first Letter
     const removeSpace = removeStringSpaces(values.label);
     const fieldName = toLowerCase(removeSpace);
 
@@ -128,7 +128,7 @@ const NewReportCategories = ({
         <Grid item xs={12}>
           <XRemoteSelect
             remote={remoteRoutes.eventsCategories}
-            parser={({ name, id }: any) => ({ name: name, id: id })}
+            parser={({ name, id }: any) => ({ name, id })}
             name="categoryId"
             label="CategoryId"
             variant="outlined"

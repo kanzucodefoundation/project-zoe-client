@@ -1,21 +1,21 @@
-import React, { SyntheticEvent } from "react";
-import { Button } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import LockIcon from "@material-ui/icons/LockOutlined";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import { Form, Formik, FormikHelpers } from "formik";
-import { useDispatch } from "react-redux";
-import { handleLogin } from "../../data/coreActions";
-import * as yup from "yup";
-import { post } from "../../utils/ajax";
-import { isDebug, localRoutes, remoteRoutes } from "../../data/constants";
-import Toast from "../../utils/Toast";
-import XTextInput from "../../components/inputs/XTextInput";
-import { useLoginStyles } from "./loginStyles";
-import { useHistory } from "react-router";
-import Link from "@material-ui/core/Link";
+import React, { SyntheticEvent } from 'react';
+import { Button } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import LockIcon from '@material-ui/icons/LockOutlined';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import { Form, Formik, FormikHelpers } from 'formik';
+import { useDispatch } from 'react-redux';
+import * as yup from 'yup';
+import { useHistory } from 'react-router';
+import Link from '@material-ui/core/Link';
+import { handleLogin } from '../../data/coreActions';
+import { post } from '../../utils/ajax';
+import { isDebug, localRoutes, remoteRoutes } from '../../data/constants';
+import Toast from '../../utils/Toast';
+import XTextInput from '../../components/inputs/XTextInput';
+import { useLoginStyles } from './loginStyles';
 
 function Login() {
   const classes = useLoginStyles();
@@ -33,7 +33,7 @@ function Login() {
       () => {
         Toast.error(`Authentication failed, invalid username/password`);
         actions.setSubmitting(false);
-      }
+      },
     );
   };
 
@@ -52,8 +52,8 @@ function Login() {
         <Typography component="h1">Sign in</Typography>
         <Formik
           initialValues={{
-            username: isDebug ? "ekastimo@gmail.com" : "",
-            password: isDebug ? "Xpass@123" : "",
+            username: isDebug ? 'ekastimo@gmail.com' : '',
+            password: isDebug ? 'Xpass@123' : '',
           }}
           validationSchema={schema}
           onSubmit={onSubmit}
@@ -98,8 +98,8 @@ function Login() {
 }
 
 export const schema = yup.object().shape({
-  username: yup.string().email("Invalid email").required("Email is required"),
-  password: yup.string().required("Password is required"),
+  username: yup.string().email('Invalid email').required('Email is required'),
+  password: yup.string().required('Password is required'),
 });
 
 export default Login;

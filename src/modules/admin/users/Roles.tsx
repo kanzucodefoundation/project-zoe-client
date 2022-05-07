@@ -1,19 +1,21 @@
-import { Box, Chip, Divider, Typography } from '@material-ui/core';
+import {
+  Box, Chip, Divider, Typography,
+} from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import { useHistory } from 'react-router';
+import Hidden from '@material-ui/core/Hidden';
 import ListHeader from '../../../components/ListHeader';
 import { hasRole } from '../../../data/appRoles';
 import { remoteRoutes, appPermissions } from '../../../data/constants';
 import { IState } from '../../../data/types';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
 import { XHeadCell } from '../../../components/table/XTableHead';
 import DataList from '../../../components/DataList';
 import Loading from '../../../components/Loading';
-import { useHistory } from 'react-router';
 import { search } from '../../../utils/ajax';
 import { IRoles } from './types';
-import Hidden from '@material-ui/core/Hidden';
 import EditDialog from '../../../components/EditDialog';
 import RolesEditor from './RolesEditor';
 import { AddFabButton } from '../../../components/EditIconButton';
@@ -41,8 +43,7 @@ const columns: XHeadCell[] = [
   {
     name: 'permissions',
     label: 'Permissions',
-    render: (permissions: string[]) =>
-      permissions?.map((it) => (
+    render: (permissions: string[]) => permissions?.map((it) => (
         <Chip
           color="primary"
           variant="outlined"
@@ -51,7 +52,7 @@ const columns: XHeadCell[] = [
           size="small"
           label={it}
         />
-      )),
+    )),
   },
 ];
 
@@ -62,9 +63,8 @@ interface IMobileRow {
   secondary: any;
 }
 
-const toMobile = (data: any): IMobileRow => {
-  return {
-    primary: (
+const toMobile = (data: any): IMobileRow => ({
+  primary: (
       <>
         {'Status: '}
         <Chip
@@ -85,8 +85,8 @@ const toMobile = (data: any): IMobileRow => {
           </Typography>
         </Box>
       </>
-    ),
-    secondary: (
+  ),
+  secondary: (
       <Box pt={0.5}>
         <Typography variant="caption" color="textSecondary">
           {data.username}
@@ -104,9 +104,8 @@ const toMobile = (data: any): IMobileRow => {
           ))}
         </Box>
       </Box>
-    ),
-  };
-};
+  ),
+});
 
 const Roles = () => {
   const history = useHistory();
@@ -127,7 +126,7 @@ const Roles = () => {
         setData(resp);
       },
       undefined,
-      () => setLoading(false)
+      () => setLoading(false),
     );
   }, [filter]);
 
@@ -141,13 +140,15 @@ const Roles = () => {
   }
 
   const handleEdit = (dt: any) => {
-    const { id, role, description, permissions, isActive } = dt;
+    const {
+      id, role, description, permissions, isActive,
+    } = dt;
     const toEdit = {
       id,
       role,
       description,
       permissions: [...permissions],
-      isActive: isActive,
+      isActive,
     };
     setSelected(toEdit);
     setDialog(true);
@@ -157,7 +158,7 @@ const Roles = () => {
     if (selected) {
       const newData = data.map((it: any) => {
         if (it.id === dt.id) return dt;
-        else return it;
+        return it;
       });
       setData(newData);
     } else {

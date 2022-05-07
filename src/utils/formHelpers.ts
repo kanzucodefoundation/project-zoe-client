@@ -1,6 +1,6 @@
-import { handleError, post, put } from "./ajax";
-import Toast from "./Toast";
-import { FormikHelpers } from "formik";
+import { FormikHelpers } from 'formik';
+import { handleError, post, put } from './ajax';
+import Toast from './Toast';
 
 export interface ISubmission {
   url: string;
@@ -11,13 +11,15 @@ export interface ISubmission {
 }
 
 export function handleSubmission(submission: ISubmission) {
-  const { isNew, actions, values, onAjaxComplete, url } = submission;
+  const {
+    isNew, actions, values, onAjaxComplete, url,
+  } = submission;
   if (isNew) {
     post(
       url,
       values,
       (data) => {
-        Toast.info("Operation successful");
+        Toast.info('Operation successful');
         actions.resetForm();
         onAjaxComplete && onAjaxComplete(data);
       },
@@ -26,14 +28,14 @@ export function handleSubmission(submission: ISubmission) {
       },
       () => {
         actions.setSubmitting(false);
-      }
+      },
     );
   } else {
     put(
       url,
       values,
       (data) => {
-        Toast.info("Update successful");
+        Toast.info('Update successful');
         actions.resetForm();
         onAjaxComplete && onAjaxComplete(data);
       },
@@ -42,7 +44,7 @@ export function handleSubmission(submission: ISubmission) {
       },
       () => {
         actions.setSubmitting(false);
-      }
+      },
     );
   }
 }

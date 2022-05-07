@@ -1,6 +1,5 @@
-
 export interface IEvent {
- 
+
   id: string;
   privacy: string;
   name: string;
@@ -30,12 +29,11 @@ export interface IAttendance {
   eventId: string;
   contactId: number;
 }
-export interface IActivities{
-id:number;
-name:string;
-eventId:number; 
+export interface IActivities {
+  id:number;
+  name:string;
+  eventId:number;
 }
-
 
 export interface IGroupEvent {
   id: string;
@@ -46,12 +44,12 @@ export interface IGroupEvent {
 }
 
 export enum EventCategory {
-  WeeklyMC = "Weekly MC",
-  Garage = "Garage",
-  Evangelism = "Evangelism",
-  Wedding = "Wedding",
-  Baptism = "Baptism",
-  MC = "MC Meeting",
+  WeeklyMC = 'Weekly MC',
+  Garage = 'Garage',
+  Evangelism = 'Evangelism',
+  Wedding = 'Wedding',
+  Baptism = 'Baptism',
+  MC = 'MC Meeting',
 }
 
 export interface IGroupReport {

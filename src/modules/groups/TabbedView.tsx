@@ -1,9 +1,9 @@
-import React from "react";
-import { makeStyles, Theme } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Box from "@material-ui/core/Box";
+import React from 'react';
+import { makeStyles, Theme } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Box from '@material-ui/core/Box';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -12,7 +12,9 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+  const {
+    children, value, index, ...other
+  } = props;
 
   return (
     <div
@@ -21,7 +23,7 @@ function TabPanel(props: TabPanelProps) {
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
-      style={{ width: "100%" }}
+      style={{ width: '100%' }}
     >
       {value === index && <Box p={2}>{children}</Box>}
     </div>
@@ -30,11 +32,11 @@ function TabPanel(props: TabPanelProps) {
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    width: "100%",
-    maxWidth: "100%",
+    width: '100%',
+    maxWidth: '100%',
     flexGrow: 1,
-    backgroundColor: theme.palette.background.paper
-  }
+    backgroundColor: theme.palette.background.paper,
+  },
 }));
 
 interface TabItem {
@@ -58,7 +60,7 @@ const TabbedView = ({ tabs }: IProps) => {
     <div className={classes.root}>
       <AppBar position="static" color="transparent" elevation={0}>
         <Tabs value={value} onChange={handleChange} aria-label="group tabs">
-          {tabs.map(it => (
+          {tabs.map((it) => (
             <Tab label={it.name} key={it.name} />
           ))}
         </Tabs>

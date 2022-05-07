@@ -1,33 +1,33 @@
-import React from "react";
-import { Field, FieldProps } from "formik";
-import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
+import React from 'react';
+import { Field, FieldProps } from 'formik';
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
 import {
   KeyboardDateTimePicker,
   MuiPickersUtilsProvider,
-} from "@material-ui/pickers";
+} from '@material-ui/pickers';
 
 interface IProps {
   name: string;
   label: string;
 }
 
-const Component = ({field, form, ...other}: FieldProps) => {
-    const currentError = form.errors[field.name];
+const Component = ({ field, form, ...other }: FieldProps) => {
+  const currentError = form.errors[field.name];
 
-    function handleTouch() {
-        return form.setFieldTouched(field.name, true, true);
-    }
+  function handleTouch() {
+    return form.setFieldTouched(field.name, true, true);
+  }
 
-    function handleChange(date: any) {
-        return form.setFieldValue(field.name, date, true);
-    }
+  function handleChange(date: any) {
+    return form.setFieldValue(field.name, date, true);
+  }
 
-    return <MuiPickersUtilsProvider utils={DateFnsUtils}>
+  return <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardDateTimePicker
             margin="normal"
             KeyboardButtonProps={{
-                'aria-label': 'change time',
+              'aria-label': 'change time',
             }}
             name={field.name}
             value={field.value || null}
@@ -39,17 +39,15 @@ const Component = ({field, form, ...other}: FieldProps) => {
             {...other}
             autoComplete="off"
         />
-    </MuiPickersUtilsProvider>
-}
+    </MuiPickersUtilsProvider>;
+};
 
-const XDateInput = (props: IProps) => {
-    return (
+const XDateInput = (props: IProps) => (
         <Field
             name={props.name}
             label={props.label}
             component={Component}
         />
-    )
-}
+);
 
-export default XDateInput
+export default XDateInput;

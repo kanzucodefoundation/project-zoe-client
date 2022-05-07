@@ -1,11 +1,11 @@
-import React, { Fragment } from "react";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
-import List from "@material-ui/core/List";
-import XAvatar from "../XAvatar";
-import { hasValue } from "../inputs/inputHelpers";
+import React, { Fragment } from 'react';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import XAvatar from '../XAvatar';
+import { hasValue } from '../inputs/inputHelpers';
 
 interface IProps {
   data: any[];
@@ -19,8 +19,7 @@ export type ListItemData = {
   secondaryText: string;
 };
 
-const XList = ({ data, onSelect, parser }: IProps) => {
-  return (
+const XList = ({ data, onSelect, parser }: IProps) => (
     <div>
       <List>
         {data.map((row: any) => {
@@ -50,7 +49,6 @@ const XList = ({ data, onSelect, parser }: IProps) => {
         })}
       </List>
     </div>
-  );
-};
+);
 
 export default XList;

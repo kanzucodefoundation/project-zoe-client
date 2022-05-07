@@ -1,18 +1,18 @@
-import { Dispatch } from "redux";
-import { IGroupReport } from "../../modules/events/types";
-import { get, search } from "../../utils/ajax";
-import { remoteRoutes } from "../constants";
+import { Dispatch } from 'redux';
+import { IGroupReport } from '../../modules/events/types';
+import { get, search } from '../../utils/ajax';
+import { remoteRoutes } from '../constants';
 
 export const unsubConstants = {
-  eventsStartLoading: "eventsStartLoading",
-  unsubEventsStopLoading: "unsubEventsStopLoading",
+  eventsStartLoading: 'eventsStartLoading',
+  unsubEventsStopLoading: 'unsubEventsStopLoading',
 
-  unsubEventsCommit: "unsubEventsCommit",
-  unsubEventCommit: "unsubEventCommit",
+  unsubEventsCommit: 'unsubEventsCommit',
+  unsubEventCommit: 'unsubEventCommit',
 
-  unsubEventsAdd: "unsubEventsAdd",
-  unsubEventsEdit: "unsubEventsEdit",
-  unsubEventsDelete: "unsubEventsDelete",
+  unsubEventsAdd: 'unsubEventsAdd',
+  unsubEventsEdit: 'unsubEventsEdit',
+  unsubEventsDelete: 'unsubEventsDelete',
 };
 
 export interface IGroupReportState {
@@ -60,29 +60,25 @@ export default function reducer(state = initialState, action: any) {
   }
 }
 
-export const unsubEventsFetchAsync = (filter: any) => {
-  return (dispatch: Dispatch<any>) => {
-    search(
-      remoteRoutes.groupReports,
-      filter,
-      (resp: any) => {
-        dispatch(unsubEventsCommit(resp));
-      },
-      undefined,
-      () => dispatch(unsubEventsStopLoading())
-    );
-  };
+export const unsubEventsFetchAsync = (filter: any) => (dispatch: Dispatch<any>) => {
+  search(
+    remoteRoutes.groupReports,
+    filter,
+    (resp: any) => {
+      dispatch(unsubEventsCommit(resp));
+    },
+    undefined,
+    () => dispatch(unsubEventsStopLoading()),
+  );
 };
 
-export const eventFetchAsync = (id: string) => {
-  return (dispatch: Dispatch<any>) => {
-    get(
-      `${remoteRoutes.events}/${id}`,
-      (resp: any) => dispatch(eventCommit(resp)),
-      undefined,
-      () => dispatch(unsubEventsStopLoading())
-    );
-  };
+export const eventFetchAsync = (id: string) => (dispatch: Dispatch<any>) => {
+  get(
+    `${remoteRoutes.events}/${id}`,
+    (resp: any) => dispatch(eventCommit(resp)),
+    undefined,
+    () => dispatch(unsubEventsStopLoading()),
+  );
 };
 
 export const eventCommit = (uData: IGroupReport) => ({

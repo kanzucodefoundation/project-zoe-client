@@ -1,6 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { localRoutes } from "../data/constants";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { localRoutes } from '../data/constants';
 
 interface IProps {
   id: string;
@@ -8,7 +8,7 @@ interface IProps {
 }
 
 const ContactLink = ({ id, name }: IProps) => (
-  <Link style={{ textDecoration: "none" }} to={`${localRoutes.contacts}/${id}`}>
+  <Link style={{ textDecoration: 'none' }} to={`${localRoutes.contacts}/${id}`}>
     {name}
   </Link>
 );
