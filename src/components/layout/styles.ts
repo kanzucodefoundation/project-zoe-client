@@ -52,7 +52,7 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
     },
     height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
     [theme.breakpoints.up('sm')]: {
-      height: `calc(100% - 64px)`,
+      height: 'calc(100% - 64px)',
     },
     overflow: 'auto',
   },
@@ -64,7 +64,7 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
     },
     height: `calc(100% - ${theme.mixins.toolbar.minHeight}px)`,
     [theme.breakpoints.up('sm')]: {
-      height: `calc(100% - 64px)`,
+      height: 'calc(100% - 64px)',
     },
     overflow: 'auto',
   },

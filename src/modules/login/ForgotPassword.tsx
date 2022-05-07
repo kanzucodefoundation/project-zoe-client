@@ -24,14 +24,14 @@ export default function ForgotPassword() {
       remoteRoutes.forgotPassword,
       data,
       (resp) => {
-        Toast.success(`Reset Password Link Sent to Email`);
+        Toast.success('Reset Password Link Sent to Email');
         const { token } = resp;
         localStorage.setItem('password_token', token);
         console.log(resp);
         actions.resetForm();
       },
       () => {
-        Toast.error(`Error: Message Not Set. Try Again Later`);
+        Toast.error('Error: Message Not Set. Try Again Later');
         actions.setSubmitting(false);
         actions.resetForm();
       },

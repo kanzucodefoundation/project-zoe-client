@@ -27,11 +27,11 @@ function Login() {
       data,
       (resp) => {
         dispatch(handleLogin(resp));
-        Toast.success(`Authentication success`);
+        Toast.success('Authentication success');
         history.push(localRoutes.profile);
       },
       () => {
-        Toast.error(`Authentication failed, invalid username/password`);
+        Toast.error('Authentication failed, invalid username/password');
         actions.setSubmitting(false);
       },
     );

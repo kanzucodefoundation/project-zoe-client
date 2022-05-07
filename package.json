@@ -1,5 +1,5 @@
 {
-  "name": "angie-client",
+  "name": "project-zoe-client",
   "version": "0.1.0",
   "private": true,
   "main": "index.json",
@@ -10,7 +10,7 @@
   "prettier": "angie-client/prettier-config",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:kisakyekenneth/project-zoe-client.git"
+    "url": "git+ssh://git@github.com:kanzucodefoundation/project-zoe-client.git"
   },
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
@@ -113,7 +113,7 @@
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
     "prepare": "husky install",
-    "eslint": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "browserslist": {
     "production": [

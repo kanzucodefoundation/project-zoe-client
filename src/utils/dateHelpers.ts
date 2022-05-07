@@ -127,5 +127,3 @@ export const printPrettyTime = (value: any): string => {
   if (isValid(value)) return format(value, 'p');
   return '';
 };
-
-
