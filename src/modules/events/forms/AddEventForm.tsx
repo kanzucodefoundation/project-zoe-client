@@ -20,7 +20,6 @@ import XTextInput from "../../../components/inputs/XTextInput";
 import XForm from "../../../components/forms/XFormHC";
 import { IState } from "../../../data/types";
 import { reqDate, reqObject, reqString } from "../../../data/validations";
-// import EventMetadataForm from "../details/EventMetadataForm";
 
 interface IProps {
   data?: Partial<IEvent>;
@@ -206,11 +205,6 @@ const EventForm = ({
               placeholder="Type to search"
             />
           </Grid>
-          {/* <Grid item xs={12}>
-            <EventMetadataForm
-              eventCategory={cleanComboValue(formData.category)}
-            />
-          </Grid> */}
         </Grid>
       )}
     </XForm>
