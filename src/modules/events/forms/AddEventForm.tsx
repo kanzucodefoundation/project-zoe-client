@@ -104,7 +104,6 @@ const EventForm = ({
 
       venue: parseGooglePlace(values.venue),
       groupId: cleanComboValue(values.group),
-      metaData: values.metaData,
     };
 
     actions.resetForm();
