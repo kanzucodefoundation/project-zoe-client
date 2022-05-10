@@ -86,7 +86,7 @@ export const isDebug = process.env.NODE_ENV !== 'production';
 const debug = process.env.NODE_ENV !== 'production';
 export const url = debug
   ? 'http://localhost:4002'
-  : 'https://app.worshipharvest.org/server';
+  : 'https://projectzoe.kanzucodefoundation.org/server';
 
 export const remoteRoutes = {
   authServer: url,
