@@ -52,9 +52,9 @@ jobs:
             StrictHostKeyChecking no
           END
         env:
-          DO_USERNAME: ${{ secrets.STAGING_DO_USERNAME }}
-          DO_PRIVATE_KEY: ${{ secrets.STAGING_DO_PRIVATE_KEY }}
-          DO_HOST: ${{ secrets.STAGING_DO_HOST }}
+          DO_USERNAME: ${{ secrets.DO_USERNAME }}
+          DO_PRIVATE_KEY: ${{ secrets.DO_PRIVATE_KEY }}
+          DO_HOST: ${{ secrets.DO_HOST }}
 
       - name: Deploy the app
         run: rsync -rtvO ./build/ project-zoe-prod-1:/var/www/html/projectzoe.kanzucodefoundation.org/
