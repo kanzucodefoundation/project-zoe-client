@@ -45,9 +45,9 @@ jobs:
     steps:
       - name: Deploy the app
         uses: garygrossgarten/github-action-scp@release
-            with:
-              local: ./build
-              remote: /var/www/html/projectzoe.kanzucodefoundation.org
-              host: ${{secrets.DO_HOST}}
-              username: ${{secrets.DO_USERNAME}}
-              privateKey: ${{secrets.DO_PRIVATE_KEY}}
+          with:
+            local: ./build
+            remote: /var/www/html/projectzoe.kanzucodefoundation.org
+            host: ${{secrets.DO_HOST}}
+            username: ${{secrets.DO_USERNAME}}
+            privateKey: ${{secrets.DO_PRIVATE_KEY}}
