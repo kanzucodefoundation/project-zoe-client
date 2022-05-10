@@ -70,3 +70,5 @@ Before making any contribution to this codebase, please read through this [contr
 
 ## Commitizen friendly
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
+https://github.com/kanzucodefoundation/project-zoe-client/actions/workflows/main.yml/badge.svg
