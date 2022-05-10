@@ -10,7 +10,7 @@ It was bootstrapped with [Create React App](https://github.com/facebook/create-r
 ## Getting started
 
 Clone the repository:
-`git clone git@github.com:kanzucode/angie-client.git`
+`git clone git@github.com:kanzucodefoundation/project-zoe-client.git`
 
 Install the dependencies:
 `npm install`
@@ -20,7 +20,7 @@ Install the dependencies:
 Finally, start the party:
 `npm start`
 
-This repo works with the server at https://github.com/kanzucode/angie-server so be sure to set that up too.
+This repo works with the server at https://github.com/kanzucodefoundation/project-zoe-server so be sure to set that up too.
 
 ## Available npm scripts
 
@@ -49,32 +49,17 @@ Your app is ready to be deployed!
 
 -See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-- You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-- To learn React, check out the [React documentation](https://reactjs.org/).
-
 ## Contributing
-Before making any contribution to this codebase, please read through this [contributing guide](https://github.com/kanzucode/angie-server/blob/master/contributing.md).
+Before making any contribution to this codebase, please read through this [contributing guide](https://github.com/kanzucodefoundation/project-zoe-client/blob/master/contributing.md).
 
 ## Commitizen friendly
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-https://github.com/kanzucodefoundation/project-zoe-client/actions/workflows/main.yml/badge.svg
+## Badges
+![Build & Deploy workflow](https://github.com/kanzucodefoundation/project-zoe-client/actions/workflows/main.yml/badge.svg)
 
 
-## Github Action
+## Github Actions
 This repo is automatically deployed to the prod server using github actions. We create an `.env` file during the deployment process. Rather than add each environment variable to the file one by one, we copied a complete `.env` file and encrypted it using base64. We use the command:
 
 ```
@@ -82,3 +67,9 @@ openssl base64 -A -in .env -out .env.prod.encrypted
 ```
 
 We then get the contents of `.env.prod.encrypted` and add them as a Github Action variable called `PROD_ENV_FILE`
+
+## Learn More
+
+- You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+- To learn React, check out the [React documentation](https://reactjs.org/).
