@@ -39,10 +39,6 @@ jobs:
         run: |
           DISABLE_ESLINT_PLUGIN=true npm run build
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Deploy the app
         uses: garygrossgarten/github-action-scp@release
         with:
@@ -50,4 +46,9 @@ jobs:
           remote: /var/www/html/projectzoe.kanzucodefoundation.org
           host: ${{secrets.DO_HOST}}
           username: ${{secrets.DO_USERNAME}}
-          privateKey: ${{secrets.DO_PRIVATE_KEY}}
+          privateKey: ${{secrets.DO_PRIVATE_KEY}}          
+
+#  deploy:
+#    runs-on: ubuntu-latest
+#    needs: build
+#    steps:
