@@ -57,6 +57,6 @@ jobs:
           DO_HOST: ${{ secrets.DO_HOST }}
 
       - name: Deploy the app
-        run: rsync -rtvO ./build/ project-zoe-prod-1:/var/www/html/projectzoe.kanzucodefoundation.org/
+        run: rsync -rtvO ./build/ project-zoe-prod-1:/opt/project-zoe-client/build/
             
  
