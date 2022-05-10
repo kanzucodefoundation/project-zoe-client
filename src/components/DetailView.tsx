@@ -76,3 +76,5 @@ const DetailView = ({data, columns}: IProps) => {
 
 
 export default DetailView;
+
+

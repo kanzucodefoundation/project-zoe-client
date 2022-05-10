@@ -11,7 +11,6 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import theme from "./theme";
 
-
 ReactDOM.render(
     <Provider store={store}>
         <ThemeProvider theme={theme}>
@@ -22,4 +21,11 @@ ReactDOM.render(
         </ThemeProvider>
     </Provider>, document.getElementById('root'));
 
-serviceWorker.register();
+serviceWorker.register({
+    onUpdate: registration => {
+        if (window.confirm("New content available, update now?")) {
+            window.location.reload()
+            registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
+        }
+    }
+});

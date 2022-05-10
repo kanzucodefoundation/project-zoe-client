@@ -18,8 +18,9 @@ export default class Toast {
         });
     }
 
-    public static error(message: string, position = defPosition) {
+    public static error(message: string, toastId?: number, position = defPosition) {
         toast.error(message, {
+            toastId,
             position
         });
     }

@@ -32,19 +32,21 @@ const useStyles = makeStyles((theme: Theme) =>
 interface IProps {
     onFilterToggle?: () => any
     onChange?: (v: string) => any
+    disable?: any
 }
 
-export default function XSearchInput({onFilterToggle, onChange = (v: string) => v}: IProps) {
+export default function XSearchInput({onFilterToggle, onChange = (v: string) => v,disable}: IProps) {
     const classes = useStyles();
-
     return (
-        <Box component="form" style={{height:"100%"}}>
+        <Box component="form" style={{height: "100%", width: '100%'}}>
             <Paper className={classes.root}>
                 <InputBase
                     className={classes.input}
                     placeholder="Search here"
                     inputProps={{'aria-label': 'Search here'}}
                     onChange={e => onChange(e.target.value)}
+                    autoComplete="off"
+                    disabled={disable}
                 />
                 <IconButton type="submit" className={classes.iconButton} aria-label="search" size='small'>
                     <SearchIcon/>

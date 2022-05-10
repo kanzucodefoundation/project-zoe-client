@@ -14,6 +14,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {ITagState, tagsFetchAsync, tagsStartLoading} from "../../../data/tags/reducer";
 import InfoMessage from "../../../components/messages/InfoMessage";
 import Box from "@material-ui/core/Box";
+import {hasNoValue} from "../../../components/inputs/inputHelpers";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
@@ -49,9 +50,7 @@ const Tags = () => {
         setDialog(true)
     }
 
-    const hasNoData = (): boolean => {
-        return data.length === 0
-    }
+
     return (
         <Box p={2} className={classes.root}>
             <Header onAddNew={handleNew} title='Tags'/>
@@ -61,7 +60,7 @@ const Tags = () => {
                         loading ?
                             <Loading/> :
                             <>{
-                                hasNoData() ?
+                                hasNoValue(data) ?
                                     <InfoMessage text='No tags found'/> :
                                     data.map(it => {
                                         return <ListItem key={it.id} button onClick={handleClick(it)}>

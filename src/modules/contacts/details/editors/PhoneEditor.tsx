@@ -2,7 +2,7 @@ import React from 'react';
 import * as yup from "yup";
 import { reqString} from "../../../../data/validations";
 import {phoneCategories} from "../../../../data/comboCategories";
-import {FormikActions} from "formik";
+import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../../components/forms/XForm";
 import XTextInput from "../../../../components/inputs/XTextInput";
@@ -14,6 +14,7 @@ import {remoteRoutes} from "../../../../data/constants";
 import {useDispatch} from 'react-redux'
 import {crmConstants} from "../../../../data/contacts/reducer";
 import {handleSubmission, ISubmission} from "../../../../utils/formHelpers";
+import {useDelete} from "../../../../data/hooks/useDelete";
 
 interface IProps {
     contactId: string
@@ -32,10 +33,10 @@ const schema = yup.object().shape(
 const PhoneEditor = ({data, isNew, contactId, done}: IProps) => {
     const dispatch = useDispatch();
 
-    function handleSubmit(values: any, actions: FormikActions<any>) {
+    function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const submission: ISubmission = {
-            url: `${remoteRoutes.contactsPhone}/${contactId}`,
-            values, actions, isNew,
+            url: remoteRoutes.contactsPhone,
+            values:{...values,contactId}, actions, isNew,
             onAjaxComplete: (data: any) => {
                 dispatch({
                     type: isNew ? crmConstants.crmAddPhone : crmConstants.crmEditPhone,
@@ -48,11 +49,21 @@ const PhoneEditor = ({data, isNew, contactId, done}: IProps) => {
         handleSubmission(submission)
     }
 
+    const deleteActions = useDelete({
+        url: `${remoteRoutes.contactsPhone}/${data?.id}`,
+        onDone: done,
+        id: data?.id!,
+        action: crmConstants.crmDeleteEmail
+    })
+
     return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={data}
+            onCancel={done}
+            onDelete={deleteActions.handleDelete}
+            loading={deleteActions.loading}
         >
             <Grid spacing={0} container>
                 <Grid item xs={12}>
@@ -69,6 +80,7 @@ const PhoneEditor = ({data, isNew, contactId, done}: IProps) => {
                         label="Phone"
                         type="text"
                         variant='outlined'
+                        aria-label='phone'
                     />
                 </Grid>
                 <Grid item xs={12}>

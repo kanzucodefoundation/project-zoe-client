@@ -94,7 +94,6 @@ export default function SimpleSelect() {
                     </Grid>
                 </Grid>
             </Box>
-
         </Layout>
     );
 }

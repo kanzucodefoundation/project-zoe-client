@@ -2,7 +2,7 @@ import React from 'react';
 import * as yup from "yup";
 import {reqString} from "../../../../data/validations";
 import {addressCategories} from "../../../../data/comboCategories";
-import {FormikActions} from "formik";
+import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../../components/forms/XForm";
 import XTextInput from "../../../../components/inputs/XTextInput";
@@ -14,6 +14,7 @@ import {remoteRoutes} from "../../../../data/constants";
 import {useDispatch} from 'react-redux'
 import {crmConstants} from "../../../../data/contacts/reducer";
 import {handleSubmission, ISubmission} from "../../../../utils/formHelpers";
+import {useDelete} from "../../../../data/hooks/useDelete";
 
 interface IProps {
     contactId: string
@@ -27,18 +28,17 @@ const schema = yup.object().shape(
         category: reqString.oneOf(addressCategories),
         country: reqString,
         district: reqString,
-        county: reqString,
-        subCounty: reqString,
+        freeForm: reqString
     }
 )
 
 const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
     const dispatch = useDispatch();
 
-    function handleSubmit(values: any, actions: FormikActions<any>) {
+    function handleSubmit(values: any, actions: FormikHelpers<any>) {
         const submission: ISubmission = {
-            url: `${remoteRoutes.contactsAddress}/${contactId}`,
-            values, actions, isNew,
+            url: remoteRoutes.contactsAddress,
+            values:{...values,contactId}, actions, isNew,
             onAjaxComplete: (data: any) => {
                 dispatch({
                     type: isNew ? crmConstants.crmAddAddress : crmConstants.crmEditAddress,
@@ -51,11 +51,20 @@ const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
         handleSubmission(submission)
     }
 
+    const deleteActions = useDelete({
+        url: `${remoteRoutes.contactsAddress}/${data?.id}`,
+        onDone: done,
+        id: data?.id!,
+        action: crmConstants.crmDeleteEmail
+    })
+
     return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
             initialValues={data}
+            loading={deleteActions.loading}
+            onDelete={deleteActions.handleDelete}
         >
             <Grid spacing={0} container>
                 <Grid item xs={12}>
@@ -84,24 +93,8 @@ const AddressEditor = ({data, isNew, contactId, done}: IProps) => {
                 </Grid>
                 <Grid item xs={12}>
                     <XTextInput
-                        name="county"
-                        label="County"
-                        type="text"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="subCounty"
-                        label="Sub County"
-                        type="text"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="village"
-                        label="Village"
+                        name="freeForm"
+                        label="Address"
                         type="text"
                         variant='outlined'
                     />

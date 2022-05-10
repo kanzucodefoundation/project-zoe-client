@@ -1,11 +1,43 @@
 import {format, isValid, parseISO} from "date-fns";
 
+export const dateFormat = 'dd.MM.yyyy'
+export const dateTimeFormat = 'dd.MM.yyyy HH:mm'
+export const standardDateTimeFormat = 'dd-MM-yyyy HH:mm'
+export const standardDateFormat = 'dd-MM-yyyy'
+
+
+export const getMonthsList = () => {
+    const monthsList = []
+    for (let i = 1; i <= 12; i++) {
+        monthsList.push(`${i}`.padStart(2,'0'))
+    }
+    return monthsList
+}
+
+export const getDayList = () => {
+    const monthsList = []
+    for (let i = 1; i <= 31; i++) {
+        monthsList.push(`${i}`.padStart(2,'0'))
+    }
+    return monthsList
+}
+
 export const printDateTime = (value: any): string => {
     if (typeof value === 'string') {
         return printDateTime(strToDate(value))
     }
     if (isValid(value))
-        return format(value, 'yyyy.MM.dd HH.mm')
+        return format(value, dateTimeFormat)
+    else
+        return ''
+}
+
+export const isoDateString = (value: any): string => {
+    if (typeof value === 'string') {
+        return strToDate(value)?.toISOString() || ""
+    }
+    if (isValid(value))
+        return value?.toISOString()
     else
         return ''
 }
@@ -66,7 +98,27 @@ export const printDate = (value: any): string => {
         return printDate(strToDate(value))
     }
     if (isValid(value))
-        return format(value, 'yyyy.MM.dd')
+        return format(value, dateFormat)
+    else
+        return ''
+}
+
+export const printStdDate = (value: any): string => {
+    if (typeof value === 'string') {
+        return printDate(strToDate(value))
+    }
+    if (isValid(value))
+        return format(value, standardDateFormat)
+    else
+        return ''
+}
+
+export const printStdDatetime = (value: any): string => {
+    if (typeof value === 'string') {
+        return printDate(strToDate(value))
+    }
+    if (isValid(value))
+        return format(value, standardDateTimeFormat)
     else
         return ''
 }

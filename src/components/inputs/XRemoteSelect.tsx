@@ -1,140 +1,30 @@
-import React, {useEffect} from 'react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import {search} from "../../utils/ajax";
-import CircularProgress from '@material-ui/core/CircularProgress';
-import {Field, FieldProps, getIn} from "formik";
+import React from 'react';
+import {useField} from "formik";
 import {hasValue} from "./inputHelpers";
-import {Box} from "@material-ui/core";
+import {IPRemoteProps, PRemoteSelect} from "../plain-inputs/PRemoteSelect";
+import {ComboValue} from "../plain-inputs/PComboInput";
 
-interface IProps {
-    name: string
-    label: string
-    remote: string
-    value?: any
-    filter?: any
-    parser: (d: any) => ISelectOpt
-    onChange?: (d: any) => any
-    onBlur?: () => any
-    error?: boolean;
-    fullWidth?: boolean;
-    helperText?: React.ReactNode;
-}
+type XRemoteProps = Omit<IPRemoteProps, 'onChange'|'value'|'onBlur'|'helperText'|'showError'>
 
-export interface ISelectOpt {
-    label: string
-    id: any
-}
-
-const FakeProgress = () => <div style={{height: 20, width: 20}}>&nbsp;</div>
-
-export function RemoteSelect(props: IProps) {
-    const [loading, setLoading] = React.useState(false);
-    const [qString, setQString] = React.useState('');
-    const [options, setOptions] = React.useState<ISelectOpt[]>([]);
-    const handleInputChange = (event: React.ChangeEvent<any>) => {
-        if (!event)
-            return
-        loadData(event.target.value)
-    }
-    const loadData = (query: string) => {
-        const noQuery = query === undefined || query === null || query.length === 0
-        if (noQuery && options.length > 0)
-            return
-        if (query === qString) {
-            console.log("Using cached")
-            return
-        }
-        setLoading(true)
-        setQString(qString)
-        search(props.remote, {...props.filter, query},
-            resp => {
-                const data = resp.map(props.parser)
-                setOptions(data)
-            },
-            undefined,
-            () => {
-                setLoading(false)
-            })
-    }
-
-    const handleChange = (event: React.ChangeEvent<any>, value: any) => {
-        props.onChange && props.onChange(value)
-    }
-    const handleTouched = () => {
-        props.onBlur && props.onBlur()
-    }
-
-    const getOptionLabel = (option: any) => option.label
-
-    return (
-        <Box pt={2} pb={1}>
-            <Autocomplete
-                getOptionLabel={getOptionLabel}
-                filterOptions={x => x}
-                options={options}
-                onChange={handleChange}
-                autoComplete
-                includeInputInList
-                freeSolo
-                disableOpenOnFocus
-                value={props.value}
-                onInputChange={handleInputChange}
-                renderInput={params => (
-                    <TextField
-                        {...params}
-                        label={props.label}
-                        variant="outlined"
-                        fullWidth
-                        onBlur={handleTouched}
-                        error={props.error}
-                        helperText={props.helperText}
-                        InputProps={{
-                            ...params.InputProps,
-                            endAdornment: (
-                                <React.Fragment>
-                                    {loading ? <CircularProgress color="inherit" size={20}/> : <FakeProgress/>}
-                                    {params.InputProps.endAdornment}
-                                </React.Fragment>
-                            ),
-                        }}
-                    />
-                )}
-            />
-        </Box>
-    );
-}
-
-
-export const Component = ({field, form, ...other}: FieldProps & IProps) => {
-    const error = getIn(form.errors, field.name);
-    const isTouched = getIn(form.touched, field.name);
-    const wasSubmitted = form.submitCount > 0;
-    const showError = hasValue(error) && (isTouched || wasSubmitted)
+export const XRemoteSelect = (props: XRemoteProps) => {
+    const [field, meta, helpers] = useField({name: props.name});
+    const error = hasValue(meta.error) ? meta.error : undefined
+    const showError = Boolean(error && meta.touched)
 
     function handleTouch() {
-        return form.setFieldTouched(field.name, true, true);
+        helpers.setTouched(true)
     }
 
-    function handleChange(date: any) {
-        return form.setFieldValue(field.name, date, true);
+    function handleChange(value: ComboValue) {
+        helpers.setValue(value)
     }
 
-    return <RemoteSelect
-        {...other}
+    return <PRemoteSelect
+        {...props}
         value={field.value}
         onChange={handleChange}
         onBlur={handleTouch}
-        error={Boolean(showError)}
-        helperText={showError && error}
+        showError={Boolean(showError)}
+        helperText={showError ? error:undefined}
     />
-}
-
-export const XRemoteSelect = (props: IProps) => {
-    return (
-        <Field
-            {...props}
-            component={Component}
-        />
-    )
 }

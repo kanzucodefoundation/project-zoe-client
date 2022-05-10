@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Field, FieldProps, getIn} from 'formik';
+import {useField} from 'formik';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -13,55 +13,40 @@ interface IProps {
     options: IOption[]
     multiple?: boolean
     variant?: 'standard' | 'outlined' | 'filled'
+    size?: 'small' | 'medium'
+    margin?: 'none' | 'dense' | 'normal'
 }
 
-const Component = (props: FieldProps & IProps) => {
-    const {field, form, options, ...rest} = props
-    const name = field.name;
-    let value = field.value;
-    if (!value && Boolean(rest.multiple)) {
-        value = []
-    }
-    if (!value && !Boolean(rest.multiple)) {
-        value = ''
-    }
-
-    const error = getIn(form.errors, name);
-    const isTouched = getIn(form.touched, name);
-    const wasSubmitted = form.submitCount > 0;
-    const showError = hasValue(error) && (isTouched || wasSubmitted)
-
-    function handleTouched() {
-        form.setFieldTouched(field.name, true, true);
-    }
-    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        form.setFieldValue(field.name, event.target.value, true);
-    };
-
+const XSelectInput = (props: IProps) => {
+    const {name, options,variant,margin = 'normal', ...rest} = props
+    const [field, meta] = useField({name});
+    const error = hasValue(meta.error) ? meta.error : undefined
+    const showError = Boolean(error && meta.touched)
     const inputLabel = React.useRef<HTMLLabelElement>(null);
     const [labelWidth, setLabelWidth] = React.useState(0);
     React.useEffect(() => {
         setLabelWidth(inputLabel.current!.offsetWidth);
     }, []);
 
-    return <FormControl error={showError} fullWidth variant={props.variant} margin='normal'>
+    return <FormControl error={showError} fullWidth variant={variant} margin={margin} size={props.size}>
         <InputLabel htmlFor={name} ref={inputLabel}>{rest.label}</InputLabel>
         <Select
-            onClose={handleTouched}
-            onBlur={handleTouched}
-            onChange={handleChange}
-            value={value}
+            {...rest}
+            value={meta.value || (props.multiple ? [] : '')}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
             fullWidth
             multiple={rest.multiple}
             inputProps={{name}}
             labelWidth={labelWidth}
+            autoComplete="off"
         >
             {
                 options.map(
                     it => <MenuItem
-                        value={it.value}
-                        key={it.value}
-                    >{it.label}</MenuItem>
+                        value={it.id}
+                        key={it.id}
+                    >{it.name}</MenuItem>
                 )
             }
         </Select>
@@ -71,13 +56,4 @@ const Component = (props: FieldProps & IProps) => {
     </FormControl>
 }
 
-const SelectInput = (props: IProps) => {
-    return (
-        <Field
-            {...props}
-            component={Component}
-        />
-    )
-}
-
-export default SelectInput
+export default XSelectInput

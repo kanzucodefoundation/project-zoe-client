@@ -1,12 +1,16 @@
 import React from 'react';
 import * as yup from "yup";
-import {reqDate, reqString} from "../../../../data/validations";
-import {civilStatusCategories, genderCategories, salutationCategories} from "../../../../data/comboCategories";
-import {FormikActions} from "formik";
+import {reqDate, reqObject, reqString} from "../../../../data/validations";
+import {
+    ageCategories,
+    civilStatusCategories,
+    genderCategories,
+    salutationCategories
+} from "../../../../data/comboCategories";
+import {FormikHelpers} from "formik";
 import Grid from "@material-ui/core/Grid";
 import XForm from "../../../../components/forms/XForm";
 import XTextInput from "../../../../components/inputs/XTextInput";
-import XDateInput from "../../../../components/inputs/XDateInput";
 import {toOptions} from "../../../../components/inputs/inputHelpers";
 
 import {remoteRoutes} from "../../../../data/constants";
@@ -17,6 +21,8 @@ import Toast from "../../../../utils/Toast";
 import XRadioInput from "../../../../components/inputs/XRadioInput";
 import {IPerson} from "../../types";
 import XSelectInput from "../../../../components/inputs/XSelectInput";
+import {getDayList, getMonthsList} from "../../../../utils/dateHelpers";
+import {parseISO} from "date-fns";
 
 interface IProps {
     data: IPerson
@@ -29,28 +35,36 @@ const schema = yup.object().shape(
         firstName: reqString,
         lastName: reqString,
         gender: reqString,
-        dateOfBirth: reqDate
+        dateOfBirth: reqDate,
+
+        birthDay: reqString,
+        birthMonth: reqString,
+        civilStatus: reqString,
+
+        ageGroup: reqString
     }
 )
 
-const PersonEditor = ({data, done,contactId}: IProps) => {
+const PersonEditor = ({data, done}: IProps) => {
     const dispatch = useDispatch();
 
-    function handleSubmit(values: any, actions: FormikActions<any>) {
-        const toSave: IPerson = {
-            age: values.age,
-            id: values.id,
-            placeOfWork: values.placeOfWork,
+    function handleSubmit(values: any, actions: FormikHelpers<any>) {
+        const toSave: any = {
+            ...data,
+            salutation: values.salutation,
             firstName: values.firstName,
             middleName: values.middleName,
             lastName: values.lastName,
-            dateOfBirth: values.dateOfBirth,
             gender: values.gender,
-            salutation: values.salutation,
+
             civilStatus: values.civilStatus,
-            avatar: ""
+            dateOfBirth: `1800-${values.birthMonth}-${values.birthDay}T00:00:00.000Z`,
+            ageGroup: values.ageGroup,
+
+            placeOfWork: values.placeOfWork,
+            residence: values.residence,
         }
-        put(`${remoteRoutes.contactsPerson}/${contactId}`, toSave,
+        put(remoteRoutes.contactsPeople, toSave,
             (data) => {
                 Toast.info('Operation successful')
                 actions.resetForm()
@@ -64,24 +78,34 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
             undefined,
             () => {
                 actions.setSubmitting(false);
-
             }
         )
     }
 
+    const {dateOfBirth} = data;
+    const initialData: any = {...data, birthDay: '', birthMonth: ''}
+    try {
+        const dt: Date = parseISO(`${dateOfBirth}`)
+        initialData['birthDay'] = `${dt.getDay()}`.padStart(2,'0')
+        initialData['birthMonth'] = `${dt.getMonth()}`.padStart(2,'0')
+    } catch (e) {
+        console.log("invalid date")
+    }
     return (
         <XForm
             onSubmit={handleSubmit}
             schema={schema}
-            initialValues={data}
+            initialValues={initialData}
+            onCancel={done}
         >
-            <Grid spacing={1} container>
+            <Grid spacing={3} container>
                 <Grid item xs={4}>
                     <XSelectInput
                         name="salutation"
                         label="Title"
                         options={toOptions(salutationCategories)}
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
                 <Grid item xs={8}>
@@ -90,6 +114,7 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
                         label="First Name"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
                 <Grid item xs={6}>
@@ -98,6 +123,7 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
                         label="Last Name"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
                 <Grid item xs={6}>
@@ -106,21 +132,14 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
                         label="Other Names"
                         type="text"
                         variant='outlined'
+                        margin='none'
                     />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                     <XRadioInput
                         name="gender"
                         label="Gender"
                         options={toOptions(genderCategories)}
-                    />
-                </Grid>
-
-                <Grid item xs={6}>
-                    <XDateInput
-                        name="dateOfBirth"
-                        label="Date of Birth"
-                        inputVariant='outlined'
                     />
                 </Grid>
                 <Grid item xs={6}>
@@ -129,6 +148,53 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
                         label="Civil Status"
                         options={toOptions(civilStatusCategories)}
                         variant='outlined'
+                        margin='none'
+                    />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <XSelectInput
+                        name="ageGroup"
+                        label="Age Group"
+                        options={toOptions(ageCategories)}
+                        variant='outlined'
+                        margin='none'
+                    />
+                </Grid>
+                <Grid item xs={6} md={4}>
+                    <XSelectInput
+                        name="birthMonth"
+                        label="Birth Month"
+                        options={toOptions(getMonthsList())}
+                        variant='outlined'
+                        margin='none'
+                    />
+                </Grid>
+                <Grid item xs={6} md={4}>
+                    <XSelectInput
+                        name="birthDay"
+                        label="Birth Day"
+                        options={toOptions(getDayList())}
+                        variant='outlined'
+                        margin='none'
+                    />
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                    <XTextInput
+                        name="residence"
+                        label="Residence"
+                        type="text"
+                        variant='outlined'
+                        margin='none'
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <XTextInput
+                        name="placeOfWork"
+                        label="Place of work"
+                        type="text"
+                        variant='outlined'
+                        margin='none'
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -136,9 +202,11 @@ const PersonEditor = ({data, done,contactId}: IProps) => {
                         name="about"
                         label="About"
                         variant='outlined'
+                        placeholder='Tell us about yourself'
                         multiline
                         rowsMax="4"
                         rows={4}
+                        margin='none'
                     />
                 </Grid>
             </Grid>

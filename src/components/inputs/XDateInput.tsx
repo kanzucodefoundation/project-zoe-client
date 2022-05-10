@@ -1,85 +1,53 @@
 import React from "react";
-import {Field, FieldProps, getIn} from 'formik';
+import {useField} from 'formik';
 import 'date-fns';
-import { useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import {isValid} from "date-fns";
 import DateFnsUtils from '@date-io/date-fns';
-import {KeyboardDatePicker, DatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
+import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers'
 import {hasValue} from "./inputHelpers";
+import {dateFormat} from "../../utils/dateHelpers";
+import {MaterialUiPickersDate} from "@material-ui/pickers/typings/date";
+import {KeyboardDatePickerProps} from "@material-ui/pickers/DatePicker/DatePicker";
 
 interface IProps {
     name: string
-    label: string
-    inputVariant?: 'outlined'|'filled'|'standard'
+    variant?: 'outlined' | 'filled' | 'standard'
+    pickerVariant?: 'inline' | 'dialog' | 'static'
 }
 
-const Component = ({field, form, ...other}: FieldProps) => {
-    const theme = useTheme();
-    const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+type PickerProps = Omit<KeyboardDatePickerProps, 'variant' | 'inputVariant'>;
 
-    const error = getIn(form.errors, field.name);
-    const isTouched = getIn(form.touched, field.name);
-    const wasSubmitted = form.submitCount > 0;
-    const showError = hasValue(error) && (isTouched || wasSubmitted)
+const XDateInput = (props: IProps & Partial<PickerProps>) => {
+    const {variant, pickerVariant,margin = 'normal', ...rest} = props
+    const [field, meta, helpers] = useField({name: props.name});
+    const error = hasValue(meta.error) ? meta.error : undefined
+    const showError = Boolean(error && meta.touched)
 
-    function handleTouch() {
-        return form.setFieldTouched(field.name, true, true);
-    }
-
-    function handleChange(date: any) {
-        return form.setFieldValue(field.name, date, true);
+    function handleChange(date: MaterialUiPickersDate) {
+        if (isValid(date)) {
+            return helpers.setValue(date?.toISOString())
+        } else {
+            return helpers.setValue(null)
+        }
     }
 
     return <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        {
-            isSmall?
-                <DatePicker
-                    fullWidth
-                    margin="normal"
-                    format="dd/MM/yyyy"
-                    name={field.name}
-                    value={field.value || null}
-                    helperText={showError && error}
-                    error={Boolean(showError)}
-                    onClose={handleTouch}
-                    onChange={handleChange}
-                    onTouchEnd={handleTouch}
-                    onBlur={handleTouch}
-                    autoOk
-
-                    {...other}
-                />
-                :
-                <KeyboardDatePicker
-                    fullWidth
-                    variant="inline"
-                    margin="normal"
-                    format="dd/MM/yyyy"
-                    KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                    }}
-                    autoOk
-                    name={field.name}
-                    value={field.value || null}
-                    helperText={showError && error}
-                    error={Boolean(showError)}
-                    onClose={handleTouch}
-                    onChange={handleChange}
-                    onTouchEnd={handleTouch}
-                    onBlur={handleTouch}
-                    {...other}
-                />
-        }
-    </MuiPickersUtilsProvider>
-}
-
-const XDateInput = (props: IProps) => {
-    return (
-        <Field
-            {...props}
-            component={Component}
+        <KeyboardDatePicker
+            {...rest}
+            margin={margin}
+            fullWidth
+            variant={pickerVariant}
+            format={dateFormat}
+            autoOk
+            name={field.name}
+            value={field.value || null}
+            helperText={showError && error}
+            error={Boolean(showError)}
+            onChange={handleChange}
+            onBlur={() => helpers.setTouched(true)}
+            inputVariant={variant}
         />
-    )
+    </MuiPickersUtilsProvider>
 }
 
 export default XDateInput

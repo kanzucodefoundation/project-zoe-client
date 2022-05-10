@@ -15,6 +15,7 @@ import Hidden from "@material-ui/core/Hidden";
 import EditDialog from "../../../components/EditDialog";
 import UserEditor from "./UserEditor";
 import Loading from "../../../components/Loading";
+import Chip from '@material-ui/core/Chip';
 
 const columns: XHeadCell[] = [
     {
@@ -43,8 +44,18 @@ const columns: XHeadCell[] = [
             component: "th", scope: "row"
         }
     }, {
-        name: 'group',
-        label: 'Group'
+        name: 'roles',
+        label: 'Roles',
+        render: (roles: string[]) => roles?.map(it => (
+            <Chip
+                color='primary'
+                variant='outlined'
+                key={it}
+                style={{margin: 5, marginLeft: 0, marginTop: 0}}
+                size='small'
+                label={it}
+            />
+        ))
     },
 ]
 
@@ -60,12 +71,22 @@ const toMobile = (data: any): IMobileRow => {
         avatar: hasAvatar ?
             <Avatar
                 alt="Avatar"
-                src={data.person.avatar}
+                src={data.avatar}
             /> : <Avatar><PersonIcon/></Avatar>,
         primary: data.fullName,
         secondary: <>
-            <Typography variant='caption' color='textSecondary' display='block'>{data.email}</Typography>
             <Typography variant='caption' color='textSecondary'>{data.username}</Typography>
+            <div>{data.roles?.map((it: any) => (
+                <Chip
+                    color='primary'
+                    variant='outlined'
+                    key={it}
+                    style={{margin: 5, marginLeft: 0, marginTop: 0}}
+                    size='small'
+                    label={it}
+                />
+            ))}</div>
+
         </>,
     }
 }
@@ -94,11 +115,11 @@ const Users = () => {
     }
 
     const handleEdit = (dt: any) => {
-        const {id, username, contactId, fullName, groupId, group} = dt
+        const {id, username, contactId, fullName, roles} = dt
         const toEdit = {
             id,
             username,
-            group: {id: groupId, label: group},
+            roles: [...roles],
             contact: {id: contactId, label: fullName}
         }
         setSelected(toEdit)
@@ -124,9 +145,14 @@ const Users = () => {
         setDialog(false)
     }
 
+    function handleDeleted(dt: any) {
+        const newData = data.filter((it: any) => it.id !== dt.id)
+        setData(newData)
+    }
+
     return (
         <Layout>
-            <Box p={2}>
+            <Box p={1}>
                 <Header title='Users' onAddNew={handleNew} onChange={handleFilter}/>
                 {
                     loading ?
@@ -142,8 +168,10 @@ const Users = () => {
             <Hidden mdUp>
                 <AddFabButton onClick={handleNew}/>
             </Hidden>
-            <EditDialog title={selected ? 'Edit User' : 'Create User'} open={dialog} onClose={handleClose}>
-                <UserEditor data={selected} isNew={!selected} done={handleComplete}/>
+            <EditDialog title={selected ? `Edit ${selected.username}` : 'Create User'} open={dialog}
+                        onClose={handleClose}>
+                <UserEditor data={selected} isNew={!selected} done={handleComplete} onDeleted={handleDeleted}
+                            onCancel={handleClose}/>
             </EditDialog>
         </Layout>
     );

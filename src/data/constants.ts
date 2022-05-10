@@ -3,22 +3,21 @@ export const AUTH_USER_KEY = '__demo__eva__user'
 
 
 export const appRoles = {
+    roleDashboard: "DASHBOARD",
     roleCrmView: "CRM_VIEW",
     roleCrmEdit: "CRM_EDIT",
 
-    roleAuthUserView: "AUTH_USER_VIEW",
-    roleAuthUserEdit: "AUTH_USER_EDIT",
+    roleUserView: "USER_VIEW",
+    roleUserEdit: "USER_EDIT",
 
-    roleAuthGroupView: "AUTH_GROUP_VIEW",
-    roleAuthGroupEdit: "AUTH_GROUP_EDIT",
-
-    roleTagView: "AUTH_TAG_VIEW",
-    roleTagEdit: "AUTH_TAG_EDIT",
+    roleTagView: "TAG_VIEW",
+    roleTagEdit: "TAG_EDIT",
 
     roleGroupView: "GROUP_VIEW",
     roleGroupEdit: "GROUP_EDIT",
 }
 
+export const rolesList = Object.values(appRoles)
 
 export const redux = {
     doLogin: 'DO_LOGIN',
@@ -30,42 +29,57 @@ export const localRoutes = {
 
     dashboard: '/dashboard',
     contacts: '/people/contacts',
+    profile: '/people/contacts/me',
     contactsDetails: '/people/contacts/:contactId',
     groups: '/people/groups',
+    groupsDetails: '/people/groups/:groupId',
 
     users: '/admin/users',
     usersGroups: '/admin/user-groups',
     tags: '/admin/tags',
     settings: '/admin/settings',
+    test: '/test',
 
-    help: '/help'
+    updatePassword: '/update-password',
+    resetPassword: '/reset-password',
+    forgotPassword: '/forgot-password',
+    help: '/help',
+    login: '/login',
+    home: '/'
 }
 
+
+export const isDebug = process.env.NODE_ENV !== 'production';
 const debug = process.env.NODE_ENV !== 'production'
-export const url = debug ? 'http://localhost:3004' :
-    'http://hgjyuk.com/server'
+export const url = debug ? 'http://localhost:4002' :
+    'https://www.hgjyuk.com/server'
 
 export const remoteRoutes = {
     authServer: url,
     login: url + '/api/auth/login',
     profile: url + '/api/auth/profile',
-    register: url + '/api/auth/register',
-    resetPass: url + '/reset',
-    contacts: url + '/api/crm/contact',
+    register: url + '/api/register',
+    forgotPassword: url + '/api/auth/forgot-password',
+    resetPassword: url + '/api/auth/reset-password',
+    contacts: url + '/api/crm/contacts',
     contactSearch: url + '/api/crm/contact/search',
-    contactById: url + '/api/crm/contact/id',
-    contactsPerson: url + '/api/crm/person',
+    contactById: url + '/api/crm/contacts/id',
+    contactsPeople: url + '/api/crm/people',
+    contactsPeopleCombo: url + '/api/crm/people/combo',
     contactsChc: url + '/api/crm/person/chc',
-    contactsEmail: url + '/api/crm/email',
+    contactsEmail: url + '/api/crm/emails',
     tags: url + '/api/tags',
     users: url + '/api/users',
     userGroups: url + '/api/user-groups',
-    contactsPhone: url + '/api/crm/phone',
-    contactsAddress: url + '/api/crm/address',
-    contactsIdentification: url + '/api/crm/identification',
+    contactsPhone: url + '/api/crm/phones',
+    contactsAddress: url + '/api/crm/addresses',
+    contactsIdentification: url + '/api/crm/identifications',
+    contactsRequests: url + '/api/crm/requests',
 
     groups: url + '/api/groups/group',
-    groupsLocationCombo: url + '/api/groups/combo',
+    groupsCombo: url + '/api/groups/combo',
+    groupsCategories: url + '/api/groups/category',
+    groupsMembership: url + '/api/groups/member',
 
     contactsCompany: url + '/api/crm/contact/company',
     contactsAvatar: url + '/api/crm/contact/avatar',
