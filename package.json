@@ -1,5 +1,5 @@
 {
-  "name": "angie-client",
+  "name": "project-zoe-client",
   "version": "0.1.0",
   "private": true,
   "main": "index.json",
@@ -10,7 +10,7 @@
   "prettier": "angie-client/prettier-config",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:kisakyekenneth/project-zoe-client.git"
+    "url": "git+ssh://git@github.com:kanzucodefoundation/project-zoe-client.git"
   },
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
@@ -27,6 +27,8 @@
     "@toast-ui/react-calendar": "^1.0.5",
     "@types/autosuggest-highlight": "^3.1.0",
     "@types/classnames": "^2.2.10",
+    "@types/enzyme": "^3.10.12",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/faker": "^4.1.10",
     "@types/gapi": "^0.0.41",
     "@types/gapi.auth2": "^0.0.55",
@@ -71,7 +73,7 @@
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-router-redux": "^4.0.8",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "5.0.0",
     "react-sortable-tree": "^2.7.1",
     "react-toastify": "^5.5.0",
     "react-youtube": "^7.13.1",
@@ -80,7 +82,6 @@
     "redux-thunk": "^2.3.0",
     "superagent": "^5.2.2",
     "tui-calendar": "^1.13.1",
-    "typescript": "~3.9.5",
     "uuid": "^3.4.0",
     "yup": "^0.32.9"
   },
@@ -93,19 +94,20 @@
     "@storybook/preset-create-react-app": "^2.0.0",
     "@storybook/react": "^5.3.17",
     "@types/multer": "^1.4.5",
-    "@typescript-eslint/eslint-plugin": "^5.3.1",
-    "@typescript-eslint/parser": "^5.3.1",
-    "eslint": "^8.2.0",
-    "eslint-config-airbnb": "^19.0.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-react": "^7.27.0",
-    "eslint-plugin-react-hooks": "^4.3.0",
+    "@types/node": "^16.11.6",
+    "@typescript-eslint/eslint-plugin": "^5.22.0",
+    "@typescript-eslint/parser": "^5.22.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
+    "eslint": "^8.15.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
     "husky": "^7.0.4",
     "lint-staged": "^11.2.6",
     "prettier": "^2.4.1",
-    "@types/node": "^16.11.6"
+    "typescript": "^3.9.10"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -114,10 +116,8 @@
     "test": "react-scripts test",
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
-    "prepare": "husky install"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
+    "prepare": "husky install",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "browserslist": {
     "production": [

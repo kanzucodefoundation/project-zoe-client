@@ -1,33 +1,31 @@
-import React, { useState } from "react";
-import { appPermissions } from "../../../data/constants";
+import React, { useState } from 'react';
 import {
   makeStyles,
   Theme,
   createStyles,
   IconButton,
   Box,
-} from "@material-ui/core";
-import EditDialog from "../../../components/EditDialog";
-import EditIcon from "@material-ui/icons/Edit";
-import MemberEventActivitiesUnAssignForm from "./MemberEventActivitiesUnAssignForm ";
-import { useSelector } from "react-redux";
-import { IState } from "../../../data/types";
-import { hasAnyRole } from "../../../data/appRoles";
+} from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+import { useSelector } from 'react-redux';
+import { appPermissions } from '../../../data/constants';
+import EditDialog from '../../../components/EditDialog';
+import MemberEventActivitiesUnAssignForm from './MemberEventActivitiesUnAssignForm ';
+import { IState } from '../../../data/types';
+import { hasAnyRole } from '../../../data/appRoles';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-      maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
-    },
-    fab: {
-      position: "absolute",
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 interface IProps {
   props: any;
@@ -40,7 +38,7 @@ const MemberEventActivitiesUnassign = (props: any) => {
   const user = useSelector((state: IState) => state.core.user);
 
   const handleEdit = () => {
-    const members = props.members;
+    const { members } = props;
 
     setSelected(members);
     setCreateDialog(true);
@@ -49,7 +47,7 @@ const MemberEventActivitiesUnassign = (props: any) => {
   function closeCreateDialog() {
     setCreateDialog(false);
   }
-  const createTitle = "Unassign  Members ";
+  const createTitle = 'Unassign  Members ';
   const canEditUsers = hasAnyRole(user, [appPermissions.roleUserEdit]);
 
   return (

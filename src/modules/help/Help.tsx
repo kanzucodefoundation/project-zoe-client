@@ -4,35 +4,32 @@ import {
   makeStyles,
   Theme,
   Typography,
-} from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import { get } from "../../utils/ajax";
-import XBreadCrumbs from "../../components/XBreadCrumbs";
-import { localRoutes } from "../../data/constants";
-import Layout from "./../../components/layout/Layout";
-import YouTube from "react-youtube";
-import Grid from "@material-ui/core/Grid";
-import { remoteRoutes } from "../../data/constants";
+} from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import YouTube from 'react-youtube';
+import Grid from '@material-ui/core/Grid';
+import { get } from '../../utils/ajax';
+import XBreadCrumbs from '../../components/XBreadCrumbs';
+import { localRoutes, remoteRoutes } from '../../data/constants';
+import Layout from '../../components/layout/Layout';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-      padding: theme.spacing(2),
-      [theme.breakpoints.up("sm")]: {
-        padding: theme.spacing(1),
-      },
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+    padding: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      padding: theme.spacing(1),
     },
-    video: {
-      width: "100%",
-    },
-  })
-); 
+  },
+  video: {
+    width: '100%',
+  },
+}));
 
 interface IFile {
-      id?: string;
-      title?: string;
-    }
+  id?: string;
+  title?: string;
+}
 
 const Help = () => {
   const classes = useStyles();
@@ -41,29 +38,34 @@ const Help = () => {
 
   const getHelp = async () => {
     try {
-    await get (`${remoteRoutes.help}`, 
-    (data) => { let files: IFile[] = [];
-    //console.log(files, 'help files');
-    for (let i = 0; i < data.length; i++) {
-      const doc = {
-        id: data[i].url,
-        title: data[i].title,
-      };
-      files.push(doc);
-  } 
-  setFile(files);
-  console.log(files, 'help files');
-  return new Promise((data) => setTimeout(data, 5000));
-  },)
-  return new Promise((data) => setTimeout(data, 5000));
-  } catch (error) {
-    console.log(error);
-  }
-}
-  useEffect(() => {
-    getHelp();
- }, 
- []);
+      await get(
+        `${remoteRoutes.help}`,
+        (data) => {
+          const files: IFile[] = [];
+          // console.log(files, 'help files');
+          for (let i = 0; i < data.length; i++) {
+            const doc = {
+              id: data[i].url,
+              title: data[i].title,
+            };
+            files.push(doc);
+          }
+          setFile(files);
+          console.log(files, 'help files');
+          return new Promise((data) => setTimeout(data, 5000));
+        },
+      );
+      return await new Promise((data) => setTimeout(data, 5000));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(
+    () => {
+      getHelp();
+    },
+    [],
+  );
 
   return (
     <Layout>
@@ -74,7 +76,7 @@ const Help = () => {
             paths={[
               {
                 path: localRoutes.home,
-                label: "Dashboard",
+                label: 'Dashboard',
               },
             ]}
           />

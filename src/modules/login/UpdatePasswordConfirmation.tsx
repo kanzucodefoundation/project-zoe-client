@@ -1,13 +1,13 @@
-import React, { SyntheticEvent } from "react";
-import Avatar from "@material-ui/core/Avatar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
-import { useLoginStyles } from "./loginStyles";
-import Link from "@material-ui/core/Link";
-import { localRoutes } from "../../data/constants";
-import { useHistory } from "react-router";
-import DoneAllIcon from "@material-ui/icons/DoneAll";
+import React, { SyntheticEvent } from 'react';
+import Avatar from '@material-ui/core/Avatar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
+import { useHistory } from 'react-router';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
+import { localRoutes } from '../../data/constants';
+import { useLoginStyles } from './loginStyles';
 
 function UpdatePasswordConfirmation() {
   const classes = useLoginStyles();
@@ -40,9 +40,4 @@ function UpdatePasswordConfirmation() {
   );
 }
 
-export default UpdatePasswordConfirmation
-
-
-
-
-
+export default UpdatePasswordConfirmation;

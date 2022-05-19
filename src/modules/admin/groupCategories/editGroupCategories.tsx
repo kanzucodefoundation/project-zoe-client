@@ -1,13 +1,13 @@
-import { Box } from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
-import React, { useState } from "react";
-import EditDialog from "../../../components/EditDialog";
-import { remoteRoutes } from "../../../data/constants";
-import Toast from "../../../utils/Toast";
-import { del } from "../../../utils/ajax";
-import NewGroupCategories from "./NewGroupCategories";
+import { Box } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import React, { useState } from 'react';
+import EditDialog from '../../../components/EditDialog';
+import { remoteRoutes } from '../../../data/constants';
+import Toast from '../../../utils/Toast';
+import { del } from '../../../utils/ajax';
+import NewGroupCategories from './NewGroupCategories';
 
 const EditReportCategories = (data: any) => {
   const [createDialog, setCreateDialog] = useState(false);
@@ -18,14 +18,14 @@ const EditReportCategories = (data: any) => {
 
   function handleDelete() {
     del(`${remoteRoutes.groupsCategories}/${data.value.id}`, (resp) => {
-      Toast.success("Deleted successfully");
+      Toast.success('Deleted successfully');
       window.location.reload();
     });
   }
   function closeCreateDialog() {
     setCreateDialog(false);
   }
-  const createTitle = "Edit Group Categories";
+  const createTitle = 'Edit Group Categories';
   return (
     <Box>
       <Box pr={2}>

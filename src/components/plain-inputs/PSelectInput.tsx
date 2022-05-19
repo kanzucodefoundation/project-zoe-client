@@ -1,18 +1,18 @@
-import React from "react";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import { IOption } from "../inputs/inputHelpers";
+import React from 'react';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { IOption } from '../inputs/inputHelpers';
 
 interface IProps {
   onChange?: (event: React.ChangeEvent<{ value: unknown }>) => any;
   value?: any;
   label?: any;
   name?: any;
-  size?: "small" | "medium";
-  variant?: "standard" | "outlined" | "filled";
+  size?: 'small' | 'medium';
+  variant?: 'standard' | 'outlined' | 'filled';
   helperText?: string;
   options: IOption[];
   multiple?: boolean;
@@ -41,7 +41,7 @@ const PSelectInput = ({
         name={name}
         value={value}
         onChange={onChange}
-        labelWidth={variant === "outlined" ? labelWidth : undefined}
+        labelWidth={variant === 'outlined' ? labelWidth : undefined}
         multiple={multiple}
         autoComplete="off"
       >

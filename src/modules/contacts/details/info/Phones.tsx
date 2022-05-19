@@ -1,32 +1,30 @@
-import React, { useState } from "react";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import { IContact, IEmail } from "../../types";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
-import EditDialog from "../../../../components/EditDialog";
-import PhoneEditor from "../editors/PhoneEditor";
-import DataCard from "../../../../components/DataCard";
-import Button from "@material-ui/core/Button";
-import Hidden from "@material-ui/core/Hidden";
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import Toast from "../../../../utils/Toast";
+import React, { useState } from 'react';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Hidden from '@material-ui/core/Hidden';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import { IContact, IEmail } from '../../types';
+import EditDialog from '../../../../components/EditDialog';
+import PhoneEditor from '../editors/PhoneEditor';
+import DataCard from '../../../../components/DataCard';
+import Toast from '../../../../utils/Toast';
 
 interface IProps {
   data: IContact;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      padding: theme.spacing(2),
-      borderRadius: 0,
-    },
-    noPadding: {
-      padding: 0,
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    padding: theme.spacing(2),
+    borderRadius: 0,
+  },
+  noPadding: {
+    padding: 0,
+  },
+}));
 
 const Phones = (props: IProps) => {
   const classes = useStyles();
@@ -48,7 +46,7 @@ const Phones = (props: IProps) => {
     setDialog(true);
   };
 
-  const { phones, id = "" } = props.data;
+  const { phones, id = '' } = props.data;
 
   return (
     <DataCard
@@ -58,10 +56,9 @@ const Phones = (props: IProps) => {
         <Button
           size="small"
           color="primary"
-          onClick={() =>
-            phones.length >= 4
-              ? Toast.info("You can only enter up to four Phone numbers")
-              : handleNew()
+          onClick={() => (phones.length >= 4
+            ? Toast.info('You can only enter up to four Phone numbers')
+            : handleNew())
           }
         >
           Add New
@@ -84,7 +81,7 @@ const Phones = (props: IProps) => {
         ))}
       </List>
       <EditDialog
-        title={selected ? "Edit Phone" : "New Phone"}
+        title={selected ? 'Edit Phone' : 'New Phone'}
         open={dialog}
         onClose={handleClose}
       >

@@ -1,78 +1,74 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import EditDialog from "../../../components/EditDialog";
-import Box from "@material-ui/core/Box";
-import Avatar from "@material-ui/core/Avatar";
-import { Grid } from "@material-ui/core";
-import PinDropIcon from "@material-ui/icons/PinDrop";
-import EventIcon from "@material-ui/icons/Event";
-import PeopleIcon from "@material-ui/icons/People";
-import Typography from "@material-ui/core/Typography";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { Theme } from "@material-ui/core";
-import DateRangeIcon from "@material-ui/icons/DateRange";
-import Divider from "@material-ui/core/Divider";
-import EditIcon from "@material-ui/icons/Edit";
-import { grey } from "@material-ui/core/colors";
-import { appPermissions, localRoutes } from "../../../data/constants";
-import Loading from "../../../components/Loading";
-import { Alert } from "@material-ui/lab";
-import { useHistory, useParams } from "react-router";
-import Layout from "../../../components/layout/Layout";
-import IconButton from "@material-ui/core/IconButton";
-import MapLink from "../../../components/MapLink";
-import { IState } from "../../../data/types";
-import { hasAnyRole } from "../../../data/appRoles";
-import TabbedView from "../../groups/TabbedView";
-import XBreadCrumbs from "../../../components/XBreadCrumbs";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Box from '@material-ui/core/Box';
+import Avatar from '@material-ui/core/Avatar';
+import { Grid, Theme } from '@material-ui/core';
+import PinDropIcon from '@material-ui/icons/PinDrop';
+import EventIcon from '@material-ui/icons/Event';
+import PeopleIcon from '@material-ui/icons/People';
+import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import DateRangeIcon from '@material-ui/icons/DateRange';
+import Divider from '@material-ui/core/Divider';
+import EditIcon from '@material-ui/icons/Edit';
+import { grey } from '@material-ui/core/colors';
+import { Alert } from '@material-ui/lab';
+import { useHistory, useParams } from 'react-router';
+import IconButton from '@material-ui/core/IconButton';
+import { appPermissions, localRoutes } from '../../../data/constants';
+import Loading from '../../../components/Loading';
+import Layout from '../../../components/layout/Layout';
+import EditDialog from '../../../components/EditDialog';
+import MapLink from '../../../components/MapLink';
+import { IState } from '../../../data/types';
+import { hasAnyRole } from '../../../data/appRoles';
+import TabbedView from '../../groups/TabbedView';
+import XBreadCrumbs from '../../../components/XBreadCrumbs';
 import {
   eventFetchAsync,
   eventsEdit,
   IEventState,
-} from "../../../data/events/eventsReducer";
-import EventForm from "../forms/EventForm";
-import EventActivitiesForm from "./EventActivitiesForm";
-import { printPrettyDate, printPrettyTime } from "../../../utils/dateHelpers";
-import GroupLink from "../../../components/GroupLink";
-import EventAttendance from "./EventAttendance";
-import EventMetadata from "./EventMetadata";
-import EventActivities from "./EventActivities";
-import MemberEventActivitiesEditor from "./MemberEventActivitiesEditor";
+} from '../../../data/events/eventsReducer';
+import EventForm from '../forms/EventForm';
+import EventActivitiesForm from './EventActivitiesForm';
+import { printPrettyDate, printPrettyTime } from '../../../utils/dateHelpers';
+import GroupLink from '../../../components/GroupLink';
+import EventAttendance from './EventAttendance';
+import EventMetadata from './EventMetadata';
+import EventActivities from './EventActivities';
+import MemberEventActivitiesEditor from './MemberEventActivitiesEditor';
 
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+    padding: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      padding: theme.spacing(1),
+    },
+  },
+  largeIcon: {
+    width: theme.spacing(6),
+    height: theme.spacing(6),
+  },
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-      padding: theme.spacing(2),
-      [theme.breakpoints.up("sm")]: {
-        padding: theme.spacing(1),
-      },
-    },
-    largeIcon: {
-      width: theme.spacing(6),
-      height: theme.spacing(6),
-    },
-
-    rootPaper: {
-      padding: theme.spacing(2),
-      borderRadius: 0,
-    },
-    description: {
-      minHeight: 100,
-      borderRadius: 5,
-      backgroundColor: grey[100],
-    },
-  })
-);
+  rootPaper: {
+    padding: theme.spacing(2),
+    borderRadius: 0,
+  },
+  description: {
+    minHeight: 100,
+    borderRadius: 5,
+    backgroundColor: grey[100],
+  },
+}));
 
 export default function Details() {
-  let { eventId } = useParams<any>();
+  const { eventId } = useParams<any>();
   const history = useHistory();
   const [dialog, setDialog] = useState<boolean>(false);
   const [dialogAdd, setDialogAdd] = useState<boolean>(false);
   const { selected: data, loading }: IEventState = useSelector(
-    (state: any) => state.events
+    (state: any) => state.events,
   );
   const dispatch = useDispatch();
   const profile = useSelector((state: IState) => state.core.user);
@@ -110,9 +106,9 @@ export default function Details() {
         <Loading />
       </Layout>
     );
-  } else {
-    if (!data) {
-      return (
+  }
+  if (!data) {
+    return (
         <Layout>
           <Box
             p={4}
@@ -123,8 +119,7 @@ export default function Details() {
             <Alert severity="error">Failed to load report data</Alert>
           </Box>
         </Layout>
-      );
-    }
+    );
   }
 
   function handleDeleted() {
@@ -133,31 +128,26 @@ export default function Details() {
 
   const tabs = [
     {
-      name: "Extra data",
+      name: 'Extra data',
       component: <EventMetadata event={data} />,
     },
     {
-      name: "Attendance",
+      name: 'Attendance',
       component: (
         <EventAttendance groupId={`${data.groupId}`} eventId={`${data.id}`} />
       ),
     },
     {
-      //Tabview for eventactivies.
-      name: "Activities",
+      // Tabview for eventactivies.
+      name: 'Activities',
       component: <EventActivities eventId={Number(data.id)} />,
     },
     {
-      //Tabview for Assigning /Unassigning MemberEventActivities.
-      name: "Assign Member(s) ",
-      component:<MemberEventActivitiesEditor/>,
+      // Tabview for Assigning /Unassigning MemberEventActivities.
+      name: 'Assign Member(s) ',
+      component: <MemberEventActivitiesEditor/>,
     },
-    
 
- 
-
-  
-    
   ];
 
   return (
@@ -169,12 +159,12 @@ export default function Details() {
             paths={[
               {
                 path: localRoutes.home,
-                label: "Dashboard",
+                label: 'Dashboard',
                 auth: hasAnyRole(profile, [appPermissions.roleDashboard]),
               },
               {
                 path: localRoutes.events,
-                label: "Events",
+                label: 'Events',
                 auth: hasAnyRole(profile, [
                   appPermissions.roleEventView,
                   appPermissions.roleEventEdit,
@@ -210,7 +200,7 @@ export default function Details() {
               ) : null}
               {/* Passing prop to eventactivities component */}
               <EventActivitiesForm eventId={`${data.id}`} />
-             
+
             </Box>
             <Divider />
             <Box pl={1}>

@@ -1,14 +1,13 @@
-import React from "react";
-import Grid from "@material-ui/core/Grid";
-import GridWrapper from "./GridWrapper";
-import { Typography } from "@material-ui/core";
+import React from 'react';
+import Grid from '@material-ui/core/Grid';
+import { Typography } from '@material-ui/core';
+import GridWrapper from './GridWrapper';
 
 interface IProps {
   text: any;
 }
 
-const Error = (props: IProps) => {
-  return (
+const Error = (props: IProps) => (
     <GridWrapper>
       <Grid container spacing={10} justify="center" alignItems="center">
         <Grid item>
@@ -18,6 +17,5 @@ const Error = (props: IProps) => {
         </Grid>
       </Grid>
     </GridWrapper>
-  );
-};
+);
 export default Error;

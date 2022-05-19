@@ -1,25 +1,25 @@
-import React from "react";
-import { HashRouter as Router, Route, Switch } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import Login from "./modules/login/Login";
-import Splash from "./modules/login/Splash";
-import { useSelector } from "react-redux";
-import LoaderDialog from "./components/LoaderDialog";
-import { localRoutes } from "./data/constants";
-import Register from "./modules/login/Register";
-import ForgotPassword from "./modules/login/ForgotPassword";
-import ResetPassword from "./modules/login/ResetPassword";
-import UpdatePasswordConfirmation from "./modules/login/UpdatePasswordConfirmation";
+import React from 'react';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import Login from './modules/login/Login';
+import Splash from './modules/login/Splash';
+import LoaderDialog from './components/LoaderDialog';
+import { localRoutes } from './data/constants';
+import Register from './modules/login/Register';
+import ForgotPassword from './modules/login/ForgotPassword';
+import ResetPassword from './modules/login/ResetPassword';
+import UpdatePasswordConfirmation from './modules/login/UpdatePasswordConfirmation';
 
-import ContentSwitch from "./modules/ContentSwitch";
+import ContentSwitch from './modules/ContentSwitch';
 
 const App: React.FC = () => {
   const coreState: any = useSelector((state: any) => state.core);
   const { isLoadingUser, user, globalLoader } = coreState;
   if (isLoadingUser) {
     return <Splash />;
-  } else {
-    return (
+  }
+  return (
       <Router>
         <ToastContainer />
         <>
@@ -40,14 +40,13 @@ const App: React.FC = () => {
                 path={localRoutes.forgotPassword}
                 component={ForgotPassword}
               />
-              <Route path={localRoutes.login} component={Login} />
-              <Route component={Register} />
+              <Route path={localRoutes.register}  component={Register} />
+              <Route component={Login} />
             </Switch>
           )}
         </>
       </Router>
-    );
-  }
+  );
 };
 
 export default App;

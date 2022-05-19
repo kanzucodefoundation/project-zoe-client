@@ -1,32 +1,31 @@
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import React, { useCallback, useEffect } from "react";
-import EditDialog from "../../../components/EditDialog";
-import EventActivitiesEditor from "./EventActivitiesEdit";
-import Loading from "../../../components/Loading";
-import XAvatar from "../../../components/XAvatar";
-import { remoteRoutes } from "../../../data/constants";
-import { get, search } from "../../../utils/ajax";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-      maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
-    },
-    fab: {
-      position: "absolute",
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  })
-);
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import React, { useCallback, useEffect } from 'react';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import EditDialog from '../../../components/EditDialog';
+import EventActivitiesEditor from './EventActivitiesEdit';
+import Loading from '../../../components/Loading';
+import XAvatar from '../../../components/XAvatar';
+import { remoteRoutes } from '../../../data/constants';
+import { get, search } from '../../../utils/ajax';
+
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 export interface IProps {
   eventId: number;
@@ -48,11 +47,11 @@ function EventActivities({ eventId }: IProps) {
 
   const fetchActivities = useCallback(() => {
     setLoading(true);
-    console.log("fetchActivities", eventId);
+    console.log('fetchActivities', eventId);
     search(
       remoteRoutes.eventsActivity,
       {
-        eventId: eventId,
+        eventId,
       },
       (data) => {
         setData(data);
@@ -60,7 +59,7 @@ function EventActivities({ eventId }: IProps) {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, [eventId]);
 
@@ -77,7 +76,7 @@ function EventActivities({ eventId }: IProps) {
 
     const newData = data.map((it: any) => {
       if (it.id === it.id) return it;
-      else return it;
+      return it;
     });
     setData(newData);
   };
@@ -104,16 +103,14 @@ function EventActivities({ eventId }: IProps) {
         {loading ? (
           <Loading />
         ) : (
-          data.map((it) => {
-            return (
+          data.map((it) => (
               <ListItem key={it.id} button onClick={handleSelected(it)}>
                 <ListItemAvatar>
                   <XAvatar value={it.name} />
                 </ListItemAvatar>
                 <ListItemText primary={it.name}></ListItemText>
               </ListItem>
-            );
-          })
+          ))
         )}
       </List>
 

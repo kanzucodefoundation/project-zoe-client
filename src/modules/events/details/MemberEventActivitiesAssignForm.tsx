@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { remoteRoutes } from "../../../data/constants";
-import XForm from "../../../components/forms/XForm";
-import { FormikHelpers } from "formik";
-import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
-import { comboParser } from "../../../components/inputs/inputHelpers";
-import { Grid } from "@material-ui/core";
+import React, { useState } from 'react';
+import { FormikHelpers } from 'formik';
+import { Grid } from '@material-ui/core';
+import { remoteRoutes } from '../../../data/constants';
+import XForm from '../../../components/forms/XForm';
+import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
+import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
+import { comboParser } from '../../../components/inputs/inputHelpers';
 
 interface IProps {
   data?: any | null;
@@ -16,8 +16,8 @@ interface IProps {
   done: any;
 }
 const initialValues = {
-  activity: "",
-  contact: "",
+  activity: '',
+  contact: '',
 };
 
 const MemberEventActivitiesForm = ({

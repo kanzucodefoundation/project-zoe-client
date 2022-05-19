@@ -1,10 +1,10 @@
-import { aggregateValue, aggregateValues } from "./utils";
+import { aggregateValue, aggregateValues } from './utils';
 
-describe("aggregateValue", () => {
-  it("works", () => {
+describe('aggregateValue', () => {
+  it('works', () => {
     const data = [
       {
-        myNumber: "3",
+        myNumber: '3',
       },
       {
         myNumber: 2,
@@ -13,13 +13,13 @@ describe("aggregateValue", () => {
         myNumber: undefined,
       },
     ];
-    const result = aggregateValue(data, "myNumber");
+    const result = aggregateValue(data, 'myNumber');
     expect(result).toEqual(5);
   });
-  it("works for nested objects", () => {
+  it('works for nested objects', () => {
     const data = [
       {
-        myNumber: "3",
+        myNumber: '3',
         child: {
           childNumber: 6,
         },
@@ -39,21 +39,21 @@ describe("aggregateValue", () => {
       {
         myNumber: undefined,
         child: {
-          childNumber: "foo",
+          childNumber: 'foo',
         },
       },
     ];
-    const result = aggregateValue(data, "child.childNumber");
+    const result = aggregateValue(data, 'child.childNumber');
     expect(result).toEqual(7);
   });
 });
 
-describe("aggregateValues", () => {
-  it("works", () => {
+describe('aggregateValues', () => {
+  it('works', () => {
     const data = [
       {
-        myNumber: "3",
-        another: "2",
+        myNumber: '3',
+        another: '2',
       },
       {
         myNumber: 2,
@@ -63,8 +63,8 @@ describe("aggregateValues", () => {
       },
     ];
     const result = aggregateValues(data, [
-      { path: "myNumber", name: "myNumber" },
-      { path: "another", name: "another" },
+      { path: 'myNumber', name: 'myNumber' },
+      { path: 'another', name: 'another' },
     ]);
     expect(result).toEqual({ myNumber: 5, another: 2 });
   });

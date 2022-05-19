@@ -11,17 +11,7 @@ export const idCategories = [
 export const helpFileCategories = ['video', 'doc'];
 export const genderCategories = ['Male', 'Female'];
 export const responseCategories = ['Yes', 'No'];
-export const ageCategories = [
-  '0-3',
-  '3-5',
-  '5-7',
-  '9-12',
-  '13-19',
-  '20-25',
-  '26-35',
-  '36-45',
-  '>45',
-];
+export const ageCategories = ['0-5', '6-9','10-12','13-19','20-30','31-40','41-50','51+'];
 export const salutationCategories = ['Mr', 'Mrs', 'Ms', 'Dr', 'Prof'];
 export const civilStatusCategories = ['Married', 'Single', 'Dating', 'Other'];
 export const emailCategories = ['Personal', 'Work', 'Other'];

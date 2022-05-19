@@ -1,49 +1,47 @@
-import React from "react";
+import React from 'react';
 import {
   createStyles,
   fade,
   makeStyles,
   Theme,
   withStyles,
-} from "@material-ui/core/styles";
+} from '@material-ui/core/styles';
 
-import TreeView from "@material-ui/lab/TreeView";
-import TreeItem, { TreeItemProps } from "@material-ui/lab/TreeItem";
-import Collapse from "@material-ui/core/Collapse";
-import { TransitionProps } from "@material-ui/core/transitions";
-import { CloseSquare, MinusSquare, PlusSquare } from "../xicons";
-import IconButton from "@material-ui/core/IconButton";
-import AddIcon from "@material-ui/icons/Add";
-import Typography from "@material-ui/core/Typography";
-import { Box } from "@material-ui/core";
+import TreeView from '@material-ui/lab/TreeView';
+import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
+import Collapse from '@material-ui/core/Collapse';
+import { TransitionProps } from '@material-ui/core/transitions';
+import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/Add';
+import Typography from '@material-ui/core/Typography';
+import { Box } from '@material-ui/core';
+import { CloseSquare, MinusSquare, PlusSquare } from '../xicons';
 
 function TransitionComponent(props: TransitionProps) {
   return <Collapse {...props} />;
 }
 
-const StyledTreeItem = withStyles((theme: Theme) =>
-  createStyles({
-    iconContainer: {
-      "& .close": {
-        opacity: 0.3,
-      },
+const StyledTreeItem = withStyles((theme: Theme) => createStyles({
+  iconContainer: {
+    '& .close': {
+      opacity: 0.3,
     },
-    group: {
-      marginLeft: 12,
-      paddingLeft: 12,
-      borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
-    },
-  })
-)((props: TreeItemProps) => (
+  },
+  group: {
+    marginLeft: 12,
+    paddingLeft: 12,
+    borderLeft: `1px dashed ${fade(theme.palette.text.primary, 0.4)}`,
+  },
+}))((props: TreeItemProps) => (
   <TreeItem {...props} TransitionComponent={TransitionComponent} />
 ));
 
 const useStyles = makeStyles(
   createStyles({
     root: {
-      width: "100%",
+      width: '100%',
     },
-  })
+  }),
 );
 
 interface IProps {

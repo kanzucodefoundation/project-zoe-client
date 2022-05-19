@@ -1,38 +1,38 @@
-import React, { SyntheticEvent, useState } from "react";
-import AppBar from "@material-ui/core/AppBar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import Link from "@material-ui/core/Link";
-import image from "../../assets/WH-11-1920w.webp";
-import { Box } from "@material-ui/core";
-import Avatar from "@material-ui/core/Avatar";
-import logo from "../../assets/WHLogo3.svg";
-import RegisterForm from "./RegisterForm";
-import { useHistory } from "react-router";
-import { localRoutes } from "../../data/constants";
-import { Alert } from "@material-ui/lab";
+import React, { SyntheticEvent, useState } from 'react';
+import AppBar from '@material-ui/core/AppBar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Link from '@material-ui/core/Link';
+import { Box } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import { useHistory } from 'react-router';
+import { Alert } from '@material-ui/lab';
+import image from '../../assets/landing-page-cross.jpg';
+import logo from '../../assets/Project Zoe-logos_transparent.png';
+import RegisterForm from './RegisterForm';
+import { localRoutes } from '../../data/constants';
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://www.worshipharvest.org/">
-        Worship Harvest Ministries
-      </Link>{" "}
+      {'Copyright © '}
+      <Link color="inherit" href="https://www.projectzoe.kanzucodefoundation.org/">
+        Project Zoe
+      </Link>{' '}
       {new Date().getFullYear()}
-      {"."}
+      {'.'}
     </Typography>
   );
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    color: "white",
-    width: "100%",
-    height: "100%",
-    overflowY: "scroll",
+    color: 'white',
+    width: '100%',
+    height: '100%',
+    overflowY: 'scroll',
   },
   icon: {
     marginRight: theme.spacing(2),
@@ -45,16 +45,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
   },
   cardGrid: {
-    color: "black",
+    color: 'black',
     backgroundColor: theme.palette.background.paper,
     borderRadius: 8,
     marginTop: theme.spacing(8),
     marginBottom: theme.spacing(8),
     padding: theme.spacing(2),
     width: 500,
-    maxWidth: "100%",
-    margin: "0 auto",
-    [theme.breakpoints.down("sm")]: {
+    maxWidth: '100%',
+    margin: '0 auto',
+    [theme.breakpoints.down('sm')]: {
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
       padding: theme.spacing(1),
@@ -64,21 +64,21 @@ const useStyles = makeStyles((theme) => ({
   content: {
     padding: theme.spacing(1),
     paddingTop: 0,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('sm')]: {
       padding: 0,
     },
   },
   titleContent: {
     padding: theme.spacing(1),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(1),
       paddingBottom: 0,
     },
   },
   footer: {
-    backgroundColor: "black",
+    backgroundColor: 'black',
     padding: theme.spacing(6),
-    color: "whitesmoke",
+    color: 'whitesmoke',
   },
   toolbarTitle: {
     flexGrow: 1,
@@ -103,24 +103,24 @@ export default function Register() {
   return (
     <div
       style={{
-        backgroundImage: "url(" + image + ")",
-        backgroundSize: "cover",
-        backgroundPosition: "top center",
+        backgroundImage: `url(${image})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'top center',
       }}
       className={classes.root}
     >
       <CssBaseline />
       <AppBar position="relative" color="transparent">
         <Toolbar>
-          <Avatar alt="Logo" src={logo} className={classes.icon} />
-          <Typography
-            variant="h5"
-            color="inherit"
-            noWrap
-            className={classes.toolbarTitle}
-          >
-            Worship Harvest
-          </Typography>
+            <Avatar alt="Logo" src={logo} className={classes.icon} />
+              <Typography
+                variant="h5"
+                color="inherit"
+                noWrap
+                className={classes.toolbarTitle}
+              >
+                Project Zoe
+              </Typography>
           <nav>
             <Link
               variant="button"
@@ -142,7 +142,7 @@ export default function Register() {
             {done && (
               <Box pt={2}>
                 <Alert>
-                  We have received your data, Please check your 
+                  We have received your data. Please check your
                   email for a link to setup a password. Thank you.
                 </Alert>
               </Box>
@@ -156,7 +156,7 @@ export default function Register() {
 
       <footer className={classes.footer}>
         <Typography variant="h6" align="center" gutterBottom color="inherit">
-          Worship Harvest is a Movement of the Gospel, Discipleship and Mission.
+          Project Zoe is a church management centered on what's at the heart of all ministry - people. 
         </Typography>
         <Typography
           variant="subtitle1"
@@ -164,10 +164,6 @@ export default function Register() {
           color="inherit"
           component="p"
         >
-          <b>
-            We exist to catalyze Spiritual, Social and Economic Renewal in our
-            immediate communities and as a result, the world.
-          </b>
         </Typography>
         <Copyright />
       </footer>

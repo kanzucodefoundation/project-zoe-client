@@ -1,16 +1,16 @@
-import * as React from "react";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import XTextInput from "../../components/inputs/XTextInput";
-import { Form, Formik } from "formik";
-import XSelectInput from "../../components/inputs/XSelectInput";
-import { toOptions } from "../../components/inputs/inputHelpers";
-import { Box } from "@material-ui/core";
-import { ageCategories } from "../../data/comboCategories";
-import { XRemoteSelect } from "../../components/inputs/XRemoteSelect";
-import { remoteRoutes } from "../../data/constants";
-import { ISearch } from "../../data/types";
-import { cleanComboValue } from "../../utils/dataHelpers";
+import * as React from 'react';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import { Form, Formik } from 'formik';
+import { Box } from '@material-ui/core';
+import XTextInput from '../../components/inputs/XTextInput';
+import XSelectInput from '../../components/inputs/XSelectInput';
+import { toOptions } from '../../components/inputs/inputHelpers';
+import { ageCategories } from '../../data/comboCategories';
+import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
+import { remoteRoutes } from '../../data/constants';
+import { ISearch } from '../../data/types';
+import { cleanComboValue } from '../../utils/dataHelpers';
 
 interface IProps {
   onFilter: (data: any) => any;
@@ -26,14 +26,14 @@ interface IContactSearchDto extends ISearch {
 }
 
 const initialValues: any = {
-  query: "",
+  query: '',
   churchLocations: [],
   cellGroups: [],
 
-  email: "",
-  phone: "",
+  email: '',
+  phone: '',
   limit: 100,
-  skip: 0
+  skip: 0,
 };
 const Filter = ({ onFilter, loading }: IProps) => {
   function handleSubmission(values: any) {
@@ -45,7 +45,7 @@ const Filter = ({ onFilter, loading }: IProps) => {
       email: values.email,
       phone: values.phone,
       limit: 100,
-      skip: 0
+      skip: 0,
     };
     onFilter(filter);
   }
@@ -105,8 +105,8 @@ const Filter = ({ onFilter, loading }: IProps) => {
             <Grid item xs={12}>
               <XRemoteSelect
                 remote={remoteRoutes.groupsCombo}
-                filter={{ "categories[]": "Location" }}
-                parser={({ name, id }: any) => ({ name: name, id: id })}
+                filter={{ 'categories[]': 'Location' }}
+                parser={({ name, id }: any) => ({ name, id })}
                 name="churchLocations"
                 label="Church Locations"
                 variant="outlined"
@@ -117,8 +117,8 @@ const Filter = ({ onFilter, loading }: IProps) => {
             <Grid item xs={12}>
               <XRemoteSelect
                 remote={remoteRoutes.groupsCombo}
-                filter={{ "categories[]": "MC" }}
-                parser={({ name, id }: any) => ({ name: name, id: id })}
+                filter={{ 'categories[]': 'MC' }}
+                parser={({ name, id }: any) => ({ name, id })}
                 name="cellGroups"
                 label="Missional Communities"
                 variant="outlined"

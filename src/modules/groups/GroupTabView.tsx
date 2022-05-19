@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from "react";
-import Layout from "../../components/layout/Layout";
-import GroupsList from "./GroupsList";
-import TabbedView from "./TabbedView";
-import { Typography } from "@material-ui/core";
-import { IGroup } from "./types";
-import { useSelector } from "react-redux";
-import { IState } from "../../data/types";
-import { search } from "../../utils/ajax";
+import React, { useEffect, useState } from 'react';
+import { Typography } from '@material-ui/core';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import Layout from '../../components/layout/Layout';
+import GroupsList from './GroupsList';
+import TabbedView from './TabbedView';
+import { IGroup } from './types';
+import { IState } from '../../data/types';
+import { search } from '../../utils/ajax';
 import {
   appPermissions,
   localRoutes,
   remoteRoutes,
-} from "../../data/constants";
-import { useHistory } from "react-router";
-import EditDialog from "../../components/EditDialog";
-import GroupEditor from "./editors/GroupEditor";
-import Box from "@material-ui/core/Box";
-import { hasAnyRole } from "../../data/appRoles";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-import ListHeader from "../../components/ListHeader";
-import GroupMapView from "./GroupMapView";
+} from '../../data/constants';
+import EditDialog from '../../components/EditDialog';
+import GroupEditor from './editors/GroupEditor';
+import { hasAnyRole } from '../../data/appRoles';
+import ListHeader from '../../components/ListHeader';
+import GroupMapView from './GroupMapView';
 
 interface IGroupMarkers {
   name: string;
@@ -67,9 +67,9 @@ const GroupTabView = () => {
     setFilter({ ...filter, ...value });
   }
 
-    function extractAddressFromEachGroup(groups: any[]) {
+  function extractAddressFromEachGroup(groups: any[]) {
     const addresses = [];
-    for (let group of groups) {
+    for (const group of groups) {
       if (group.address === null) {
       } else {
         const address = {
@@ -87,11 +87,11 @@ const GroupTabView = () => {
 
   const starterData = selected
     ? {
-        parent: {
-          id: selected.id,
-          name: selected.name,
-        },
-      }
+      parent: {
+        id: selected.id,
+        name: selected.name,
+      },
+    }
     : undefined;
 
   useEffect(() => {
@@ -99,7 +99,7 @@ const GroupTabView = () => {
     search(
       remoteRoutes.groups,
       filter,
-      data => {
+      (data) => {
         const groupAddresses = extractAddressFromEachGroup(data);
         setAddresses(groupAddresses);
         setData(data);
@@ -107,7 +107,7 @@ const GroupTabView = () => {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, [filter]);
   return (
@@ -140,7 +140,7 @@ const GroupTabView = () => {
         <TabbedView
           tabs={[
             {
-              name: "List View",
+              name: 'List View',
               component: (
                 <GroupsList
                   loading={loading}
@@ -152,11 +152,11 @@ const GroupTabView = () => {
               ),
             },
             {
-              name: "Map View",
+              name: 'Map View',
               component: <GroupMapView
               data={addresses}
-              />
-            }
+              />,
+            },
           ]}
         />
 

@@ -1,25 +1,22 @@
-import React from "react";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
-import AddIcon from "@material-ui/icons/Add";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import IconButton from "@material-ui/core/IconButton";
-import Fab from "@material-ui/core/Fab";
-import useTheme from "@material-ui/core/styles/useTheme";
-import { errorColor } from "../theme/custom-colors";
-import { SvgIcon } from "@material-ui/core";
+import React from 'react';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
+import useTheme from '@material-ui/core/styles/useTheme';
+import { SvgIcon } from '@material-ui/core';
+import { errorColor } from '../theme/custom-colors';
 
 interface IProps {
   onClick: () => any;
   style?: any;
 }
 
-export const HiddenIcon = () => {
-  return <SvgIcon style={{ fontSize: "1rem", margin: 4 }} />;
-};
+export const HiddenIcon = () => <SvgIcon style={{ fontSize: '1rem', margin: 4 }} />;
 
-export const EditIconButton = ({ onClick, style }: IProps) => {
-  return (
+export const EditIconButton = ({ onClick, style }: IProps) => (
     <IconButton
       aria-label="delete"
       size="small"
@@ -28,13 +25,11 @@ export const EditIconButton = ({ onClick, style }: IProps) => {
       style={{ ...style }}
       onClick={onClick}
     >
-      <EditIcon style={{ fontSize: "1rem", margin: 4 }} />
+      <EditIcon style={{ fontSize: '1rem', margin: 4 }} />
     </IconButton>
-  );
-};
+);
 
-export const DeleteIconButton = ({ onClick, style }: IProps) => {
-  return (
+export const DeleteIconButton = ({ onClick, style }: IProps) => (
     <IconButton
       aria-label="delete"
       size="small"
@@ -42,13 +37,11 @@ export const DeleteIconButton = ({ onClick, style }: IProps) => {
       style={{ color: errorColor, ...style }}
       onClick={onClick}
     >
-      <DeleteIcon style={{ fontSize: "1rem", margin: 4 }} />
+      <DeleteIcon style={{ fontSize: '1rem', margin: 4 }} />
     </IconButton>
-  );
-};
+);
 
-export const AddIconButton = ({ onClick, style }: IProps) => {
-  return (
+export const AddIconButton = ({ onClick, style }: IProps) => (
     <IconButton
       aria-label="add-new"
       size="small"
@@ -59,15 +52,14 @@ export const AddIconButton = ({ onClick, style }: IProps) => {
     >
       <AddIcon />
     </IconButton>
-  );
-};
+);
 export const AddFabButton = ({ onClick }: IProps) => {
   const theme = useTheme();
   return (
     <Fab
       aria-label="add-new"
       style={{
-        position: "absolute",
+        position: 'absolute',
         bottom: theme.spacing(2),
         right: theme.spacing(2),
       }}
@@ -79,8 +71,7 @@ export const AddFabButton = ({ onClick }: IProps) => {
   );
 };
 
-export const MoreIconButton = ({ onClick }: IProps) => {
-  return (
+export const MoreIconButton = ({ onClick }: IProps) => (
     <IconButton
       aria-label="add-new"
       size="small"
@@ -90,7 +81,6 @@ export const MoreIconButton = ({ onClick }: IProps) => {
     >
       <MoreHorizIcon />
     </IconButton>
-  );
-};
+);
 
 export default EditIconButton;

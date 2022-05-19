@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
-import * as yup from "yup";
-import { reqArray, reqObject, reqString } from "../../../data/validations";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../../components/forms/XForm";
-import XTextInput from "../../../components/inputs/XTextInput";
-import XCheckBoxInput from "../../../components/inputs/XCheckBoxInput";
-import { remoteRoutes } from "../../../data/constants";
-import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
-import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { comboParser } from "../../../components/inputs/inputHelpers";
-import { del, get } from "../../../utils/ajax";
-import Toast from "../../../utils/Toast";
-import XComboInput from "../../../components/inputs/XComboInput";
-import { cleanComboValue } from "../../../utils/dataHelpers";
-import { IRoles } from "./types";
+import React, { useEffect, useState } from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { reqArray, reqObject, reqString } from '../../../data/validations';
+import XForm from '../../../components/forms/XForm';
+import XTextInput from '../../../components/inputs/XTextInput';
+import XCheckBoxInput from '../../../components/inputs/XCheckBoxInput';
+import { remoteRoutes } from '../../../data/constants';
+import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
+import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
+import { comboParser } from '../../../components/inputs/inputHelpers';
+import { del, get } from '../../../utils/ajax';
+import Toast from '../../../utils/Toast';
+import XComboInput from '../../../components/inputs/XComboInput';
+import { cleanComboValue } from '../../../utils/dataHelpers';
+import { IRoles } from './types';
 
 interface IProps {
   data: any;
@@ -40,14 +40,14 @@ const initialValues = {
   roles: [],
   isActive: true,
 };
-const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
+const UserEditor = ({
+  data, isNew, done, onDeleted, onCancel,
+}: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const userRoles: string[] = [];
 
   useEffect(() => {
-    get(remoteRoutes.roles, (resp: IRoles[]) =>
-      resp.map((it: IRoles) => it.isActive && userRoles.push(it.role))
-    );
+    get(remoteRoutes.roles, (resp: IRoles[]) => resp.map((it: IRoles) => it.isActive && userRoles.push(it.role)));
   }, [userRoles]);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
@@ -73,14 +73,14 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
     del(
       `${remoteRoutes.users}/${data.id}`,
       (dt) => {
-        console.log("Delete response", dt);
-        Toast.success("Operation succeeded");
+        console.log('Delete response', dt);
+        Toast.success('Operation succeeded');
         onDeleted(data);
       },
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }
 
@@ -122,7 +122,7 @@ const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
             name="password"
             label="Password"
             type="password"
-            value={"Hello"}
+            value={'Hello'}
             variant="outlined"
             autoComplete="off"
           />

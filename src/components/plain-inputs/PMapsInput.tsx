@@ -1,24 +1,24 @@
-import React from "react";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
-import parse from "autosuggest-highlight/parse";
-import throttle from "lodash/throttle";
-import { AutocompleteProps } from "@material-ui/lab/Autocomplete/Autocomplete";
-import { TextFieldProps } from "@material-ui/core/TextField/TextField";
-import { hasValue } from "../inputs/inputHelpers";
+import React from 'react';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import LocationOnIcon from '@material-ui/icons/LocationOn';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import parse from 'autosuggest-highlight/parse';
+import throttle from 'lodash/throttle';
+import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
+import { TextFieldProps } from '@material-ui/core/TextField/TextField';
+import { hasValue } from '../inputs/inputHelpers';
 
 function loadScript(src: string, position: HTMLElement | null, id: string) {
   if (!position) {
     return;
   }
 
-  const script = document.createElement("script");
-  script.setAttribute("async", "");
-  script.setAttribute("id", id);
+  const script = document.createElement('script');
+  script.setAttribute('async', '');
+  script.setAttribute('id', id);
   script.src = src;
   position.appendChild(script);
 }
@@ -39,12 +39,13 @@ export interface IGPlace {
 
 export const parseGooglePlace = (dt: GooglePlace | IGPlace): IGPlace | null => {
   const data: any = dt;
-  if (hasValue(dt))
+  if (hasValue(dt)) {
     return {
-      placeId: data["place_id"] || data.placeId,
+      placeId: data.place_id || data.placeId,
       description: dt.description,
     };
-  else return null;
+  }
+  return null;
 };
 
 export interface GooglePlace {
@@ -57,7 +58,7 @@ export interface GooglePlace {
       {
         offset: number;
         length: number;
-      }
+      },
     ];
   };
 }
@@ -68,49 +69,49 @@ export interface IProps {
   showError?: boolean;
   helperText?: string;
   name: string;
-  variant?: "outlined" | "filled" | "standard";
+  variant?: 'outlined' | 'filled' | 'standard';
   multiple?: any;
-  size?: "medium" | "small";
+  size?: 'medium' | 'small';
   onChange: (value: GooglePlace | null) => void;
   onBlur?: () => void;
   textFieldProps?: TextFieldProps;
-  margin?: "none" | "dense" | "normal";
+  margin?: 'none' | 'dense' | 'normal';
 }
 
 type OptionalBool = boolean | undefined;
 type BaseProps = AutocompleteProps<
-  GooglePlace,
-  OptionalBool,
-  OptionalBool,
-  OptionalBool
+GooglePlace,
+OptionalBool,
+OptionalBool,
+OptionalBool
 >;
 type AutoProps = Omit<
-  BaseProps,
-  | "variant"
-  | "multiple"
-  | "renderInput"
-  | "onChange"
-  | "value"
-  | "options"
-  | "onInputChange"
-  | "renderOption"
+BaseProps,
+| 'variant'
+| 'multiple'
+| 'renderInput'
+| 'onChange'
+| 'value'
+| 'options'
+| 'onInputChange'
+| 'renderOption'
 >;
 export type PMapsProps = IProps & AutoProps;
 
 export default function PMapsInput(props: PMapsProps) {
   const classes = useStyles();
 
-  const [inputValue, setInputValue] = React.useState("");
+  const [inputValue, setInputValue] = React.useState('');
   const [options, setOptions] = React.useState<GooglePlace[]>([]);
   const loaded = React.useRef(false);
 
-  if (typeof window !== "undefined" && !loaded.current) {
-    if (!document.querySelector("#google-maps")) {
+  if (typeof window !== 'undefined' && !loaded.current) {
+    if (!document.querySelector('#google-maps')) {
       const key = process.env.REACT_APP_GOOGLE_KEY;
       loadScript(
         `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`,
-        document.querySelector("head"),
-        "google-maps"
+        document.querySelector('head'),
+        'google-maps',
       );
     }
 
@@ -118,14 +119,13 @@ export default function PMapsInput(props: PMapsProps) {
   }
 
   const fetch = React.useMemo(
-    () =>
-      throttle((request: any, callback: (results?: GooglePlace[]) => void) => {
-        (autocompleteService.current as any).getPlacePredictions(
-          request,
-          callback
-        );
-      }, 200),
-    []
+    () => throttle((request: any, callback: (results?: GooglePlace[]) => void) => {
+      (autocompleteService.current as any).getPlacePredictions(
+        request,
+        callback,
+      );
+    }, 200),
+    [],
   );
 
   React.useEffect(() => {
@@ -138,15 +138,15 @@ export default function PMapsInput(props: PMapsProps) {
       return undefined;
     }
 
-    if (inputValue === "") {
+    if (inputValue === '') {
       setOptions(props.value ? [props.value] : []);
       return undefined;
     }
     const autoCompleteReq = {
       input: inputValue,
-      fields: ["geometry"],
+      fields: ['geometry'],
       componentRestrictions: {
-        country: ["ug", "ke"], //Countries...to be updated based on the countries with MCs
+        country: ['ug', 'ke'], // Countries...to be updated based on the countries with MCs
       },
     };
     fetch(autoCompleteReq, (results?: GooglePlace[]) => {
@@ -173,11 +173,12 @@ export default function PMapsInput(props: PMapsProps) {
     props.onBlur && props.onBlur();
   };
 
-  const { label, variant, helperText, showError, margin = "normal" } = props;
+  const {
+    label, variant, helperText, showError, margin = 'normal',
+  } = props;
   return (
     <Autocomplete
-      getOptionLabel={(option) =>
-        typeof option === "string" ? option : option.description
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)
       }
       filterOptions={(x) => x}
       options={options}
@@ -207,14 +208,13 @@ export default function PMapsInput(props: PMapsProps) {
       onBlur={handleTouched}
       renderOption={(option) => {
         if (option.structured_formatting) {
-          const matches =
-            option.structured_formatting.main_text_matched_substrings;
+          const matches = option.structured_formatting.main_text_matched_substrings;
           const parts = parse(
             option.structured_formatting.main_text,
             matches.map((match: any) => [
               match.offset,
               match.offset + match.length,
-            ])
+            ]),
           );
 
           return (
@@ -237,8 +237,8 @@ export default function PMapsInput(props: PMapsProps) {
               </Grid>
             </Grid>
           );
-        } else {
-          return (
+        }
+        return (
             <Grid container alignItems="center">
               <Grid item>
                 <LocationOnIcon className={classes.icon} />
@@ -249,8 +249,7 @@ export default function PMapsInput(props: PMapsProps) {
                 </Typography>
               </Grid>
             </Grid>
-          );
-        }
+        );
       }}
     />
   );

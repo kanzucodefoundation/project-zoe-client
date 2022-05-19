@@ -1,18 +1,18 @@
-import { Dispatch } from "redux";
-import { get, search } from "../../utils/ajax";
-import { remoteRoutes } from "../constants";
-import { IEvent } from "../../modules/events/types";
+import { Dispatch } from 'redux';
+import { get, search } from '../../utils/ajax';
+import { remoteRoutes } from '../constants';
+import { IEvent } from '../../modules/events/types';
 
 export const eventsConstants = {
-  eventsStartLoading: "eventsStartLoading",
-  eventsStopLoading: "eventsStopLoading",
+  eventsStartLoading: 'eventsStartLoading',
+  eventsStopLoading: 'eventsStopLoading',
 
-  eventsCommit: "eventsCommit",
-  eventCommit: "eventCommit",
+  eventsCommit: 'eventsCommit',
+  eventCommit: 'eventCommit',
 
-  eventsAdd: "eventsAdd",
-  eventsEdit: "eventsEdit",
-  eventsDelete: "eventsDelete",
+  eventsAdd: 'eventsAdd',
+  eventsEdit: 'eventsEdit',
+  eventsDelete: 'eventsDelete',
 };
 
 export interface IEventState {
@@ -60,38 +60,30 @@ export default function reducer(state = initialState, action: any) {
   }
 }
 
-export const eventsFetchAsync = (filter: any) => {
-  return (dispatch: Dispatch<any>) => {
-    search(
-      remoteRoutes.events,
-      {filter},
-      (resp: any) => {
-        const getFullName = (name: any) => {
-          return `${name.firstName} ${
-            name.middleName && name.middleName !== null ? name.middleName : ""
-          } ${name.lastName}`;
-        };
+export const eventsFetchAsync = (filter: any) => (dispatch: Dispatch<any>) => {
+  search(
+    remoteRoutes.events,
+    { filter },
+    (resp: any) => {
+      const getFullName = (name: any) => `${name.firstName} ${
+        name.middleName && name.middleName !== null ? name.middleName : ''
+      } ${name.lastName}`;
 
-        const newResp = resp.map((it: any) => {
-          return { ...it, submittedBy: getFullName(it.submittedBy) };
-        });
-        dispatch(eventsCommit(newResp));
-      },
-      undefined,
-      () => dispatch(eventsStopLoading())
-    );
-  };
+      const newResp = resp.map((it: any) => ({ ...it, submittedBy: getFullName(it.submittedBy) }));
+      dispatch(eventsCommit(newResp));
+    },
+    undefined,
+    () => dispatch(eventsStopLoading()),
+  );
 };
 
-export const eventFetchAsync = (id: string) => {
-  return (dispatch: Dispatch<any>) => {
-    get(
-      `${remoteRoutes.events}/${id}`,
-      (resp: any) => dispatch(eventCommit(resp)),
-      undefined,
-      () => dispatch(eventsStopLoading())
-    );
-  };
+export const eventFetchAsync = (id: string) => (dispatch: Dispatch<any>) => {
+  get(
+    `${remoteRoutes.events}/${id}`,
+    (resp: any) => dispatch(eventCommit(resp)),
+    undefined,
+    () => dispatch(eventsStopLoading()),
+  );
 };
 
 export const eventCommit = (data: IEvent) => ({

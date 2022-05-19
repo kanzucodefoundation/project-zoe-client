@@ -1,14 +1,14 @@
-import React from "react";
-import * as yup from "yup";
-import { reqString } from "../../../data/validations";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../../components/forms/XForm";
-import XTextInput from "../../../components/inputs/XTextInput";
-import { remoteRoutes } from "../../../data/constants";
+import React from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { reqString } from '../../../data/validations';
+import XForm from '../../../components/forms/XForm';
+import XTextInput from '../../../components/inputs/XTextInput';
+import { remoteRoutes } from '../../../data/constants';
 
-import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { hasValue } from "../../../components/inputs/inputHelpers";
+import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
+import { hasValue } from '../../../components/inputs/inputHelpers';
 
 interface IProps {
   data?: any | null;
@@ -23,7 +23,7 @@ const schema = yup.object().shape({
 });
 
 const initialValues = {
-  name: "",
+  name: '',
 };
 
 const NewGroupCategories = ({
@@ -38,7 +38,7 @@ const NewGroupCategories = ({
   }
 
   function removeStringSpaces(s: string) {
-    return s.replace(/\s+/g, "");
+    return s.replace(/\s+/g, '');
   }
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {

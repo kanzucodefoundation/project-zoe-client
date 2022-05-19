@@ -10,25 +10,25 @@ import { del } from '../../../utils/ajax';
 import AddHelpFileButton from './AddHelpFile';
 
 const EditHelpFile = (data:any) => {
-    const [createDialog, setCreateDialog] = useState(false);
+  const [createDialog, setCreateDialog] = useState(false);
 
-    function handleEdit() {
-        setCreateDialog(true);
-    }
+  function handleEdit() {
+    setCreateDialog(true);
+  }
 
-    function handleDelete() {
-        del(`${remoteRoutes.help}/${data.value.id}`, (resp) => {
-          console.log(resp);
-        window.location.reload();
-        Toast.success('Deleted successfully');
-        });
-    }
-    function closeCreateDialog() {
-        setCreateDialog(false);
-    }
+  function handleDelete() {
+    del(`${remoteRoutes.help}/${data.value.id}`, (resp) => {
+      console.log(resp);
+      window.location.reload();
+      Toast.success('Deleted successfully');
+    });
+  }
+  function closeCreateDialog() {
+    setCreateDialog(false);
+  }
 
-    const createTitle = 'Edit Help File';
-     return (
+  const createTitle = 'Edit Help File';
+  return (
         <Box>
         <Box pr={2}>
           <IconButton
@@ -61,7 +61,7 @@ const EditHelpFile = (data:any) => {
           />
         </EditDialog>
       </Box>
-     );
-    };
+  );
+};
 
 export default EditHelpFile;

@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
+import { FormikHelpers } from 'formik';
+import { Box, Button, Grid } from '@material-ui/core';
+import SendIcon from '@material-ui/icons/Mail';
 import { remoteRoutes } from '../../data/constants';
 import { post } from '../../utils/ajax';
 import Toast from '../../utils/Toast';
-import { FormikHelpers } from 'formik';
-import { Box, Button, Grid } from '@material-ui/core';
 import XForm from '../../components/forms/XForm';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 import { comboParser } from '../../components/inputs/inputHelpers';
 import XTextInput from '../../components/inputs/XTextInput';
 import XTextAreaInput from '../../components/inputs/XTextAreaInput';
 import EditDialog from '../../components/EditDialog';
-import SendIcon from '@material-ui/icons/Mail';
 
 // TODO Remove code
 const initials = {

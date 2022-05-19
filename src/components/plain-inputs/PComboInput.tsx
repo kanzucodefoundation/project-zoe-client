@@ -1,9 +1,9 @@
-import React, { ChangeEvent } from "react";
-import TextField from "@material-ui/core/TextField";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import { AutocompleteProps } from "@material-ui/lab/Autocomplete/Autocomplete";
-import { TextFieldProps } from "@material-ui/core/TextField/TextField";
-import { IOption } from "../inputs/inputHelpers";
+import React, { ChangeEvent } from 'react';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
+import { TextFieldProps } from '@material-ui/core/TextField/TextField';
+import { IOption } from '../inputs/inputHelpers';
 
 export type ComboValue = string | IOption | (string | IOption)[] | null;
 
@@ -14,25 +14,25 @@ interface IProps {
   showError?: boolean;
   helperText?: string;
   name: string;
-  variant?: "outlined" | "filled" | "standard";
+  variant?: 'outlined' | 'filled' | 'standard';
   multiple?: any;
-  size?: "medium" | "small";
+  size?: 'medium' | 'small';
   onChange: (value: ComboValue) => void;
   onBlur?: () => void;
   textFieldProps?: TextFieldProps;
-  margin?: "none" | "dense" | "normal";
+  margin?: 'none' | 'dense' | 'normal';
 }
 
 type OptionalBool = boolean | undefined;
 type BaseProps = AutocompleteProps<
-  string | IOption,
-  OptionalBool,
-  OptionalBool,
-  OptionalBool
+string | IOption,
+OptionalBool,
+OptionalBool,
+OptionalBool
 >;
 type AutoProps = Omit<
-  BaseProps,
-  "variant" | "multiple" | "renderInput" | "onChange" | "value"
+BaseProps,
+'variant' | 'multiple' | 'renderInput' | 'onChange' | 'value'
 >;
 export type PComboProps = IProps & AutoProps;
 const PComboInput = (props: PComboProps) => {
@@ -56,14 +56,14 @@ const PComboInput = (props: PComboProps) => {
   }
 
   function getOptionLabel(o: string | IOption): string {
-    if (typeof o === "string") {
+    if (typeof o === 'string') {
       return o;
     }
-    if (typeof o === "object") {
+    if (typeof o === 'object') {
       const obj = o as IOption;
       return obj?.name;
     }
-    return "";
+    return '';
   }
   return (
     <Autocomplete

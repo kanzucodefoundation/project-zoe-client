@@ -7,13 +7,13 @@ import TableRow from '@material-ui/core/TableRow';
 import grey from '@material-ui/core/colors/grey';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import { getSorting, Order, stableSort } from "./helpers";
-import XToolbar from "./XToolbar";
-import { useTableStyles } from "./tableStyles";
-import XTableHead, { XHeadCell } from "./XTableHead";
-import Loading from "../Loading";
-import { parseXpath } from "../../utils/jsonHelpers";
 import Alert from '@material-ui/lab/Alert';
+import { getSorting, Order, stableSort } from './helpers';
+import XToolbar from './XToolbar';
+import { useTableStyles } from './tableStyles';
+import XTableHead, { XHeadCell } from './XTableHead';
+import Loading from '../Loading';
+import { parseXpath } from '../../utils/jsonHelpers';
 
 interface XTableProps {
   initialSortBy?: string
@@ -33,7 +33,9 @@ interface XTableProps {
 }
 
 export default function XTable(props: XTableProps) {
-  const { primaryKey = 'id', usePagination = true, title, headCells, data, useCheckbox, initialSortBy = 'id', initialOrder = 'asc', initialRowsPerPage = 10, headerSize = 'medium', bodySize = 'medium' } = props
+  const {
+    primaryKey = 'id', usePagination = true, title, headCells, data, useCheckbox, initialSortBy = 'id', initialOrder = 'asc', initialRowsPerPage = 10, headerSize = 'medium', bodySize = 'medium',
+  } = props;
   const classes = useTableStyles();
   const [order, setOrder] = React.useState<Order>(initialOrder);
   const [orderBy, setOrderBy] = React.useState<string>(initialSortBy);
@@ -49,7 +51,7 @@ export default function XTable(props: XTableProps) {
 
   function handleSelectAllClick(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.checked) {
-      const newSelected = data.map(n => n.name);
+      const newSelected = data.map((n) => n.name);
       setSelected(newSelected);
     } else {
       setSelected([]);
@@ -58,11 +60,9 @@ export default function XTable(props: XTableProps) {
 
   function handleClick(event: React.MouseEvent<unknown>, id: string) {
     if (useCheckbox) {
-      handleCheckboxSelection(event, id)
-    } else {
-      if (props.handleSelection) {
-        props.handleSelection(id);
-      }
+      handleCheckboxSelection(event, id);
+    } else if (props.handleSelection) {
+      props.handleSelection(id);
     }
   }
 
@@ -97,14 +97,13 @@ export default function XTable(props: XTableProps) {
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
-
-  const isEven = (num: number) => num % 2 !== 0
+  const isEven = (num: number) => num % 2 !== 0;
   return (
     <div className={classes.root}>
       <Paper className={classes.paper} elevation={0}>
         {
-          title &&
-          <XToolbar numSelected={selected.length} title={title} onFilterToggle={props.onFilterToggle} />
+          title
+          && <XToolbar numSelected={selected.length} title={title} onFilterToggle={props.onFilterToggle} />
         }
 
         <div className={classes.tableWrapper}>
@@ -125,18 +124,18 @@ export default function XTable(props: XTableProps) {
               rowCount={data.length}
             />
             {
-              props.loading ?
-                <TableBody>
+              props.loading
+                ? <TableBody>
                   <TableRow style={{ height: 49 * emptyRows }}>
                     <TableCell colSpan={headCells.length}>
                       <Loading />
                     </TableCell>
                   </TableRow>
-                </TableBody> :
-                <TableBody>
+                </TableBody>
+                : <TableBody>
                   {
-                    data.length > 0 ?
-                      stableSort(data, getSorting(order, orderBy))
+                    data.length > 0
+                      ? stableSort(data, getSorting(order, orderBy))
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row: any, index: number) => {
                           const isItemSelected = isSelected(row[primaryKey]);
@@ -144,7 +143,7 @@ export default function XTable(props: XTableProps) {
                           return (
                             <TableRow
                               hover
-                              onClick={event => handleClick(event, row[primaryKey])}
+                              onClick={(event) => handleClick(event, row[primaryKey])}
                               role="checkbox"
                               aria-checked={isItemSelected}
                               tabIndex={-1}
@@ -153,8 +152,8 @@ export default function XTable(props: XTableProps) {
                               style={{ backgroundColor: isEven(index) ? 'white' : grey[50] }}
                             >
                               {
-                                useCheckbox &&
-                                <TableCell padding="checkbox" size={bodySize}>
+                                useCheckbox
+                                && <TableCell padding="checkbox" size={bodySize}>
                                   <Checkbox
                                     checked={isItemSelected}
                                     inputProps={{ 'aria-labelledby': labelId }}
@@ -162,7 +161,7 @@ export default function XTable(props: XTableProps) {
                                 </TableCell>
                               }
                               {
-                                headCells.map(it => (
+                                headCells.map((it) => (
                                   <TableCell
                                     size={bodySize}
                                     key={it.name}
@@ -175,8 +174,8 @@ export default function XTable(props: XTableProps) {
                               }
                             </TableRow>
                           );
-                        }) :
-                      <TableRow style={{ height: 49 * 2 }}>
+                        })
+                      : <TableRow style={{ height: 49 * 2 }}>
                         <TableCell colSpan={headCells.length}>
                           <Alert severity="warning">No records to display</Alert>
                         </TableCell>
@@ -195,7 +194,6 @@ export default function XTable(props: XTableProps) {
         {
           usePagination && <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
-            component="div"
             count={data.length}
             rowsPerPage={rowsPerPage}
             page={page}
@@ -206,6 +204,7 @@ export default function XTable(props: XTableProps) {
               'aria-label': 'next page',
             }}
             onChangePage={handleChangePage}
+            onPageChange={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
         }

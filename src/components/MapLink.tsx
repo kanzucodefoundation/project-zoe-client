@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface IProps {
   value: string;
@@ -6,11 +6,11 @@ interface IProps {
 }
 const MapLink = ({ value, title }: IProps) => {
   const link = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    title
+    title,
   )}&query_place_id=${value}`;
   return (
     <a
-      style={{ textDecoration: "none" }}
+      style={{ textDecoration: 'none' }}
       href={link}
       target="_blank"
       rel="noopener noreferrer"

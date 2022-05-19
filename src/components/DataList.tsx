@@ -1,20 +1,20 @@
-import React, { Fragment } from "react";
-import { useTheme } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import Divider from "@material-ui/core/Divider";
-import Table from "@material-ui/core/Table";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import TableBody from "@material-ui/core/TableBody";
-import { XHeadCell } from "./table/XTableHead";
-import IconButton from "@material-ui/core/IconButton";
-import EditIcon from "@material-ui/icons/Edit";
-import VisibilityIcon from "@material-ui/icons/Visibility";
+import React, { Fragment } from 'react';
+import { useTheme } from '@material-ui/core';
+import useMediaQuery from '@material-ui/core/useMediaQuery/useMediaQuery';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TableBody from '@material-ui/core/TableBody';
+import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@material-ui/icons/Edit';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import { XHeadCell } from './table/XTableHead';
 
 interface IProps {
   data: any[];
@@ -32,7 +32,7 @@ const DataList = ({
   onViewClick,
 }: IProps) => {
   const theme = useTheme();
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <>
       {isSmall ? (
@@ -64,7 +64,7 @@ const DataList = ({
                       <VisibilityIcon />
                     </IconButton>
                   )}
-                  {onEditClick && row.role !== "RoleAdmin" && (
+                  {onEditClick && row.role !== 'RoleAdmin' && (
                     <IconButton
                       onClick={() => onEditClick && onEditClick(row)}
                       size="medium"
@@ -88,7 +88,7 @@ const DataList = ({
               {columns.map((it) => (
                 <TableCell
                   key={it.name}
-                  align={it.numeric ? "right" : "left"}
+                  align={it.numeric ? 'right' : 'left'}
                   component="th"
                   {...it.cellProps}
                 >
@@ -113,7 +113,7 @@ const DataList = ({
                 {columns.map((it) => (
                   <TableCell
                     key={it.name}
-                    align={it.numeric ? "right" : "left"}
+                    align={it.numeric ? 'right' : 'left'}
                     {...it.cellProps}
                   >
                     {it.render ? it.render(row[it.name], row) : row[it.name]}
@@ -134,7 +134,7 @@ const DataList = ({
                 )}
                 {onEditClick && (
                   <TableCell align="center">
-                    {row.role !== "RoleAdmin" && (
+                    {row.role !== 'RoleAdmin' && (
                       <IconButton
                         size="medium"
                         color="primary"

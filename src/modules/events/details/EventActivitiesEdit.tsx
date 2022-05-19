@@ -1,28 +1,26 @@
-import React, { useState } from "react";
-import { remoteRoutes } from "../../../data/constants";
-import Toast from "../../../utils/Toast";
-import Grid from "@material-ui/core/Grid";
-import { del } from "../../../utils/ajax";
-import XForm from "../../../components/forms/XForm";
-import { makeStyles, Theme, createStyles } from "@material-ui/core";
-import { FormikHelpers } from "formik";
-import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import XTextInput from "../../../components/inputs/XTextInput";
+import React, { useState } from 'react';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles, Theme, createStyles } from '@material-ui/core';
+import { FormikHelpers } from 'formik';
+import { remoteRoutes } from '../../../data/constants';
+import Toast from '../../../utils/Toast';
+import { del } from '../../../utils/ajax';
+import XForm from '../../../components/forms/XForm';
+import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
+import XTextInput from '../../../components/inputs/XTextInput';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-      maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
-    },
-    fab: {
-      position: "absolute",
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 interface IProps {
   data: any;
@@ -32,7 +30,9 @@ interface IProps {
   onCancel?: () => any;
 }
 
-function EventActivitiesEditor({ data, done, onDeleted, onCancel }: IProps) {
+function EventActivitiesEditor({
+  data, done, onDeleted, onCancel,
+}: IProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [editActivitiy, setEditingActivity] = React.useState<boolean>(false);
 
@@ -56,13 +56,13 @@ function EventActivitiesEditor({ data, done, onDeleted, onCancel }: IProps) {
     del(
       `${remoteRoutes.eventsActivity}/${data.id}`,
       (dt) => {
-        Toast.success("Operation succeeded");
+        Toast.success('Operation succeeded');
         onDeleted(data);
       },
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }
 

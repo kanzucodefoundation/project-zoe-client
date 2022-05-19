@@ -6,16 +6,16 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-} from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-import { remoteRoutes } from "../../../data/constants";
-import { del, post, search } from "../../../utils/ajax";
-import { Alert } from "@material-ui/lab";
-import PersonAvatar from "../../../components/PersonAvatar";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import CancelIcon from "@material-ui/icons/Cancel";
-import Toast from "../../../utils/Toast";
-import { useHistory } from "react-router";
+} from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Alert } from '@material-ui/lab';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CancelIcon from '@material-ui/icons/Cancel';
+import { useHistory } from 'react-router';
+import { remoteRoutes } from '../../../data/constants';
+import { del, post, search } from '../../../utils/ajax';
+import PersonAvatar from '../../../components/PersonAvatar';
+import Toast from '../../../utils/Toast';
 
 const MemberRequests = (props: any) => {
   const history = useHistory();
@@ -24,7 +24,7 @@ const MemberRequests = (props: any) => {
 
   useEffect(() => {
     let filter = {};
-    if (props.group.categoryId === "Location") {
+    if (props.group.categoryId === 'Location') {
       setIsLocation(true);
       filter = { parentId: props.group.id };
     } else {
@@ -39,10 +39,10 @@ const MemberRequests = (props: any) => {
     const toSave = {
       groupId: props.group.id,
       members: [dt.contactId],
-      role: "Member",
+      role: 'Member',
     };
     post(`${remoteRoutes.groupsMembership}`, toSave, (resp) => {
-      Toast.info("USER REQUEST APPROVED");
+      Toast.info('USER REQUEST APPROVED');
       del(`${remoteRoutes.groupsRequest}/${dt.id}`, (resp) => {
         setTimeout(() => history.go(0), 3000);
       });
@@ -51,7 +51,7 @@ const MemberRequests = (props: any) => {
 
   function handleDelete(dt: any) {
     del(`${remoteRoutes.groupsRequest}/${dt}`, (resp) => {
-      Toast.info("User Request Denied");
+      Toast.info('User Request Denied');
       setTimeout(() => history.go(0), 3000);
     });
   }
@@ -64,13 +64,12 @@ const MemberRequests = (props: any) => {
           <Box>
             {data.length === 0 ? (
               <ListItem>
-                <Alert severity="info" style={{ width: "100%" }}>
+                <Alert severity="info" style={{ width: '100%' }}>
                   No Pending Memberships
                 </Alert>
               </ListItem>
             ) : (
-              data.map((mbr) => {
-                return (
+              data.map((mbr) => (
                   <ListItem key={mbr.id}>
                     <ListItemAvatar>
                       <PersonAvatar data={mbr.contact.avatar} />
@@ -98,8 +97,7 @@ const MemberRequests = (props: any) => {
                       </>
                     )}
                   </ListItem>
-                );
-              })
+              ))
             )}
           </Box>
         </Box>

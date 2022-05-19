@@ -1,40 +1,38 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import { IGroupMembership } from "../types";
-import { search } from "../../../utils/ajax";
-import { remoteRoutes } from "../../../data/constants";
-import PersonAvatar from "../../../components/PersonAvatar";
-import { Grid } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-import Divider from "@material-ui/core/Divider";
-import { Alert } from "@material-ui/lab";
-import Loading from "../../../components/Loading";
-import EditDialog from "../../../components/EditDialog";
-import MembersEditor from "./MembersEditor";
-import MemberEditor from "./MemberEditor";
-import { useSelector } from "react-redux";
-import { IState } from "../../../data/types";
+import React, { useCallback, useEffect, useState } from 'react';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import { Grid } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import Divider from '@material-ui/core/Divider';
+import { Alert } from '@material-ui/lab';
+import { useSelector } from 'react-redux';
+import { IGroupMembership } from '../types';
+import { search } from '../../../utils/ajax';
+import { remoteRoutes } from '../../../data/constants';
+import PersonAvatar from '../../../components/PersonAvatar';
+import Loading from '../../../components/Loading';
+import EditDialog from '../../../components/EditDialog';
+import MembersEditor from './MembersEditor';
+import MemberEditor from './MemberEditor';
+import { IState } from '../../../data/types';
 
 interface IProps {
   groupId: number;
   isLeader: boolean;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-      maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
+}));
 
 const MembersList = ({ groupId, isLeader }: IProps) => {
   const classes = useStyles();
@@ -45,11 +43,11 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
 
   const fetchMembers = useCallback(() => {
     setLoading(true);
-    console.log("fetchMembers", groupId);
+    console.log('fetchMembers', groupId);
     search(
       remoteRoutes.groupsMembership,
       {
-        groupId: groupId,
+        groupId,
       },
       (data) => {
         setData(data);
@@ -57,7 +55,7 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, [groupId]);
 
@@ -81,7 +79,7 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
     setSelected(null);
     const newData = data.map((it: any) => {
       if (it.id === mbr.id) return mbr;
-      else return it;
+      return it;
     });
     setData(newData);
   };
@@ -123,13 +121,12 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
         <List dense className={classes.root}>
           {data.length === 0 ? (
             <ListItem button onClick={handleAddNew}>
-              <Alert severity="info" style={{ width: "100%" }}>
+              <Alert severity="info" style={{ width: '100%' }}>
                 No members click to add new
               </Alert>
             </ListItem>
           ) : (
-            data.map((mbr) => {
-              return (
+            data.map((mbr) => (
                 <ListItem key={mbr.id} button onClick={handleSelected(mbr)}>
                   <ListItemAvatar>
                     <PersonAvatar data={mbr.contact} />
@@ -139,8 +136,7 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
                     secondary={`Role: ${mbr.role}`}
                   />
                 </ListItem>
-              );
-            })
+            ))
           )}
         </List>
       </Grid>

@@ -1,79 +1,77 @@
-import Box from "@material-ui/core/Box/Box";
-import React, { Fragment, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import Hidden from "@material-ui/core/Hidden/Hidden";
-import XTable from "../../components/table/XTable";
-import { XHeadCell } from "../../components/table/XTableHead";
-import { hasValue } from "../../components/inputs/inputHelpers";
-import { useHistory } from "react-router";
-import List from "@material-ui/core/List/List";
-import { IGroupReport } from "./types";
-import Typography from "@material-ui/core/Typography/Typography";
-import ListItem from "@material-ui/core/ListItem/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar/ListItemAvatar";
-import { Divider, ListItemText } from "@material-ui/core";
-import { IMobileRow } from "../../components/DataList";
-import GroupLink from "../../components/GroupLink";
-import ListHeader from "../../components/ListHeader";
-import Loading from "../../components/Loading";
-import PersonAvatar from "../../components/PersonAvatar";
+import Box from '@material-ui/core/Box/Box';
+import React, { Fragment, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Hidden from '@material-ui/core/Hidden/Hidden';
+import { useHistory } from 'react-router';
+import List from '@material-ui/core/List/List';
+import Typography from '@material-ui/core/Typography/Typography';
+import ListItem from '@material-ui/core/ListItem/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar/ListItemAvatar';
+import { Divider, ListItemText } from '@material-ui/core';
+import {
+  addDays, format, lastDayOfWeek, startOfWeek,
+} from 'date-fns';
+import XTable from '../../components/table/XTable';
+import { XHeadCell } from '../../components/table/XTableHead';
+import { hasValue } from '../../components/inputs/inputHelpers';
+import { IGroupReport } from './types';
+import { IMobileRow } from '../../components/DataList';
+import GroupLink from '../../components/GroupLink';
+import ListHeader from '../../components/ListHeader';
+import Loading from '../../components/Loading';
+import PersonAvatar from '../../components/PersonAvatar';
 import {
   IGroupReportState,
   unsubEventsFetchAsync,
-} from "../../data/events/groupReportsReducer";
-import { localRoutes } from "../../data/constants";
-import { addDays, format, lastDayOfWeek, startOfWeek } from "date-fns";
-import UnsubEventsFilter from "./UnsubEventsFilter";
+} from '../../data/events/groupReportsReducer';
+import { localRoutes } from '../../data/constants';
+import UnsubEventsFilter from './UnsubEventsFilter';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    filterPaper: {
-      borderRadius: 0,
-      padding: theme.spacing(2),
-    },
-    fab: {
-      position: "absolute",
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    flexGrow: 1,
+  },
+  filterPaper: {
+    borderRadius: 0,
+    padding: theme.spacing(2),
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 const headCells: XHeadCell[] = [
   {
-    name: "group",
-    label: "Group",
-    render: (value) =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : "-na-",
+    name: 'group',
+    label: 'Group',
+    render: (value) => (hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-'),
   },
 
   {
-    name: "group.category",
-    label: "Group Category",
+    name: 'group.category',
+    label: 'Group Category',
   },
   {
-    name: "eventCategory",
-    label: "Report Type",
+    name: 'eventCategory',
+    label: 'Report Type',
   },
   {
-    name: "groupLeader",
-    label: "Leader",
+    name: 'groupLeader',
+    label: 'Leader',
   },
   {
-    name: "info",
-    label: "Missing Report",
+    name: 'info',
+    label: 'Missing Report',
   },
 ];
 
-const toMobileRow = (data: IGroupReport): IMobileRow => {
-  return {
-    avatar: <PersonAvatar data={data} />,
-    primary: data.group.name,
-    secondary: (
+const toMobileRow = (data: IGroupReport): IMobileRow => ({
+  avatar: <PersonAvatar data={data} />,
+  primary: data.group.name,
+  secondary: (
       <>
         <Typography variant="caption" color="textSecondary" display="block">
           {data.info}
@@ -82,9 +80,8 @@ const toMobileRow = (data: IGroupReport): IMobileRow => {
           Leader: {data.groupLeader}
         </Typography>
       </>
-    ),
-  };
-};
+  ),
+});
 const UnsubmittedReports = () => {
   const today = new Date();
   const lastWeekDate = addDays(today, -7);
@@ -93,12 +90,12 @@ const UnsubmittedReports = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { data, loading }: IGroupReportState = useSelector(
-    (state: any) => state.groupReports
+    (state: any) => state.groupReports,
   );
   const [filter, setFilter] = useState<any>({
     limit: 5000,
-    from: `${format(new Date(startPeriod), "PP")}`,
-    to: `${format(new Date(endPeriod), "PP")}`,
+    from: `${format(new Date(startPeriod), 'PP')}`,
+    to: `${format(new Date(endPeriod), 'PP')}`,
   });
   const classes = useStyles();
 

@@ -1,7 +1,7 @@
-import * as yup from "yup";
+import * as yup from 'yup';
 
-export const invalidInputs = [null, "null", "undefined", undefined, ""];
-export const reqMsg = "Input is required";
+export const invalidInputs = [null, 'null', 'undefined', undefined, ''];
+export const reqMsg = 'Input is required';
 
 export const reqString = yup
   .string()
@@ -30,14 +30,14 @@ export const validateString = yup.string().notOneOf(invalidInputs, reqMsg);
 
 export const reqEmail = yup
   .string()
-  .email("Must be a valid email")
-  .required("Email is required");
+  .email('Must be a valid email')
+  .required('Email is required');
 
 export const validateEmail = yup
   .string()
   .nullable()
   .notRequired()
-  .email("Must be a valid email");
+  .email('Must be a valid email');
 
 export const reqDate = yup
   .date()

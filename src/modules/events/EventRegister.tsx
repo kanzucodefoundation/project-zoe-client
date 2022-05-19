@@ -12,13 +12,13 @@ interface IProps {
 }
 
 const EventRegisterButton = ({ id }: IProps) => {
-  //Getting contactId of loggedIn User
+  // Getting contactId of loggedIn User
   const user = useSelector((state: IState) => state.core.user);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [register, setRegister] = useState<boolean>(false);
 
-  //Function to handle submissions
+  // Function to handle submissions
   const handleSubmit = () => {
     const toSave = {
       contactId: user.contactId,
@@ -30,14 +30,14 @@ const EventRegisterButton = ({ id }: IProps) => {
     });
   };
 
-  //Fetch data
+  // Fetch data
   useEffect(() => {
     setLoading(true);
     get(
       `${remoteRoutes.eventsRegistration}/?contactId=${user.contactId}`,
       (data) => {
         for (let i = 0; i < data.length; i++) {
-          //check if the event was already registered to
+          // check if the event was already registered to
           if (data[i].event.id === id) {
             setRegister(data[i].event.id);
           }
@@ -46,7 +46,7 @@ const EventRegisterButton = ({ id }: IProps) => {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, [user.contactId]);
   return hasNoValue(register) ? (

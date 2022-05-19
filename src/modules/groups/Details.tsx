@@ -1,28 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { IGroup } from "./types";
-import EditDialog from "../../components/EditDialog";
-import GroupEditor from "./editors/GroupEditor";
-import Box from "@material-ui/core/Box";
-import Avatar from "@material-ui/core/Avatar";
-import PinDropIcon from "@material-ui/icons/PinDrop";
-import PeopleIcon from "@material-ui/icons/People";
-import Typography from "@material-ui/core/Typography";
-import { createStyles, makeStyles } from "@material-ui/core/styles";
-import { Button, ButtonGroup, Hidden, Theme } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import Divider from "@material-ui/core/Divider";
-import EditIcon from "@material-ui/icons/Edit";
-import EventIcon from "@material-ui/icons/Event";
-import MembersList from "./members/MembersList";
-import { grey } from "@material-ui/core/colors";
-import { get } from "../../utils/ajax";
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import Box from '@material-ui/core/Box';
+import Avatar from '@material-ui/core/Avatar';
+import PinDropIcon from '@material-ui/icons/PinDrop';
+import PeopleIcon from '@material-ui/icons/People';
+import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import {
-  appPermissions,
-  localRoutes,
-  remoteRoutes,
-} from "../../data/constants";
-import Loading from "../../components/Loading";
+  Button, ButtonGroup, Hidden, Theme,
+} from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Divider from '@material-ui/core/Divider';
+import EditIcon from '@material-ui/icons/Edit';
+import EventIcon from '@material-ui/icons/Event';
+import { grey } from '@material-ui/core/colors';
 import {
   Alert,
   SpeedDial,
@@ -30,6 +21,17 @@ import {
   SpeedDialIcon,
 } from '@material-ui/lab';
 import { useHistory, useParams } from 'react-router';
+import MembersList from './members/MembersList';
+import { get } from '../../utils/ajax';
+import {
+  appPermissions,
+  localRoutes,
+  remoteRoutes,
+} from '../../data/constants';
+import Loading from '../../components/Loading';
+import GroupEditor from './editors/GroupEditor';
+import EditDialog from '../../components/EditDialog';
+import { IGroup } from './types';
 import Layout from '../../components/layout/Layout';
 import MapLink from '../../components/MapLink';
 import { IState } from '../../data/types';
@@ -40,41 +42,39 @@ import XBreadCrumbs from '../../components/XBreadCrumbs';
 import GroupEventsList from './GroupEventsList';
 import EventForm from '../events/forms/EventForm';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-      padding: theme.spacing(2),
-      [theme.breakpoints.up('sm')]: {
-        padding: theme.spacing(1),
-      },
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+    padding: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      padding: theme.spacing(1),
     },
-    largeIcon: {
-      width: theme.spacing(6),
-      height: theme.spacing(6),
-    },
+  },
+  largeIcon: {
+    width: theme.spacing(6),
+    height: theme.spacing(6),
+  },
 
-    rootPaper: {
-      padding: theme.spacing(2),
-      borderRadius: 0,
+  rootPaper: {
+    padding: theme.spacing(2),
+    borderRadius: 0,
+  },
+  description: {
+    minHeight: 70,
+    borderRadius: 5,
+    backgroundColor: grey[100],
+  },
+  speedDial: {
+    position: 'fixed',
+    '&.MuiSpeedDial-directionDown': {
+      top: theme.spacing(15),
+      right: theme.spacing(4),
     },
-    description: {
-      minHeight: 70,
-      borderRadius: 5,
-      backgroundColor: grey[100],
-    },
-    speedDial: {
-      position: 'fixed',
-      '&.MuiSpeedDial-directionDown': {
-        top: theme.spacing(15),
-        right: theme.spacing(4),
-      },
-    },
-  })
-);
+  },
+}));
 
 export default function Details() {
-  let { groupId } = useParams<any>();
+  const { groupId } = useParams<any>();
   const history = useHistory();
   const [dialog, setDialog] = useState<boolean>(false);
   const [event, setNewEvent] = useState<boolean>(false);
@@ -97,7 +97,7 @@ export default function Details() {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, [groupId]);
 
@@ -160,14 +160,15 @@ export default function Details() {
     setOpen(!open);
   };
 
-  if (loading)
+  if (loading) {
     return (
       <Layout>
         <Loading />
       </Layout>
     );
+  }
 
-  if (!data)
+  if (!data) {
     return (
       <Layout>
         <Box
@@ -180,6 +181,7 @@ export default function Details() {
         </Box>
       </Layout>
     );
+  }
 
   function handleDeleted() {
     history.push(localRoutes.groups);
@@ -236,12 +238,12 @@ export default function Details() {
             paths={[
               {
                 path: localRoutes.home,
-                label: "Dashboard",
+                label: 'Dashboard',
                 auth: hasAnyRole(profile, [appPermissions.roleDashboard]),
               },
               {
                 path: localRoutes.groups,
-                label: "Groups",
+                label: 'Groups',
                 auth: hasAnyRole(profile, [
                   appPermissions.roleGroupEdit,
                   appPermissions.roleGroupView,
@@ -289,7 +291,7 @@ export default function Details() {
                             Create Report&nbsp;&nbsp;
                           </Button>
                         ) : undefined}
-                    
+
                       </ButtonGroup>
                     </Box>
                   </Hidden>

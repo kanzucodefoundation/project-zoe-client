@@ -1,17 +1,17 @@
-import React from "react";
-import * as yup from "yup";
-import { reqString } from "../../../../data/validations";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../../../components/forms/XForm";
+import React from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { reqString } from '../../../../data/validations';
+import XForm from '../../../../components/forms/XForm';
 
-import { remoteRoutes } from "../../../../data/constants";
-import { post, put } from "../../../../utils/ajax";
-import Toast from "../../../../utils/Toast";
-import { GroupRole, IGroup } from "../../../groups/types";
-import XSelectInput from "../../../../components/inputs/XSelectInput";
-import { toOptions } from "../../../../components/inputs/inputHelpers";
-import { enumToArray } from "../../../../utils/stringHelpers";
+import { remoteRoutes } from '../../../../data/constants';
+import { post, put } from '../../../../utils/ajax';
+import Toast from '../../../../utils/Toast';
+import { GroupRole, IGroup } from '../../../groups/types';
+import XSelectInput from '../../../../components/inputs/XSelectInput';
+import { toOptions } from '../../../../components/inputs/inputHelpers';
+import { enumToArray } from '../../../../utils/stringHelpers';
 
 interface IProps {
   data?: Partial<IGroup>;
@@ -26,11 +26,13 @@ const schema = yup.object().shape({
   tag: reqString,
 });
 
-const GroupEditor = ({ data, isNew, onGroupAdded, onGroupEdited }: IProps) => {
+const GroupEditor = ({
+  data, isNew, onGroupAdded, onGroupEdited,
+}: IProps) => {
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: IGroup = {
-      categoryId: "",
-      id: "0",
+      categoryId: '',
+      id: '0',
       ...data,
       name: values.name,
       details: values.description,
@@ -43,28 +45,28 @@ const GroupEditor = ({ data, isNew, onGroupAdded, onGroupEdited }: IProps) => {
         remoteRoutes.groups,
         toSave,
         (data) => {
-          Toast.info("Group created");
+          Toast.info('Group created');
           actions.resetForm();
           onGroupAdded && onGroupAdded(data);
         },
         undefined,
         () => {
           actions.setSubmitting(false);
-        }
+        },
       );
     } else {
       put(
         remoteRoutes.groups,
         toSave,
         (data) => {
-          Toast.info("Group updated");
+          Toast.info('Group updated');
           actions.resetForm();
           onGroupEdited && onGroupEdited(data);
         },
         undefined,
         () => {
           actions.setSubmitting(false);
-        }
+        },
       );
     }
   }

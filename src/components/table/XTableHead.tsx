@@ -1,13 +1,13 @@
-import React from "react";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import Typography from "@material-ui/core/Typography";
-import TableRow from "@material-ui/core/TableRow";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import { Order } from "./helpers";
-import { useTableStyles } from "./tableStyles";
-import { Size } from "@material-ui/core/Table";
+import React from 'react';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import Typography from '@material-ui/core/Typography';
+import TableRow from '@material-ui/core/TableRow';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import { Size } from '@material-ui/core/Table';
+import { Order } from './helpers';
+import { useTableStyles } from './tableStyles';
 
 export interface XTableHeadProps {
   classes: ReturnType<typeof useTableStyles>;
@@ -26,36 +26,38 @@ export interface XTableHeadProps {
 }
 
 export interface XHeadCell {
-    name: any
-    label: string
-    numeric?: boolean
-    cellProps?: any
-    render?: (data: any, rec: any) => any
+  name: any
+  label: string
+  numeric?: boolean
+  cellProps?: any
+  render?: (data: any, rec: any) => any
 
 }
 
 function XTableHead(props: XTableHeadProps) {
-    const {headCells, useCheckbox, classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort} = props;
-    const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
-        onRequestSort(event, property);
-    };
-    return (
+  const {
+    headCells, useCheckbox, classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort,
+  } = props;
+  const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
+    onRequestSort(event, property);
+  };
+  return (
         <TableHead>
             <TableRow className={classes.tableHead}>
                 {
-                    useCheckbox &&
-                    <TableCell padding="checkbox" size={props.headerSize}>
+                    useCheckbox
+                    && <TableCell padding="checkbox" size={props.headerSize}>
                         <Checkbox
 
                             indeterminate={numSelected > 0 && numSelected < rowCount}
                             checked={numSelected === rowCount}
                             onChange={onSelectAllClick}
-                            inputProps={{'aria-label': 'select all desserts'}}
+                            inputProps={{ 'aria-label': 'select all desserts' }}
                         />
                     </TableCell>
                 }
 
-                {headCells.map(headCell => (
+                {headCells.map((headCell) => (
                     <TableCell
                         size={props.headerSize}
                         key={headCell.name}
@@ -80,7 +82,7 @@ function XTableHead(props: XTableHeadProps) {
                 ))}
             </TableRow>
         </TableHead>
-    );
+  );
 }
 
-export default XTableHead
+export default XTableHead;

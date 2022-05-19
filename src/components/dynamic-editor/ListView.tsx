@@ -1,46 +1,44 @@
-import React from "react";
-import clsx from "clsx";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { parseXpath } from "../../utils/jsonHelpers";
-import { Box } from "@material-ui/core";
-import EditIconButton, { DeleteIconButton } from "../EditIconButton";
-import Button from "@material-ui/core/Button";
-import AddIcon from "@material-ui/icons/Add";
-import { IColumn } from "./types";
-import Divider from "@material-ui/core/Divider";
-import Typography from "@material-ui/core/Typography";
+import React from 'react';
+import clsx from 'clsx';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
+import { IColumn } from './types';
+import EditIconButton, { DeleteIconButton } from '../EditIconButton';
+import { parseXpath } from '../../utils/jsonHelpers';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: "100%",
-    },
-    row: {
-      marginLeft: 0,
-      paddingLeft: 0,
-      paddingBottom: theme.spacing(2),
-    },
-    col: {
-      marginLeft: 0,
-      paddingLeft: 0,
-      paddingBottom: theme.spacing(1),
-    },
-    label: {
-      margin: 0,
-      paddingLeft: 0,
-      paddingRight: theme.spacing(2),
-      width: "auto",
-    },
-    actions: {
-      margin: 0,
-      paddingLeft: 0,
-      paddingRight: 0,
-    },
-    value: {
-      width: "100%",
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    width: '100%',
+  },
+  row: {
+    marginLeft: 0,
+    paddingLeft: 0,
+    paddingBottom: theme.spacing(2),
+  },
+  col: {
+    marginLeft: 0,
+    paddingLeft: 0,
+    paddingBottom: theme.spacing(1),
+  },
+  label: {
+    margin: 0,
+    paddingLeft: 0,
+    paddingRight: theme.spacing(2),
+    width: 'auto',
+  },
+  actions: {
+    margin: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+  value: {
+    width: '100%',
+  },
+}));
 
 interface IProps {
   data: any[];
@@ -89,8 +87,7 @@ const ListView = (props: IProps) => {
               const primaryKey = row[props.primaryKey];
               return (
                 <tr key={primaryKey} className={classes.row}>
-                  {props.columns.map((col) => {
-                    return (
+                  {props.columns.map((col) => (
                       <td
                         key={col.name}
                         className={clsx(classes.col, classes.label)}
@@ -101,8 +98,7 @@ const ListView = (props: IProps) => {
                             : parseXpath(row, col.name)}
                         </Box>
                       </td>
-                    );
-                  })}
+                  ))}
                   {(props.onEdit || props.onDelete) && (
                     <td className={classes.actions} align="right">
                       <Box display="flex" flexDirection="row-reverse">
@@ -116,8 +112,7 @@ const ListView = (props: IProps) => {
                         {props.onDelete && (
                           <Box>
                             <DeleteIconButton
-                              onClick={() =>
-                                props.onDelete && props.onDelete(row)
+                              onClick={() => props.onDelete && props.onDelete(row)
                               }
                             />
                           </Box>

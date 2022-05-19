@@ -1,15 +1,15 @@
-import { ITag } from "../../modules/settings/tags/types";
-import { Dispatch } from "redux";
-import { search } from "../../utils/ajax";
-import { remoteRoutes } from "../constants";
+import { Dispatch } from 'redux';
+import { ITag } from '../../modules/settings/tags/types';
+import { search } from '../../utils/ajax';
+import { remoteRoutes } from '../constants';
 
 export const tagConstants = {
-  tagsStartLoading: "tagsStartLoading",
-  tagsStopLoading: "tagsStopLoading",
-  tagsCommitAll: "tagsCommitAll",
-  tagsAdd: "tagsAdd",
-  tagsEdit: "tagsEdit",
-  tagsDelete: "tagsDelete",
+  tagsStartLoading: 'tagsStartLoading',
+  tagsStopLoading: 'tagsStopLoading',
+  tagsCommitAll: 'tagsCommitAll',
+  tagsAdd: 'tagsAdd',
+  tagsEdit: 'tagsEdit',
+  tagsDelete: 'tagsDelete',
 };
 
 export interface ITagState {
@@ -19,7 +19,7 @@ export interface ITagState {
 
 const initialState: ITagState = {
   data: [],
-  loading: false
+  loading: false,
 };
 
 export default function reducer(state = initialState, action: any) {
@@ -40,11 +40,11 @@ export default function reducer(state = initialState, action: any) {
     }
     case tagConstants.tagsDelete: {
       const id: string = action.payload;
-      return { ...state, data: [...state.data.filter(it => it.id !== id)] };
+      return { ...state, data: [...state.data.filter((it) => it.id !== id)] };
     }
     case tagConstants.tagsEdit: {
       const dt: ITag = action.payload;
-      const data = state.data.map(it => {
+      const data = state.data.map((it) => {
         if (dt.id === it.id) {
           return dt;
         }
@@ -58,32 +58,30 @@ export default function reducer(state = initialState, action: any) {
   }
 }
 
-export const tagsFetchAsync = (filter: any) => {
-  return (dispatch: Dispatch<any>) => {
-    search(
-      remoteRoutes.tags,
-      filter,
-      (resp: any) => dispatch(tagsCommitFetch(resp)),
-      undefined,
-      () => dispatch(tagsStopLoading())
-    );
-  };
+export const tagsFetchAsync = (filter: any) => (dispatch: Dispatch<any>) => {
+  search(
+    remoteRoutes.tags,
+    filter,
+    (resp: any) => dispatch(tagsCommitFetch(resp)),
+    undefined,
+    () => dispatch(tagsStopLoading()),
+  );
 };
 export const tagsCommitFetch = (data: ITag[]) => ({
   type: tagConstants.tagsCommitAll,
-  payload: data
+  payload: data,
 });
 export const tagsStartLoading = () => ({ type: tagConstants.tagsStartLoading });
 export const tagsStopLoading = () => ({ type: tagConstants.tagsStopLoading });
 export const tagsAddTag = (data: ITag) => ({
   type: tagConstants.tagsAdd,
-  payload: data
+  payload: data,
 });
 export const tagsEditTag = (data: ITag) => ({
   type: tagConstants.tagsEdit,
-  payload: data
+  payload: data,
 });
 export const tagsDeleteTag = (data: string) => ({
   type: tagConstants.tagsDelete,
-  payload: data
+  payload: data,
 });

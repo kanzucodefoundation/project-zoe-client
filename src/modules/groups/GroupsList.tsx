@@ -1,12 +1,12 @@
-import React from "react";
-import XTreeData from "../../components/tree/XTreeData";
+import React from 'react';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Hidden from '@material-ui/core/Hidden';
+import XTreeData from '../../components/tree/XTreeData';
 
-import { IGroup } from "./types";
-import InfoMessage from "../../components/messages/InfoMessage";
-import Box from "@material-ui/core/Box";
-import Loading from "../../components/Loading";
-import Grid from "@material-ui/core/Grid";
-import Hidden from "@material-ui/core/Hidden";
+import { IGroup } from './types';
+import InfoMessage from '../../components/messages/InfoMessage';
+import Loading from '../../components/Loading';
 
 interface IProps {
   data: IGroup[];

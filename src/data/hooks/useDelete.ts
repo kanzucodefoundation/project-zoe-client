@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { del } from "../../utils/ajax";
-import Toast from "../../utils/Toast";
-import { useDispatch } from "react-redux";
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { del } from '../../utils/ajax';
+import Toast from '../../utils/Toast';
 
 export interface Props {
   url: string;
@@ -19,22 +19,22 @@ export function useDelete<T extends { id: any }>(props: Props) {
     del(
       props.url,
       () => {
-        Toast.success("Operation succeeded");
+        Toast.success('Operation succeeded');
         dispatch({
           type: props.action,
-          payload: props.id
+          payload: props.id,
         });
         props.onDone && props.onDone();
       },
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }
 
   return {
     loading,
-    handleDelete
+    handleDelete,
   };
 }

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import Button from "@material-ui/core/Button";
-import { IContact, renderName } from "../../types";
-import DetailView, { IRec } from "../../../../components/DetailView";
-import { printBirthday } from "../../../../utils/dateHelpers";
-import DataCard from "../../../../components/DataCard";
-import PersonEditor from "../editors/PersonEditor";
-import EditDialog from "../../../../components/EditDialog";
+import React, { useState } from 'react';
+import Button from '@material-ui/core/Button';
+import { IContact, renderName } from '../../types';
+import DetailView, { IRec } from '../../../../components/DetailView';
+import { printBirthday } from '../../../../utils/dateHelpers';
+import DataCard from '../../../../components/DataCard';
+import PersonEditor from '../editors/PersonEditor';
+import EditDialog from '../../../../components/EditDialog';
 
 interface IProps {
   data: IContact;
@@ -15,27 +15,27 @@ export const idFields = (data: IContact): IRec[] => {
   const { person } = data;
   return [
     {
-      label: "Name",
-      value: renderName(person)
+      label: 'Name',
+      value: renderName(person),
     },
     {
-      label: "BirthDay",
-      value: printBirthday(person.dateOfBirth)
+      label: 'BirthDay',
+      value: printBirthday(person.dateOfBirth),
     },
     {
-      label: "Gender",
-      value: person.gender
+      label: 'Gender',
+      value: person.gender,
     },
     {
-      label: "Marital Status",
-      value: person.civilStatus
-    }
+      label: 'Marital Status',
+      value: person.civilStatus,
+    },
   ];
 };
 
 const BasicData = ({ data }: IProps) => {
   const [dialog, setDialog] = useState(false);
-  const { id = "" } = data;
+  const { id = '' } = data;
 
   const handleClick = () => {
     setDialog(true);

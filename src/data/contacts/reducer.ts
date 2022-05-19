@@ -5,34 +5,34 @@ import {
   IIdentification,
   IPerson,
   IPhone,
-} from "../../modules/contacts/types";
+} from '../../modules/contacts/types';
 
 export const crmConstants = {
-  crmFetchAll: "crmFetchAll",
-  crmFetchLoading: "crmFetchLoading",
-  crmFetchOne: "crmFetchOne",
+  crmFetchAll: 'crmFetchAll',
+  crmFetchLoading: 'crmFetchLoading',
+  crmFetchOne: 'crmFetchOne',
 
-  crmAddContact: "crmAddContact",
+  crmAddContact: 'crmAddContact',
 
-  crmEditPerson: "crmEditPerson",
+  crmEditPerson: 'crmEditPerson',
 
-  crmAddEmail: "crmAddEmail",
-  crmEditEmail: "crmEditEmail",
-  crmDeleteEmail: "crmDeleteEmail",
+  crmAddEmail: 'crmAddEmail',
+  crmEditEmail: 'crmEditEmail',
+  crmDeleteEmail: 'crmDeleteEmail',
 
-  crmAddPhone: "crmAddPhone",
-  crmEditPhone: "crmEditPhone",
-  crmDeletePhone: "crmDeletePhone",
+  crmAddPhone: 'crmAddPhone',
+  crmEditPhone: 'crmEditPhone',
+  crmDeletePhone: 'crmDeletePhone',
 
-  crmAddAddress: "crmAddAddress",
-  crmEditAddress: "crmEditAddress",
-  crmDeleteAddress: "crmDeleteAddress",
+  crmAddAddress: 'crmAddAddress',
+  crmEditAddress: 'crmEditAddress',
+  crmDeleteAddress: 'crmDeleteAddress',
 
-  crmAddIdentification: "crmAddIdentification",
-  crmEditIdentification: "crmEditIdentification",
-  crmDeleteIdentification: "crmDeleteIdentification",
+  crmAddIdentification: 'crmAddIdentification',
+  crmEditIdentification: 'crmEditIdentification',
+  crmDeleteIdentification: 'crmDeleteIdentification',
 
-  coreLogout: "CORE_LOGOUT",
+  coreLogout: 'CORE_LOGOUT',
 };
 
 export interface ICrmState {
@@ -111,7 +111,7 @@ export default function reducer(state = initialState, action: any) {
       return state;
     }
     case crmConstants.crmAddPhone: {
-      const phone: IPhone[] = action.payload; //TODO @herbert We expect one email from the server
+      const phone: IPhone[] = action.payload; // TODO @herbert We expect one email from the server
       if (state.selected) {
         const { phones, ...rest } = state.selected;
         const selected: IContact = { ...rest, phones: [...phone] };
@@ -161,9 +161,7 @@ export default function reducer(state = initialState, action: any) {
       const identification: IIdentification = action.payload;
       if (state.selected) {
         const { identifications: oldIdentifications, ...rest } = state.selected;
-        const identifications = oldIdentifications.map((it) =>
-          it.id === identification.id ? identification : it
-        );
+        const identifications = oldIdentifications.map((it) => (it.id === identification.id ? identification : it));
         const selected: IContact = { ...rest, identifications };
         return { ...state, selected };
       }
@@ -199,9 +197,7 @@ export default function reducer(state = initialState, action: any) {
       const address: IAddress = action.payload;
       if (state.selected) {
         const { addresses: oldAddresses, ...rest } = state.selected;
-        const addresses = oldAddresses.map((it) =>
-          it.id === address.id ? address : it
-        );
+        const addresses = oldAddresses.map((it) => (it.id === address.id ? address : it));
         const selected: IContact = { ...rest, addresses };
         return { ...state, selected };
       }

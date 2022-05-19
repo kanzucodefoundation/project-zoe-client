@@ -1,17 +1,15 @@
-import React from "react";
-import { Typography } from "@material-ui/core";
+import React from 'react';
+import { Typography } from '@material-ui/core';
 
 interface IProps {
   children?: React.ReactNode;
   noColon?: boolean;
 }
 
-const DataLabel = (props: IProps) => {
-  return (
+const DataLabel = (props: IProps) => (
     <Typography variant="body2" noWrap component="div">
-      {props.children} {props.noColon ? "" : ":"}
+      {props.children} {props.noColon ? '' : ':'}
     </Typography>
-  );
-};
+);
 
 export default DataLabel;

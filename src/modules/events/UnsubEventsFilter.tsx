@@ -1,10 +1,10 @@
-import * as React from "react";
-import Grid from "@material-ui/core/Grid";
-import { remoteRoutes } from "../../data/constants";
-import { PRemoteSelect } from "../../components/plain-inputs/PRemoteSelect";
-import PDateInput from "../../components/plain-inputs/PDateInput";
-import { useFilter } from "../../utils/fitlerUtilities";
-import { format, lastDayOfWeek, startOfWeek } from "date-fns";
+import * as React from 'react';
+import Grid from '@material-ui/core/Grid';
+import { format, lastDayOfWeek, startOfWeek } from 'date-fns';
+import { remoteRoutes } from '../../data/constants';
+import { PRemoteSelect } from '../../components/plain-inputs/PRemoteSelect';
+import PDateInput from '../../components/plain-inputs/PDateInput';
+import { useFilter } from '../../utils/fitlerUtilities';
 
 interface IProps {
   onFilter: (data: any) => any;
@@ -15,11 +15,11 @@ const startPeriod = startOfWeek(today);
 const endPeriod = lastDayOfWeek(today);
 
 const initialData: any = {
-  query: "",
+  query: '',
   reportFreqList: [],
   categoryIdList: [],
-  from: `${format(new Date(startPeriod), "PP")}`,
-  to: `${format(new Date(endPeriod), "PP")}`,
+  from: `${format(new Date(startPeriod), 'PP')}`,
+  to: `${format(new Date(endPeriod), 'PP')}`,
   limit: 200,
   skip: 0,
 };
@@ -27,7 +27,7 @@ const UnsubEventsFilter = ({ onFilter }: IProps) => {
   const { data, handleComboChange, handleDateChange } = useFilter({
     initialData,
     onFilter,
-    comboFields: ["categoryIdList", "reportFreqList"],
+    comboFields: ['categoryIdList', 'reportFreqList'],
   });
 
   return (
@@ -42,8 +42,8 @@ const UnsubEventsFilter = ({ onFilter }: IProps) => {
             size="small"
             margin="none"
             multiple
-            onChange={(value) => handleComboChange("categoryIdList", value)}
-            value={data["categoryIdList"]}
+            onChange={(value) => handleComboChange('categoryIdList', value)}
+            value={data.categoryIdList}
             searchOnline
           />
         </Grid>
@@ -57,8 +57,8 @@ const UnsubEventsFilter = ({ onFilter }: IProps) => {
             size="small"
             margin="none"
             multiple={true}
-            onChange={(value) => handleComboChange("reportFreqList", value)}
-            value={data["reportFreqList"]}
+            onChange={(value) => handleComboChange('reportFreqList', value)}
+            value={data.reportFreqList}
             searchOnline
           />
         </Grid>
@@ -66,8 +66,8 @@ const UnsubEventsFilter = ({ onFilter }: IProps) => {
         <Grid item xs={12} md>
           <PDateInput
             name="from"
-            value={data["from"]}
-            onChange={(value) => handleDateChange("from", value)}
+            value={data.from}
+            onChange={(value) => handleDateChange('from', value)}
             label="From"
             inputVariant="outlined"
           />
@@ -76,10 +76,10 @@ const UnsubEventsFilter = ({ onFilter }: IProps) => {
         <Grid item xs={12} md>
           <PDateInput
             name="to"
-            value={data["to"]}
+            value={data.to}
             label="To"
             inputVariant="outlined"
-            onChange={(value) => handleDateChange("to", value)}
+            onChange={(value) => handleDateChange('to', value)}
           />
         </Grid>
         <Grid></Grid>

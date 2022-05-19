@@ -1,31 +1,31 @@
-import React from "react";
-import * as yup from "yup";
-import { reqString } from "../../../../data/validations";
+import React from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { useDispatch } from 'react-redux';
+import { getDate, getMonth, parseISO } from 'date-fns';
+import { reqString } from '../../../../data/validations';
 import {
   ageCategories,
   civilStatusCategories,
   genderCategories,
   salutationCategories,
-} from "../../../../data/comboCategories";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../../../components/forms/XForm";
-import XTextInput from "../../../../components/inputs/XTextInput";
+} from '../../../../data/comboCategories';
+import XForm from '../../../../components/forms/XForm';
+import XTextInput from '../../../../components/inputs/XTextInput';
 import {
   hasValue,
   toOptions,
-} from "../../../../components/inputs/inputHelpers";
+} from '../../../../components/inputs/inputHelpers';
 
-import { remoteRoutes } from "../../../../data/constants";
-import { useDispatch } from "react-redux";
-import { crmConstants } from "../../../../data/contacts/reducer";
-import { put } from "../../../../utils/ajax";
-import Toast from "../../../../utils/Toast";
-import XRadioInput from "../../../../components/inputs/XRadioInput";
-import { IPerson } from "../../types";
-import XSelectInput from "../../../../components/inputs/XSelectInput";
-import { getDayList, getMonthsList } from "../../../../utils/dateHelpers";
-import { getDate, getMonth, parseISO } from "date-fns";
+import { remoteRoutes } from '../../../../data/constants';
+import { crmConstants } from '../../../../data/contacts/reducer';
+import { put } from '../../../../utils/ajax';
+import Toast from '../../../../utils/Toast';
+import XRadioInput from '../../../../components/inputs/XRadioInput';
+import { IPerson } from '../../types';
+import XSelectInput from '../../../../components/inputs/XSelectInput';
+import { getDayList, getMonthsList } from '../../../../utils/dateHelpers';
 
 interface IProps {
   data: IPerson;
@@ -66,7 +66,7 @@ const PersonEditor = ({ data, done }: IProps) => {
       remoteRoutes.contactsPeople,
       toSave,
       (data) => {
-        Toast.info("Operation successful");
+        Toast.info('Operation successful');
         actions.resetForm();
         dispatch({
           type: crmConstants.crmEditPerson,
@@ -77,7 +77,7 @@ const PersonEditor = ({ data, done }: IProps) => {
       undefined,
       () => {
         actions.setSubmitting(false);
-      }
+      },
     );
   }
 
@@ -86,12 +86,10 @@ const PersonEditor = ({ data, done }: IProps) => {
   if (hasValue(dateOfBirth)) {
     try {
       const dt: Date = parseISO(`${dateOfBirth}`);
-      initialData["birthDay"] =
-        getDate(dt) < 10 ? "0" + getDate(dt) : `${getDate(dt)}`;
-      initialData["birthMonth"] =
-        getMonth(dt) < 10 ? "0" + (getMonth(dt) + 1) : `${getMonth(dt) + 1}`;
+      initialData.birthDay = getDate(dt) < 10 ? `0${getDate(dt)}` : `${getDate(dt)}`;
+      initialData.birthMonth = getMonth(dt) < 10 ? `0${getMonth(dt) + 1}` : `${getMonth(dt) + 1}`;
     } catch (e) {
-      console.log("invalid date");
+      console.log('invalid date');
     }
   }
 

@@ -1,4 +1,4 @@
-import { parseXpath } from "../../utils/jsonHelpers";
+import { parseXpath } from '../../utils/jsonHelpers';
 
 export const aggregateValue = (data: any[], fieldName: string): number => {
   let sum = 0;
@@ -16,7 +16,7 @@ export type AgField = {
 };
 
 export const aggregateValues = (data: any[], fields: AgField[]): any => {
-  let sum: any = {};
+  const sum: any = {};
   for (const f of fields) {
     sum[f.name] = 0;
   }

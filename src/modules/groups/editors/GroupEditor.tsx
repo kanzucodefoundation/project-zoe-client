@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import * as yup from "yup";
-import { reqObject, reqString } from "../../../data/validations";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../../components/forms/XForm";
-import XTextInput from "../../../components/inputs/XTextInput";
-import { remoteRoutes } from "../../../data/constants";
-import { GroupPrivacy, IGroup } from "../types";
-import XSelectInput from "../../../components/inputs/XSelectInput";
-import { toOptions } from "../../../components/inputs/inputHelpers";
-import { enumToArray } from "../../../utils/stringHelpers";
-import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
-import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { del } from "../../../utils/ajax";
-import Toast from "../../../utils/Toast";
-import { cleanComboValue } from "../../../utils/dataHelpers";
-import { parseGooglePlace } from "../../../components/plain-inputs/PMapsInput";
-import { XMapsInput } from "../../../components/inputs/XMapsInput";
+import React, { useState } from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { reqObject, reqString } from '../../../data/validations';
+import XForm from '../../../components/forms/XForm';
+import XTextInput from '../../../components/inputs/XTextInput';
+import { remoteRoutes } from '../../../data/constants';
+import { GroupPrivacy, IGroup } from '../types';
+import XSelectInput from '../../../components/inputs/XSelectInput';
+import { toOptions } from '../../../components/inputs/inputHelpers';
+import { enumToArray } from '../../../utils/stringHelpers';
+import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
+import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
+import { del } from '../../../utils/ajax';
+import Toast from '../../../utils/Toast';
+import { cleanComboValue } from '../../../utils/dataHelpers';
+import { parseGooglePlace } from '../../../components/plain-inputs/PMapsInput';
+import { XMapsInput } from '../../../components/inputs/XMapsInput';
 
 interface IProps {
   data?: Partial<IGroup>;
@@ -31,17 +31,17 @@ const schema = yup.object().shape({
   name: reqString,
   privacy: reqString,
   details: reqString,
-  //address: reqObject,
-  category: reqObject
+  // address: reqObject,
+  category: reqObject,
 });
 
 const initialData = {
-  name: "",
-  privacy: "",
-  details: "",
+  name: '',
+  privacy: '',
+  details: '',
   address: null,
   category: null,
-  parent: null
+  parent: null,
 };
 
 const GroupEditor = ({
@@ -50,7 +50,7 @@ const GroupEditor = ({
   onCreated,
   onUpdated,
   onDeleted,
-  onCancel
+  onCancel,
 }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -62,7 +62,7 @@ const GroupEditor = ({
       privacy: values.privacy,
       categoryId: cleanComboValue(values.category),
       parentId: cleanComboValue(values.parent),
-      address: parseGooglePlace(values.address)
+      address: parseGooglePlace(values.address),
     };
 
     const submission: ISubmission = {
@@ -78,7 +78,7 @@ const GroupEditor = ({
         }
         actions.resetForm();
         actions.setSubmitting(false);
-      }
+      },
     };
     handleSubmission(submission);
   }
@@ -88,13 +88,13 @@ const GroupEditor = ({
     del(
       `${remoteRoutes.groups}/${data?.id}`,
       () => {
-        Toast.success("Operation succeeded");
+        Toast.success('Operation succeeded');
         onDeleted && onDeleted(data?.id);
       },
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }
 

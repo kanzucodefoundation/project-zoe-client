@@ -1,29 +1,29 @@
-import React from "react";
-import * as yup from "yup";
-import { reqEmail, reqObject, reqString } from "../../data/validations";
+import React from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { useDispatch } from 'react-redux';
+import { Box } from '@material-ui/core';
+import { reqEmail, reqObject, reqString } from '../../data/validations';
 import {
   ageCategories,
   civilStatusCategories,
   genderCategories,
-} from "../../data/comboCategories";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import XForm from "../../components/forms/XForm";
-import XTextInput from "../../components/inputs/XTextInput";
-import XSelectInput from "../../components/inputs/XSelectInput";
-import { toOptions } from "../../components/inputs/inputHelpers";
-import { remoteRoutes } from "../../data/constants";
-import { useDispatch } from "react-redux";
-import { crmConstants } from "../../data/contacts/reducer";
-import { post } from "../../utils/ajax";
-import Toast from "../../utils/Toast";
-import XRadioInput from "../../components/inputs/XRadioInput";
-import { XRemoteSelect } from "../../components/inputs/XRemoteSelect";
-import { Box } from "@material-ui/core";
-import { ICreatePersonDto } from "./types";
-import { getDayList, getMonthsList } from "../../utils/dateHelpers";
-import { XMapsInput } from "../../components/inputs/XMapsInput";
-import { parseGooglePlace } from "../../components/plain-inputs/PMapsInput";
+} from '../../data/comboCategories';
+import XForm from '../../components/forms/XForm';
+import XTextInput from '../../components/inputs/XTextInput';
+import XSelectInput from '../../components/inputs/XSelectInput';
+import { toOptions } from '../../components/inputs/inputHelpers';
+import { remoteRoutes } from '../../data/constants';
+import { crmConstants } from '../../data/contacts/reducer';
+import { post } from '../../utils/ajax';
+import Toast from '../../utils/Toast';
+import XRadioInput from '../../components/inputs/XRadioInput';
+import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
+import { ICreatePersonDto } from './types';
+import { getDayList, getMonthsList } from '../../utils/dateHelpers';
+import { XMapsInput } from '../../components/inputs/XMapsInput';
+import { parseGooglePlace } from '../../components/plain-inputs/PMapsInput';
 
 interface IProps {
   data: any | null;
@@ -47,24 +47,24 @@ const schema = yup.object().shape({
   churchLocation: reqObject,
 
   email: reqEmail,
-  phone: reqString
+  phone: reqString,
 });
 
 const initialValues = {
-  firstName: "",
-  middleName: "",
-  lastName: "",
-  birthDay: "",
-  birthMonth: "",
-  gender: "",
-  civilStatus: "",
-  ageGroup: "",
-  placeOfWork: "",
-  residence: "",
+  firstName: '',
+  middleName: '',
+  lastName: '',
+  birthDay: '',
+  birthMonth: '',
+  gender: '',
+  civilStatus: '',
+  ageGroup: '',
+  placeOfWork: '',
+  residence: '',
   cellGroup: null,
   churchLocation: null,
-  email: "",
-  phone: ""
+  email: '',
+  phone: '',
 };
 
 const NewPersonForm = ({ done }: IProps) => {
@@ -87,25 +87,25 @@ const NewPersonForm = ({ done }: IProps) => {
       churchLocationId: values.churchLocation.id,
 
       email: values.email,
-      phone: values.phone
+      phone: values.phone,
     };
 
     post(
       remoteRoutes.contactsPeople,
       toSave,
-      data => {
-        Toast.info("Operation successful");
+      (data) => {
+        Toast.info('Operation successful');
         actions.resetForm();
         dispatch({
           type: crmConstants.crmAddContact,
-          payload: { ...data }
+          payload: { ...data },
         });
         if (done) done();
       },
       undefined,
       () => {
         actions.setSubmitting(false);
-      }
+      },
     );
   }
 
@@ -211,8 +211,8 @@ const NewPersonForm = ({ done }: IProps) => {
         <Grid item xs={12} md={6}>
           <XRemoteSelect
             remote={remoteRoutes.groupsCombo}
-            filter={{ "categories[]": "Location" }}
-            parser={({ name, id }: any) => ({ name: name, id: id })}
+            filter={{ 'categories[]': 'Location' }}
+            parser={({ name, id }: any) => ({ name, id })}
             name="churchLocation"
             label="Church Location"
             variant="outlined"
@@ -222,8 +222,8 @@ const NewPersonForm = ({ done }: IProps) => {
         <Grid item xs={12} md={6}>
           <XRemoteSelect
             remote={remoteRoutes.groupsCombo}
-            filter={{ "categories[]": "MC" }}
-            parser={({ name, id }: any) => ({ name: name, id: id })}
+            filter={{ 'categories[]': 'MC' }}
+            parser={({ name, id }: any) => ({ name, id })}
             name="cellGroup"
             label="Missional Community"
             variant="outlined"

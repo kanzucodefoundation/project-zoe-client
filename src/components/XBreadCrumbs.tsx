@@ -1,8 +1,8 @@
-import React from "react";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import { Breadcrumbs, Link } from "@material-ui/core";
-import { Link as RouterLink } from "react-router-dom";
-import Typography from "@material-ui/core/Typography";
+import React from 'react';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import { Breadcrumbs, Link } from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 
 interface IProps {
   paths: MyPath[];
@@ -15,8 +15,7 @@ type MyPath = {
   auth?: boolean;
 };
 
-const XBreadCrumbs = ({ paths, title }: IProps) => {
-  return (
+const XBreadCrumbs = ({ paths, title }: IProps) => (
     <Breadcrumbs
       separator={<NavigateNextIcon fontSize="small" />}
       aria-label="breadcrumb"
@@ -39,7 +38,6 @@ const XBreadCrumbs = ({ paths, title }: IProps) => {
         {title}
       </Typography>
     </Breadcrumbs>
-  );
-};
+);
 
 export default XBreadCrumbs;

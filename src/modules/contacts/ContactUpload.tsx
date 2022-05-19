@@ -1,19 +1,19 @@
-import React, { useCallback, useState } from "react";
-import EditDialog from "../../components/EditDialog";
-import { createStyles, makeStyles, Theme } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
-import { downLoad, postFile, triggerDownLoad } from "../../utils/ajax";
-import { remoteRoutes } from "../../data/constants";
-import Grid from "@material-ui/core/Grid";
+import React, { useCallback, useState } from 'react';
+import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 
-import Alert from "@material-ui/lab/Alert";
-import { hasNoValue } from "../../components/inputs/inputHelpers";
-import Button from "@material-ui/core/Button";
-import { DropzoneArea } from "material-ui-dropzone";
-import { getRandomStr } from "../../utils/stringHelpers";
-import Loading from "../../components/Loading";
+import Alert from '@material-ui/lab/Alert';
+import Button from '@material-ui/core/Button';
+import { DropzoneArea } from 'material-ui-dropzone';
+import { hasNoValue } from '../../components/inputs/inputHelpers';
+import { remoteRoutes } from '../../data/constants';
+import { downLoad, postFile, triggerDownLoad } from '../../utils/ajax';
+import EditDialog from '../../components/EditDialog';
+import { getRandomStr } from '../../utils/stringHelpers';
+import Loading from '../../components/Loading';
 
-const fileTypes = [".csv"];
+const fileTypes = ['.csv'];
 
 interface IProps {
   show: boolean;
@@ -21,13 +21,11 @@ interface IProps {
   onDone: () => any;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    zone: {
-      width: 400,
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  zone: {
+    width: 400,
+  },
+}));
 
 const ContactUpload = ({ show, onClose, onDone }: IProps) => {
   const classes = useStyles();
@@ -41,8 +39,8 @@ const ContactUpload = ({ show, onClose, onDone }: IProps) => {
     }
     setFiles(files);
     setLoading(true);
-    let formData = new FormData();
-    formData.append("file", files[0]);
+    const formData = new FormData();
+    formData.append('file', files[0]);
     postFile(
       remoteRoutes.contactsPeopleUpload,
       formData,
@@ -52,7 +50,7 @@ const ContactUpload = ({ show, onClose, onDone }: IProps) => {
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   }, []);
 
