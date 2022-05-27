@@ -7,7 +7,7 @@
     "prettier",
     "prettier-config"
   ],
-  "prettier": "angie-client/prettier-config",
+  "prettier": "project-zoe-client/prettier-config",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com:kanzucodefoundation/project-zoe-client.git"
