@@ -22,7 +22,7 @@ import { remoteRoutes } from '../../../data/constants';
 import { get, del } from '../../../utils/ajax';
 import Toast from '../../../utils/Toast';
 import EditDialog from '../../../components/EditDialog';
-import EventForm from '../../events/forms/EventForm';
+import AddEventForm from "../../events/forms/AddEventForm";
 import { eventsEdit } from '../../../data/events/eventsReducer';
 import { IEvent } from '../../events/types';
 import { IState } from '../../../data/types';
@@ -275,7 +275,7 @@ const MembersCalendar = () => {
 							onClose={handleClose}
 							title={isNew ? 'Add Event' : 'Edit Event'}
 						>
-							<EventForm
+							<AddEventForm
 								data={selectedEvent}
 								cal={cal}
 								scheduleData={value}
