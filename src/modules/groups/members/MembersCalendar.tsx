@@ -248,7 +248,7 @@ const MembersCalendar = () => {
 
   return (
       <Layout>
-        <h1>Worship Harvest Calendar</h1>
+        <h1>Church Calendar</h1>
         <Grid item xs={12}>
         <Grid item xs={6} md={6}>
         <Button
