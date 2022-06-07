@@ -72,6 +72,7 @@ const NewPersonForm = ({ done }: IProps) => {
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: ICreatePersonDto = {
+      churchName: values.churchName,
       firstName: values.firstName,
       middleName: values.middleName,
       lastName: values.lastName,
@@ -117,6 +118,15 @@ const NewPersonForm = ({ done }: IProps) => {
       onCancel={done}
     >
       <Grid spacing={2} container className="min-width-100">
+        <Grid item xs={6}>
+          <XTextInput
+            name="churchName"
+            label="Church Name"
+            type="text"
+            variant="outlined"
+            margin="none"
+          />
+        </Grid>
         <Grid item xs={6}>
           <XTextInput
             name="firstName"

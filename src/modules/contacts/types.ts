@@ -7,6 +7,7 @@ const uuid = require('uuid/v4');
 export interface ICreatePersonDto {
   email: string;
   phone: string;
+  churchName: string;
   firstName: string;
   lastName: string;
   middleName?: string;

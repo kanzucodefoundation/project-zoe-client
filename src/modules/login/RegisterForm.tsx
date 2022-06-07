@@ -33,6 +33,7 @@ interface IProps {
 }
 
 const schema = yup.object().shape({
+  churchName: reqString,
   firstName: reqString,
   otherNames: reqString,
   // middleName: reqString,
@@ -52,6 +53,7 @@ const schema = yup.object().shape({
 });
 
 const initialValues = {
+  churchName: '',
   firstName: '',
   middleName: '',
   lastName: '',
@@ -88,6 +90,7 @@ const RegisterForm = ({ done }: IProps) => {
     const [lastName, middleName] = processName(values.otherNames);
 
     const toSave: ICreatePersonDto = {
+      churchName: values.churchName,
       firstName: values.firstName,
       middleName,
       lastName,
@@ -139,6 +142,15 @@ const RegisterForm = ({ done }: IProps) => {
               <Typography variant="caption">Basic Data</Typography>
             </Box>
             <Divider />
+          </Grid>
+          <Grid item xs={12}>
+            <XTextInput
+              name="churchName"
+              label="Church Name"
+              type="text"
+              variant="outlined"
+              margin="none"
+            />
           </Grid>
           <Grid item xs={12} md={6}>
             <XTextInput
