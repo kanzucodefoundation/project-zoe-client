@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from "react";
-import * as yup from "yup";
-import { FormikHelpers } from "formik";
-import Grid from "@material-ui/core/Grid";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from 'react';
+import * as yup from 'yup';
+import { FormikHelpers } from 'formik';
+import Grid from '@material-ui/core/Grid';
+import { useSelector } from 'react-redux';
 
-import { remoteRoutes } from "../../../data/constants";
-import { GroupPrivacy } from "../../groups/types";
-import { XRemoteSelect } from "../../../components/inputs/XRemoteSelect";
-import { handleSubmission, ISubmission } from "../../../utils/formHelpers";
-import { del, search } from "../../../utils/ajax";
-import Toast from "../../../utils/Toast";
-import { cleanComboValue } from "../../../utils/dataHelpers";
-import { parseGooglePlace } from "../../../components/plain-inputs/PMapsInput";
-import { XMapsInput } from "../../../components/inputs/XMapsInput";
-import { IEvent } from "../types";
-import XDateTimeInput from "../../../components/inputs/XDateTimeInput";
-import XTextInput from "../../../components/inputs/XTextInput";
-import XForm from "../../../components/forms/XFormHC";
-import { IState } from "../../../data/types";
-import { reqDate, reqObject, reqString } from "../../../data/validations";
+import { remoteRoutes } from '../../../data/constants';
+import { GroupPrivacy } from '../../groups/types';
+import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
+import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
+import { del, search } from '../../../utils/ajax';
+import Toast from '../../../utils/Toast';
+import { cleanComboValue } from '../../../utils/dataHelpers';
+import { parseGooglePlace } from '../../../components/plain-inputs/PMapsInput';
+import { XMapsInput } from '../../../components/inputs/XMapsInput';
+import { IEvent } from '../types';
+import XDateTimeInput from '../../../components/inputs/XDateTimeInput';
+import XTextInput from '../../../components/inputs/XTextInput';
+import XForm from '../../../components/forms/XFormHC';
+import { IState } from '../../../data/types';
+import { reqDate, reqObject, reqString } from '../../../data/validations';
 
 interface IProps {
   data?: Partial<IEvent>;
@@ -44,7 +44,7 @@ const schema = yup.object().shape({
 });
 
 const initialData = {
-  summary: "",
+  summary: '',
   privacy: GroupPrivacy.Public,
   category: null,
 
@@ -64,10 +64,10 @@ const EventForm = ({
   onDeleted,
   onCancel,
   cal,
-	scheduleData,
+  scheduleData,
 }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [frequency, setFrequency] = useState("");
+  const [frequency, setFrequency] = useState('');
   const user = useSelector((state: IState) => state.core.user);
   const [group, setGroup] = useState<any>();
   const [event, setEvent] = useState<any>();
@@ -130,13 +130,13 @@ const EventForm = ({
     del(
       `${remoteRoutes.events}/${data?.id}`,
       () => {
-        Toast.success("Operation succeeded");
+        Toast.success('Operation succeeded');
         onDeleted && onDeleted(data?.id);
       },
       undefined,
       () => {
         setLoading(false);
-      }
+      },
     );
   };
 
@@ -178,7 +178,7 @@ const EventForm = ({
               name="startDate"
               label="Start Date"
               variant="outlined"
-            />    
+            />
           </Grid>
           <Grid item xs={12} md={6}>
             <XDateTimeInput

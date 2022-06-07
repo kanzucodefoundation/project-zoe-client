@@ -156,7 +156,7 @@ export default function Register() {
 
       <footer className={classes.footer}>
         <Typography variant="h6" align="center" gutterBottom color="inherit">
-          Project Zoe is a church management centered on what's at the heart of all ministry - people. 
+          Project Zoe is a church management centered on what's at the heart of all ministry - people.
         </Typography>
         <Typography
           variant="subtitle1"

@@ -26,6 +26,7 @@ import { getDayList, getMonthsList } from '../../utils/dateHelpers';
 import { ICreatePersonDto } from '../contacts/types';
 import { XMapsInput } from '../../components/inputs/XMapsInput';
 import { parseGooglePlace } from '../../components/plain-inputs/PMapsInput';
+import XRemoteSelectLoadOnOpen from '../../components/inputs/XRemoteSelectLoadOnOpen';
 
 interface IProps {
   data: any | null;
@@ -36,17 +37,12 @@ const schema = yup.object().shape({
   churchName: reqString,
   firstName: reqString,
   otherNames: reqString,
-  // middleName: reqString,
   gender: reqString,
   birthDay: reqString,
   birthMonth: reqString,
   civilStatus: reqString,
-
   ageGroup: reqString,
-  residence: reqObject,
-
   churchLocation: reqObject,
-
   email: reqEmail,
   phone: reqString,
   inCell: reqString,
@@ -86,6 +82,9 @@ const RegisterForm = ({ done }: IProps) => {
   // Does visitor want to join a misional community state
   const [joinMc, setIsJoinMc] = useState(false);
 
+  // The visitor's church name state
+  const [userChurchName, setChurchName] = useState('');
+
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const [lastName, middleName] = processName(values.otherNames);
 
@@ -112,7 +111,7 @@ const RegisterForm = ({ done }: IProps) => {
       remoteRoutes.register,
       toSave,
       (data) => {
-        Toast.info('Operation successful');
+        Toast.info('Registration successful. Please check your email for a link to setup a password');
         actions.resetForm();
         if (done) done();
       },
@@ -124,9 +123,14 @@ const RegisterForm = ({ done }: IProps) => {
   }
 
   // Does visitor belong to/want to join a missional community function
-  const fn_mcStatus = (value: any) => {
+  const changeMCStatus = (value: any) => {
     value === 'Yes' ? setIsInMc(true) : setIsInMc(false);
     value === 'No' ? setIsJoinMc(true) : setIsJoinMc(false);
+  };
+
+  const handleOnChurchNameChange = (event: any) => {
+    const churchName: string = event.target.value;
+    setChurchName(churchName.toLowerCase().replace(/\s/g, ""));
   };
 
   return (
@@ -150,6 +154,7 @@ const RegisterForm = ({ done }: IProps) => {
               type="text"
               variant="outlined"
               margin="none"
+              onBlur={handleOnChurchNameChange}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -242,10 +247,8 @@ const RegisterForm = ({ done }: IProps) => {
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <XRemoteSelect
-              remote={remoteRoutes.groupsCombo}
-              filter={{ 'categories[]': 'Location' }}
-              parser={({ name, id }: any) => ({ name, id })}
+            <XRemoteSelectLoadOnOpen 
+              remote={remoteRoutes.groupsCombo+'?categories[]=Location&churchName='+userChurchName}
               name="churchLocation"
               label="Church Location"
               variant="outlined"
@@ -259,7 +262,7 @@ const RegisterForm = ({ done }: IProps) => {
                 name="inCell"
                 label="Do you belong to an MC?"
                 options={toOptions(responseCategories)}
-                customOnChange={fn_mcStatus}
+                customOnChange={changeMCStatus}
               />
             </Box>
           </Grid>

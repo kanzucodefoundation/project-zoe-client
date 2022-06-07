@@ -22,7 +22,7 @@ import { remoteRoutes } from '../../../data/constants';
 import { get, del } from '../../../utils/ajax';
 import Toast from '../../../utils/Toast';
 import EditDialog from '../../../components/EditDialog';
-import AddEventForm from "../../events/forms/AddEventForm";
+import AddEventForm from '../../events/forms/AddEventForm';
 import { eventsEdit } from '../../../data/events/eventsReducer';
 import { IEvent } from '../../events/types';
 import { IState } from '../../../data/types';

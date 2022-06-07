@@ -1,8 +1,8 @@
 import React from 'react';
-import App from './App';
-import { shallow, configure } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
+import { shallow, configure } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 import * as redux from 'react-redux';
+import App from './App';
 
 configure({ adapter: new Adapter() });
 
@@ -14,7 +14,7 @@ describe('ProjectZoeHome', () => {
   beforeEach(() => {
     // Mock useSelector hook
     spyOnUseSelector = jest.spyOn(redux, 'useSelector');
-    spyOnUseSelector.mockReturnValue([{isLoadingUser: false, user: {}, globalLoader: {}}]);
+    spyOnUseSelector.mockReturnValue([{ isLoadingUser: false, user: {}, globalLoader: {} }]);
 
     // Mock useDispatch hook
     spyOnUseDispatch = jest.spyOn(redux, 'useDispatch');
@@ -32,5 +32,4 @@ describe('ProjectZoeHome', () => {
 
     expect(wrapper.exists()).toBe(true);
   });
-
 });

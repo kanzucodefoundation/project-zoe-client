@@ -49,13 +49,13 @@ function Login() {
   }
 
   return (
-    <div     style={{
+    <div style={{
       backgroundImage: `url(${image})`,
       backgroundSize: 'cover',
       height: '100%',
       backgroundPosition: 'top center',
     }}>
-    <main className={classes.main}>       
+    <main className={classes.main}>
       <CssBaseline />
       <Paper className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -109,7 +109,7 @@ function Login() {
               <Link className={classes.link} onClick={handleForgotPassword}>
                 Forgot Password?
               </Link>
-              <Link className={classes.link}  onClick={handleRegister}>
+              <Link className={classes.link} onClick={handleRegister}>
               {' '}Sign-up
               </Link>
             </Form>
