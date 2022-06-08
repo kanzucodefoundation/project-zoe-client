@@ -62,6 +62,14 @@ export default function ForgotPassword() {
           {(formState) => (
             <Form className={classes.form}>
               <XTextInput
+                type="text"
+                name="churchName"
+                label="Church Name"
+                autoComplete="off"
+                autoFocus
+                margin="normal"
+              />
+              <XTextInput
                 type="email"
                 name="username"
                 label="Email"
