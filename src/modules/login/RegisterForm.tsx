@@ -130,7 +130,7 @@ const RegisterForm = ({ done }: IProps) => {
 
   const handleOnChurchNameChange = (event: any) => {
     const churchName: string = event.target.value;
-    setChurchName(churchName.toLowerCase().replace(/\s/g, ""));
+    setChurchName(churchName.toLowerCase().replace(/\s/g, ''));
   };
 
   return (
@@ -247,8 +247,8 @@ const RegisterForm = ({ done }: IProps) => {
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <XRemoteSelectLoadOnOpen 
-              remote={remoteRoutes.groupsCombo+'?categories[]=Location&churchName='+userChurchName}
+            <XRemoteSelectLoadOnOpen
+              remote={`${remoteRoutes.groupsCombo}?categories[]=Location&churchName=${userChurchName}`}
               name="churchLocation"
               label="Church Location"
               variant="outlined"

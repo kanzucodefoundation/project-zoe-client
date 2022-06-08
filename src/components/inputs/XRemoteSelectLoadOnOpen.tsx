@@ -2,8 +2,8 @@ import * as React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {search} from '../../utils/ajax';
-import {useField} from 'formik';
+import { useField } from 'formik';
+import { search } from '../../utils/ajax';
 
 interface SelectOption {
   id: number;
@@ -11,9 +11,7 @@ interface SelectOption {
   categoryId?: string;
 }
 
-
 export default function XRemoteSelectLoadOnOpen(props: any) {
-
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState<SelectOption[]>([]);
   const loading = open && options.length === 0;
@@ -29,19 +27,19 @@ export default function XRemoteSelectLoadOnOpen(props: any) {
     (async () => {
       if (active) {
         search(
-            props.remote,
-            [],
-            (resp: any[] = []) => {
-              if (!Array.isArray(resp)) {
-                console.error('Invalid response for remote select', resp);
-              } else if (props.parser) {
-                const data: any[] = resp.map(props.parser);
-                setOptions(data);
-              } else {
-                setOptions(resp);
-              }
+          props.remote,
+          [],
+          (resp: any[] = []) => {
+            if (!Array.isArray(resp)) {
+              console.error('Invalid response for remote select', resp);
+            } else if (props.parser) {
+              const data: any[] = resp.map(props.parser);
+              setOptions(data);
+            } else {
+              setOptions(resp);
             }
-          );
+          },
+        );
       }
     })();
 
@@ -93,4 +91,3 @@ export default function XRemoteSelectLoadOnOpen(props: any) {
     />
   );
 }
-

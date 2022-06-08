@@ -14,5 +14,8 @@ module.exports = {
       'airbnb-base',
       'airbnb-typescript',
     ],
-    rules: {}
+    ignorePatterns: ['.eslintrc.js'],
+    rules: {
+      "react/jsx-filename-extension": 'off'
+    }
   };
