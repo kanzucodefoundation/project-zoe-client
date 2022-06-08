@@ -10,7 +10,6 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import Divider from '@material-ui/core/Divider';
 import { Alert } from '@material-ui/lab';
-import { useSelector } from 'react-redux';
 import { IGroupMembership } from '../types';
 import { search } from '../../../utils/ajax';
 import { remoteRoutes } from '../../../data/constants';
@@ -19,7 +18,6 @@ import Loading from '../../../components/Loading';
 import EditDialog from '../../../components/EditDialog';
 import MembersEditor from './MembersEditor';
 import MemberEditor from './MemberEditor';
-import { IState } from '../../../data/types';
 
 interface IProps {
   groupId: number;

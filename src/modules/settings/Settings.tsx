@@ -4,7 +4,6 @@ import Divider from '@material-ui/core/Divider';
 import Navigation from '../../components/layout/Layout';
 import Tags from './tags/Tags';
 import PasswordReset from './PasswordReset';
-import ReportCategories from '../admin/reports/reportCategories';
 
 const Settings = () => (
     <Navigation>

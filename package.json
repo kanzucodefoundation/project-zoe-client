@@ -103,6 +103,7 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "husky": "^7.0.4",
     "lint-staged": "^11.2.6",
     "prettier": "^2.4.1",
@@ -132,6 +133,9 @@
   },
   "lint-staged": {
     "*.js": "eslint --cache --fix",
-    "*.{ts,tsx}": ["prettier --write","eslint . --ext .ts,.tsx --fix"]
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint . --ext .ts,.tsx --fix"
+    ]
   }
 }

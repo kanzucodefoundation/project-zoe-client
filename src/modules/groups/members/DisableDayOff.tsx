@@ -3,28 +3,18 @@ import * as yup from 'yup';
 import { FormikHelpers } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { useSelector } from 'react-redux';
-import { Box, Typography, Button } from '@material-ui/core';
-import { ISchedule } from 'tui-calendar';
 import { reqDate, reqString } from '../../../data/validations';
 import XForm from '../../../components/forms/XFormHC';
 import XTextInput from '../../../components/inputs/XTextInput';
-import { remoteRoutes, appPermissions } from '../../../data/constants';
+import { remoteRoutes } from '../../../data/constants';
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
 import {
-  del, get, post, search,
+  del, search,
 } from '../../../utils/ajax';
 import Toast from '../../../utils/Toast';
-import { cleanComboValue } from '../../../utils/dataHelpers';
-import { parseGooglePlace } from '../../../components/plain-inputs/PMapsInput';
-import { XMapsInput } from '../../../components/inputs/XMapsInput';
-import { IEvent } from '../../events/types';
 import XDateTimeInput from '../../../components/inputs/XDateTimeInput';
 import { IState } from '../../../data/types';
-import XRadioInput from '../../../components/inputs/XRadioInput';
-import { responseCategories } from '../../../data/comboCategories';
-import { toOptions } from '../../../components/inputs/inputHelpers';
 // import EventDayOff from "../../events/details/EventDayOff";
-import { hasAnyRole } from '../../../data/appRoles';
 
 interface IProps {
   data?: any | null;

@@ -9,7 +9,6 @@ import CenteredDiv from '../../components/CenteredDiv';
 import XForm from '../../components/forms/XForm';
 import XTextInput from '../../components/inputs/XTextInput';
 import { IState } from '../../data/types';
-import { handleSubmission, ISubmission } from '../../utils/formHelpers';
 import { remoteRoutes } from '../../data/constants';
 import { put } from '../../utils/ajax';
 import { reqString } from '../../data/validations';

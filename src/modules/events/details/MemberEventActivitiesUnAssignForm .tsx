@@ -1,17 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { FormikHelpers } from 'formik';
 import { Grid } from '@material-ui/core';
-import { id } from 'date-fns/locale';
 import { remoteRoutes } from '../../../data/constants';
 import XForm from '../../../components/forms/XForm';
-import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
 import { toOption } from '../../../components/inputs/inputHelpers';
-import XSelectInput from '../../../components/inputs/XSelectInput';
 
-import {
-  get, post, put, search,
-} from '../../../utils/ajax';
+import { put } from '../../../utils/ajax';
 import XComboInput from '../../../components/inputs/XComboInput';
 import Toast from '../../../utils/Toast';
 

@@ -5,14 +5,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import React, { useCallback, useEffect } from 'react';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
 import EditDialog from '../../../components/EditDialog';
 import EventActivitiesEditor from './EventActivitiesEdit';
 import Loading from '../../../components/Loading';
 import XAvatar from '../../../components/XAvatar';
 import { remoteRoutes } from '../../../data/constants';
-import { get, search } from '../../../utils/ajax';
+import { search } from '../../../utils/ajax';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Typography } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import Box from '@material-ui/core/Box';
