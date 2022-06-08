@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { SyntheticEvent } from 'react';
 import { Button } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -8,6 +8,7 @@ import { Form, Formik, FormikHelpers } from 'formik';
 import HelpIcon from '@material-ui/icons/Help';
 import * as yup from 'yup';
 import { useHistory, useParams } from 'react-router';
+import Link from '@material-ui/core/Link';
 import { useLoginStyles } from './loginStyles';
 import XTextInput from '../../components/inputs/XTextInput';
 import { put } from '../../utils/ajax';
@@ -30,7 +31,7 @@ function ResetPassword() {
     put(
       `${remoteRoutes.resetPassword}/${token}`,
       data,
-      (resp) => {
+      () => {
         actions.resetForm();
         localStorage.removeItem('password_token');
         history.push(localRoutes.updatePassword);
@@ -38,11 +39,16 @@ function ResetPassword() {
       () => {
         Toast.error('Password change was unsuccessful. Try again');
         actions.setSubmitting(false);
-        // console.log(token);
         actions.resetForm();
       },
     );
   };
+
+  function handleLogin(e: SyntheticEvent<any>) {
+    e.preventDefault();
+    history.push(localRoutes.login);
+  }
+
   if (hasNoValue(token)) return <Error text="Invalid password reset link" />;
 
   return (
@@ -64,6 +70,12 @@ function ResetPassword() {
 
             <Form className={classes.form}>
               <XTextInput
+                type="text"
+                name="churchName"
+                label="Church Name"
+                margin="normal"
+              />
+              <XTextInput
                 type="password"
                 name="password"
                 label="Password"
@@ -79,6 +91,9 @@ function ResetPassword() {
               >
                 Update Password
               </Button>
+              <Link className={classes.link} onClick={handleLogin}>
+                Login
+              </Link>
             </Form>
           )}
         </Formik>

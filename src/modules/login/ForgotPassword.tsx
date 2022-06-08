@@ -18,6 +18,9 @@ import Toast from '../../utils/Toast';
 export default function ForgotPassword() {
   const classes = useLoginStyles();
   const history = useHistory();
+  const schema = yup.object().shape({
+    username: yup.string().email('Invalid Email').required('Email is required'),
+  });
 
   const onSubmit = (data: any, actions: FormikHelpers<any>) => {
     post(
@@ -97,7 +100,3 @@ export default function ForgotPassword() {
     </main>
   );
 }
-
-export const schema = yup.object().shape({
-  username: yup.string().email('Invalid Email').required('Email is required'),
-});
