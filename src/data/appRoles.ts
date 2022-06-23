@@ -29,7 +29,7 @@ export const clientAssignRoles = [...clientRoles, appRoles.User];
 export const hasRole = (
   { permissions = [] }: IAuthUser,
   appPermission: string,
-): boolean => permissions?.indexOf(appPermission) > -1;
+): boolean => permissions?true:false;
 
 export const hasAnyRole = (
   user: IAuthUser,
