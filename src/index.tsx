@@ -13,25 +13,25 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import theme from './theme';
 
-// add sentry set-up
-const SENTRY_STATUS = process.env.NODE_ENV === 'production';
-Sentry.init({
-  dsn: process.env.REACT_APP_SENTRY_DSN,
-  autoSessionTracking: SENTRY_STATUS,
-  integrations: [
-    new Integrations.BrowserTracing(),
-  ],
-  tracesSampleRate: 0.5,
-  beforeSend: (event) => {
-    if (
-    // Exclude "localhost" envs from issue tracker
-      window.location.hostname === 'localhost'
-    ) {
-      return null;
-    }
-    return event;
-  },
-});
+// // add sentry set-up
+// const SENTRY_STATUS = process.env.NODE_ENV === 'production';
+// Sentry.init({
+//   dsn: process.env.REACT_APP_SENTRY_DSN,
+//   autoSessionTracking: SENTRY_STATUS,
+//   integrations: [
+//     new Integrations.BrowserTracing(),
+//   ],
+//   tracesSampleRate: 0.5,
+//   beforeSend: (event) => {
+//     if (
+//     // Exclude "localhost" envs from issue tracker
+//       window.location.hostname === 'localhost'
+//     ) {
+//       return null;
+//     }
+//     return event;
+//   },
+// });
 
 ReactDOM.render(<Provider store={store}>
         <ThemeProvider theme={theme}>

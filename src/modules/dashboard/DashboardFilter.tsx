@@ -1,9 +1,11 @@
 import { Grid } from '@material-ui/core';
 import { lastDayOfWeek, startOfWeek } from 'date-fns/esm';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import PDateInput from '../../components/plain-inputs/PDateInput';
 import { PRemoteSelect } from '../../components/plain-inputs/PRemoteSelect';
 import { remoteRoutes } from '../../data/constants';
+import { IState } from '../../data/types';
 import { useFilter } from '../../utils/fitlerUtilities';
 
 interface IProps {
@@ -24,6 +26,8 @@ const DashboardFilter = ({ onFilter }: IProps) => {
     onFilter,
     comboFields: ['groupIdList'],
   });
+//   const profile = useSelector((state: IState) => state.core.user);
+//   console.log(profile.)
 
   return (
         <form>
@@ -52,6 +56,7 @@ const DashboardFilter = ({ onFilter }: IProps) => {
                     remote={remoteRoutes.groupsCombo}
                     name="groupIdList"
                     label="Groups"
+					filter={{ churchName: data.churchName}}
                     variant="outlined"
                     size="small"
                     margin="none"
