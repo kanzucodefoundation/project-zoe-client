@@ -56,7 +56,7 @@ const DashboardFilter = ({ onFilter }: IProps) => {
                     remote={remoteRoutes.groupsCombo}
                     name="groupIdList"
                     label="Groups"
-					filter={{ churchName: data.churchName}}
+					// filter={{ churchName: data.name}}
                     variant="outlined"
                     size="small"
                     margin="none"
