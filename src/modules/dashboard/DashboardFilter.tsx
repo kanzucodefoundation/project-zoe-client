@@ -26,8 +26,8 @@ const DashboardFilter = ({ onFilter }: IProps) => {
     onFilter,
     comboFields: ['groupIdList'],
   });
-//   const profile = useSelector((state: IState) => state.core.user);
-//   console.log(profile.)
+  const profile = useSelector((state: IState) => state.core.user);
+//   console.log(profile);
 
   return (
         <form>
@@ -56,7 +56,7 @@ const DashboardFilter = ({ onFilter }: IProps) => {
                     remote={remoteRoutes.groupsCombo}
                     name="groupIdList"
                     label="Groups"
-					// filter={{ churchName: data.name}}
+					filter={{ churchName: profile.aud}}
                     variant="outlined"
                     size="small"
                     margin="none"

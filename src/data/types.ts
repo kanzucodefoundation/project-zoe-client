@@ -11,6 +11,7 @@ export interface IAuthUser {
   avatar: string;
   username: string;
   email: string;
+  aud: string;
   fullName: string;
   roles: string[];
   permissions: string[];
