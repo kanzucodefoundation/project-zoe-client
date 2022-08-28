@@ -16,7 +16,7 @@ const MailChat = () => {
     <Layout>
       {' '}
       <ListHeader
-        title="Chat"
+        title="Connect"
         onFilter={setFilter}
         filter={filter}
         filterComponent={<ContactFilter onFilter={setFilter} />}
@@ -27,7 +27,7 @@ const MailChat = () => {
           </>
         }
       />
-      <p> MORE COMING SOON </p>
+      {/* <p> MORE COMING SOON </p> */}
     </Layout>
   );
 };

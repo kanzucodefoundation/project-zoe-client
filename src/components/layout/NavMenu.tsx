@@ -56,7 +56,7 @@ const routes: IAppRoute[] = [
     icon: TodayIcon,
   },
   {
-    name: 'Chat',
+    name: 'Connect',
     route: localRoutes.chat,
     icon: ChatIcon,
   },
