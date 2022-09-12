@@ -43,6 +43,16 @@ export interface IPerson {
   dateOfBirth: Date;
 }
 
+export interface IPersonState {
+  core: ICoreState;
+  contacts: any;
+}
+
+export interface ICoreState {
+  user: IPerson;
+  token: string;
+}
+
 export interface IEmail {
   id?: string;
   value: string;
