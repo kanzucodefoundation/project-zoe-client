@@ -48,8 +48,7 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
 const timeout = 0;
 export const isAuthError = (err: any = {}, res: superagent.Response) => {
   if (err) {
-    console.log(err);
-    return false;
+	return false;
   }
   return (res && res.forbidden) || (res && res.unauthorized);
 };
@@ -103,7 +102,6 @@ export const search = (
   endCallBack?: EndCallback,
 ) => {
   const searchData = cleanUp(data);
-  console.log('searchData', searchData);
   superagent
     .get(url)
     .set('Authorization', `Bearer ${getToken()}`)

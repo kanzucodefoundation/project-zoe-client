@@ -83,7 +83,6 @@ const MemberEventActivitiesEditor = () => {
     get(
       `${remoteRoutes.memberEventActivities}`,
       (data) => {
-        console.log('data', data);
         setData(data);
       },
       undefined,

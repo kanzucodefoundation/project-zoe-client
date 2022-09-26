@@ -30,7 +30,6 @@ export default function ForgotPassword() {
         Toast.success('Reset Password Link Sent to Email');
         const { token } = resp;
         localStorage.setItem('password_token', token);
-        console.log(resp);
         actions.resetForm();
       },
       () => {

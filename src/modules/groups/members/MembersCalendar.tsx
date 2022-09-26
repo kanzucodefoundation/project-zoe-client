@@ -96,7 +96,6 @@ const MembersCalendar = () => {
       if (!user.roles.includes('RoleAdmin')) {
         setDialog(true);
       } else {
-        console.log('day off');
         setDay(true);
       }
     },
@@ -241,7 +240,6 @@ const MembersCalendar = () => {
             end: { dateTime: calEvent.end },
           };
           publishTheCalenderEvent(googleCalEvent);
-          console.log(googleCalEvent);
         }
       });
   };

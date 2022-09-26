@@ -49,8 +49,6 @@ const NewEventCategories = ({
       name: values.name,
     };
 
-    console.log(toSave);
-
     const submission: ISubmission = {
       url: remoteRoutes.eventsCategories,
       values: toSave,

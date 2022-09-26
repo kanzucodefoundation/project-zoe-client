@@ -47,7 +47,6 @@ function EventActivities({ eventId }: IProps) {
 
   const fetchActivities = useCallback(() => {
     setLoading(true);
-    console.log('fetchActivities', eventId);
     search(
       remoteRoutes.eventsActivity,
       {

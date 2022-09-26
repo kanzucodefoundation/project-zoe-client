@@ -60,7 +60,6 @@ const AddHelpFileButton = ({
       title: values.title,
       category: values.category,
     };
-    console.log(toSave);
 
     const submission: ISubmission = {
       url: remoteRoutes.help,

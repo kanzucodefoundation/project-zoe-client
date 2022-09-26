@@ -61,7 +61,6 @@ const MemberActivityList = () => {
   const person = {
     contactId: user.contactId,
   };
-  console.log(person, 'person');
 
   useEffect(() => {
     setLoading(true);
@@ -69,7 +68,6 @@ const MemberActivityList = () => {
     get(
       `${remoteRoutes.memberEventActivities}/?contactId=${user.contactId}`,
       (data) => {
-        console.log(data);
 
         setData(data);
       },

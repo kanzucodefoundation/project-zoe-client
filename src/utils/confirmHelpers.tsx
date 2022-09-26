@@ -15,7 +15,7 @@ export function askConfirmation(message: string, callback: () => any) {
     .then(() => {
       callback();
     })
-    .catch((e) => console.log('confirmation denied'));
+    .catch((e) => {});
 }
 
 export default ConfirmDialog;

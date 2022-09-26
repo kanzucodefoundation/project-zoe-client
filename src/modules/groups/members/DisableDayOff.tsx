@@ -80,7 +80,6 @@ const DisableDayOff = ({
   }
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
-    console.log(values, 'Heyyyyy');
     const toSave: any = {
       contactId: user.contactId,
       reason: values.reason,
@@ -111,7 +110,6 @@ const DisableDayOff = ({
     setLoad(true);
     // get(remoteRoutes.dayOff, (data) => {
     //   setEvent(data);
-    //   console.log(data, "hello");
     //   let myEvents: any[] = [];
     //   for (let i = 0; i < data.length; i++) {
     //     const calEvent = {

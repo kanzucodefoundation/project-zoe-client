@@ -18,7 +18,6 @@ const EditHelpFile = (data:any) => {
 
   function handleDelete() {
     del(`${remoteRoutes.help}/${data.value.id}`, (resp) => {
-      console.log(resp);
       window.location.reload();
       Toast.success('Deleted successfully');
     });

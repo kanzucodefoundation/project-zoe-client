@@ -22,7 +22,6 @@ export default function Splash() {
         dispatch(handleLogin({ user: data, token: getToken() }));
       },
       (err) => {
-        console.log('Profile loading failed', err);
         dispatch(handleLogout());
       },
       () => {

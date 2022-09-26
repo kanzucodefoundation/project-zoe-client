@@ -42,7 +42,6 @@ const Help = () => {
         `${remoteRoutes.help}`,
         (data) => {
           const files: IFile[] = [];
-          // console.log(files, 'help files');
           for (let i = 0; i < data.length; i++) {
             const doc = {
               id: data[i].url,
@@ -51,13 +50,11 @@ const Help = () => {
             files.push(doc);
           }
           setFile(files);
-          console.log(files, 'help files');
           return new Promise((data) => setTimeout(data, 5000));
         },
       );
       return await new Promise((data) => setTimeout(data, 5000));
     } catch (error) {
-      console.log(error);
     }
   };
   useEffect(

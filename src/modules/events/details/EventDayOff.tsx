@@ -19,7 +19,6 @@ const AvailabilityButtons = ({ data }: IProps) => {
       contactId: user.contactId,
       dayOff: data.start._date,
     };
-    console.log(disable);
 
     // post(remoteRoutes.dayOff, disable, () => {
     //   Toast.info("Operation successful");

@@ -89,7 +89,6 @@ const PersonEditor = ({ data, done }: IProps) => {
       initialData.birthDay = getDate(dt) < 10 ? `0${getDate(dt)}` : `${getDate(dt)}`;
       initialData.birthMonth = getMonth(dt) < 10 ? `0${getMonth(dt) + 1}` : `${getMonth(dt) + 1}`;
     } catch (e) {
-      console.log('invalid date');
     }
   }
 

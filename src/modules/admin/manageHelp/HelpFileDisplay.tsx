@@ -81,8 +81,7 @@ const HelpFilesDisplay = () => {
       `${remoteRoutes.help}`,
       (data) => {
         setData(data);
-        console.log(data);
-      },
+             },
       undefined,
       () => {
         setLoading(false);

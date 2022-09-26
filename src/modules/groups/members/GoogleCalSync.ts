@@ -20,13 +20,10 @@ export function initClient(callback: (arg0: boolean) => void) {
       }).then((resolution) => {
         if (typeof (callback) === 'function') {
           callback(true);
-          console.log(resolution);
         }
       }, (error) => {
-        console.log(error);
       });
     } catch (error) {
-      console.log(error);
     }
   });
 }
@@ -36,19 +33,16 @@ export const checkSignInStatus = async () => {
     const status = await gapi.auth2.getAuthInstance().isSignedIn.get();
     return status;
   } catch (error) {
-    console.log(error);
   }
 };
 
 export const signInToGoogle = async () => {
   try {
     const googleuser = await gapi.auth2.getAuthInstance().signIn({ prompt: 'consent' });
-    console.log('loaded');
     if (googleuser) {
       return true;
     }
   } catch (error) {
-    console.log(error);
   }
 };
 
@@ -60,7 +54,6 @@ export const signOutFromGoogle = () => {
     });
     return true;
   } catch (error) {
-    console.log(error);
   }
 };
 
@@ -75,25 +68,20 @@ export const getSignedInUserEmail = async () => {
     }
     return null;
   } catch (error) {
-    console.log(error);
   }
 };
 
 export const publishTheCalenderEvent = (googleCalEvent: any) => {
   try {
     gapi.client.load('calendar', 'v3', () => {
-      console.log('loaded!');
       const request = gapi.client.calendar.events.insert({
         calendarId: 'primary',
         resource: googleCalEvent,
       });
-      console.log(request, 'inserted event');
       request.execute((event) => {
-        console.log(event);
         // window.open('Event created: ' + event)
       });
     });
   } catch (error) {
-    console.log(error, 'insert error');
   }
 };

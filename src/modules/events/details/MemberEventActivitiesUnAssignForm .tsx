@@ -88,7 +88,6 @@ const MemberEventActivitiesUnAssignForm = ({
     >
       <Grid spacing={1} container>
         <Grid item xs={12}>
-          {console.log(members, 'dialog')}
           <XComboInput
             name="person"
             label="Members"

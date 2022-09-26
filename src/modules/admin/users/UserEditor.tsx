@@ -73,7 +73,6 @@ const UserEditor = ({
     del(
       `${remoteRoutes.users}/${data.id}`,
       (dt) => {
-        console.log('Delete response', dt);
         Toast.success('Operation succeeded');
         onDeleted(data);
       },

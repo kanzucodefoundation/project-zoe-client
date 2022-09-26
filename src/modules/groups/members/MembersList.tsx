@@ -43,7 +43,6 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
 
   const fetchMembers = useCallback(() => {
     setLoading(true);
-    console.log('fetchMembers', groupId);
     search(
       remoteRoutes.groupsMembership,
       {

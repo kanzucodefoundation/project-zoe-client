@@ -32,12 +32,10 @@ const MemberEventActivitiesForm = ({
   const [dialog, setDialog] = useState<boolean>(false);
 
   const handleSubmit = (values: any, actions: FormikHelpers<any>) => {
-    console.log(values);
     const toSave = {
       activityId: values.activity.id,
       contactId: values.contact.map((it: any) => it.id),
     };
-    console.log(toSave);
 
     const submission: ISubmission = {
       url: remoteRoutes.memberEventActivities,
