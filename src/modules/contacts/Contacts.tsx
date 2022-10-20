@@ -19,7 +19,9 @@ import { IContactListDto, IContactsFilter } from './types';
 import XTable from '../../components/table/XTable';
 import { XHeadCell } from '../../components/table/XTableHead';
 import ContactLink from '../../components/ContactLink';
+import IconLink from '../../components/IconLink';
 import { search } from '../../utils/ajax';
+
 import {
   appPermissions,
   localRoutes,
@@ -73,6 +75,11 @@ const headCells: XHeadCell[] = [
     label: 'Location',
     render: (value) => (hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-'),
   },
+  {
+    name: 'id',
+    label: '',
+    render: (value) => <IconLink id={`${value}?showEdit=true`} name={value.name}/>,
+  },
 ];
 
 const toMobileRow = (data: IContactListDto): IMobileRow => ({
@@ -93,6 +100,7 @@ const toMobileRow = (data: IContactListDto): IMobileRow => ({
 const Contacts = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const [selected, setSelected] = useState<any | null>(null);
   const [createDialog, setCreateDialog] = useState(false);
   const { data, loading }: ICrmState = useSelector((state: any) => state.crm);
   const [uploadDialog, setUploadDialog] = useState(false);
@@ -127,6 +135,7 @@ const Contacts = () => {
   }, [filter, dispatch]);
 
   function handleNew() {
+    setSelected(null);
     setCreateDialog(true);
   }
 
@@ -147,11 +156,39 @@ const Contacts = () => {
     setUploadDialog(false);
   }
 
+  // const handleComplete = (dt: any) => {
+  //   if (selected) {
+  //     const newData = data.map((it: any) => {
+  //       if (it.id === dt.id) return dt;
+  //       return it;
+  //     });
+  //     setFilter(newData);
+  //   } else {
+  //     const newData = [...data, dt];
+  //     setFilter(newData);
+  //   }
+  //   closeUploadDialog();
+  // };
+
   function closeUploadDialog() {
     setUploadDialog(false);
   }
 
-  const createTitle = 'New Person';
+  const handleEdit = (dt: any) => {
+    const {
+      id, name, phone, dateOfBirth, contactId,
+    } = dt;
+    const toEdit = {
+      id,
+      name,
+      phone,
+      dateOfBirth,
+      contact: { id: contactId, label: name },
+    };
+    setSelected(toEdit);
+    setCreateDialog(true);
+  };
+  
   return (
     <Navigation>
       <Box p={1} className={classes.root}>
@@ -228,7 +265,7 @@ const Contacts = () => {
                   </Fragment>
                 );
               })
-            )}
+            )}  
           </List>
           {hasAnyRole(user, [appPermissions.roleCrmEdit]) ? (
             <Fab
@@ -243,11 +280,18 @@ const Contacts = () => {
         </Hidden>
       </Box>
       <EditDialog
-        title={createTitle}
+        title={selected ? `Edit ${selected.name}` : 'New Person'}
         open={createDialog}
         onClose={closeCreateDialog}
       >
         <NewPersonForm data={{}} done={closeCreateDialog} />
+        {/* <UserEditor
+          data={selected}
+          isNew={!selected}
+          done={handleComplete}
+          onDeleted={handleDeleted}
+          onCancel={handleClose}
+          /> */}
       </EditDialog>
       <ContactUpload
         show={uploadDialog}
