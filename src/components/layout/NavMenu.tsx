@@ -45,21 +45,21 @@ const routes: IAppRoute[] = [
     route: localRoutes.dashboard,
     icon: AppsIcon,
   },
-  {
-    name: 'My Profile',
-    route: localRoutes.profile,
-    icon: PersonIcon,
-  },
+  // {
+  //   name: 'My Profile',
+  //   route: localRoutes.profile,
+  //   icon: PersonIcon,
+  // },
   {
     name: 'Calendar',
     route: localRoutes.calendar,
     icon: TodayIcon,
   },
-  {
-    name: 'Connect',
-    route: localRoutes.chat,
-    icon: ChatIcon,
-  },
+  // {
+  //   name: 'Connect',
+  //   route: localRoutes.chat,
+  //   icon: ChatIcon,
+  // },
   {
     requiredRoles: [appPermissions.roleCrmView, appPermissions.roleCrmEdit],
     name: 'People',
@@ -113,11 +113,11 @@ const routes: IAppRoute[] = [
       },
     ],
   },
-  {
-    name: 'Help',
-    route: localRoutes.help,
-    icon: HelpIcon,
-  },
+  // {
+  //   name: 'Help',
+  //   route: localRoutes.help,
+  //   icon: HelpIcon,
+  // },
 ];
 const menBackgroundColor = grey[800];
 const useStyles = makeStyles((theme: Theme) => createStyles({

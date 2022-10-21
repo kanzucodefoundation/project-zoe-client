@@ -16,7 +16,6 @@ import { localRoutes } from '../data/constants';
 export const BarView = (props: any) => {
   const profile = useSelector((state: IState) => state.core.user);
   const user = useSelector((state: IPersonState) => state.core.user);
-  console.log(user)
   const dispatch = useDispatch();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
