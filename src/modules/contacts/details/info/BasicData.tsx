@@ -6,6 +6,7 @@ import { printBirthday } from '../../../../utils/dateHelpers';
 import DataCard from '../../../../components/DataCard';
 import PersonEditor from '../editors/PersonEditor';
 import EditDialog from '../../../../components/EditDialog';
+import {useLocation,useHistory} from "react-router-dom";
 
 interface IProps {
   data: IContact;
@@ -34,15 +35,17 @@ export const idFields = (data: IContact): IRec[] => {
 };
 
 const BasicData = ({ data }: IProps) => {
-  const [dialog, setDialog] = useState(false);
+  const openDialog = useLocation().search.includes("showEdit")
+  const [dialog, setDialog] = useState(openDialog);
   const { id = '' } = data;
+  const history = useHistory();
 
-  const handleClick = () => {
+  const handleClick = () => { 
     setDialog(true);
   };
 
   const handleClose = () => {
-    setDialog(false);
+    openDialog ? history.push('/people/contacts') : setDialog(false);
   };
   return (
     <DataCard

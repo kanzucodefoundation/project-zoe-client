@@ -12,7 +12,7 @@ interface IProps {
   title?: string;
   onAddNew?: () => any;
   onFilterToggle?: () => any;
-  onChange?: (v: string) => any;
+  onChange?: (v: string) => any;  
 }
 
 const Header = ({

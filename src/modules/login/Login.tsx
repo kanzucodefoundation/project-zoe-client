@@ -29,7 +29,7 @@ function Login() {
       (resp) => {
         dispatch(handleLogin(resp));
         Toast.success('Authentication success');
-        history.push(localRoutes.profile);
+        history.push(localRoutes.dashboard);
       },
       () => {
         Toast.error('Authentication failed, invalid username/password');

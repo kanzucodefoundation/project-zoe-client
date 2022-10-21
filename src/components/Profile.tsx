@@ -8,12 +8,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import HiddenJs from '@material-ui/core/Hidden/HiddenJs';
 import { useHistory } from 'react-router';
 import { IState } from '../data/types';
+import { IPersonState } from '../modules/contacts/types';
 import { getInitials } from '../utils/stringHelpers';
 import { handleLogout } from '../data/coreActions';
-import { localRoutes } from '../data/constants';
+import { localRoutes } from '../data/constants';  
 
 export const BarView = (props: any) => {
   const profile = useSelector((state: IState) => state.core.user);
+  const user = useSelector((state: IPersonState) => state.core.user);
+  console.log(user)
   const dispatch = useDispatch();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

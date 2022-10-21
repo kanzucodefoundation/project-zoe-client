@@ -12,7 +12,7 @@ const MailChat = () => {
   const [filter, setFilter] = useState<IContactsFilter>({
     limit: 200,
   });
-  return (
+  return ( 
     <Layout>
       {' '}
       <ListHeader
@@ -21,13 +21,10 @@ const MailChat = () => {
         filter={filter}
         filterComponent={<ContactFilter onFilter={setFilter} />}
         loading={loading}
-        buttons={
-          <>
-            <SendEmail />
-          </>
-        }
       />
-      <p> MORE COMING SOON </p>
+      <p>
+        <SendEmail />  
+      </p>
     </Layout>
   );
 };

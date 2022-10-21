@@ -12,6 +12,12 @@ import { errorColor } from '../theme/custom-colors';
 interface IProps {
   onClick: () => any;
   style?: any;
+  id?:any;
+}
+
+interface LProps {
+  style?: any;
+  id?:any;
 }
 
 export const HiddenIcon = () => <SvgIcon style={{ fontSize: '1rem', margin: 4 }} />;
@@ -24,6 +30,18 @@ export const EditIconButton = ({ onClick, style }: IProps) => (
       color="primary"
       style={{ ...style }}
       onClick={onClick}
+    >
+      <EditIcon style={{ fontSize: '1rem', margin: 4 }} />
+    </IconButton>
+);
+
+export const EditiIcon = ({ style }: LProps) => (
+    <IconButton
+      aria-label="delete"
+      size="small"
+      title="Edit"
+      color="primary"
+      style={{ ...style }}
     >
       <EditIcon style={{ fontSize: '1rem', margin: 4 }} />
     </IconButton>

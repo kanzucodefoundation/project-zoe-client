@@ -56,7 +56,7 @@ const routes: IAppRoute[] = [
     icon: TodayIcon,
   },
   {
-    name: 'Chat',
+    name: 'Connect',
     route: localRoutes.chat,
     icon: ChatIcon,
   },
@@ -131,6 +131,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     },
     height: 58,
     width: 'auto',
+    fontSize:'25px',
+    color:'white',
   },
   whiteText: {
     color: 'white',
@@ -195,7 +197,7 @@ const NavMenu = (props: any) => {
         alignContent="center"
         justify="center"
       >
-        <img src={appLogo} alt="logo" className={classes.logo} />
+      <h3 className={classes.logo}>Project Zoe</h3>
       </Grid>
       <Divider />
       <List style={{ paddingTop: 0 }}>
