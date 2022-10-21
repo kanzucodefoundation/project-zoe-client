@@ -36,7 +36,7 @@ const schema = yup.object().shape({
   category: reqObject,
   summary: reqString,
 
-  venue: reqObject,
+  venue: reqString,
   group: reqObject,
 
   startDate: reqDate,
@@ -197,11 +197,11 @@ const EventForm = ({
             />
           </Grid>
           <Grid item xs={12}>
-            <XMapsInput
+            <XTextInput
               name="venue"
               label="Venue"
+              type="text"
               variant="outlined"
-              placeholder="Type to search"
             />
           </Grid>
           <Grid item xs={12}>

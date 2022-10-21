@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as yup from 'yup';
 import { FormikHelpers } from 'formik';
 import Grid from '@material-ui/core/Grid';
-import { reqArray, reqObject, reqString } from '../../../data/validations';
+import { reqArray, reqString } from '../../../data/validations';
 import XForm from '../../../components/forms/XForm';
 import XTextInput from '../../../components/inputs/XTextInput';
 import XCheckBoxInput from '../../../components/inputs/XCheckBoxInput';

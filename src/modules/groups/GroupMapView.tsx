@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   GoogleMap, InfoWindow, LoadScript, Marker,
 } from '@react-google-maps/api';
-import { IGroup } from './types';
 
 interface IGroupMarkers {
   name: string;

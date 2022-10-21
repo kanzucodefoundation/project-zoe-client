@@ -60,7 +60,7 @@ const Addresses = (props: IProps) => {
             <List className={classes.noPadding}>
                 {addresses.map((it) => (
                     <ListItem button key={it.id} className={classes.noPadding} onClick={handleClick(it)}>
-                        <ListItemText primary={printAddress(it)} secondary={it.category}/>
+                        <ListItemText primary={`${it.freeForm} ${printAddress(it)}`} secondary={it.category}/>
                         <Hidden mdUp>
                             <ArrowRightIcon/>
                         </Hidden>

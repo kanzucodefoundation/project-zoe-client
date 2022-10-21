@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
 import { useSelector } from 'react-redux';

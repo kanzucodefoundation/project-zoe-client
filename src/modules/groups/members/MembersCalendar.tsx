@@ -15,7 +15,7 @@ import AddIcon from '@material-ui/icons/Add';
 import TUICalendar from '@toast-ui/react-calendar';
 import { ISchedule } from 'tui-calendar';
 import {
-  signInToGoogle, initClient, getSignedInUserEmail, publishTheCalenderEvent,
+  signInToGoogle, getSignedInUserEmail, publishTheCalenderEvent,
 } from './GoogleCalSync';
 
 import { remoteRoutes } from '../../../data/constants';
