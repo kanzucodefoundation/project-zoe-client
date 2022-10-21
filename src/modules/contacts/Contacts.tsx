@@ -156,20 +156,6 @@ const Contacts = () => {
     setUploadDialog(false);
   }
 
-  // const handleComplete = (dt: any) => {
-  //   if (selected) {
-  //     const newData = data.map((it: any) => {
-  //       if (it.id === dt.id) return dt;
-  //       return it;
-  //     });
-  //     setFilter(newData);
-  //   } else {
-  //     const newData = [...data, dt];
-  //     setFilter(newData);
-  //   }
-  //   closeUploadDialog();
-  // };
-
   function closeUploadDialog() {
     setUploadDialog(false);
   }
@@ -285,13 +271,6 @@ const Contacts = () => {
         onClose={closeCreateDialog}
       >
         <NewPersonForm data={{}} done={closeCreateDialog} />
-        {/* <UserEditor
-          data={selected}
-          isNew={!selected}
-          done={handleComplete}
-          onDeleted={handleDeleted}
-          onCancel={handleClose}
-          /> */}
       </EditDialog>
       <ContactUpload
         show={uploadDialog}
