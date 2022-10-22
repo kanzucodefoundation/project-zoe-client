@@ -53,6 +53,7 @@ export const localRoutes = {
   groupsReports: '/groups',
 
   events: '/events',
+  summary: '/summary',
   eventsDetails: '/events/:eventId',
   eventActivities: '/events/:activitiesId',
 
@@ -125,6 +126,7 @@ export const remoteRoutes = {
   groupCategoriesCombo: `${url}/api/groups/groupscombo`,
 
   events: `${url}/api/events/event`,
+  summary: `https://f6c78e1c-ae85-4d87-8f75-d3b9ce8b08fc.mock.pstmn.io/api/reports/?name=service-attendance&period=lastmonth`,
   eventsMetricsRaw: `${url}/api/events/metrics/raw`,
   eventsCategories: `${url}/api/events/category`,
   eventsAttendance: `${url}/api/events/attendance`,

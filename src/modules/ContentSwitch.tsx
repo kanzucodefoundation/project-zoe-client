@@ -31,6 +31,7 @@ const UpdatePasswordConfirmation = React.lazy(
   () => import('./login/UpdatePasswordConfirmation'),
 );
 const EventDetails = React.lazy(() => import('./events/details/EventDetails'));
+const Summary = React.lazy(() => import('./events/Summary'));
 const EventReports = React.lazy(() => import('./events/EventReports'));
 const Help = React.lazy(() => import('./help/Help'));
 const ManageHelp = React.lazy(() => import('./admin/manageHelp/HelpFileDisplay'));
@@ -60,6 +61,8 @@ const ContentSwitch = () => {
         <Route path={localRoutes.dashboard} component={Dashboard} />
 
         <Route path={localRoutes.calendar} component={MembersCalendar} />
+        <Route path={localRoutes.summary} component={Summary} />
+
 
         <Route path={localRoutes.contactsDetails} component={ContactDetails} />
         {hasAnyRole(user, [
@@ -97,7 +100,6 @@ const ContentSwitch = () => {
         ]) && <Route path={localRoutes.events} component={EventReports} />}
 
          <Route path={localRoutes.manageHelp} component={ManageHelp} />
-
         <Route path={localRoutes.settings} component={Settings} />
         <Route
           path={localRoutes.groupsCategories}
