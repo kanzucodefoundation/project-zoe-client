@@ -13,4 +13,7 @@ export interface IReport{
   data: any[]
 }
 
+export interface ReportProps{
+  reportName: string,
+}
 

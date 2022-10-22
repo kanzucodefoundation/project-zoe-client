@@ -8,11 +8,11 @@ export default function ReportList() {
   const tabs = [
     {
       name: 'Service Attendance',
-      component: <ServiceAttendanceReport />,
+      component: <ServiceAttendanceReport reportName='service-attendance' />,
     },
     {
       name: 'Small Group Attendance',
-      component: <UnsubmittedReports />,
+      component: <ServiceAttendanceReport reportName='small-group-attendance'/>,
     },
   ];
 
