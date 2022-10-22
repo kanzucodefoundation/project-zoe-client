@@ -32,6 +32,7 @@ const UpdatePasswordConfirmation = React.lazy(
 );
 const EventDetails = React.lazy(() => import('./events/details/EventDetails'));
 const EventReports = React.lazy(() => import('./events/EventReports'));
+const ReportList = React.lazy(() => import('./reports/ReportList'));
 const Help = React.lazy(() => import('./help/Help'));
 const ManageHelp = React.lazy(() => import('./admin/manageHelp/HelpFileDisplay'));
 
@@ -95,6 +96,11 @@ const ContentSwitch = () => {
           appPermissions.roleEventView,
           appPermissions.roleEventEdit,
         ]) && <Route path={localRoutes.events} component={EventReports} />}
+
+        {hasAnyRole(user, [
+          appPermissions.roleEventView,
+          appPermissions.roleEventEdit,
+        ]) && <Route path={localRoutes.reports} component={ReportList} />}
 
          <Route path={localRoutes.manageHelp} component={ManageHelp} />
 

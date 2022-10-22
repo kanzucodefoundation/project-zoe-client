@@ -23,11 +23,12 @@ interface IProps {
   filterComponent?: any;
   title: string;
   showBreadCrumbs?: boolean;
+  enableFiltering?: boolean;
 }
 
 const ListHeader = (props: IProps) => {
   const [showFilter, setShowFilter] = useState(false);
-  const { showBreadCrumbs = true } = props;
+  const { showBreadCrumbs = true, enableFiltering = true } = props;
   const profile = useSelector((state: IState) => state.core.user);
 
   function handleFilterToggle() {
@@ -55,25 +56,27 @@ const ListHeader = (props: IProps) => {
         </Box>
       )}
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
-          <TextField
-            autoComplete="off"
-            hiddenLabel
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="inherit" />
-                </InputAdornment>
-              ),
-            }}
-            onChange={(e) => handleQuerySearch(e.target.value)}
-            variant="outlined"
-            size="small"
-            name="query"
-            placeholder="Search here ..."
-            fullWidth
-          />
-        </Grid>
+      {enableFiltering && (
+          <Grid item xs={12} md={6}>
+            <TextField
+              autoComplete="off"
+              hiddenLabel
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="inherit" />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(e) => handleQuerySearch(e.target.value)}
+              variant="outlined"
+              size="small"
+              name="query"
+              placeholder="Search here ..."
+              fullWidth
+            />
+          </Grid>
+        )}
         <Hidden smDown>
           <Grid item xs={12} md={6}>
             <Box
