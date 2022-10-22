@@ -7,7 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-import {  useSelector } from 'react-redux';
+import {  useDispatch, useSelector } from 'react-redux';
 import XTable from '../../components/table/XTable';
 import { XHeadCell } from '../../components/table/XTableHead';
 import Loading from '../../components/Loading';
@@ -16,6 +16,9 @@ import PersonAvatar from '../../components/PersonAvatar';
 import ListHeader from '../../components/ListHeader';
 import { IEvent } from '../events/types';
 import {  IEventState } from '../../data/events/eventsReducer';
+import { IReportState, reportsConstants } from '../../data/reports/reducer';
+import { remoteRoutes } from '../../data/constants';
+import { search } from '../../utils/ajax';
 
 const reportData = {
   metadata: {
@@ -124,23 +127,56 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-const headCells: XHeadCell[] = reportData.metadata.columns
 
-const toMobileRow = (data: IEvent): IMobileRow => ({
-  avatar: <PersonAvatar data={data} />,
-  primary: reportData.metadata.name,
-  secondary: (
-      <>
-      </>
-  ),
-});
 
 const ServiceAttendanceReport = () => {
+  const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
-  const { data, loading }: IEventState = useSelector(
-    (state: any) => state.events,
+  const { data, loading }: IReportState = useSelector(
+    (state: any) => state.reports,
   );
+  console.log('data')
+  console.log(data)
+
+  const reportName = data.metadata ? data.metadata.name : ''
+
+  const toMobileRow = (data: IEvent): IMobileRow => ({
+    avatar: <PersonAvatar data={data} />,
+    primary: reportName,
+    secondary: (
+        <>
+        </>
+    ),
+  });
+
+  function getHeadCells(): XHeadCell[] {
+    return data.metadata ? data.metadata.columns : []
+  }
+
+  useEffect(() => {
+    dispatch({
+      type: reportsConstants.reportsFetchLoading,
+      payload: true,
+    });
+    search(
+      remoteRoutes.reports,
+      filter,
+      (resp) => {
+        dispatch({
+          type: reportsConstants.reportsFetchOne,
+          payload: resp,
+        });
+      },
+      undefined,
+      () => {
+        dispatch({
+          type: reportsConstants.reportsFetchLoading,
+          payload: false,
+        });
+      },
+    );
+  }, [filter, dispatch]);  
 
   return (
     <>
@@ -155,12 +191,13 @@ const ServiceAttendanceReport = () => {
         />
         <Hidden smDown>
           <Box pt={1}>
-            {loading ? (
+            {loading || !data.metadata ? (
               <Loading />
             ) : (
+              
               <XTable
-                headCells={headCells}
-                data={reportData.data}
+                headCells={data.metadata.columns}
+                data={data.data}
                 initialRowsPerPage={10}
                 initialSortBy="name"
               />
@@ -169,10 +206,10 @@ const ServiceAttendanceReport = () => {
         </Hidden>
         <Hidden mdUp>
           <List>
-            {loading ? (
+            {loading || ! data?.data ? (
               <Loading />
             ) : (
-              reportData.data.map((row: any) => {
+              data.data.map((row: any) => {
                 const mobileRow = toMobileRow(row);
                 return (
                   <Fragment key={row.location}>

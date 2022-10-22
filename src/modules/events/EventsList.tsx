@@ -102,7 +102,6 @@ const EventsList = () => {
   const { data, loading }: IEventState = useSelector(
     (state: any) => state.events,
   );
-  console.log(data)
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const user = useSelector((state: IState) => state.core.user);
   const classes = useStyles();
