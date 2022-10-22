@@ -14,6 +14,10 @@ export default function ReportList() {
       name: 'Small Group Attendance',
       component: <ServiceAttendanceReport reportName='small-group-attendance'/>,
     },
+    {
+      name: 'Salvations',
+      component: <ServiceAttendanceReport reportName='salvations'/>,
+    },
   ];
 
   return (
