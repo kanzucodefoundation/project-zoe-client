@@ -85,6 +85,12 @@ const routes: IAppRoute[] = [
     icon: AssessmentIcon,
   },
   {
+    requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
+    name: 'Summary Reports',
+    route: localRoutes.reports,
+    icon: AssessmentIcon,
+  },
+  {
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
     name: 'Admin',
     route: localRoutes.settings,
