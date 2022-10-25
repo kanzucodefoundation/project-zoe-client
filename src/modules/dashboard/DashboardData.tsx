@@ -39,10 +39,6 @@ const fields: AgField[] = [
     name: 'noOfMechanics',
   },
   {
-    path: 'metaData.noOfRecommitments',
-    name: 'noOfRecommitments',
-  },
-  {
     path: 'metaData.totalMcAttendance',
     name: 'totalMcAttendance',
   },
@@ -108,15 +104,6 @@ const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => 
         currentData.noOfBaptisms,
       ),
       icon: EmojiPeople,
-    },
-    {
-      title: 'No. of Recommitments',
-      value: printInteger(currentData.noOfRecommitments),
-      percentage: getPercentage(
-        previousData.noOfRecommitments,
-        currentData.noOfRecommitments,
-      ),
-      icon: Restore,
     },
     {
       title: 'Church Service Attendance',
