@@ -50,11 +50,11 @@ const routes: IAppRoute[] = [
   //   route: localRoutes.profile,
   //   icon: PersonIcon,
   // },
-  {
-    name: 'Calendar',
-    route: localRoutes.calendar,
-    icon: TodayIcon,
-  },
+//   {
+//     name: 'Calendar',
+//     route: localRoutes.calendar,
+//     icon: TodayIcon,
+//   },
   // {
   //   name: 'Connect',
   //   route: localRoutes.chat,
