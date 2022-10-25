@@ -248,7 +248,7 @@ const RegisterForm = ({ done }: IProps) => {
           </Grid>
           <Grid item xs={12} md={6}>
             <XRemoteSelectLoadOnOpen
-              remote={`${remoteRoutes.groupsCombo}?categories[]=Location&churchName=${userChurchName}`}
+              remote={`${remoteRoutes.groupsCombo}/locations?categories[]=Location&churchName=${userChurchName}`}
               name="churchLocation"
               label="Church Location"
               variant="outlined"
