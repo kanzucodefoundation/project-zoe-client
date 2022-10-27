@@ -13,6 +13,12 @@ export interface IReport{
   data: any[]
 }
 
+export interface IReportsFilter {
+  query?: string;
+  skip?: number;
+  limit?: number;
+}
+
 export interface ReportProps{
   reportName: string,
 }
