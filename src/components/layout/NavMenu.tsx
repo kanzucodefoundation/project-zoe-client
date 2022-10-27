@@ -78,17 +78,33 @@ const routes: IAppRoute[] = [
   // icon:EventIcon,
 
   // },
+  // {
+  //   requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
+  //   name: 'Reports',
+  //   route: localRoutes.events,
+  //   icon: AssessmentIcon,
+  // },
+  // {
+  //   requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
+  //   name: 'Summary Reports',
+  //   route: localRoutes.reports,
+  //   icon: AssessmentIcon,
+  // },
   {
-    requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
+    requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
     name: 'Reports',
     route: localRoutes.events,
     icon: AssessmentIcon,
-  },
-  {
-    requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
-    name: 'Summary Reports',
-    route: localRoutes.reports,
-    icon: AssessmentIcon,
+    items: [
+      {
+        name: 'Detailed Reports',
+        route: localRoutes.events,
+      },
+      {
+        name: 'Summaries',
+        route: localRoutes.reports,
+      },
+    ],
   },
   {
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
