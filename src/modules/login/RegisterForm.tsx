@@ -154,7 +154,7 @@ const RegisterForm = ({ done }: IProps) => {
               type="text"
               variant="outlined"
               margin="none"
-              onBlur={handleOnChurchNameChange}
+              onFocus={handleOnChurchNameChange}
             />
           </Grid>
           <Grid item xs={12} md={6}>
