@@ -4,4 +4,5 @@ my-app*
 packages/react-scripts/template
 packages/react-scripts/fixtures
 fixtures/
-src/*
+coverage/
+commitlint.config.js

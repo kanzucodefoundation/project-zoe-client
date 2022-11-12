@@ -174,7 +174,7 @@ const Contacts = () => {
     setSelected(toEdit);
     setCreateDialog(true);
   };
-  
+
   return (
     <Navigation>
       <Box p={1} className={classes.root}>
@@ -251,7 +251,7 @@ const Contacts = () => {
                   </Fragment>
                 );
               })
-            )}  
+            )}
           </List>
           {hasAnyRole(user, [appPermissions.roleCrmEdit]) ? (
             <Fab

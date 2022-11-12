@@ -49,9 +49,9 @@ const MembersCalendar = () => {
   const profile = useSelector((state: IState) => state.core.user);
   const [day, setDay] = useState<any>();
   const classes = useStyles();
-  const monthNames: string[] = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
+  const monthNames: string[] = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
 
   useEffect(() => {
     get(remoteRoutes.events, (data) => {
@@ -173,7 +173,7 @@ const MembersCalendar = () => {
       const currentMonth: number = cal.current.calendarInst.getDate().toDate().getMonth();
       const currentYear: number = cal.current.calendarInst.getDate().toDate().getFullYear();
       setCurrentMonth(currentMonth);
-      setCurrentYear(currentYear)
+      setCurrentYear(currentYear);
     }
   }, [updateCount, cal]);
 

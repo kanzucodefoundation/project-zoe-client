@@ -14,7 +14,7 @@ import * as serviceWorker from './serviceWorker';
 import theme from './theme';
 
 // add sentry set-up in production
-if(process.env.REACT_APP_ENVIRONMENT === 'production'){
+if (process.env.REACT_APP_ENVIRONMENT === 'production') {
   const SENTRY_STATUS = process.env.NODE_ENV === 'production';
   Sentry.init({
     dsn: process.env.REACT_APP_SENTRY_DSN,

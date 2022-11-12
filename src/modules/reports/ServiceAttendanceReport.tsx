@@ -7,15 +7,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-import {  useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import XTable from '../../components/table/XTable';
-import { XHeadCell } from '../../components/table/XTableHead';
 import Loading from '../../components/Loading';
 import { IMobileRow } from '../../components/DataList';
 import PersonAvatar from '../../components/PersonAvatar';
 import ListHeader from '../../components/ListHeader';
 import { IEvent } from '../events/types';
-import {  IEventState } from '../../data/events/eventsReducer';
 import { IReportState, reportsConstants } from '../../data/reports/reducer';
 import { remoteRoutes } from '../../data/constants';
 import { search } from '../../utils/ajax';
@@ -36,10 +34,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-
-
 const ServiceAttendanceReport = (reportProps: ReportProps) => {
-  const { reportName = 'service-attendance'} = reportProps;
+  const { reportName = 'service-attendance' } = reportProps;
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
@@ -55,7 +51,6 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
         </>
     ),
   });
-
 
   useEffect(() => {
     dispatch({
@@ -79,7 +74,7 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
         });
       },
     );
-  }, [filter, dispatch]);  
+  }, [filter, dispatch]);
 
   return (
     <>
@@ -97,7 +92,7 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
             {loading || !data.metadata ? (
               <Loading />
             ) : (
-              
+
               <XTable
                 headCells={data.metadata.columns}
                 data={data.data}
@@ -109,7 +104,7 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
         </Hidden>
         <Hidden mdUp>
           <List>
-            {loading || ! data?.data ? (
+            {loading || !data?.data ? (
               <Loading />
             ) : (
               data.data.map((row: any) => {

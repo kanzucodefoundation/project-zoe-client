@@ -2,11 +2,9 @@ import * as React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { lastDayOfWeek, startOfWeek } from 'date-fns/esm';
 import PDateInput from '../../components/plain-inputs/PDateInput';
-import XSelectInput from '../../components/inputs/XSelectInput';
 import { useFilter } from '../../utils/fitlerUtilities';
 import { remoteRoutes } from '../../data/constants';
 import { PRemoteSelect } from '../../components/plain-inputs/PRemoteSelect';
-import { toOptions } from '../../components/inputs/inputHelpers';
 
 interface IProps {
   onFilter: (data: any) => any;
@@ -14,7 +12,7 @@ interface IProps {
 
 const initialData: any = {
   query: '',
-  'cellGroups[]': ['All','No. Of Teenagers','No. Of Children','No. of Adults'],
+  'cellGroups[]': ['All', 'No. Of Teenagers', 'No. Of Children', 'No. of Adults'],
 
   startDate: startOfWeek(new Date()),
   endDate: lastDayOfWeek(new Date()),
@@ -22,7 +20,7 @@ const initialData: any = {
   skip: 0,
 };
 const ReportFilter = ({ onFilter }: IProps) => {
-  const { data, handleDateChange,handleComboChange } = useFilter({
+  const { data, handleDateChange, handleComboChange } = useFilter({
     initialData,
     onFilter,
     comboFields: ['cellGroups[]'],

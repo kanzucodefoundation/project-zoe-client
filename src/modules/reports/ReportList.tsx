@@ -1,12 +1,11 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import TabbedView from '../groups/TabbedView';
 import Layout from '../../components/layout/Layout';
-import UnsubmittedReports from '../events/UnsubmittedReports';
 import ServiceAttendanceReport from './ServiceAttendanceReport';
 import ListHeader from '../../components/ListHeader';
 import ReportFilter from './ReportFilter';
 import { ICrmState } from '../../data/contacts/reducer';
-import {useSelector} from 'react-redux'
 import { IReportsFilter } from './types';
 
 export default function ReportList() {

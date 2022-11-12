@@ -76,7 +76,7 @@ const ListHeader = (props: IProps) => {
               fullWidth
             />
           </Grid>
-        )}
+      )}
         <Hidden smDown>
           <Grid item xs={12} md={6}>
             <Box

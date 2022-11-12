@@ -6,7 +6,6 @@ import {
   Info,
   Money,
   People,
-  Restore,
 } from '@material-ui/icons';
 import { filter } from 'lodash';
 import React from 'react';

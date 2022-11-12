@@ -129,15 +129,15 @@ const RegisterForm = ({ done }: IProps) => {
   };
 
   const isChurchNameValid = () => {
-    if(!userChurchName){
+    if (!userChurchName) {
       Toast.error('Please enter a valid church name');
     }
   };
 
   const saveChurchName = (event: any) => {
     const churchName: string = event.target.value;
-    if(churchName !== ''){
-      setChurchName(churchName.toLowerCase().replace(/\s/g, ''))    
+    if (churchName !== '') {
+      setChurchName(churchName.toLowerCase().replace(/\s/g, ''));
     }
   };
 
@@ -163,7 +163,7 @@ const RegisterForm = ({ done }: IProps) => {
               type="text"
               variant="outlined"
               margin="none"
-              onBlurCapture={saveChurchName} // For some reason, onBlur stops validation from immediately triggering so we use onBlurCapture      
+              onBlurCapture={saveChurchName} // For some reason, onBlur stops validation from immediately triggering so we use onBlurCapture
             />
           </Grid>
           <Grid item xs={12} md={6}>

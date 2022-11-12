@@ -13,7 +13,7 @@ const devTools: any = myWindow[toolsName]
   ? myWindow[toolsName]()
   : (f: any) => f;
 const reducers: any = {
-  core, crm, tags, events, groupReports, reports
+  core, crm, tags, events, groupReports, reports,
 };
 const middleware = applyMiddleware(
   // createLogger(),

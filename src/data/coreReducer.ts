@@ -31,7 +31,7 @@ export default function reducer(state = initialState, action: any) {
       const { token, user }: ILoginResponse = action.payload;
       localStorage.setItem(AUTH_TOKEN_KEY, token);
       localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
-      return {  
+      return {
         ...state, user, isLoadingUser: false, splash: false,
       };
     }
