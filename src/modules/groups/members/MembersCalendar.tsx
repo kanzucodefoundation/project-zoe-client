@@ -37,7 +37,7 @@ const MembersCalendar = () => {
   const [event, setEvent] = useState<any>([]);
   const cal = useRef<any>(null); // this will store the `Calendar` instance.
   const [updateCount, forceUpdate] = useReducer((c) => c + 1, 0);
-  const [currentMonth, setCurrentMonth] = useState('');
+  const [currentMonth, setCurrentMonth] = useState(0);
   const [dialog, setDialog] = useState(false);
   const [value, setValue] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -48,6 +48,9 @@ const MembersCalendar = () => {
   const profile = useSelector((state: IState) => state.core.user);
   const [day, setDay] = useState<any>();
   const classes = useStyles();
+  const monthNames: string[] = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
   useEffect(() => {
     get(remoteRoutes.events, (data) => {
@@ -169,8 +172,7 @@ const MembersCalendar = () => {
       const rangeStart = cal.current.calendarInst.getDateRangeStart().getTime();
       const rangeEnd = cal.current.calendarInst.getDateRangeEnd().getTime();
 
-      const currentMonth = cal.current.calendarInst.getDateRangeEnd().toLocaleString('default', { month: 'long' });
-
+      const currentMonth: number = cal.current.calendarInst.getDate().toDate().getMonth();
       setCurrentMonth(currentMonth);
     }
   }, [updateCount, cal]);
@@ -308,7 +310,7 @@ const MembersCalendar = () => {
 
 					</Grid>
           <div className='button'>
-              <span>Current month: {currentMonth}</span>&nbsp;
+              <span>Current month: {monthNames[currentMonth]}</span>&nbsp;
               <Button
                 variant='outlined'
                 size='small'
