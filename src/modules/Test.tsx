@@ -1,48 +1,46 @@
 import React from 'react';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            display: 'flex',
-            flexWrap: 'wrap',
-        },
-        formControl: {
-            margin: theme.spacing(1),
-            minWidth: 120,
-        },
-        selectEmpty: {
-            marginTop: theme.spacing(2),
-        },
-    }),
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
 
 export default function Test() {
-    const classes = useStyles();
-    const [values, setValues] = React.useState({
-        age: '',
-        name: 'hai',
-    });
+  const classes = useStyles();
+  const [values, setValues] = React.useState({
+    age: '',
+    name: 'hai',
+  });
 
-    const inputLabel = React.useRef<HTMLLabelElement>(null);
-    const [labelWidth, setLabelWidth] = React.useState(0);
-    React.useEffect(() => {
-        setLabelWidth(inputLabel.current!.offsetWidth);
-    }, []);
+  const inputLabel = React.useRef<HTMLLabelElement>(null);
+  const [labelWidth, setLabelWidth] = React.useState(0);
+  React.useEffect(() => {
+    setLabelWidth(inputLabel.current!.offsetWidth);
+  }, []);
 
-    const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-        setValues(oldValues => ({
-            ...oldValues,
-            [event.target.name as string]: event.target.value,
-        }));
-    };
+  const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    setValues((oldValues) => ({
+      ...oldValues,
+      [event.target.name as string]: event.target.value,
+    }));
+  };
 
-    return (
+  return (
         <form className={classes.root} autoComplete="off">
             <FormControl className={classes.formControl}>
                 <InputLabel htmlFor="age-simple">Age</InputLabel>
@@ -50,8 +48,8 @@ export default function Test() {
                     value={values.age}
                     onChange={handleChange}
                     inputProps={{
-                        name: 'age',
-                        id: 'age-simple',
+                      name: 'age',
+                      id: 'age-simple',
                     }}
                 >
                     <MenuItem value={10}>Ten</MenuItem>
@@ -65,8 +63,8 @@ export default function Test() {
                     value={values.age}
                     onChange={handleChange}
                     inputProps={{
-                        name: 'age',
-                        id: 'age-helper',
+                      name: 'age',
+                      id: 'age-helper',
                     }}
                 >
                     <MenuItem value="">
@@ -103,8 +101,8 @@ export default function Test() {
                     value={values.age}
                     onChange={handleChange}
                     inputProps={{
-                        name: 'age',
-                        id: 'age-label-placeholder',
+                      name: 'age',
+                      id: 'age-label-placeholder',
                     }}
                     displayEmpty
                     name="age"
@@ -125,8 +123,8 @@ export default function Test() {
                     value={values.name}
                     onChange={handleChange}
                     inputProps={{
-                        name: 'name',
-                        id: 'name-disabled',
+                      name: 'name',
+                      id: 'name-disabled',
                     }}
                 >
                     <MenuItem value="">
@@ -144,9 +142,9 @@ export default function Test() {
                     value={values.name}
                     onChange={handleChange}
                     name="name"
-                    renderValue={value => `⚠️  - ${value}`}
+                    renderValue={(value) => `⚠️  - ${value}`}
                     inputProps={{
-                        id: 'name-error',
+                      id: 'name-error',
                     }}
                 >
                     <MenuItem value="">
@@ -164,9 +162,9 @@ export default function Test() {
                     value={values.name}
                     onChange={handleChange}
                     inputProps={{
-                        name: 'name',
-                        id: 'name-readonly',
-                        readOnly: true,
+                      name: 'name',
+                      id: 'name-readonly',
+                      readOnly: true,
                     }}
                 >
                     <MenuItem value="">
@@ -184,8 +182,8 @@ export default function Test() {
                     value={values.age}
                     onChange={handleChange}
                     inputProps={{
-                        name: 'age',
-                        id: 'age-auto-width',
+                      name: 'age',
+                      id: 'age-auto-width',
                     }}
                     autoWidth
                 >
@@ -222,7 +220,7 @@ export default function Test() {
                     onChange={handleChange}
                     name="age"
                     inputProps={{
-                        id: 'age-required',
+                      id: 'age-required',
                     }}
                     className={classes.selectEmpty}
                 >
@@ -244,8 +242,8 @@ export default function Test() {
                     onChange={handleChange}
                     labelWidth={labelWidth}
                     inputProps={{
-                        name: 'age',
-                        id: 'outlined-age-simple',
+                      name: 'age',
+                      id: 'outlined-age-simple',
                     }}
                 >
                     <MenuItem value="">
@@ -262,8 +260,8 @@ export default function Test() {
                     value={values.age}
                     onChange={handleChange}
                     inputProps={{
-                        name: 'age',
-                        id: 'filled-age-simple',
+                      name: 'age',
+                      id: 'filled-age-simple',
                     }}
                 >
                     <MenuItem value="">
@@ -275,5 +273,5 @@ export default function Test() {
                 </Select>
             </FormControl>
         </form>
-    );
+  );
 }

@@ -1,9 +1,10 @@
 import React from 'react';
+
 interface IProps {
-    value:string
+  value: string;
 }
-const EmailLink = ({value}:IProps) => (
-    <a style={{textDecoration:'none'}} href={`mailto:${value}`}>{value}</a>
+const EmailLink = ({ value }:IProps) => (
+    <a style={{ textDecoration: 'none' }} href={`mailto:${value}`}>{value}</a>
 );
 
-export default EmailLink
+export default EmailLink;

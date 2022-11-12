@@ -1,26 +1,25 @@
-import {hasValue} from "../components/inputs/inputHelpers";
+import { hasValue } from '../components/inputs/inputHelpers';
 
 export const removeEmptyFields = (data: any): any => {
-    if (hasValue(data)) {
-        const cleanData: any = {}
-        for (const key in data) {
-            if (data.hasOwnProperty(key) && hasValue(data[key])) {
-                cleanData[key] = data[key]
-            }
-        }
-        return cleanData
+  if (hasValue(data)) {
+    const cleanData: any = {};
+    for (const key in data) {
+      if (data.hasOwnProperty(key) && hasValue(data[key])) {
+        cleanData[key] = data[key];
+      }
     }
-    return {} as any
-}
-
+    return cleanData;
+  }
+  return {} as any;
+};
 
 export const cleanComboValue = (value: any): any => {
-    if (Array.isArray(value)) {
-        return value.map(cleanComboValue)
-    } else if (value && typeof value === 'object') {
-        return value.id;
-    } else if (typeof value === 'string') {
-        return value
-    }
-    return null
-}
+  if (Array.isArray(value)) {
+    return value.map(cleanComboValue);
+  } if (value && typeof value === 'object') {
+    return value.id;
+  } if (typeof value === 'string' || typeof value === 'number') {
+    return value;
+  }
+  return null;
+};

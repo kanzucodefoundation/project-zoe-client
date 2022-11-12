@@ -1,99 +1,82 @@
-import React from 'react';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import Layout from "../../components/layout/Layout";
-import {Grid} from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import {useSelector} from "react-redux";
-import {IState} from "../../data/types";
-import Widget from "./Widget";
-import Box from "@material-ui/core/Box";
-import Money from '@material-ui/icons/Money';
-import Info from '@material-ui/icons/Info';
-import People from '@material-ui/icons/People';
-import {printMoney,printInteger} from "../../utils/numberHelpers";
-import UsersByDevice from "./UsersByDevice";
+import React, { useEffect, useState } from 'react';
+import { Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import {
+  differenceInDays, format, lastDayOfWeek, startOfWeek,
+  subDays,
+} from 'date-fns';
+import Loading from '../../components/Loading';
+import DashboardData from './DashboardData';
+import Layout from '../../components/layout/Layout';
+import { search } from '../../utils/ajax';
+import { remoteRoutes } from '../../data/constants';
+import DashboardFilter from './DashboardFilter';
+import { IInterval } from '../events/types';
 
-const data = [
-    {
-        title: "Giving",
-        value: printMoney(20088766),
-        percentage: -6,
-        icon: Money
-    },
-    {
-        title: "Attendance",
-        value: printInteger(2567),
-        percentage: 4,
-        icon: Info
-    },
-    {
-        title: "MC Attendance",
-        value: 256,
-        percentage: 1,
-        icon: People
-    },
-    {
-        title: "Salvation",
-        value: 45,
-        percentage: 2,
-        icon: People
-    },
-    {
-        title: "No. of mechanics",
-        value: 56,
-        percentage: 4,
-        icon: People
-    },
-    {
-        title: "No. of Baptisms",
-        value: 5,
-        percentage: 5,
-        icon: People
-    },
-    {
-        title: "No. of recommitments",
-        value: 23,
-        percentage: 7,
-        icon: People
-    },
-    {
-        title: "No. of babies born",
-        value: 5,
-        percentage: 1,
-        icon: People
-    },             
-    {
-        title: "No. of weddings",
-        value: 3,
-        percentage: 6,
-        icon: People
-    }             
-]
+const Dashboard = () => {
+  const today = new Date();
+  const startPeriod = startOfWeek(today);
+  const endPeriod = lastDayOfWeek(today);
+  const [currData, setCurrData] = useState<any[]>([]);
+  const [prevData, setPrevData] = useState<any[]>([]);
+  const [interval, setInterval] = useState<IInterval>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const currFilter = {
+    from: format(startPeriod, 'yyyy-MM-dd'),
+    to: format(endPeriod, 'yyyy-MM-dd'),
+  };
+  const [filter, setFilter] = useState<any>({ from: currFilter.from, to: currFilter.to, limit: 5000 });
 
-export default function SimpleSelect() {
-    const profile = useSelector((state: IState) => state.core.user)
+  useEffect(() => {
+    setLoading(true);
+    search(remoteRoutes.eventsMetricsRaw, filter, (resp) => {
+      setCurrData(resp);
+    });
 
-    return (
-        <Layout>
-            <Box p={2}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Typography variant='overline' component='div'>Dashboard</Typography>
-                        <Typography variant='caption' component='div'>Here's what's happening</Typography>
-                    </Grid>
-                    {
-                        data.map(it => <Grid item xs={12} sm={6} md={4} lg={3} key={it.title}>
-                            <Widget {...it}/>
-                        </Grid>)
-                    }
-                    <Grid item xs={12} md={6} >
-                        <UsersByDevice/>
-                    </Grid>
-                    <Grid item xs={12} md={6} >
-                        <UsersByDevice/>
-                    </Grid>
-                </Grid>
-            </Box>
-        </Layout>
-    );
-}
+    const d = differenceInDays(new Date(filter.to), new Date(filter.from));
+    const prevTo = subDays(new Date(filter.from), 1);
+    const prevFrom = subDays(prevTo, d);
+
+    const prevFilter = {
+      from: format(prevFrom, 'yyyy-MM-dd'),
+      to: format(prevTo, 'yyyy-MM-dd'),
+      groupIdList: filter.groupIdList,
+    };
+    setInterval({ from: format(prevFrom, 'dd/MM'), to: format(prevTo, 'dd/MM') });
+
+    search(remoteRoutes.eventsMetricsRaw, prevFilter, (resp) => {
+      setPrevData(resp);
+    });
+    setLoading(false);
+  }, [filter]);
+
+  return (
+    <Layout>
+      <Box p={2}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="button" component="div">
+              Dashboard
+            </Typography>
+            <Typography variant="caption" component="div" style={{ marginBottom: '10px' }}>
+              Here's what's happening
+            </Typography>
+            <DashboardFilter onFilter={setFilter}/>
+          </Grid>
+          {loading ? (
+            <Loading />
+          ) : (
+            <DashboardData
+              currDataEvents={currData}
+              prevDataEvents={prevData}
+              interval={interval}
+            />
+          )}
+        </Grid>
+      </Box>
+    </Layout>
+  );
+};
+
+export default Dashboard;

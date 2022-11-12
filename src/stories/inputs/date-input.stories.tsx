@@ -1,30 +1,28 @@
 import React from 'react';
-import XForm from "../../components/forms/XForm";
-import Grid from "@material-ui/core/Grid";
-import * as yup from "yup";
-import {reqDate, reqString} from "../../data/validations";
-import {top100Films} from "./testData";
-import XComboInput from "../../components/inputs/XComboInput";
-import XDateInput from "../../components/inputs/XDateInput";
+import Grid from '@material-ui/core/Grid';
+import * as yup from 'yup';
+import XForm from '../../components/forms/XForm';
+import { reqDate } from '../../data/validations';
+import XDateInput from '../../components/inputs/XDateInput';
 
 export default {
-    title: 'Date Input',
-    component: XForm,
+  title: 'Date Input',
+  component: XForm,
 };
 
 export const Input = () => {
-    const onSubmit = (values:any) => {
-        alert(JSON.stringify(values, null, 2));
-    }
-    const schema = yup.object().shape(
-        {
-            movie: reqDate
-        }
-    )
-    const data = {
-        movie: ""
-    }
-    return (
+  const onSubmit = (values:any) => {
+    alert(JSON.stringify(values, null, 2));
+  };
+  const schema = yup.object().shape(
+    {
+      movie: reqDate,
+    },
+  );
+  const data = {
+    movie: '',
+  };
+  return (
         <XForm
             onSubmit={onSubmit}
             schema={schema}
@@ -42,5 +40,5 @@ export const Input = () => {
                 </Grid>
             </Grid>
         </XForm>
-    );
+  );
 };
