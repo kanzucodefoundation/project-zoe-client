@@ -6,10 +6,7 @@ export default {
   component: InfoMessage,
 };
 
-
-export const Basic = ()=>{
-    return <InfoMessage text="Hello World"/>
-}
-export const Complex = ()=><InfoMessage text={<span role="img" aria-label="so cool">
+export const Basic = () => <InfoMessage text="Hello World"/>;
+export const Complex = () => <InfoMessage text={<span role="img" aria-label="so cool">
 😀 😎 👍 💯
-</span>}/>
+</span>}/>;

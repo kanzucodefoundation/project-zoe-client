@@ -6,27 +6,27 @@ import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
-import {BarView} from "../Profile";
-import Paper from "@material-ui/core/Paper";
-import {useStyles} from "./styles";
-import NavMenu from "./NavMenu";
-import {Typography} from "@material-ui/core";
+import Paper from '@material-ui/core/Paper';
+import { Typography } from '@material-ui/core';
+import { BarView } from '../Profile';
+import { useStyles } from './styles';
+import NavMenu from './NavMenu';
 
 interface IProps {
-    title?: string
-    children?: any,
-    mobilePadding?: boolean
+  title?: string;
+  children?: any;
+  mobilePadding?: boolean;
 }
 
 function Layout(props: IProps) {
-    const classes = useStyles();
-    const [mobileOpen, setMobileOpen] = React.useState(false);
+  const classes = useStyles();
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
-    function handleDrawerToggle() {
-        setMobileOpen(!mobileOpen);
-    }
+  function handleDrawerToggle() {
+    setMobileOpen(!mobileOpen);
+  }
 
-    return (
+  return (
         <div className={classes.root}>
             <CssBaseline/>
             <AppBar position="fixed" className={classes.appBar} color='default'>
@@ -54,10 +54,10 @@ function Layout(props: IProps) {
                         open={mobileOpen}
                         onClose={handleDrawerToggle}
                         classes={{
-                            paper: classes.drawerPaper,
+                          paper: classes.drawerPaper,
                         }}
                         ModalProps={{
-                            keepMounted: true, // Better open performance on mobile.
+                          keepMounted: true, // Better open performance on mobile.
                         }}
                     >
                         <NavMenu/>
@@ -66,7 +66,7 @@ function Layout(props: IProps) {
                 <Hidden smDown implementation="css">
                     <Drawer
                         classes={{
-                            paper: classes.drawerPaper,
+                          paper: classes.drawerPaper,
                         }}
                         variant="permanent"
                         open={false}
@@ -82,7 +82,7 @@ function Layout(props: IProps) {
                 </Paper>
             </main>
         </div>
-    );
+  );
 }
 
-export default Layout
+export default Layout;
