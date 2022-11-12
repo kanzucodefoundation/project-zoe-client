@@ -31,6 +31,10 @@ export const idFields = (data: IContact): IRec[] => {
       label: 'Marital Status',
       value: person.civilStatus,
     },
+    {
+      label: 'Place Of Work',
+      value: person.placeOfWork,
+    },
   ];
 };
 
