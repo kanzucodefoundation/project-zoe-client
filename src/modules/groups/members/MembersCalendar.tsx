@@ -28,6 +28,7 @@ import { IEvent } from '../../events/types';
 import { IState } from '../../../data/types';
 import Layout from '../../../components/layout/Layout';
 import DisableDayOff from './DisableDayOff';
+import { useStyles } from './styles';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const intl = new Intl.DateTimeFormat('en-US');
@@ -36,7 +37,7 @@ const MembersCalendar = () => {
   const [event, setEvent] = useState<any>([]);
   const cal = useRef<any>(null); // this will store the `Calendar` instance.
   const [updateCount, forceUpdate] = useReducer((c) => c + 1, 0);
-  const [currentRange, setCurrentRange] = useState('');
+  const [currentMonth, setCurrentMonth] = useState('');
   const [dialog, setDialog] = useState(false);
   const [value, setValue] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -46,6 +47,7 @@ const MembersCalendar = () => {
   const [isNew, setIsNew] = useState<boolean>(true);
   const profile = useSelector((state: IState) => state.core.user);
   const [day, setDay] = useState<any>();
+  const classes = useStyles();
 
   useEffect(() => {
     get(remoteRoutes.events, (data) => {
@@ -167,7 +169,9 @@ const MembersCalendar = () => {
       const rangeStart = cal.current.calendarInst.getDateRangeStart().getTime();
       const rangeEnd = cal.current.calendarInst.getDateRangeEnd().getTime();
 
-      setCurrentRange(`${intl.format(rangeStart)} ~ ${intl.format(rangeEnd)}`);
+      const currentMonth = cal.current.calendarInst.getDateRangeEnd().toLocaleString('default', { month: 'long' });
+
+      setCurrentMonth(currentMonth);
     }
   }, [updateCount, cal]);
 
@@ -248,6 +252,7 @@ const MembersCalendar = () => {
 
   return (
       <Layout>
+        <div className={classes.calendarHeading}>
         <h1>Church Calendar</h1>
         <Grid item xs={12}>
         <Grid item xs={6} md={6}>
@@ -302,11 +307,8 @@ const MembersCalendar = () => {
             </EditDialog>
 
 					</Grid>
-
-          <Grid item xs={12}>
-          <div>
-            <div className='button'>
-              <span>Current range: {currentRange}</span>&nbsp;
+          <div className='button'>
+              <span>Current month: {currentMonth}</span>&nbsp;
               <Button
                 variant='outlined'
                 size='small'
@@ -332,6 +334,10 @@ const MembersCalendar = () => {
                 Next Month{'>'}
               </Button>
             </div>
+          </div>
+
+          <Grid item xs={12}>
+          <div>
             <TUICalendar
               ref={cal}
               height='1000px'
