@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { lastDayOfWeek, startOfWeek } from 'date-fns/esm';
-import PDateInput from '../../components/plain-inputs/PDateInput';
+import { format,lastDayOfWeek, startOfWeek } from 'date-fns/esm';
+import PDateInputRange from '../../components/plain-inputs/PDateInputRange';
 import XSelectInput from '../../components/inputs/XSelectInput';
 import { useFilter } from '../../utils/fitlerUtilities';
 import { remoteRoutes } from '../../data/constants';
@@ -12,12 +12,15 @@ interface IProps {
   onFilter: (data: any) => any;
 }
 
+const today = new Date();
+const startPeriod = startOfWeek(today);
+const endPeriod = lastDayOfWeek(today);
+
 const initialData: any = {
   query: '',
   'cellGroups[]': ['All','No. Of Teenagers','No. Of Children','No. of Adults'],
-
-  startDate: startOfWeek(new Date()),
-  endDate: lastDayOfWeek(new Date()),
+  from: `${format(new Date(startPeriod), 'PP')}`,
+  to: `${format(new Date(endPeriod), 'PP')}`,
   limit: 100,
   skip: 0,
 };
@@ -32,18 +35,18 @@ const ReportFilter = ({ onFilter }: IProps) => {
     <form>
       <Grid spacing={2} container>
         <Grid item xs={12} md>
-        <PDateInput
+        <PDateInputRange
             name="startDate"
-            label="Start Date"
+            label="From"
             inputVariant="outlined"
             value={data.from}
             onChange={(value) => handleDateChange('from', value)}
         />
         </Grid>
         <Grid item xs={12} md>
-        <PDateInput
+        <PDateInputRange
             name="startDate"
-            label="End Date"
+            label="To"
             inputVariant="outlined"
             value={data.to}
             onChange={(value) => handleDateChange('to', value)}
