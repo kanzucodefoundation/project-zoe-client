@@ -1,14 +1,14 @@
-export interface IReportColumn{
+export interface IReportColumn {
   name: string,
   label: string
 }
 
-export interface IReportMetadata{
+export interface IReportMetadata {
   name?: string,
   columns: Array<IReportColumn> | []
 }
 
-export interface IReport{
+export interface IReport {
   metadata: IReportMetadata,
   data: any[]
 }
@@ -19,7 +19,6 @@ export interface IReportsFilter {
   limit?: number;
 }
 
-export interface ReportProps{
+export interface ReportProps {
   reportName: string,
 }
-

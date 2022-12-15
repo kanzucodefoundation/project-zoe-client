@@ -14,7 +14,6 @@ import { del, search } from '../../../utils/ajax';
 import Toast from '../../../utils/Toast';
 import { cleanComboValue } from '../../../utils/dataHelpers';
 import { parseGooglePlace } from '../../../components/plain-inputs/PMapsInput';
-import { XMapsInput } from '../../../components/inputs/XMapsInput';
 import { IEvent } from '../types';
 import XDateTimeInput from '../../../components/inputs/XDateTimeInput';
 import { IState } from '../../../data/types';

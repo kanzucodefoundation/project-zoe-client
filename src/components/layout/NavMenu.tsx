@@ -6,12 +6,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AppsIcon from '@material-ui/icons/Apps';
 import PeopleIcon from '@material-ui/icons/People';
-import TodayIcon from '@material-ui/icons/Today';
-import PersonIcon from '@material-ui/icons/Person';
 import SettingsIcon from '@material-ui/icons/Settings';
-import ChatIcon from '@material-ui/icons/Chat';
 import BubbleChartIcon from '@material-ui/icons/BubbleChart';
-import HelpIcon from '@material-ui/icons/Help';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
@@ -25,7 +21,6 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import { useSelector } from 'react-redux';
 import { hasAnyRole } from '../../data/appRoles';
 import { navBackgroundColor } from './styles';
-import appLogo from '../../assets/cool.png';
 import { appPermissions, localRoutes } from '../../data/constants';
 import { IState } from '../../data/types';
 import { hasValue } from '../inputs/inputHelpers';
@@ -78,18 +73,6 @@ const routes: IAppRoute[] = [
   // icon:EventIcon,
 
   // },
-  // {
-  //   requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
-  //   name: 'Reports',
-  //   route: localRoutes.events,
-  //   icon: AssessmentIcon,
-  // },
-  // {
-  //   requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
-  //   name: 'Summary Reports',
-  //   route: localRoutes.reports,
-  //   icon: AssessmentIcon,
-  // },
   {
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
     name: 'Reports',
@@ -97,7 +80,7 @@ const routes: IAppRoute[] = [
     icon: AssessmentIcon,
     items: [
       {
-        name: 'Detailed Reports',
+        name: 'Details',
         route: localRoutes.events,
       },
       {
@@ -153,8 +136,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     },
     height: 58,
     width: 'auto',
-    fontSize:'25px',
-    color:'white',
+    fontSize: '25px',
+    color: 'white',
   },
   whiteText: {
     color: 'white',

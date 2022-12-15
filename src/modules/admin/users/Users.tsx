@@ -16,7 +16,7 @@ import { AddFabButton } from '../../../components/EditIconButton';
 import { search } from '../../../utils/ajax';
 import {
   appPermissions,
-  localRoutes,  
+  localRoutes,
   remoteRoutes,
 } from '../../../data/constants';
 import { hasValue } from '../../../components/inputs/inputHelpers';

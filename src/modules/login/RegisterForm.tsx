@@ -128,9 +128,17 @@ const RegisterForm = ({ done }: IProps) => {
     value === 'No' ? setIsJoinMc(true) : setIsJoinMc(false);
   };
 
-  const handleOnChurchNameChange = (event: any) => {
+  const isChurchNameValid = () => {
+    if (!userChurchName) {
+      Toast.error('Please enter a valid church name');
+    }
+  };
+
+  const saveChurchName = (event: any) => {
     const churchName: string = event.target.value;
-    setChurchName(churchName.toLowerCase().replace(/\s/g, ''));
+    if (churchName !== '') {
+      setChurchName(churchName.toLowerCase().replace(/\s/g, ''));
+    }
   };
 
   return (
@@ -151,10 +159,11 @@ const RegisterForm = ({ done }: IProps) => {
             <XTextInput
               name="churchName"
               label="Church Name"
+              autoFocus
               type="text"
               variant="outlined"
               margin="none"
-              onFocus={handleOnChurchNameChange}
+              onBlurCapture={saveChurchName} // For some reason, onBlur stops validation from immediately triggering so we use onBlurCapture
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -164,6 +173,7 @@ const RegisterForm = ({ done }: IProps) => {
               type="text"
               variant="outlined"
               margin="none"
+              onBlurCapture={isChurchNameValid}
             />
           </Grid>
           <Grid item xs={12} md={6}>
