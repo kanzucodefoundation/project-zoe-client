@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -9,6 +10,9 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import Divider from '@material-ui/core/Divider';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
 import { Alert } from '@material-ui/lab';
 import { IGroupMembership } from '../types';
 import { search } from '../../../utils/ajax';
@@ -41,7 +45,7 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
 
   const fetchMembers = useCallback(() => {
     setLoading(true);
-    console.log('fetchMembers', groupId);
+    console.log('fetchMembers',data.length, groupId);
     search(
       remoteRoutes.groupsMembership,
       {
@@ -92,11 +96,43 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
     fetchMembers();
     setAddingMembers(false);
   }
+  
+  function handleQuerySearch(query: string) {
+    let searched = data.filter(mbr => mbr.contact.name.toLowerCase().includes(query.toLowerCase()));
+    searched && query.length > 0 ? setData(searched): fetchMembers();
+  }
 
   if (loading) return <Loading />;
 
   return (
     <Grid container>
+      <Grid item xs={12} md={6}>
+      {data.length > 0 ? (
+        <Box p={2}>
+            <Typography variant="body2">Total number of members:  <strong>{data.length}</strong></Typography>
+          </Box>
+        ):('')
+      }
+      </Grid>
+      <Grid item xs={12} md={6}>
+        <TextField
+          autoComplete="off"
+          hiddenLabel
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="inherit" />
+              </InputAdornment>
+            ),
+          }}
+          onChange={(e) => handleQuerySearch(e.target.value)}
+          variant="outlined"
+          size="small"
+          name="query"
+          placeholder="Search here ..."
+          fullWidth
+        />
+      </Grid>
       <Grid item xs={12}>
         <Box display="flex" pt={1} style={{ paddingBottom: 20 }}>
           <Box display="flex" justifyContent="flex-end">
@@ -124,8 +160,11 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
               </Alert>
             </ListItem>
           ) : (
-            data.map((mbr) => (
+            data.map((mbr,i) => (
                 <ListItem key={mbr.id} button onClick={handleSelected(mbr)}>
+                  <ListItemText
+                    primary={i+1}
+                  />
                   <ListItemAvatar>
                     <PersonAvatar data={mbr.contact} />
                   </ListItemAvatar>
@@ -163,6 +202,7 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
         </EditDialog>
       ) : null}
     </Grid>
+    
   );
 };
 
