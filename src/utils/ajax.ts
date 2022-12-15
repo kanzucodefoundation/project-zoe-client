@@ -9,6 +9,21 @@ type CallbackFunction = (data?: any) => void;
 type ErrorCallback = (err: any, res: superagent.Response) => void;
 type EndCallback = (data?: any) => void;
 
+export const extractBadRequestErrorMessage = (message: any, errors: any) => {
+  let msg = 'Invalid request format';
+  if (typeof message === 'string') {
+    msg = message;
+  }
+  if (Array.isArray(message)) {
+    [msg] = message;
+  }
+  if (hasNoValue(msg) && hasValue(errors)) {
+    [msg] = errors;
+  }
+  return msg;
+};
+
+// eslint-disable-next-line @typescript-eslint/default-param-last
 export const handleError = (err: any = {}, res: superagent.Response) => {
   const authError = 22000987;
   const ajaxError = 22000987;
@@ -18,16 +33,7 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
     window.location.reload();
   } else if (res && res.badRequest) {
     const { message, errors } = res.body;
-    let msg = 'Invalid request format';
-    if (typeof message === 'string') {
-      msg = message;
-    }
-    if (Array.isArray(message)) {
-      msg = message[0];
-    }
-    if (hasNoValue(msg) && hasValue(errors)) {
-      msg = errors[0];
-    }
+    const msg = extractBadRequestErrorMessage(message, errors);
     Toast.error(msg || defaultMessage, ajaxError);
   } else if (
     (res && res.clientError)
@@ -46,6 +52,7 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
 };
 
 const timeout = 0;
+// eslint-disable-next-line @typescript-eslint/default-param-last
 export const isAuthError = (err: any = {}, res: superagent.Response) => {
   if (err) {
     console.log(err);
@@ -92,7 +99,7 @@ export const get = (
     .end(handleResponse(callBack, errorCallBack, endCallBack));
 };
 const cleanUp = (data: any = {}) => Object.fromEntries(
-  Object.entries(data).filter(([_, v]) => v !== undefined),
+  Object.entries(data).filter(([, v]) => v !== undefined),
 );
 
 export const search = (
