@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 
@@ -8,7 +8,9 @@ import Button from '@material-ui/core/Button';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { hasNoValue } from '../../components/inputs/inputHelpers';
 import { remoteRoutes } from '../../data/constants';
-import { downLoad, postFile, triggerDownLoad } from '../../utils/ajax';
+import {
+  downLoad, postFile, triggerDownLoad, extractBadRequestErrorMessage,
+} from '../../utils/ajax';
 import EditDialog from '../../components/EditDialog';
 import { getRandomStr } from '../../utils/stringHelpers';
 import Loading from '../../components/Loading';
@@ -21,7 +23,7 @@ interface IProps {
   onDone: () => any;
 }
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   zone: {
     width: 400,
   },
@@ -31,23 +33,31 @@ const ContactUpload = ({ show, onClose, onDone }: IProps) => {
   const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
+  const [uploadErrorMessage, setUploadErrorMessage] = useState<string>('Upload failed');
   const [files, setFiles] = useState<any[] | null>(null);
 
-  const onDrop = useCallback((files: any[]) => {
-    if (hasNoValue(files)) {
+  const onDrop = useCallback((uploadedFiles: any[]) => {
+    if (hasNoValue(uploadedFiles)) {
       return;
     }
-    setFiles(files);
+    setFiles(uploadedFiles);
     setLoading(true);
     const formData = new FormData();
-    formData.append('file', files[0]);
+    formData.append('file', uploadedFiles[0]);
     postFile(
       remoteRoutes.contactsPeopleUpload,
       formData,
-      (data) => {
+      () => {
         setSuccess(true);
       },
-      undefined,
+      (err, res) => {
+        if (res && res.badRequest) {
+          const { message, errors } = res.body;
+          const uploadError = extractBadRequestErrorMessage(message, errors);
+          setUploadErrorMessage(uploadError);
+        }
+        setSuccess(false);
+      },
       () => {
         setLoading(false);
       },
@@ -77,7 +87,7 @@ const ContactUpload = ({ show, onClose, onDone }: IProps) => {
                 {success ? (
                   <Alert severity="success">Upload complete</Alert>
                 ) : (
-                  <Alert severity="error">Upload failed</Alert>
+                  <Alert severity="error">{uploadErrorMessage}</Alert>
                 )}
               </Box>
             )}
