@@ -1,15 +1,15 @@
 import * as React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { format,lastDayOfWeek, startOfWeek } from 'date-fns/esm';
+import { format, startOfWeek,lastDayOfWeek } from 'date-fns/esm';
+import PDateInput from '../../components/plain-inputs/PDateInput';
 import PDateInputRange from '../../components/plain-inputs/PDateInputRange';
-import XSelectInput from '../../components/inputs/XSelectInput';
 import { useFilter } from '../../utils/fitlerUtilities';
 import { remoteRoutes } from '../../data/constants';
 import { PRemoteSelect } from '../../components/plain-inputs/PRemoteSelect';
-import { toOptions } from '../../components/inputs/inputHelpers';
 
 interface IProps {
   onFilter: (data: any) => any;
+  reportName?:string;
 }
 
 const today = new Date();
@@ -24,19 +24,20 @@ const initialData: any = {
   limit: 100,
   skip: 0,
 };
-const ReportFilter = ({ onFilter }: IProps) => {
+const ReportFilter = ({ onFilter,reportName }: IProps) => {
   const { data, handleDateChange,handleComboChange } = useFilter({
     initialData,
     onFilter,
     comboFields: ['cellGroups[]'],
   });
-
   return (
     <form>
       <Grid spacing={2} container>
+        {reportName === 'service-attendance' ? (
+        <>
         <Grid item xs={12} md>
         <PDateInputRange
-            name="startDate"
+            name="from"
             label="From"
             inputVariant="outlined"
             value={data.from}
@@ -45,13 +46,36 @@ const ReportFilter = ({ onFilter }: IProps) => {
         </Grid>
         <Grid item xs={12} md>
         <PDateInputRange
-            name="startDate"
+            name="to"
             label="To"
             inputVariant="outlined"
             value={data.to}
             onChange={(value) => handleDateChange('to', value)}
         />
         </Grid>
+        </>
+        ):(
+        <>
+        <Grid item xs={12} md>
+        <PDateInput
+            name="from"
+            label="From"
+            inputVariant="outlined"
+            value={data.from}
+            onChange={(value) => handleDateChange('from', value)}
+        />
+        </Grid>
+        <Grid item xs={12} md>
+        <PDateInput
+            name="to"
+            label="To"
+            inputVariant="outlined"
+            value={data.to}
+            onChange={(value) => handleDateChange('to', value)}
+        />
+        </Grid>
+        </>
+        )}
         <Grid item xs={12} md>
           <PRemoteSelect
             remote={remoteRoutes.groupsCombo}

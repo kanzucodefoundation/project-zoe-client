@@ -25,7 +25,6 @@ const ContactFilter = ({ onFilter }: IProps) => {
     onFilter,
     comboFields: ['churchLocations[]', 'cellGroups[]'],
   });
-
   return (
     <form>
       <Grid spacing={2} container>
@@ -61,7 +60,6 @@ const ContactFilter = ({ onFilter }: IProps) => {
             searchOnline
           />
         </Grid>
-
         <Grid item xs={12} md>
           <TextField
             name="email"

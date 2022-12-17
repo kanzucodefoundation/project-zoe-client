@@ -18,6 +18,7 @@ import { hasAnyRole } from '../data/appRoles';
 interface IProps {
   onFilter: (data: any) => void;
   filter: any;
+  reportName?: string;
   buttons?: any;
   loading: boolean;
   filterComponent?: any;
@@ -28,9 +29,9 @@ interface IProps {
 
 const ListHeader = (props: IProps) => {
   const [showFilter, setShowFilter] = useState(false);
+  const [value, setValue] = useState("");
   const { showBreadCrumbs = true, enableFiltering = true } = props;
   const profile = useSelector((state: IState) => state.core.user);
-
   function handleFilterToggle() {
     setShowFilter(!showFilter);
   }
@@ -39,6 +40,9 @@ const ListHeader = (props: IProps) => {
     props.onFilter({ ...props.filter, query });
   }
 
+  const updateReportFilter =(newValue:string) =>{
+      setValue(newValue)
+  }
   return (
     <div>
       {showBreadCrumbs && (

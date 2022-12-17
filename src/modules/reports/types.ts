@@ -21,5 +21,6 @@ export interface IReportsFilter {
 
 export interface ReportProps{
   reportName: string,
+  updateReportName:any,
 }
 

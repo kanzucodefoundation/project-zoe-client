@@ -14,18 +14,24 @@ export default function ReportList() {
   const [filter, setFilter] = useState<IReportsFilter>({
     limit: 200,
   });
+  const [reportName,setReportName] = useState("")
+
+  function updateReport(newValue:string){
+      setReportName(newValue)
+  }
+  
   const tabs = [
     {
       name: 'Service Attendance',
-      component: <ServiceAttendanceReport reportName='service-attendance' />,
+      component: <ServiceAttendanceReport reportName='service-attendance' updateReportName={updateReport}/>,
     },
     {
       name: 'Small Group Attendance',
-      component: <ServiceAttendanceReport reportName='small-group-attendance'/>,
+      component: <ServiceAttendanceReport reportName='small-group-attendance' updateReportName={updateReport}/>,
     },
     {
       name: 'Salvations',
-      component: <ServiceAttendanceReport reportName='salvations'/>,
+      component: <ServiceAttendanceReport reportName='salvations' updateReportName={updateReport}/>,
     },
   ];
 
@@ -35,7 +41,7 @@ export default function ReportList() {
           title="Summary Reports"
           onFilter={setFilter}
           filter={filter}
-          filterComponent={<ReportFilter onFilter={setFilter} />}
+          filterComponent={<ReportFilter onFilter={setFilter} reportName={reportName}/>}
           loading={loading}
         />
       <TabbedView tabs={tabs} />

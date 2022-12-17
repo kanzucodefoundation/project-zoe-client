@@ -18,7 +18,7 @@ interface IProps {
 }
 
 const disableDates = (date:any):boolean => {
-  let disabledDays = date.getDay() === 1 || date.getDay() === 2 || date.getDay() === 3 || date.getDay() === 4 || date.getDay() === 5;
+  let disabledDays = date.getDay() === 1 || date.getDay() === 2 || date.getDay() === 3 || date.getDay() === 4 || date.getDay() === 5 || date.getDay() === 6;
   return disabledDays;
 }
 

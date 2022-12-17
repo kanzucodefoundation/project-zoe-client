@@ -36,17 +36,15 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-
-
 const ServiceAttendanceReport = (reportProps: ReportProps) => {
-  const { reportName = 'service-attendance'} = reportProps;
+  const { reportName = 'service-attendance',updateReportName} = reportProps;
   const dispatch = useDispatch();
-  const [filter, setFilter] = useState<any>({ limit: 5000 });
+  const [filter, setFilter] = useState<any>({ limit: 5000});
   const classes = useStyles();
-  const { data, loading }: IReportState = useSelector(
+  const { data , loading }: IReportState = useSelector(
     (state: any) => state.reports,
   );
-
+  updateReportName(reportName)
   const toMobileRow = (data: IEvent): IMobileRow => ({
     avatar: <PersonAvatar data={data} />,
     primary: reportName,
@@ -80,7 +78,6 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
       },
     );
   }, [filter, dispatch]);  
-
   return (
     <>
       <Box p={1} className={classes.root}>
