@@ -31,9 +31,13 @@ interface IProps {
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
     width: '100%',
-    maxWidth: 360,
+    maxWidth: '100%',
     backgroundColor: theme.palette.background.paper,
   },
+  flexContent: {
+    flex:0,
+    marginTop:20
+  }
 }));
 
 const MembersList = ({ groupId, isLeader }: IProps) => {
@@ -160,20 +164,21 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
               </Alert>
             </ListItem>
           ) : (
-            data.map((mbr,i) => (
-                <ListItem key={mbr.id} button onClick={handleSelected(mbr)}>
-                  <ListItemText
-                    primary={i+1}
-                  />
-                  <ListItemAvatar>
-                    <PersonAvatar data={mbr.contact} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={mbr.contact.name}
-                    secondary={`Role: ${mbr.role}`}
-                  />
-                </ListItem>
-            ))
+              data.map((mbr,i) => (
+              <ListItem key={mbr.id} button onClick={handleSelected(mbr)} alignItems="flex-start">
+                 <ListItemText
+                  primary={i + 1}
+                  className={classes.flexContent}
+                />
+                <ListItemAvatar style={{ marginLeft:30 }}>
+                  <PersonAvatar data={mbr.contact} />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={mbr.contact.name}
+                  secondary={`Role: ${mbr.role}`}
+                />
+              </ListItem>
+              ))
           )}
         </List>
       </Grid>
