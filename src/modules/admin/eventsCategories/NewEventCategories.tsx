@@ -41,8 +41,7 @@ const NewEventCategories = ({
   }
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
-    const removeAllSpaces = removeStringSpaces(values.name);
-    const categoryId = toLowerCase(removeAllSpaces);
+    const categoryId = data.value.id;
 
     const toSave = {
       id: categoryId,
