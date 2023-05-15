@@ -8,6 +8,7 @@ import XTextInput from '../../../components/inputs/XTextInput';
 import { remoteRoutes } from '../../../data/constants';
 
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
+import { hasValue } from '../../../components/inputs/inputHelpers';
 
 interface IProps {
   data?: any | null;
@@ -25,7 +26,7 @@ const initialValues = {
   name: '',
 };
 
-const NewEventCategories = ({
+const EditGroupCategory = ({
   data,
   isNew,
   onCreated,
@@ -41,7 +42,10 @@ const NewEventCategories = ({
   }
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
+    const categoryId = data.value.id;
+
     const toSave = {
+      id: categoryId,
       name: values.name,
     };
 
@@ -90,4 +94,4 @@ const NewEventCategories = ({
   );
 };
 
-export default NewEventCategories;
+export default EditGroupCategory;
