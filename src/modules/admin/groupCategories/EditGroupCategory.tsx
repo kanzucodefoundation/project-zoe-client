@@ -52,7 +52,7 @@ const EditGroupCategory = ({
     console.log(toSave);
 
     const submission: ISubmission = {
-      url: remoteRoutes.eventsCategories,
+      url: remoteRoutes.groupsCategories,
       values: toSave,
       actions,
       isNew,

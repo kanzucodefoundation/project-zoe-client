@@ -43,17 +43,14 @@ const NewGroupCategories = ({
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const removeAllSpaces = removeStringSpaces(values.name);
-    const categoryId = toLowerCase(removeAllSpaces);
     let toSave;
     if (hasValue(data)) {
       toSave = {
-        id: values.id,
-        name: values.name,
+        name: removeAllSpaces,
       };
     } else {
       toSave = {
-        id: categoryId,
-        name: values.name,
+        name: removeAllSpaces,
       };
     }
 
