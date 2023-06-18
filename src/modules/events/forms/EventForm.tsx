@@ -97,6 +97,7 @@ const EventForm = ({
       parentId: values.group.parentId,
       startDate: values.startDate,
       endDate: values.endDate,
+      details: values.summary,
       submittedAt: new Date(),
       submittedById: user.contactId,
 
