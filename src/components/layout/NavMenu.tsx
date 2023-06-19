@@ -80,11 +80,11 @@ const routes: IAppRoute[] = [
     icon: AssessmentIcon,
     items: [
       {
-        name: 'Details',
-        route: localRoutes.events,
+        name: 'Submit',
+        route: localRoutes.reportsSubmit,
       },
       {
-        name: 'Summaries',
+        name: 'View Submissions',
         route: localRoutes.reports,
       },
     ],

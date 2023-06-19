@@ -12,7 +12,7 @@ export interface IReportState {
 }
 
 const initialState: IReportState = {
-  data: { data: [], metadata: { columns: [] } },
+  data: { data: [], metadata: { columns: [] }, footer: [], columns: [] },
   loading: true,
 };
 

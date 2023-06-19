@@ -10,7 +10,9 @@ export interface IReportMetadata {
 
 export interface IReport {
   metadata: IReportMetadata,
-  data: any[]
+  data: any[],
+  footer: string[],
+  columns:  Array<IReportColumn> | []
 }
 
 export interface IReportsFilter {

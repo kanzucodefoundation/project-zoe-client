@@ -58,7 +58,7 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
       payload: true,
     });
     search(
-      `${remoteRoutes.reports}/${reportName}`,
+      `${remoteRoutes.reports}/6/submissions`, //@TODO Use the proper
       filter,
       (resp) => {
         dispatch({
@@ -89,12 +89,12 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
         />
         <Hidden smDown>
           <Box pt={1}>
-            {loading || !data.metadata ? (
+            {loading || !data.data ? (
               <Loading />
             ) : (
 
               <XTable
-                headCells={data.metadata.columns}
+                headCells={data.columns}
                 data={data.data}
                 initialRowsPerPage={10}
                 initialSortBy="name"
