@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { IReportColumn } from './types';
+import Layout from '../../components/layout/Layout';
 
 type ReportFormProps = {
   reportId: string;
@@ -50,6 +51,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
   };
 
   return (
+    <Layout>
     <form className={classes.form} onSubmit={handleSubmit}>
       {fields.map((field) => (
         <TextField
@@ -70,6 +72,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
         Submit
       </Button>
     </form>
+    </Layout>
   );
 };
 
