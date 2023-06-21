@@ -4,10 +4,11 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import { IReportColumn } from './types';
 
 type ReportFormProps = {
   reportId: string;
-  fields: string[];
+  fields: IReportColumn[];
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -52,11 +53,11 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
     <form className={classes.form} onSubmit={handleSubmit}>
       {fields.map((field) => (
         <TextField
-          key={field}
+          key={field.name}
           className={classes.field}
-          label={field}
-          name={field}
-          value={formData[field] || ''}
+          label={field.label}
+          name={field.name}
+          value={formData[field.name] || ''}
           onChange={handleChange}
         />
       ))}

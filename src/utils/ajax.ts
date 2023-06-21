@@ -110,7 +110,6 @@ export const search = (
   endCallBack?: EndCallback,
 ) => {
   const searchData = cleanUp(data);
-  console.log('searchData', searchData);
   superagent
     .get(url)
     .set('Authorization', `Bearer ${getToken()}`)
