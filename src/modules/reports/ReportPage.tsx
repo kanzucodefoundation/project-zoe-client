@@ -6,14 +6,13 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { remoteRoutes } from '../../data/constants';
 import { get } from '../../utils/ajax';
-import Loading from '../../components/Loading';
-import ReportForm from './ReportFormSubmit';
 import Layout from '../../components/layout/Layout';
 import { ListItem, List, ListItemText } from '@material-ui/core';
-import { IReport, IReportColumn, ReportProps } from './types';
+import { IReport, IReportColumn } from './types';
 import ServiceAttendanceReport from './ServiceAttendanceReport';
+import ReportDetail from './ReportDetail';
+import Loading from '../../components/Loading';
 
- 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -25,53 +24,16 @@ const useStyles = makeStyles((theme: Theme) =>
     reportList: {
       marginTop: theme.spacing(2),
     },
-    reportItem: {
-      cursor: 'pointer',
-      marginBottom: theme.spacing(1),
+    listItem: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     },
     buttonContainer: {
-        marginLeft: theme.spacing(2),
+      marginLeft: theme.spacing(2),
     },
-    listItem: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      },
-    
   })
 );
-
-
-const ReportDetail: React.FC<{ report: IReport; reportFields: IReportColumn[]; onBackToList: () => void }> = ({
-  report,
-  reportFields,
-  onBackToList,
-}) => {
-  const classes = useStyles();
-
-  return (
-    <>
-      <Typography variant="h4" className={classes.title}>
-        Report Submission
-      </Typography>
-      <Box mt={2}>
-        <Typography variant="subtitle1">
-          Report ID: {report.id}
-        </Typography>
-      </Box>
-      <Box mt={2}>
-        <button onClick={onBackToList}>Back to Report List</button>
-      </Box>
-      <Box mt={2}>
-        {reportFields.length > 0 ? (
-          <ReportForm reportId={report.id.toString()} fields={reportFields} />
-        ) : (
-          <Loading />
-        )}
-      </Box>
-    </>
-  );
-};
 
 const ReportPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -103,7 +65,7 @@ const ReportPage: React.FC = () => {
       (response: any) => {
         if (Array.isArray(response.fields)) {
           setReportFields(response.fields);
-          setSelectedReport({id: report.id, name: report.name});
+          setSelectedReport({ id: report.id, name: report.name });
         } else {
           console.error('Failed to fetch report fields');
         }
@@ -113,7 +75,7 @@ const ReportPage: React.FC = () => {
   };
 
   const handleViewSubmissions = async (report: IReport) => {
-    setSelectedReport({id: report.id, name: report.name});
+    setSelectedReport({ id: report.id, name: report.name });
     setIsViewingReportSubmissions(true);
   };
 
@@ -122,8 +84,6 @@ const ReportPage: React.FC = () => {
     setReportFields([]);
     setIsViewingReportSubmissions(false);
   };
-
-
 
   if (loading) {
     return <Loading />;
@@ -149,36 +109,35 @@ const ReportPage: React.FC = () => {
     );
   }
 
-
   return (
     <Layout>
-  <div className={classes.root}>
-    <Typography variant="button" className={classes.title}>
-      Report List
-    </Typography>
-    <Box mt={2} className={classes.reportList}>
-      <List>
-        {reports.map((report) => (
-          <ListItem key={report.id} className={classes.listItem}>
-            <ListItemText primary={report.name} />
-            <div className={classes.buttonContainer}>
-              <Button variant="contained" color="primary" onClick={() => handleSubmitReport(report)}>
-                Submit Report
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleViewSubmissions(report)}
-              >
-                View Submissions
-              </Button>
-            </div>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  </div>
-</Layout>
+      <div className={classes.root}>
+        <Typography variant="button" className={classes.title}>
+          Report List
+        </Typography>
+        <Box mt={2} className={classes.reportList}>
+          <List>
+            {reports.map((report) => (
+              <ListItem key={report.id} className={classes.listItem}>
+                <ListItemText primary={report.name} />
+                <div className={classes.buttonContainer}>
+                  <Button variant="contained" color="primary" onClick={() => handleSubmitReport(report)}>
+                    Submit Report
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleViewSubmissions(report)}
+                  >
+                    View Submissions
+                  </Button>
+                </div>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </div>
+    </Layout>
   );
 };
 
