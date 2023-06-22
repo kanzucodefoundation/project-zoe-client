@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 }));
 
 const ServiceAttendanceReport = (reportProps: ReportProps) => {
-  const { reportName = 'Small Group Attendance' } = reportProps;
+  const { report, onBackToList } = reportProps;
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
@@ -49,7 +49,7 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
 
   const toMobileRow = (data: IEvent): IMobileRow => ({
     avatar: <PersonAvatar data={data} />,
-    primary: reportName,
+    primary: report.name,
     secondary: (
         <>
         </>
@@ -62,7 +62,7 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
       payload: true,
     });
     search(
-      `${remoteRoutes.reports}/6/submissions`, //@TODO Use the proper
+      `${remoteRoutes.reports}/${report.id}/submissions`,
       filter,
       (resp) => {
         dispatch({
@@ -84,8 +84,11 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
     <>
       <Box p={1} className={classes.root}>
         <Typography variant="button" className={classes.title}>
-          { reportName } submissions
+          { report.name } submissions
         </Typography>
+        <Box mt={2}>
+          <button onClick={onBackToList}>Back to Report List</button>
+        </Box>
         <ListHeader
           title="Report Submissions"
           onFilter={setFilter}
@@ -101,8 +104,8 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
             ) : (
 
               <XTable
-                headCells={data.columns}
-                data={data.data}
+                headCells={data.columns || []}
+                data={data.data || []}
                 initialRowsPerPage={10}
                 initialSortBy="name"
               />

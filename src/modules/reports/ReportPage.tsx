@@ -10,7 +10,7 @@ import Loading from '../../components/Loading';
 import ReportForm from './ReportFormSubmit';
 import Layout from '../../components/layout/Layout';
 import { ListItem, List, ListItemText } from '@material-ui/core';
-import { IReportColumn, ReportProps } from './types';
+import { IReport, IReportColumn, ReportProps } from './types';
 import ServiceAttendanceReport from './ServiceAttendanceReport';
 
  
@@ -41,14 +41,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Report {
-  id: number;
-  title?: string;
-  name?: string;
-}
 
-const ReportDetail: React.FC<{ reportId: number; reportFields: IReportColumn[]; onBackToList: () => void }> = ({
-  reportId,
+const ReportDetail: React.FC<{ report: IReport; reportFields: IReportColumn[]; onBackToList: () => void }> = ({
+  report,
   reportFields,
   onBackToList,
 }) => {
@@ -61,7 +56,7 @@ const ReportDetail: React.FC<{ reportId: number; reportFields: IReportColumn[]; 
       </Typography>
       <Box mt={2}>
         <Typography variant="subtitle1">
-          Report ID: {reportId}
+          Report ID: {report.id}
         </Typography>
       </Box>
       <Box mt={2}>
@@ -69,7 +64,7 @@ const ReportDetail: React.FC<{ reportId: number; reportFields: IReportColumn[]; 
       </Box>
       <Box mt={2}>
         {reportFields.length > 0 ? (
-          <ReportForm reportId={reportId.toString()} fields={reportFields} />
+          <ReportForm reportId={report.id.toString()} fields={reportFields} />
         ) : (
           <Loading />
         )}
@@ -80,10 +75,8 @@ const ReportDetail: React.FC<{ reportId: number; reportFields: IReportColumn[]; 
 
 const ReportPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [reports, setReports] = useState<Report[]>([]);
-  const [reportSubmissions, setReportSubmissions] = useState<any[]>([]); //@TODO Fix Any
-  const [selectedReport, setSelectedReport] = useState<number | null>(null);
-  const [selectedReportName, setSelectedReportName] = useState<string | null>(null);
+  const [reports, setReports] = useState<IReport[]>([]);
+  const [selectedReport, setSelectedReport] = useState<IReport | null>(null);
   const [isViewingReportSubmissions, setIsViewingReportSubmissions] = useState<boolean>(false);
   const [reportFields, setReportFields] = useState<IReportColumn[]>([]);
   const classes = useStyles();
@@ -104,13 +97,13 @@ const ReportPage: React.FC = () => {
     fetchReports();
   }, []);
 
-  const handleSubmitReport = async (reportId: number) => {
+  const handleSubmitReport = async (report: IReport) => {
     get(
-      `${remoteRoutes.reports}/${reportId}`,
+      `${remoteRoutes.reports}/${report.id}`,
       (response: any) => {
         if (Array.isArray(response.fields)) {
           setReportFields(response.fields);
-          setSelectedReport(reportId);
+          setSelectedReport({id: report.id, name: report.name});
         } else {
           console.error('Failed to fetch report fields');
         }
@@ -119,26 +112,15 @@ const ReportPage: React.FC = () => {
     );
   };
 
-  const handleViewSubmissions = async (reportId: number, reportName: string) => {
-    get(
-      `${remoteRoutes.reports}/${reportId}/submissions`,
-      (response: any) => {
-        if (Array.isArray(response.data)) {
-          setReportSubmissions(response.data);
-          setSelectedReport(reportId);
-          setIsViewingReportSubmissions(true);
-          setSelectedReportName(reportName);
-        } else {
-          console.error('Failed to fetch report submissions');
-        }
-      },
-      (error) => console.error('Failed to fetch report submissions', error)
-    );
+  const handleViewSubmissions = async (report: IReport) => {
+    setSelectedReport({id: report.id, name: report.name});
+    setIsViewingReportSubmissions(true);
   };
 
   const handleBackToList = () => {
     setSelectedReport(null);
     setReportFields([]);
+    setIsViewingReportSubmissions(false);
   };
 
 
@@ -151,7 +133,7 @@ const ReportPage: React.FC = () => {
     return (
       <Layout>
         <div className={classes.root}>
-          <ServiceAttendanceReport reportName={selectedReportName} reportId={selectedReport} reportFields={reportFields} onBackToList={handleBackToList} />
+          <ServiceAttendanceReport report={selectedReport} onBackToList={handleBackToList} />
         </div>
       </Layout>
     );
@@ -161,7 +143,7 @@ const ReportPage: React.FC = () => {
     return (
       <Layout>
         <div className={classes.root}>
-          <ReportDetail reportId={selectedReport} reportFields={reportFields} onBackToList={handleBackToList} />
+          <ReportDetail report={selectedReport} reportFields={reportFields} onBackToList={handleBackToList} />
         </div>
       </Layout>
     );
@@ -180,13 +162,13 @@ const ReportPage: React.FC = () => {
           <ListItem key={report.id} className={classes.listItem}>
             <ListItemText primary={report.name} />
             <div className={classes.buttonContainer}>
-              <Button variant="contained" color="primary" onClick={() => handleSubmitReport(report.id)}>
+              <Button variant="contained" color="primary" onClick={() => handleSubmitReport(report)}>
                 Submit Report
               </Button>
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => handleViewSubmissions(report.id, report.name)}
+                onClick={() => handleViewSubmissions(report)}
               >
                 View Submissions
               </Button>

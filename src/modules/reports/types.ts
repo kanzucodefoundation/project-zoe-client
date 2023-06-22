@@ -9,10 +9,13 @@ export interface IReportMetadata {
 }
 
 export interface IReport {
-  metadata: IReportMetadata,
-  data: any[],
-  footer: string[],
-  columns:  Array<IReportColumn> | []
+  id: number;
+  title?: string;
+  name?: string;
+  metadata?: IReportMetadata,
+  data?: any[],
+  footer?: string[],
+  columns?:  Array<IReportColumn> | []
 }
 
 export interface IReportsFilter {
@@ -22,8 +25,6 @@ export interface IReportsFilter {
 }
 
 export interface ReportProps {
-  reportName: string,
-  reportId: number,
-  reportFields: any, //@TODO Update this
+  report: IReport,
   onBackToList: () => void,
 }

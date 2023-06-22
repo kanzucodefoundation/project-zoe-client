@@ -16,15 +16,15 @@ export default function ReportSubmissionsList() {
   const tabs = [
     {
       name: 'Service Attendance',
-      component: <ServiceAttendanceReport reportName='service-attendance' />,
+      component: <ServiceAttendanceReport report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
     },
     {
       name: 'Small Group Attendance',
-      component: <ServiceAttendanceReport reportName='small-group-attendance'/>,
+      component: <ServiceAttendanceReport report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
     },
     {
       name: 'Salvations',
-      component: <ServiceAttendanceReport reportName='salvations'/>,
+      component: <ServiceAttendanceReport report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
     },
   ];
 
