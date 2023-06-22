@@ -8,7 +8,7 @@ import ReportFilter from './ReportFilter';
 import { ICrmState } from '../../data/contacts/reducer';
 import { IReportsFilter } from './types';
 
-export default function ReportList() {
+export default function ReportSubmissionsList() {
   const { data, loading }: ICrmState = useSelector((state: any) => state.crm);
   const [filter, setFilter] = useState<IReportsFilter>({
     limit: 200,
@@ -31,7 +31,7 @@ export default function ReportList() {
   return (
     <Layout>
       <ListHeader
-          title="Summary Reports"
+          title="Report Submissions"
           onFilter={setFilter}
           filter={filter}
           filterComponent={<ReportFilter onFilter={setFilter} />}
