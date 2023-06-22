@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-const ServiceAttendanceReport = (reportProps: ReportProps) => {
+const ReportSubmissions = (reportProps: ReportProps) => {
   const { report, onBackToList } = reportProps;
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
@@ -144,4 +144,4 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
   );
 };
 
-export default ServiceAttendanceReport;
+export default ReportSubmissions;

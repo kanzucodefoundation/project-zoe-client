@@ -9,7 +9,7 @@ import { get } from '../../utils/ajax';
 import Layout from '../../components/layout/Layout';
 import { ListItem, List, ListItemText } from '@material-ui/core';
 import { IReport, IReportColumn } from './types';
-import ServiceAttendanceReport from './ServiceAttendanceReport';
+import ReportSubmissions from './ReportSubmissions';
 import ReportDetail from './ReportDetail';
 import Loading from '../../components/Loading';
 
@@ -42,7 +42,6 @@ const ReportPage: React.FC = () => {
   const [isViewingReportSubmissions, setIsViewingReportSubmissions] = useState<boolean>(false);
   const [reportFields, setReportFields] = useState<IReportColumn[]>([]);
   const classes = useStyles();
-  const history = useHistory();
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -93,7 +92,7 @@ const ReportPage: React.FC = () => {
     return (
       <Layout>
         <div className={classes.root}>
-          <ServiceAttendanceReport report={selectedReport} onBackToList={handleBackToList} />
+          <ReportSubmissions report={selectedReport} onBackToList={handleBackToList} />
         </div>
       </Layout>
     );

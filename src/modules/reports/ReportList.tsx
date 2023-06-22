@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import TabbedView from '../groups/TabbedView';
 import Layout from '../../components/layout/Layout';
-import ServiceAttendanceReport from './ServiceAttendanceReport';
+import ReportSubmissions from './ReportSubmissions';
 import ListHeader from '../../components/ListHeader';
 import ReportFilter from './ReportFilter';
 import { ICrmState } from '../../data/contacts/reducer';
@@ -16,15 +16,15 @@ export default function ReportSubmissionsList() {
   const tabs = [
     {
       name: 'Service Attendance',
-      component: <ServiceAttendanceReport report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
+      component: <ReportSubmissions report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
     },
     {
       name: 'Small Group Attendance',
-      component: <ServiceAttendanceReport report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
+      component: <ReportSubmissions report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
     },
     {
       name: 'Salvations',
-      component: <ServiceAttendanceReport report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
+      component: <ReportSubmissions report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
     },
   ];
 
