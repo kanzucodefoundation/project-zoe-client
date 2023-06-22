@@ -3,13 +3,17 @@ import { useHistory } from 'react-router-dom';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import { remoteRoutes } from '../../data/constants';
 import { get } from '../../utils/ajax';
 import Loading from '../../components/Loading';
 import ReportForm from './ReportFormSubmit';
 import Layout from '../../components/layout/Layout';
-import { IReportColumn } from './types';
+import { ListItem, List, ListItemText } from '@material-ui/core';
+import { IReportColumn, ReportProps } from './types';
+import ServiceAttendanceReport from './ServiceAttendanceReport';
 
+ 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -25,6 +29,15 @@ const useStyles = makeStyles((theme: Theme) =>
       cursor: 'pointer',
       marginBottom: theme.spacing(1),
     },
+    buttonContainer: {
+        marginLeft: theme.spacing(2),
+    },
+    listItem: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      },
+    
   })
 );
 
@@ -68,7 +81,10 @@ const ReportDetail: React.FC<{ reportId: number; reportFields: IReportColumn[]; 
 const ReportPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [reports, setReports] = useState<Report[]>([]);
+  const [reportSubmissions, setReportSubmissions] = useState<any[]>([]); //@TODO Fix Any
   const [selectedReport, setSelectedReport] = useState<number | null>(null);
+  const [selectedReportName, setSelectedReportName] = useState<string | null>(null);
+  const [isViewingReportSubmissions, setIsViewingReportSubmissions] = useState<boolean>(false);
   const [reportFields, setReportFields] = useState<IReportColumn[]>([]);
   const classes = useStyles();
   const history = useHistory();
@@ -88,7 +104,7 @@ const ReportPage: React.FC = () => {
     fetchReports();
   }, []);
 
-  const handleReportClick = async (reportId: number) => {
+  const handleSubmitReport = async (reportId: number) => {
     get(
       `${remoteRoutes.reports}/${reportId}`,
       (response: any) => {
@@ -103,13 +119,42 @@ const ReportPage: React.FC = () => {
     );
   };
 
+  const handleViewSubmissions = async (reportId: number, reportName: string) => {
+    get(
+      `${remoteRoutes.reports}/${reportId}/submissions`,
+      (response: any) => {
+        if (Array.isArray(response.data)) {
+          setReportSubmissions(response.data);
+          setSelectedReport(reportId);
+          setIsViewingReportSubmissions(true);
+          setSelectedReportName(reportName);
+        } else {
+          console.error('Failed to fetch report submissions');
+        }
+      },
+      (error) => console.error('Failed to fetch report submissions', error)
+    );
+  };
+
   const handleBackToList = () => {
     setSelectedReport(null);
     setReportFields([]);
   };
 
+
+
   if (loading) {
     return <Loading />;
+  }
+
+  if (selectedReport && isViewingReportSubmissions) {
+    return (
+      <Layout>
+        <div className={classes.root}>
+          <ServiceAttendanceReport reportName={selectedReportName} reportId={selectedReport} reportFields={reportFields} onBackToList={handleBackToList} />
+        </div>
+      </Layout>
+    );
   }
 
   if (selectedReport) {
@@ -122,25 +167,36 @@ const ReportPage: React.FC = () => {
     );
   }
 
+
   return (
     <Layout>
-      <div className={classes.root}>
-        <Typography variant="button" className={classes.title}>
-          Report List
-        </Typography>
-        <Box mt={2} className={classes.reportList}>
-          {reports.map((report) => (
-            <div
-              key={report.id}
-              className={classes.reportItem}
-              onClick={() => handleReportClick(report.id)}
-            >
-              {report.name}
+  <div className={classes.root}>
+    <Typography variant="button" className={classes.title}>
+      Report List
+    </Typography>
+    <Box mt={2} className={classes.reportList}>
+      <List>
+        {reports.map((report) => (
+          <ListItem key={report.id} className={classes.listItem}>
+            <ListItemText primary={report.name} />
+            <div className={classes.buttonContainer}>
+              <Button variant="contained" color="primary" onClick={() => handleSubmitReport(report.id)}>
+                Submit Report
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleViewSubmissions(report.id, report.name)}
+              >
+                View Submissions
+              </Button>
             </div>
-          ))}
-        </Box>
-      </div>
-    </Layout>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  </div>
+</Layout>
   );
 };
 

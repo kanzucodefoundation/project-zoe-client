@@ -23,4 +23,7 @@ export interface IReportsFilter {
 
 export interface ReportProps {
   reportName: string,
+  reportId: number,
+  reportFields: any, //@TODO Update this
+  onBackToList: () => void,
 }

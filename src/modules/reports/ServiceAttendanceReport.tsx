@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
 import List from '@material-ui/core/List';
@@ -19,9 +19,13 @@ import { remoteRoutes } from '../../data/constants';
 import { search } from '../../utils/ajax';
 import { ReportProps } from './types';
 
+
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
     flexGrow: 1,
+  },
+  title: {
+    marginBottom: theme.spacing(2),
   },
   filterPaper: {
     borderRadius: 0,
@@ -35,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 }));
 
 const ServiceAttendanceReport = (reportProps: ReportProps) => {
-  const { reportName = 'service-attendance' } = reportProps;
+  const { reportName = 'Small Group Attendance' } = reportProps;
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
@@ -79,8 +83,11 @@ const ServiceAttendanceReport = (reportProps: ReportProps) => {
   return (
     <>
       <Box p={1} className={classes.root}>
+        <Typography variant="button" className={classes.title}>
+          { reportName } submissions
+        </Typography>
         <ListHeader
-          title="Service Attendance Reports"
+          title="Report Submissions"
           onFilter={setFilter}
           filter={filter}
           showBreadCrumbs={false}
