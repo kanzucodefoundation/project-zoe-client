@@ -96,18 +96,18 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
     setData(newData);
   };
 
-  function handleDone() {
-    fetchMembers();
-    setAddingMembers(false);
-  }
-
   function handleQuerySearch(query: string) {
-    const searched = data.filter((mbr) => mbr.contact.name.toLowerCase().includes(query.toLowerCase()));
-    if (searched && query.length > 0) {
-      setData(searched);
+    const results = data.filter((p) => p.contact.name.toLowerCase().includes(query.toLowerCase()));
+    if (results && query.length > 0) {
+      setData(results);
     } else {
       fetchMembers();
     }
+  }
+
+  function handleDone() {
+    fetchMembers();
+    setAddingMembers(false);
   }
 
   if (loading) return <Loading />;
@@ -115,12 +115,15 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
   return (
     <Grid container>
       <Grid item xs={12} md={6}>
-      {data.length > 0 ? (
-        <Box p={2}>
-            <Typography variant="body2">Total number of members:  <strong>{data.length}</strong></Typography>
+        {data.length > 0 ? (
+          <Box p={2}>
+            <Typography variant="body2">
+              Total number of members: <strong>{data.length}</strong>
+            </Typography>
           </Box>
-      ) : ('')
-      }
+        ) : (
+          ''
+        )}
       </Grid>
       <Grid item xs={12} md={6}>
         <TextField
@@ -169,11 +172,13 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
             </ListItem>
           ) : (
             data.map((mbr, i) => (
-              <ListItem key={mbr.id} button onClick={handleSelected(mbr)} alignItems="flex-start">
-                 <ListItemText
-                  primary={i + 1}
-                  className={classes.flexContent}
-                />
+              <ListItem
+                key={mbr.id}
+                button
+                onClick={handleSelected(mbr)}
+                alignItems="flex-start"
+              >
+                <ListItemText primary={i + 1} className={classes.flexContent} />
                 <ListItemAvatar style={{ marginLeft: 30 }}>
                   <PersonAvatar data={mbr.contact} />
                 </ListItemAvatar>
@@ -211,7 +216,6 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
         </EditDialog>
       ) : null}
     </Grid>
-
   );
 };
 

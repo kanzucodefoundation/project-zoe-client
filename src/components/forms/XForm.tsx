@@ -17,6 +17,7 @@ interface IProps {
   loading?: boolean;
   children?: React.ReactNode;
   initialValues?: any;
+  submitButtonAlignment?: 'left' | 'right';
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -35,11 +36,15 @@ const XForm = (props: IProps) => {
   function handleDelete() {
     if (count === 1) {
       setCount(0);
-      props.onDelete && props.onDelete();
+      if (props.onDelete) {
+        props.onDelete();
+      }
     } else {
       setCount(count + 1);
     }
   }
+
+  const buttonAlignment = props.submitButtonAlignment === 'left' ? 'flex-start' : 'flex-end';
 
   return (
     <Formik
@@ -72,7 +77,7 @@ const XForm = (props: IProps) => {
                   container
                   spacing={1}
                   alignContent="flex-end"
-                  justify="flex-end"
+                  justifyContent={buttonAlignment}
                 >
                   {props.onDelete && (
                     <Grid item>

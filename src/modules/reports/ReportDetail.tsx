@@ -1,6 +1,7 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Loading from '../../components/Loading';
 import ReportForm from './ReportFormSubmit';
@@ -37,7 +38,9 @@ const ReportDetail: React.FC<ReportDetailProps> = ({
         <Typography variant="subtitle1">Report Name: {report.name}</Typography>
       </Box>
       <Box mt={2}>
-        <button onClick={onBackToList}>Back to Report List</button>
+        <Button variant="contained" color="primary" onClick={onBackToList}>
+          Back to Report List
+        </Button>
       </Box>
       <Box mt={2}>
         {reportFields.length > 0 ? (

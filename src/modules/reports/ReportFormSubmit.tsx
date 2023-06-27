@@ -52,21 +52,22 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
   return (
     <XForm
       onSubmit={handleSubmit}
+      submitButtonAlignment="left"
       initialValues={formData}
     >
       <Grid container spacing={2}>
         {fields.map((field) => (
-            <Grid item xs={12} md={8}>
+          <Grid item xs={12} md={8}>
             <XTextInput
-                id={field.name}
-                name={field.name}
-                value={formData[field.name] || ''}
-                onChange={handleChange}
-                label={field.label}
-                variant="outlined"
-                margin="none"
+              id={field.name}
+              name={field.name}
+              value={formData[field.name] || ''}
+              onChange={handleChange}
+              label={field.label}
+              variant="outlined"
+              margin="none"
             />
-            </Grid>
+          </Grid>
         ))}
       </Grid>
     </XForm>

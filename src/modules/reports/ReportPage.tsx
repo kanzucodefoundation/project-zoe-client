@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   listItem: {
     display: 'flex',
     justifyContent: 'space-between',
+    borderBottom: `1px solid ${theme.palette.divider}`,
     alignItems: 'center',
   },
   buttonContainer: {
@@ -89,7 +90,10 @@ const ReportPage: React.FC = () => {
     return (
       <Layout>
         <div className={classes.root}>
-          <ReportSubmissions report={selectedReport} onBackToList={handleBackToList} />
+          <ReportSubmissions
+            report={selectedReport}
+            onBackToList={handleBackToList}
+          />
         </div>
       </Layout>
     );
@@ -99,7 +103,11 @@ const ReportPage: React.FC = () => {
     return (
       <Layout>
         <div className={classes.root}>
-          <ReportDetail report={selectedReport} reportFields={reportFields} onBackToList={handleBackToList} />
+          <ReportDetail
+            report={selectedReport}
+            reportFields={reportFields}
+            onBackToList={handleBackToList}
+          />
         </div>
       </Layout>
     );
@@ -117,12 +125,17 @@ const ReportPage: React.FC = () => {
               <ListItem key={report.id} className={classes.listItem}>
                 <ListItemText primary={report.name} />
                 <div className={classes.buttonContainer}>
-                  <Button variant="contained" color="primary" onClick={() => handleSubmitReport(report)}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleSubmitReport(report)}
+                  >
                     Submit Report
                   </Button>
                   <Button
                     variant="contained"
                     color="primary"
+                    className={classes.buttonContainer}
                     onClick={() => handleViewSubmissions(report)}
                   >
                     View Submissions
