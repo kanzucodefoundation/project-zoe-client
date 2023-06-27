@@ -77,7 +77,7 @@ const routes: IAppRoute[] = [
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
     name: 'Reports',
     route: localRoutes.reports,
-    icon: AssessmentIcon
+    icon: AssessmentIcon,
   },
   {
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
@@ -175,8 +175,9 @@ const NavMenu = (props: any) => {
   };
 
   const cleanRoutes = (r: IAppRoute[]) => r.filter((it) => {
-    if (it.items && hasValue(it.items)) {
-      it.items = cleanRoutes(it.items);
+    let { items } = it;
+    if (items && hasValue(items)) {
+      items = cleanRoutes(items);
     }
     return it.requiredRoles ? hasAnyRole(user, it.requiredRoles) : true;
   });

@@ -1,34 +1,22 @@
 import React, { useState } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import { useDispatch } from 'react-redux';
+import XForm from '../../components/forms/XForm';
+import XTextInput from '../../components/inputs/XTextInput';
+import { remoteRoutes } from '../../data/constants';
+import { crmConstants } from '../../data/contacts/reducer';
+import { post } from '../../utils/ajax';
+import Toast from '../../utils/Toast';
+import { ICreatePersonDto } from '../contacts/types';
 import { IReportColumn } from './types';
-import Layout from '../../components/layout/Layout';
 
 type ReportFormProps = {
   reportId: string;
   fields: IReportColumn[];
 };
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    form: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      marginTop: theme.spacing(4),
-    },
-    field: {
-      marginBottom: theme.spacing(2),
-    },
-    submitButton: {
-      marginTop: theme.spacing(2),
-    },
-  })
-);
-
 const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
-  const classes = useStyles();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,39 +26,50 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (values: any) => {
+    const toSave: ICreatePersonDto = {
+      reportId,
+      ...values,
+    };
 
-    // Submit the form data to the server or perform any required actions
-    // Here, you can use an API request to submit the report data
-    // You can send formData to the server using an HTTP request library like Axios
-
-    console.log('we have submitted');
+    post(
+      remoteRoutes.reports,
+      toSave,
+      (data) => {
+        Toast.info('Report submitted successfully');
+        dispatch({
+          type: crmConstants.crmAddAddress,
+          payload: { ...data },
+        });
+      },
+      undefined,
+      () => {
+        // handle error or complete state updates
+      },
+    );
   };
 
   return (
-    <Layout>
-    <form className={classes.form} onSubmit={handleSubmit}>
-      {fields.map((field) => (
-        <TextField
-          key={field.name}
-          className={classes.field}
-          label={field.label}
-          name={field.name}
-          value={formData[field.name] || ''}
-          onChange={handleChange}
-        />
-      ))}
-      <Button
-        className={classes.submitButton}
-        variant="contained"
-        color="primary"
-        type="submit"
-      >
-        Submit
-      </Button>
-    </form>
-    </Layout>
+    <XForm
+      onSubmit={handleSubmit}
+      initialValues={formData}
+    >
+      <Grid container spacing={2}>
+        {fields.map((field) => (
+            <Grid item xs={12} md={8}>
+            <XTextInput
+                id={field.name}
+                name={field.name}
+                value={formData[field.name] || ''}
+                onChange={handleChange}
+                label={field.label}
+                variant="outlined"
+                margin="none"
+            />
+            </Grid>
+        ))}
+      </Grid>
+    </XForm>
   );
 };
 

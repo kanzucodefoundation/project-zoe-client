@@ -1,39 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import { ListItem, List, ListItemText } from '@material-ui/core';
 import { remoteRoutes } from '../../data/constants';
 import { get } from '../../utils/ajax';
 import Layout from '../../components/layout/Layout';
-import { ListItem, List, ListItemText } from '@material-ui/core';
 import { IReport, IReportColumn } from './types';
 import ReportSubmissions from './ReportSubmissions';
 import ReportDetail from './ReportDetail';
 import Loading from '../../components/Loading';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    title: {
-      marginBottom: theme.spacing(2),
-    },
-    reportList: {
-      marginTop: theme.spacing(2),
-    },
-    listItem: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    buttonContainer: {
-      marginLeft: theme.spacing(2),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    flexGrow: 1,
+  },
+  title: {
+    marginBottom: theme.spacing(2),
+  },
+  reportList: {
+    marginTop: theme.spacing(2),
+  },
+  listItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    marginLeft: theme.spacing(2),
+  },
+}));
 
 const ReportPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -51,7 +48,7 @@ const ReportPage: React.FC = () => {
           setReports(response);
         },
         (error: any) => console.error('Failed to fetch reports', error),
-        () => setLoading(false)
+        () => setLoading(false),
       );
     };
 
@@ -69,7 +66,7 @@ const ReportPage: React.FC = () => {
           console.error('Failed to fetch report fields');
         }
       },
-      (error) => console.error('Failed to fetch report fields', error)
+      (error) => console.error('Failed to fetch report fields', error),
     );
   };
 

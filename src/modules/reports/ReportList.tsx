@@ -9,22 +9,22 @@ import { ICrmState } from '../../data/contacts/reducer';
 import { IReportsFilter } from './types';
 
 export default function ReportSubmissionsList() {
-  const { data, loading }: ICrmState = useSelector((state: any) => state.crm);
+  const { loading }: ICrmState = useSelector((state: any) => state.crm);
   const [filter, setFilter] = useState<IReportsFilter>({
     limit: 200,
   });
   const tabs = [
     {
       name: 'Service Attendance',
-      component: <ReportSubmissions report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
+      component: <ReportSubmissions report={{ id: 1, name: 'service-attendance' }} onBackToList={() => {}} />,
     },
     {
       name: 'Small Group Attendance',
-      component: <ReportSubmissions report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
+      component: <ReportSubmissions report={{ id: 1, name: 'service-attendance' }} onBackToList={() => {}} />,
     },
     {
       name: 'Salvations',
-      component: <ReportSubmissions report={{id: 1, name: 'service-attendance'}} onBackToList={() => {}} />,
+      component: <ReportSubmissions report={{ id: 1, name: 'service-attendance' }} onBackToList={() => {}} />,
     },
   ];
 

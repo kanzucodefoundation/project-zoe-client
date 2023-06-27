@@ -7,7 +7,6 @@ import { IState } from '../data/types';
 import { hasAnyRole } from '../data/appRoles';
 import Loading from '../components/Loading';
 import MembersCalendar from './groups/members/MembersCalendar';
-import ReportForm from './reports/ReportFormSubmit';
 import ReportPage from './reports/ReportPage';
 
 // const Events= React.lazy(() => import( "./events/EventsList"));
@@ -24,7 +23,6 @@ const ContactDetails = React.lazy(
 const Settings = React.lazy(() => import('./settings/Settings'));
 const Groups = React.lazy(() => import('./groups/GroupTabView'));
 const GroupDetails = React.lazy(() => import('./groups/Details'));
-const Users = React.lazy(() => import('./admin/users/Users'));
 
 const MembersEditor = React.lazy(
   () => import('./groups/members/MembersEditor'),
@@ -34,7 +32,6 @@ const UpdatePasswordConfirmation = React.lazy(
 );
 const EventDetails = React.lazy(() => import('./events/details/EventDetails'));
 const EventReports = React.lazy(() => import('./events/EventReports'));
-const ReportList = React.lazy(() => import('./reports/ReportList'));
 const Help = React.lazy(() => import('./help/Help'));
 const ManageHelp = React.lazy(() => import('./admin/manageHelp/HelpFileDisplay'));
 
@@ -50,6 +47,19 @@ const GroupCategories = React.lazy(
 const EventActivitiesForm = React.lazy(() => import('./events/details/EventActivitiesForm'));
 const EventCategories = React.lazy(
   () => import('./admin/eventsCategories/EventCategories'),
+);
+
+const Testing = () => (
+  <Layout>
+    <MembersEditor group={{ id: 1 }} done={() => undefined} />
+  </Layout>
+);
+
+const NoMatch = () => (
+  <Layout>
+    <h2>Oops nothing here!!</h2>
+    <Link to="/">Take me home</Link>
+  </Layout>
 );
 
 const ContentSwitch = () => {
@@ -128,18 +138,5 @@ const ContentSwitch = () => {
     </Suspense>
   );
 };
-
-const Testing = () => (
-  <Layout>
-    <MembersEditor group={{ id: 1 }} done={() => undefined} />
-  </Layout>
-);
-
-const NoMatch = () => (
-  <Layout>
-    <h2>Oops nothing here!!</h2>
-    <Link to="/">Take me home</Link>
-  </Layout>
-);
 
 export default ContentSwitch;

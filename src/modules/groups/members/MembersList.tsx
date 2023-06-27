@@ -35,9 +35,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     backgroundColor: theme.palette.background.paper,
   },
   flexContent: {
-    flex:0,
-    marginTop:20
-  }
+    flex: 0,
+    marginTop: 20,
+  },
 }));
 
 const MembersList = ({ groupId, isLeader }: IProps) => {
@@ -49,14 +49,14 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
 
   const fetchMembers = useCallback(() => {
     setLoading(true);
-    console.log('fetchMembers',data.length, groupId);
+    console.log('fetchMembers', data.length, groupId);
     search(
       remoteRoutes.groupsMembership,
       {
         groupId,
       },
-      (data) => {
-        setData(data);
+      (respData) => {
+        setData(respData);
       },
       undefined,
       () => {
@@ -100,10 +100,14 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
     fetchMembers();
     setAddingMembers(false);
   }
-  
+
   function handleQuerySearch(query: string) {
-    let searched = data.filter(mbr => mbr.contact.name.toLowerCase().includes(query.toLowerCase()));
-    searched && query.length > 0 ? setData(searched): fetchMembers();
+    const searched = data.filter((mbr) => mbr.contact.name.toLowerCase().includes(query.toLowerCase()));
+    if (searched && query.length > 0) {
+      setData(searched);
+    } else {
+      fetchMembers();
+    }
   }
 
   if (loading) return <Loading />;
@@ -115,7 +119,7 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
         <Box p={2}>
             <Typography variant="body2">Total number of members:  <strong>{data.length}</strong></Typography>
           </Box>
-        ):('')
+      ) : ('')
       }
       </Grid>
       <Grid item xs={12} md={6}>
@@ -164,13 +168,13 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
               </Alert>
             </ListItem>
           ) : (
-              data.map((mbr,i) => (
+            data.map((mbr, i) => (
               <ListItem key={mbr.id} button onClick={handleSelected(mbr)} alignItems="flex-start">
                  <ListItemText
                   primary={i + 1}
                   className={classes.flexContent}
                 />
-                <ListItemAvatar style={{ marginLeft:30 }}>
+                <ListItemAvatar style={{ marginLeft: 30 }}>
                   <PersonAvatar data={mbr.contact} />
                 </ListItemAvatar>
                 <ListItemText
@@ -178,7 +182,7 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
                   secondary={`Role: ${mbr.role}`}
                 />
               </ListItem>
-              ))
+            ))
           )}
         </List>
       </Grid>
@@ -207,7 +211,7 @@ const MembersList = ({ groupId, isLeader }: IProps) => {
         </EditDialog>
       ) : null}
     </Grid>
-    
+
   );
 };
 

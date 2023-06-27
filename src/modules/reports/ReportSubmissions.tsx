@@ -1,5 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { createStyles, makeStyles, Theme, Typography } from '@material-ui/core';
+import {
+  createStyles, makeStyles, Theme, Typography,
+} from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
 import List from '@material-ui/core/List';
@@ -18,7 +20,6 @@ import { IReportState, reportsConstants } from '../../data/reports/reducer';
 import { remoteRoutes } from '../../data/constants';
 import { search } from '../../utils/ajax';
 import { ReportProps } from './types';
-
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -47,8 +48,8 @@ const ReportSubmissions = (reportProps: ReportProps) => {
     (state: any) => state.reports,
   );
 
-  const toMobileRow = (data: IEvent): IMobileRow => ({
-    avatar: <PersonAvatar data={data} />,
+  const toMobileRow = (personData: IEvent): IMobileRow => ({
+    avatar: <PersonAvatar data={personData} />,
     primary: report.name,
     secondary: (
         <>

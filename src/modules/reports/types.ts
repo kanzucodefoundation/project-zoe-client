@@ -15,7 +15,7 @@ export interface IReport {
   metadata?: IReportMetadata,
   data?: any[],
   footer?: string[],
-  columns?:  Array<IReportColumn> | []
+  columns?: Array<IReportColumn> | []
 }
 
 export interface IReportsFilter {

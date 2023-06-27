@@ -6,16 +6,14 @@ import Loading from '../../components/Loading';
 import ReportForm from './ReportFormSubmit';
 import { IReport, IReportColumn } from './types';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    title: {
-      marginBottom: theme.spacing(2),
-    },
-    buttonContainer: {
-      marginLeft: theme.spacing(2),
-    },
-  })
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  title: {
+    marginBottom: theme.spacing(2),
+  },
+  buttonContainer: {
+    marginLeft: theme.spacing(2),
+  },
+}));
 
 interface ReportDetailProps {
   report: IReport;
