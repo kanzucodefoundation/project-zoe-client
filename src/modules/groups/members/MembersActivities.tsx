@@ -39,25 +39,25 @@ const headCells: XHeadCell[] = [
     name: 'members',
     label: 'MEMBER(S)',
     render: (members: string[]) => members.map((it: any, i: any) => (
-				<Chip
-					color='primary'
-					variant='outlined'
-					key={i}
-					style={{ margin: 5, marginLeft: 0, marginTop: 0 }}
-					size='small'
-					label={it.person}
-				/>
+      <Chip
+        color='primary'
+        variant='outlined'
+        key={i}
+        style={{ margin: 5, marginLeft: 0, marginTop: 0 }}
+        size='small'
+        label={it.person}
+      />
     )),
   },
 ];
 const MemberActivityList = () => {
   const classes = useStyles();
-  const [createDialog, setCreateDialog] = useState(false);
+  const [createDialog, _setCreateDialog] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<any[]>([]);
   const user = useSelector((state: IState) => state.core.user);
 
-  const handleItemClick = (id: number) => {};
+  const handleItemClick = (id: number) => { };
   const person = {
     contactId: user.contactId,
   };
@@ -81,28 +81,28 @@ const MemberActivityList = () => {
   }, [createDialog]);
 
   return (
-		<Box>
-			<Box p={1} className={classes.root}>
-				<Divider />
-			</Box>
-			<Box>
-				<Hidden smDown>
-					<Box pt={1}>
-						{loading ? (
-							<Loading />
-						) : (
-							<XTable
-								headCells={headCells}
-								data={data}
-								initialRowsPerPage={5}
-								initialSortBy='name'
-								handleSelection={handleItemClick}
-							/>
-						)}
-					</Box>
-				</Hidden>
-			</Box>
-		</Box>
+    <Box>
+      <Box p={1} className={classes.root}>
+        <Divider />
+      </Box>
+      <Box>
+        <Hidden smDown>
+          <Box pt={1}>
+            {loading ? (
+              <Loading />
+            ) : (
+              <XTable
+                headCells={headCells}
+                data={data}
+                initialRowsPerPage={5}
+                initialSortBy='name'
+                handleSelection={handleItemClick}
+              />
+            )}
+          </Box>
+        </Hidden>
+      </Box>
+    </Box>
   );
 };
 

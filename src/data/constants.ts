@@ -135,6 +135,7 @@ export const remoteRoutes = {
   dayOff: `${url}/api/events/dayoff`,
 
   reports: `${url}/api/reports`,
+  reportsSubmit: `${url}/api/reports/submit`,
   reportsCategories: `${url}api/reports/category`,
 
   contactsCompany: `${url}/api/crm/contact/company`,

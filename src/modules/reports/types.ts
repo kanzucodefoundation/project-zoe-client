@@ -18,6 +18,11 @@ export interface IReport {
   columns?: Array<IReportColumn> | []
 }
 
+export interface ICreateReportSubmissionDto{
+  reportId: string,
+  data: any[]
+}
+
 export interface IReportsFilter {
   query?: string;
   skip?: number;

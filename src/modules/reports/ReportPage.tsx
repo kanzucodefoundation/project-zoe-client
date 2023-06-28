@@ -8,7 +8,7 @@ import { remoteRoutes } from '../../data/constants';
 import { get } from '../../utils/ajax';
 import Layout from '../../components/layout/Layout';
 import { IReport, IReportColumn } from './types';
-import ReportSubmissions from './ReportSubmissions';
+import ReportSubmissions from './ReportSubmissionsList';
 import ReportDetail from './ReportDetail';
 import Loading from '../../components/Loading';
 

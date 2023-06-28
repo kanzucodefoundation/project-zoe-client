@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import TabbedView from '../groups/TabbedView';
 import Layout from '../../components/layout/Layout';
-import ReportSubmissions from './ReportSubmissions';
+import ReportSubmissions from './ReportSubmissionsList';
 import ListHeader from '../../components/ListHeader';
 import ReportFilter from './ReportFilter';
 import { ICrmState } from '../../data/contacts/reducer';

@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import {
-  createStyles, makeStyles, Theme, Typography,
+  createStyles, Button, makeStyles, Theme, Typography,
 } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
@@ -84,11 +84,15 @@ const ReportSubmissions = (reportProps: ReportProps) => {
   return (
     <>
       <Box p={1} className={classes.root}>
-        <Typography variant="button" className={classes.title}>
-          { report.name } submissions
-        </Typography>
         <Box mt={2}>
-          <button onClick={onBackToList}>Back to Report List</button>
+          <Typography variant="button" className={classes.title}>
+            { report.name } submissions
+          </Typography>
+        </Box>
+        <Box mt={2}>
+          <Button variant="contained" color="primary" onClick={onBackToList}>
+            Back to Report List
+          </Button>
         </Box>
         <ListHeader
           title="Report Submissions"
@@ -121,7 +125,7 @@ const ReportSubmissions = (reportProps: ReportProps) => {
               data.data.map((row: any) => {
                 const mobileRow = toMobileRow(row);
                 return (
-                  <Fragment key={row.location}>
+                  <Fragment key={row.id}>
                     <ListItem
                       alignItems="flex-start"
                       button
