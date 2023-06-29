@@ -7,7 +7,7 @@ import { ListItem, List, ListItemText } from '@material-ui/core';
 import { remoteRoutes } from '../../data/constants';
 import { get } from '../../utils/ajax';
 import Layout from '../../components/layout/Layout';
-import { IReport, IReportColumn } from './types';
+import { IReport, IReportColumn, IReportField } from './types';
 import ReportSubmissions from './ReportSubmissionsList';
 import ReportDetail from './ReportDetail';
 import Loading from '../../components/Loading';
@@ -38,7 +38,7 @@ const ReportPage: React.FC = () => {
   const [reports, setReports] = useState<IReport[]>([]);
   const [selectedReport, setSelectedReport] = useState<IReport | null>(null);
   const [isViewingReportSubmissions, setIsViewingReportSubmissions] = useState<boolean>(false);
-  const [reportFields, setReportFields] = useState<IReportColumn[]>([]);
+  const [reportFields, setReportFields] = useState<IReportField[]>([]);
   const classes = useStyles();
 
   useEffect(() => {

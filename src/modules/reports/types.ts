@@ -3,6 +3,19 @@ export interface IReportColumn {
   label: string
 }
 
+export interface IReportField{
+  name: string,
+  label: string,
+  type: string,
+  options?: IReportFieldOption[],
+  required?: boolean
+}
+
+export interface IReportFieldOption {
+  value: string;
+  label: string;
+}
+
 export interface IReportMetadata {
   name?: string,
   columns: Array<IReportColumn> | []

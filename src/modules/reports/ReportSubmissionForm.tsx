@@ -11,16 +11,15 @@ import { remoteRoutes } from '../../data/constants';
 import { crmConstants } from '../../data/contacts/reducer';
 import { post } from '../../utils/ajax';
 import Toast from '../../utils/Toast';
-import { ICreateReportSubmissionDto, IReportColumn } from './types';
-import { fieldsToOptions } from '../../components/inputs/inputHelpers';
+import { ICreateReportSubmissionDto, IReportField, IReport, IReportColumn } from './types';
+import { reportOptionToFieldOptions } from '../../components/inputs/inputHelpers';
 
 type ReportFormProps = {
   reportId: string;
-  fields: IReportColumn[];
+  fields: IReportField[];
 };
 
 const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
-  const dispatch = useDispatch();
   const [formData, setFormData] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,10 +54,11 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
     );
   };
 
-  function getFieldComponent(field, formData, handleChange) {
+  function getFieldComponent(field: IReportField, formData: any , handleChange: any) {
     const { name, label, type } = field;
     const value = formData[name] || '';
-  
+    const options = field.options ? reportOptionToFieldOptions(field.options) : [];
+
     switch (type) {
       case 'text':
         return (
@@ -90,7 +90,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
             name={name}
             customOnChange={handleChange}
             label={label}
-            options={field.options}
+            options={options}
           />
         );
       case 'select':
@@ -98,7 +98,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
           <XSelectInput
             name={name}
             label={label}
-            options={fieldsToOptions(field.options)}
+            options={options}
           />
         );
       case 'textarea':

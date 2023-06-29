@@ -49,9 +49,9 @@ const XRadioInput = (props: IProps) => {
                 {
                     options.map(
                       (it) => <FormControlLabel
-                            key={it.id || it.name}
-                            value={it.id || it.name}
-                            label={it.name || it.label}
+                            key={it.id}
+                            value={it.id}
+                            label={it.name}
                             control={<Radio color='primary'/>}
                         />,
                     )

@@ -5,7 +5,7 @@ import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Loading from '../../components/Loading';
 import ReportForm from './ReportSubmissionForm';
-import { IReport, IReportColumn } from './types';
+import { IReport, IReportColumn, IReportField } from './types';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   title: {
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 
 interface ReportDetailProps {
   report: IReport;
-  reportFields: IReportColumn[];
+  reportFields: IReportField[];
   onBackToList: () => void;
 }
 

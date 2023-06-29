@@ -6,20 +6,14 @@ import XDateInput from './XDateInput';
 import XRadioInput from './XRadioInput';
 import XSelectInput from './XSelectInput';
 import XTextAreaInput from './XTextAreaInput';
+import { IReportFieldOption } from '../../modules/reports/types';
 
 export interface IOption {
   name: string;
-  label?: string;
   id: any;
 }
-
-export interface IFieldOption {
-  value: string;
-  label: string;
-}
-
 export const toOptions = (data: string[]): IOption[] => data.map((it) => ({ name: it, id: it }));
-export const fieldsToOptions = (data: IFieldOption[]): IOption[] => data.map((it) => ({ name: it.label, id: it.value }));
+export const reportOptionToFieldOptions = (data: IReportFieldOption[]): IOption[] => data.map((it) => ({ name: it.label, id: it.value }));
 export const toOption = (data: any[]): IOption[] => data.map((it:any) => ({ name: it.name, id: it.id }));
 export const comboParser = ({ id, name }: any): IOption => ({ id, name });
 
