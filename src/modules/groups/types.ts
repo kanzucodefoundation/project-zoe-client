@@ -12,6 +12,7 @@ export interface IGroup {
   metaData?: any;
   address?: any;
   leaders?: number[];
+  canEditGroup?: boolean;
   parents?: number[];
   children: any[];
   totalAttendance?: number;

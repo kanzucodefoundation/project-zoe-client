@@ -102,6 +102,9 @@ export default function Details() {
   }, [groupId]);
 
   const isLeader = () => {
+    if (data?.canEditGroup){
+      return true;
+    }
     if (data?.leaders && data?.leaders.length === 0) {
       return false;
     }
