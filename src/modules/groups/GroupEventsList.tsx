@@ -72,7 +72,7 @@ const GroupEventsList = ({ reports }: IProps) => {
             {reports.length === 0 ? (
               <ListItem>
                 <Alert severity="info" style={{ width: '100%' }}>
-                  No reports to display
+                  No events to display
                 </Alert>
               </ListItem>
             ) : (
@@ -91,7 +91,7 @@ const GroupEventsList = ({ reports }: IProps) => {
             {reports.length === 0 ? (
               <ListItem>
                 <Alert severity="info" style={{ width: '100%' }}>
-                  No reports to display
+                  No events to display
                 </Alert>
               </ListItem>
             ) : (

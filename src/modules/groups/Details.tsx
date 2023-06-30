@@ -114,10 +114,8 @@ export default function Details() {
     return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
   };
 
-  const mcView = () => {
-    if (hasAnyRole(profile, [appPermissions.roleMcView])) {
-      return true;
-    }
+  const canViewMc = () => {
+    return hasAnyRole(profile, [appPermissions.roleMcView]);
   };
 
   function handleClose() {
@@ -206,7 +204,7 @@ export default function Details() {
     });
   }
 
-  if (mcView()) {
+  if (canViewMc() && !isLeader()) {
     tabs.push({
       name: 'Requests',
       component: <MemberRequests group={data} />,
