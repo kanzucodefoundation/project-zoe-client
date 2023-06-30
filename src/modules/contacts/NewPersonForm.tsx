@@ -33,19 +33,11 @@ interface IProps {
 const schema = yup.object().shape({
   firstName: reqString,
   lastName: reqString,
-  // middleName: reqString,
   gender: reqString,
-  birthDay: reqString,
-  birthMonth: reqString,
   civilStatus: reqString,
-
   ageGroup: reqString,
-  placeOfWork: reqString,
-  residence: reqString,
-
   cellGroup: reqObject,
   churchLocation: reqObject,
-
   email: reqEmail,
   phone: reqString,
 });

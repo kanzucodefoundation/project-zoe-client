@@ -197,7 +197,7 @@ export default function Details() {
   ];
   if (isLeader()) {
     tabs.push({
-      name: 'Reports',
+      name: 'Events',
       component: <GroupEventsList reports={data.reports ? data.reports : []} />,
     });
     tabs.push({
@@ -287,7 +287,7 @@ export default function Details() {
                             variant="contained"
                             onClick={handleNewEvent}
                           >
-                            Create Report&nbsp;&nbsp;
+                            Create Event&nbsp;&nbsp;
                           </Button>
                         ) : undefined}
 
