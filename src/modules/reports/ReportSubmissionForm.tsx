@@ -15,12 +15,12 @@ import { ICreateReportSubmissionDto, IReportField, IReport, IReportColumn } from
 import { reportOptionToFieldOptions } from '../../components/inputs/inputHelpers';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 
-type ReportFormProps = {
+type ReportSubmissionFormProps = {
   reportId: string;
   fields: IReportField[];
 };
 
-const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
+const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, fields }) => {
   const [formData, setFormData] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,12 +35,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
       reportId,
       data: { ...values },
     };
-
     // Validate required fields
     const requiredFields = fields.filter((field) => field.required);
     const emptyFields = requiredFields.filter(
       (field) => !values[field.name]
     );
+
     if (emptyFields.length > 0) {
       Toast.error('Please fill in all required fields');
       return;
@@ -175,4 +175,4 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
   );
 };
 
-export default ReportForm;
+export default ReportSubmissionForm;

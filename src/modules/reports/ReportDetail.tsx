@@ -4,7 +4,7 @@ import Box from '@material-ui/core/Box';
 import { Button } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Loading from '../../components/Loading';
-import ReportForm from './ReportSubmissionForm';
+import ReportSubmissionForm from './ReportSubmissionForm';
 import { IReport, IReportColumn, IReportField } from './types';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -44,7 +44,7 @@ const ReportDetail: React.FC<ReportDetailProps> = ({
       </Box>
       <Box mt={2}>
         {reportFields.length > 0 ? (
-          <ReportForm reportId={report.id.toString()} fields={reportFields} />
+          <ReportSubmissionForm reportId={report.id.toString()} fields={reportFields} />
         ) : (
           <Loading />
         )}
