@@ -13,6 +13,7 @@ import { post } from '../../utils/ajax';
 import Toast from '../../utils/Toast';
 import { ICreateReportSubmissionDto, IReportField, IReport, IReportColumn } from './types';
 import { reportOptionToFieldOptions } from '../../components/inputs/inputHelpers';
+import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 
 type ReportFormProps = {
   reportId: string;
@@ -34,6 +35,16 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
       reportId,
       data: { ...values },
     };
+
+    // Validate required fields
+    const requiredFields = fields.filter((field) => field.required);
+    const emptyFields = requiredFields.filter(
+      (field) => !values[field.name]
+    );
+    if (emptyFields.length > 0) {
+      Toast.error('Please fill in all required fields');
+      return;
+    }
 
     post(
       remoteRoutes.reportsSubmit,
@@ -59,6 +70,18 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
     const value = formData[name] || '';
     const options = field.options ? reportOptionToFieldOptions(field.options) : [];
 
+    if (name == 'mcName'){
+      return <XRemoteSelect
+        remote={remoteRoutes.groupsCombo}
+        filter={{ 'categories[]': 'MC' }}
+        parser={({ name, id }: any) => ({ name, id })}
+        name="mcName"
+        label="Missional Community"
+        variant="outlined"
+        margin="none"
+      />
+    }
+
     switch (type) {
       case 'text':
         return (
@@ -70,6 +93,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
             label={label}
             variant="outlined"
             margin="none"
+            required={field.required}
           />
         );
       case 'date':
@@ -82,6 +106,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
             label={label}
             variant="outlined"
             margin="none"
+            required={field.required}
           />
         );
       case 'radio':
@@ -91,6 +116,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
             customOnChange={handleChange}
             label={label}
             options={options}
+            required={field.required}
           />
         );
       case 'select':
@@ -99,6 +125,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ reportId, fields }) => {
             name={name}
             label={label}
             options={options}
+            required={field.required}
           />
         );
       case 'textarea':

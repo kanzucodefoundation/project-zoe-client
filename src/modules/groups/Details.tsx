@@ -212,7 +212,6 @@ export default function Details() {
       component: <MemberRequests group={data} />,
     });
   }
-
   if (hasEventEdit) {
     actions.push({
       icon: <EditIcon color="primary" />,

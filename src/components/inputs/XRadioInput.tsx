@@ -11,6 +11,7 @@ import { hasValue, IOption } from './inputHelpers';
 interface IProps {
   label: string;
   name: string;
+  required?: boolean;
   options: IOption[];
   customOnChange?: (value: any) => void | undefined;
 }
