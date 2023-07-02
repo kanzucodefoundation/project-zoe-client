@@ -90,10 +90,6 @@ const routes: IAppRoute[] = [
         route: localRoutes.users,
       },
       {
-        name: 'Manage Help',
-        route: localRoutes.manageHelp,
-      },
-      {
         name: 'Group Categories',
         route: localRoutes.groupsCategories,
       },
@@ -101,10 +97,14 @@ const routes: IAppRoute[] = [
         name: 'Event Categories',
         route: localRoutes.eventCategories,
       },
-      { name: 'Report Fields', route: localRoutes.reportCategories },
+      { name: 'Event Fields', route: localRoutes.reportCategories },
       {
         name: 'Settings',
         route: localRoutes.settings,
+      },
+      {
+        name: 'Manage Help',
+        route: localRoutes.manageHelp,
       },
     ],
   },

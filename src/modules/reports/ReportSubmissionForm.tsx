@@ -70,13 +70,13 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
     const value = formData[name] || '';
     const options = field.options ? reportOptionToFieldOptions(field.options) : [];
 
-    if (name == 'mcName'){
+    if (name == 'smallGroupName'){
       return <XRemoteSelect
         remote={remoteRoutes.groupsCombo}
-        filter={{ 'categories[]': 'MC' }}
+        filter={{ 'categories[]': 'Missional Community' }}
         parser={({ name, id }: any) => ({ name, id })}
-        name="mcName"
-        label="Missional Community"
+        name="smallGroupName"
+        label={label}
         variant="outlined"
         margin="none"
       />
