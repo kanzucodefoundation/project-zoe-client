@@ -14,6 +14,7 @@ import Toast from '../../utils/Toast';
 import { ICreateReportSubmissionDto, IReportField, IReport, IReportColumn } from './types';
 import { reportOptionToFieldOptions } from '../../components/inputs/inputHelpers';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
+import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 
 type ReportSubmissionFormProps = {
   reportId: string;
@@ -23,10 +24,11 @@ type ReportSubmissionFormProps = {
 const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, fields }) => {
   const [formData, setFormData] = useState<Record<string, string>>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleChange = (name: string, value: any) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
@@ -78,6 +80,7 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
         name="smallGroupName"
         label={label}
         variant="outlined"
+        customOnChange={(value: string) => handleChange(name, value)}
         margin="none"
       />
     }
@@ -89,7 +92,9 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
             id={name}
             name={name}
             value={value}
-            onChange={handleChange}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(name, e.target.value)
+            }
             label={label}
             variant="outlined"
             margin="none"
@@ -102,7 +107,7 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
             id={name}
             name={name}
             value={value}
-            onChange={handleChange}
+            onChange={(value: MaterialUiPickersDate) => handleChange(name, value)}
             label={label}
             variant="outlined"
             margin="none"
@@ -113,7 +118,9 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
         return (
           <XRadioInput
             name={name}
-            customOnChange={handleChange}
+            customOnChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(name, e.target.value)
+            }
             label={label}
             options={options}
             required={field.required}
@@ -124,6 +131,9 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
           <XSelectInput
             name={name}
             label={label}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(name, e.target.value)
+            }
             options={options}
             required={field.required}
           />
@@ -134,7 +144,9 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
             id={name}
             name={name}
             value={value}
-            onChange={handleChange}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(name, e.target.value)
+            }
             label={label}
             variant="outlined"
             margin="none"
@@ -146,7 +158,9 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
               id={name}
               name={name}
               value={value}
-              onChange={handleChange}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange(name, e.target.value)
+              }
               label={label}
               variant="outlined"
               margin="none"

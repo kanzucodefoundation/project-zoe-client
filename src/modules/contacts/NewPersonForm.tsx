@@ -224,7 +224,7 @@ const NewPersonForm = ({ done }: IProps) => {
         <Grid item xs={12} md={6}>
           <XRemoteSelect
             remote={remoteRoutes.groupsCombo}
-            filter={{ 'categories[]': 'MC' }}
+            filter={{ 'categories[]': 'Missional Community' }}
             parser={({ name, id }: any) => ({ name, id })}
             name="cellGroup"
             label="Missional Community"

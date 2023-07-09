@@ -21,17 +21,20 @@ type PickerProps = Omit<KeyboardDatePickerProps, 'variant' | 'inputVariant'>;
 
 const XDateInput = (props: IProps & Partial<PickerProps>) => {
   const {
-    variant, pickerVariant, margin = 'normal', ...rest
+    variant, pickerVariant, margin = 'normal', onChange, ...rest
   } = props;
   const [field, meta, helpers] = useField({ name: props.name });
   const error = hasValue(meta.error) ? meta.error : undefined;
   const showError = Boolean(error && meta.touched);
 
   function handleChange(date: MaterialUiPickersDate) {
-    if (isValid(date)) {
-      return helpers.setValue(date?.toISOString());
+    if (date && isValid(date)) {
+      helpers.setValue(date.toISOString());
+      onChange?.(date);
+    } else {
+      helpers.setValue(null);
+      onChange?.(null);
     }
-    return helpers.setValue(null);
   }
 
   return (
