@@ -45,7 +45,7 @@ const ContactUpload = ({ show, onClose, onDone }: IProps) => {
     const formData = new FormData();
     formData.append('file', uploadedFiles[0]);
     postFile(
-      remoteRoutes.contactsPeopleUpload,
+      `${remoteRoutes.contactsPeopleUpload}/groupLeaders`,
       formData,
       () => {
         setSuccess(true);

@@ -44,7 +44,7 @@ const ReportDetail: React.FC<ReportDetailProps> = ({
       </Box>
       <Box mt={2}>
         {reportFields.length > 0 ? (
-          <ReportSubmissionForm reportId={report.id.toString()} fields={reportFields} />
+          <ReportSubmissionForm reportId={report.id.toString()} fields={reportFields} onSubmit={onBackToList} />
         ) : (
           <Loading />
         )}

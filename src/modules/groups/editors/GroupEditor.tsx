@@ -60,7 +60,8 @@ const GroupEditor = ({
       name: values.name,
       details: values.details,
       privacy: values.privacy,
-      categoryId: cleanComboValue(values.category),
+      categoryId: values.category.id,
+      categoryName: values.category.name,
       parentId: cleanComboValue(values.parent),
       address: parseGooglePlace(values.address),
     };

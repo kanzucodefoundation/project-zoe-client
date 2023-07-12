@@ -19,9 +19,10 @@ import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 type ReportSubmissionFormProps = {
   reportId: string;
   fields: IReportField[];
+  onSubmit: () => void;
 };
 
-const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, fields }) => {
+const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, fields, onSubmit }) => {
   const [formData, setFormData] = useState<Record<string, string>>({});
 
 
@@ -57,6 +58,7 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
        //  type: crmConstants.crmAddAddress,
        //  payload: { ...data },
        //});
+       onSubmit();
       },
       () => {
         Toast.error('Sorry, there was an error when submitting the report. Please retry.')
