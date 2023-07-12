@@ -7,10 +7,14 @@ import { ListItem, List, ListItemText } from '@material-ui/core';
 import { remoteRoutes } from '../../data/constants';
 import { get } from '../../utils/ajax';
 import Layout from '../../components/layout/Layout';
-import { IReport, IReportColumn, IReportField } from './types';
+import { IReport, IReportField } from './types';
 import ReportSubmissions from './ReportSubmissionsList';
 import ReportDetail from './ReportDetail';
 import Loading from '../../components/Loading';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import IconButton from '@material-ui/core/IconButton';
+import { useSelector } from 'react-redux';
+import { IState } from '../../data/types';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -25,7 +29,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   listItem: {
     display: 'flex',
     justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.divider}`,
     alignItems: 'center',
   },
   buttonContainer: {
@@ -40,6 +43,7 @@ const ReportPage: React.FC = () => {
   const [isViewingReportSubmissions, setIsViewingReportSubmissions] = useState<boolean>(false);
   const [reportFields, setReportFields] = useState<IReportField[]>([]);
   const classes = useStyles();
+  const user = useSelector((state: IState) => state.core.user);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -122,24 +126,26 @@ const ReportPage: React.FC = () => {
         <Box mt={2} className={classes.reportList}>
           <List>
             {reports.map((report) => (
-              <ListItem key={report.id} className={classes.listItem}>
+              <ListItem key={report.id} alignItems="flex-start" disableGutters>
                 <ListItemText primary={report.name} />
                 <div className={classes.buttonContainer}>
-                  <Button
-                    variant="contained"
+                  <Button 
+                    variant="outlined"
                     color="primary"
-                    onClick={() => handleSubmitReport(report)}
-                  >
+                    onClick={() => handleSubmitReport(report)}>
                     Submit Report
                   </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.buttonContainer}
-                    onClick={() => handleViewSubmissions(report)}
-                  >
-                    View Submissions
-                  </Button>
+                  {user.roles.includes('RoleAdmin') && (
+                    <IconButton
+                      size="medium"
+                      color="primary"
+                      aria-label="edit"
+                      component="span"
+                      onClick={() => handleViewSubmissions(report)}
+                    >
+                      <VisibilityIcon />
+                    </IconButton>
+                  )}
                 </div>
               </ListItem>
             ))}
