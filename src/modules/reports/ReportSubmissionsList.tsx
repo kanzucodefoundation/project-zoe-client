@@ -112,7 +112,7 @@ const ReportSubmissions = (reportProps: ReportProps) => {
                 headCells={data.columns || []}
                 data={data.data || []}
                 initialRowsPerPage={10}
-                initialSortBy="name"
+                initialSortBy="smallGroupName"
               />
             )}
           </Box>

@@ -33,6 +33,14 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
     }));
   };
 
+  const handleSmallGroupChange = (name: string, value: any) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value.name,
+      'smallGroupId': value.id,
+    }));
+  };
+
   const handleSubmit = (values: any) => {
     const reportSubmissionData: ICreateReportSubmissionDto = {
       reportId,
@@ -82,7 +90,7 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
         name="smallGroupName"
         label={label}
         variant="outlined"
-        customOnChange={(value: string) => handleChange(name, value)}
+        customOnChange={(value: string) => handleSmallGroupChange(name, value)}
         margin="none"
       />
     }
