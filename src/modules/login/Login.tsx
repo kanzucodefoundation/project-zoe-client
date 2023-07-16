@@ -12,7 +12,7 @@ import { useHistory } from 'react-router';
 import Link from '@material-ui/core/Link';
 import { handleLogin } from '../../data/coreActions';
 import { post } from '../../utils/ajax';
-import { isDebug, localRoutes, remoteRoutes } from '../../data/constants';
+import { localRoutes, remoteRoutes } from '../../data/constants';
 import Toast from '../../utils/Toast';
 import XTextInput from '../../components/inputs/XTextInput';
 import { useLoginStyles } from './loginStyles';
@@ -22,6 +22,12 @@ function Login() {
   const classes = useLoginStyles();
   const dispatch = useDispatch();
   const history = useHistory();
+  const schema = yup.object().shape({
+    username: yup.string().email('Invalid email').required('Email is required'),
+    password: yup.string().required('Password is required'),
+    churchName: yup.string().required('Church Name is required'),
+  });
+
   const onSubmit = (data: any, actions: FormikHelpers<any>) => {
     post(
       remoteRoutes.login,
@@ -63,10 +69,7 @@ function Login() {
         </Avatar>
         <Typography component="h1">Sign in</Typography>
         <Formik
-          initialValues={{
-            username: isDebug ? 'ekastimo@gmail.com' : '',
-            password: isDebug ? 'Xpass@123' : '',
-          }}
+          initialValues={{}}
           validationSchema={schema}
           onSubmit={onSubmit}
         >
@@ -120,11 +123,5 @@ function Login() {
     </div>
   );
 }
-
-export const schema = yup.object().shape({
-  username: yup.string().email('Invalid email').required('Email is required'),
-  password: yup.string().required('Password is required'),
-  churchName: yup.string().required('Church Name is required'),
-});
 
 export default Login;

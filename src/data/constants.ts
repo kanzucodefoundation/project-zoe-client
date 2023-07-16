@@ -83,7 +83,6 @@ export const localRoutes = {
 
 };
 
-export const isDebug = process.env.NODE_ENV !== 'production';
 const debug = process.env.NODE_ENV !== 'production';
 export const url = debug
   ? 'http://localhost:4002'

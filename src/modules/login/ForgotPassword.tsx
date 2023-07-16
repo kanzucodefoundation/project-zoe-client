@@ -12,7 +12,7 @@ import { useHistory } from 'react-router';
 import { useLoginStyles } from './loginStyles';
 import XTextInput from '../../components/inputs/XTextInput';
 import { post } from '../../utils/ajax';
-import { isDebug, remoteRoutes } from '../../data/constants';
+import { remoteRoutes } from '../../data/constants';
 import Toast from '../../utils/Toast';
 
 export default function ForgotPassword() {
@@ -55,10 +55,7 @@ export default function ForgotPassword() {
         </Avatar>
         <Typography component="h1">Recover Password</Typography>
         <Formik
-          initialValues={{
-            username: isDebug ? 'ekastimo@gmail.com' : '',
-            // "username": ""
-          }}
+          initialValues={{}}
           validationSchema={schema}
           onSubmit={onSubmit}
         >
