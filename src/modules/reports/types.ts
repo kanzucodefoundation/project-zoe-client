@@ -64,6 +64,10 @@ export interface ReportSubmissionData{
       smallGroupAttendanceCount: string;
       smallGroupNumberOfMembers: string;
     };
+    labels: {
+      name: string;
+      label: string;
+    }[];
     submittedAt: string;
     submittedBy: string;  
 };

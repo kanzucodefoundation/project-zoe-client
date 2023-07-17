@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Button } from '@material-ui/core';
 import { get } from '../../utils/ajax';
-import { remoteRoutes } from '../../data/constants';
+import { localRoutes, remoteRoutes } from '../../data/constants';
 import { useParams } from 'react-router';
 import { ReportSubmissionData } from './types';
 import Loading from '../../components/Loading';
@@ -10,11 +10,17 @@ import Layout from '../../components/layout/Layout';
 import DetailView, { IRec } from '../../components/DetailView';
 import DataCard from '../../components/DataCard';
 import Toast from '../../utils/Toast';
+import { useHistory } from 'react-router';
 
 const ReportSubmissionDetail = () => {
   const [submissionData, setSubmissionData] = useState<IRec[]>([]);
   const { reportId, reportSubmissionId } = useParams<any>();
   const [ isLoadingData, setIsLoadingData ] = useState<boolean>(true);
+  const history = useHistory();
+
+  const handleBackToReports = () => {
+    history.push(localRoutes.reports);
+  };
 
   useEffect(() => {
     const fetchSubmissionData = async () => {
@@ -28,8 +34,9 @@ const ReportSubmissionDetail = () => {
               return
             }
             Object.entries(resp.data).forEach(([key, value]) => {
+              const label = resp.labels.find((item: { name: string }) => item.name === key)?.label || key;
               const rec: IRec = {
-                label: key,
+                label: label,
                 value: value
               };
               submissionDetails.push(rec);
@@ -59,6 +66,11 @@ const ReportSubmissionDetail = () => {
             <Typography variant="button" component="div">
               Report Submission Details
             </Typography>
+            <Box mt={2}>
+              <Button variant="contained" color="primary" onClick={handleBackToReports}>
+                Back to Report List
+              </Button>
+            </Box>
               {submissionData.length ? (
                 <DataCard useActionContent={false} title="" buttons={''}>
                   <DetailView data={submissionData} />
