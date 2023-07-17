@@ -59,6 +59,7 @@ export const localRoutes = {
   reports: '/reports',
   reportsSubmit: '/reports/submit',
   reportsDetails: '/reports/:reportId',
+  reportSubmissionDetails: '/reports/:reportId/submissions/:reportSubmissionId',
 
   users: '/admin/users',
   usersGroups: '/admin/user-groups',

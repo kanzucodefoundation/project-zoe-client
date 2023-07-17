@@ -46,3 +46,24 @@ export interface ReportProps {
   report: IReport,
   onBackToList: () => void,
 }
+
+export interface ReportSubmissionData{
+    id: number;
+    data: {
+      date: string;
+      mcHostHome: string;
+      smallGroupId: number;
+      mcHuddleCount: string;
+      mcTestimonies: string;
+      smallGroupName: string;
+      mcAttendeeNames: string;
+      mcFrontierStory: string;
+      mcPrayerRequest: string;
+      mcWordHighlights: string;
+      mcGeneralFeedback: string;
+      smallGroupAttendanceCount: string;
+      smallGroupNumberOfMembers: string;
+    };
+    submittedAt: string;
+    submittedBy: string;  
+};

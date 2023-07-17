@@ -17,9 +17,11 @@ import PersonAvatar from '../../components/PersonAvatar';
 import ListHeader from '../../components/ListHeader';
 import { IEvent } from '../events/types';
 import { IReportState, reportsConstants } from '../../data/reports/reducer';
-import { remoteRoutes } from '../../data/constants';
+import { localRoutes, remoteRoutes } from '../../data/constants';
 import { search } from '../../utils/ajax';
 import { ReportProps } from './types';
+import ReportSubmissionDetail from './ReportSubmissionDetail';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -44,10 +46,18 @@ const ReportSubmissions = (reportProps: ReportProps) => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  const history = useHistory();
+
   const { data, loading }: IReportState = useSelector(
     (state: any) => state.reports,
   );
 
+  const handleRowSelection = (reportSubmissionId: string) => {
+    setSelectedRowId(reportSubmissionId);
+    history.push(`${localRoutes.reports}/${report.id}/submissions/${reportSubmissionId}`);
+  };
+  
   const toMobileRow = (personData: IEvent): IMobileRow => ({
     avatar: <PersonAvatar data={personData} />,
     primary: report.name,
@@ -112,6 +122,7 @@ const ReportSubmissions = (reportProps: ReportProps) => {
                 headCells={data.columns || []}
                 data={data.data || []}
                 initialRowsPerPage={10}
+                handleSelection={handleRowSelection}
                 initialSortBy="smallGroupName"
               />
             )}
