@@ -57,8 +57,9 @@ export const localRoutes = {
   eventActivities: '/events/:activitiesId',
 
   reports: '/reports',
-  reportsSubmit: '/reports/submit',
   reportsDetails: '/reports/:reportId',
+  reportSubmit: '/reports/:reportId/submit',
+  reportSubmissions: '/reports/:reportId/submissions',
   reportSubmissionDetails: '/reports/:reportId/submissions/:reportSubmissionId',
 
   users: '/admin/users',

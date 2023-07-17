@@ -7,8 +7,10 @@ import { IState } from '../data/types';
 import { hasAnyRole } from '../data/appRoles';
 import Loading from '../components/Loading';
 import MembersCalendar from './groups/members/MembersCalendar';
-import ReportPage from './reports/ReportPage';
+import ReportList from './reports/ReportList';
+import ReportSubmissions from './reports/ReportSubmissionsList';
 import ReportSubmissionDetail from './reports/ReportSubmissionDetail';
+import ReportSubmissionForm from './reports/ReportSubmissionForm';
 // const Events= React.lazy(() => import( "./events/EventsList"));
 // const GroupReports = React.lazy(() => import("./events/GroupEvents"));
 
@@ -109,6 +111,12 @@ const ContentSwitch = () => {
           appPermissions.roleEventEdit,
         ]) && <Route path={localRoutes.events} component={EventReports} />}
 
+
+        {hasAnyRole(user, [
+          appPermissions.roleEventView,
+          appPermissions.roleEventEdit,
+        ]) && <Route path={localRoutes.reportSubmit} component={ReportSubmissionForm} />}
+
         {hasAnyRole(user, [
           appPermissions.roleEventView,
           appPermissions.roleEventEdit,
@@ -117,7 +125,13 @@ const ContentSwitch = () => {
         {hasAnyRole(user, [
           appPermissions.roleEventView,
           appPermissions.roleEventEdit,
-        ]) && <Route path={localRoutes.reports} component={ReportPage} />}
+        ]) && <Route path={localRoutes.reportSubmissions} component={ReportSubmissions} />}
+
+
+        {hasAnyRole(user, [
+          appPermissions.roleEventView,
+          appPermissions.roleEventEdit,
+        ]) && <Route path={localRoutes.reports} component={ReportList} />}
 
          <Route path={localRoutes.manageHelp} component={ManageHelp} />
 

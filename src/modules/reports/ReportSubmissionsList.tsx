@@ -21,7 +21,9 @@ import { localRoutes, remoteRoutes } from '../../data/constants';
 import { search } from '../../utils/ajax';
 import { ReportProps } from './types';
 import ReportSubmissionDetail from './ReportSubmissionDetail';
-import { useHistory } from 'react-router';
+import { useHistory, useParams } from 'react-router';
+import Layout from '../../components/layout/Layout';
+import XBreadCrumbs from '../../components/XBreadCrumbs';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -41,13 +43,13 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-const ReportSubmissions = (reportProps: ReportProps) => {
-  const { report, onBackToList } = reportProps;
+const ReportSubmissions = () => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const history = useHistory();
+  const { reportId } = useParams<any>();
 
   const { data, loading }: IReportState = useSelector(
     (state: any) => state.reports,
@@ -55,12 +57,12 @@ const ReportSubmissions = (reportProps: ReportProps) => {
 
   const handleRowSelection = (reportSubmissionId: string) => {
     setSelectedRowId(reportSubmissionId);
-    history.push(`${localRoutes.reports}/${report.id}/submissions/${reportSubmissionId}`);
+    history.push(`${localRoutes.reports}/${reportId}/submissions/${reportSubmissionId}`);
   };
   
   const toMobileRow = (personData: IEvent): IMobileRow => ({
     avatar: <PersonAvatar data={personData} />,
-    primary: report.name,
+    primary: 'Report',
     secondary: (
         <>
         </>
@@ -73,7 +75,7 @@ const ReportSubmissions = (reportProps: ReportProps) => {
       payload: true,
     });
     search(
-      `${remoteRoutes.reports}/${report.id}/submissions`,
+      `${remoteRoutes.reports}/${reportId}/submissions`,
       filter,
       (resp) => {
         dispatch({
@@ -92,18 +94,23 @@ const ReportSubmissions = (reportProps: ReportProps) => {
   }, [filter, dispatch]);
 
   return (
-    <>
+    <Layout title='Report Submissions'>
       <Box p={1} className={classes.root}>
-        <Box mt={2}>
-          <Typography variant="button" className={classes.title}>
-            { report.name } submissions
-          </Typography>
-        </Box>
-        <Box mt={2}>
-          <Button variant="contained" color="primary" onClick={onBackToList}>
-            Back to Report List
-          </Button>
-        </Box>
+        <Box pb={2}>
+            <XBreadCrumbs
+              title="Report Submissions"
+              paths={[
+                {
+                  path: localRoutes.home,
+                  label: 'Dashboard',
+                },
+                {
+                  path: localRoutes.reports,
+                  label: 'Reports',
+                }
+              ]}
+            />
+          </Box>
         <ListHeader
           title="Report Submissions"
           onFilter={setFilter}
@@ -156,7 +163,7 @@ const ReportSubmissions = (reportProps: ReportProps) => {
           </List>
         </Hidden>
       </Box>
-    </>
+    </Layout>
   );
 };
 

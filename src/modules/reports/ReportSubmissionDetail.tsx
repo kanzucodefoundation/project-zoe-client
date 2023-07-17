@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 import { get } from '../../utils/ajax';
 import { localRoutes, remoteRoutes } from '../../data/constants';
 import { useParams } from 'react-router';
@@ -10,17 +10,12 @@ import Layout from '../../components/layout/Layout';
 import DetailView, { IRec } from '../../components/DetailView';
 import DataCard from '../../components/DataCard';
 import Toast from '../../utils/Toast';
-import { useHistory } from 'react-router';
+import XBreadCrumbs from '../../components/XBreadCrumbs';
 
 const ReportSubmissionDetail = () => {
   const [submissionData, setSubmissionData] = useState<IRec[]>([]);
   const { reportId, reportSubmissionId } = useParams<any>();
   const [ isLoadingData, setIsLoadingData ] = useState<boolean>(true);
-  const history = useHistory();
-
-  const handleBackToReports = () => {
-    history.push(localRoutes.reports);
-  };
 
   useEffect(() => {
     const fetchSubmissionData = async () => {
@@ -59,18 +54,29 @@ const ReportSubmissionDetail = () => {
   }
 
   return (
-    <Layout>
+    <Layout title='Report Submission Details'>
       <Box p={2}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="button" component="div">
-              Report Submission Details
-            </Typography>
-            <Box mt={2}>
-              <Button variant="contained" color="primary" onClick={handleBackToReports}>
-                Back to Report List
-              </Button>
-            </Box>
+          <Box pb={2}>
+            <XBreadCrumbs
+              title="Report Submission Details"
+              paths={[
+                {
+                  path: localRoutes.home,
+                  label: 'Dashboard',
+                },
+                {
+                  path: localRoutes.reports,
+                  label: 'Reports',
+                },
+                {
+                  path: `${localRoutes.reports}/${reportId}/submissions`,
+                  label: 'Report Submissions',
+                }
+              ]}
+            />
+          </Box>
               {submissionData.length ? (
                 <DataCard useActionContent={false} title="" buttons={''}>
                   <DetailView data={submissionData} />

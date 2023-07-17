@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useDispatch } from 'react-redux';
 import XForm from '../../components/forms/XForm';
 import XTextInput from '../../components/inputs/XTextInput';
 import XDateInput from '../../components/inputs/XDateInput';
 import XRadioInput from '../../components/inputs/XRadioInput';
 import XSelectInput from '../../components/inputs/XSelectInput';
 import XTextAreaInput from '../../components/inputs/XTextAreaInput';
-import { remoteRoutes } from '../../data/constants';
-import { crmConstants } from '../../data/contacts/reducer';
-import { post } from '../../utils/ajax';
+import { localRoutes, remoteRoutes } from '../../data/constants';
 import Toast from '../../utils/Toast';
 import { ICreateReportSubmissionDto, IReportField, IReport, IReportColumn } from './types';
 import { reportOptionToFieldOptions } from '../../components/inputs/inputHelpers';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
+import { get, post } from '../../utils/ajax';
+import { useParams, useHistory } from 'react-router';
+import Loading from '../../components/Loading';
+import Layout from '../../components/layout/Layout';
 
-type ReportSubmissionFormProps = {
-  reportId: string;
-  fields: IReportField[];
-  onSubmit: () => void;
-};
 
-const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, fields, onSubmit }) => {
+
+const ReportSubmissionForm = () => {
   const [formData, setFormData] = useState<Record<string, string>>({});
-
+  const { reportId } = useParams<any>();
+  const [ isLoadingData, setIsLoadingData ] = useState<boolean>(true);
+  const [reportFields, setReportFields] = useState<IReportField[]>([]);
+  const history = useHistory();
 
   const handleChange = (name: string, value: any) => {
     setFormData((prevFormData) => ({
@@ -32,6 +32,32 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
       [name]: value,
     }));
   };
+
+
+  useEffect(() => {
+    const fetchReportData = async () => {
+      get(
+        `${remoteRoutes.reports}/${reportId}`,
+        (response: any) => {
+          setIsLoadingData(false);
+          if (Array.isArray(response.fields)) {
+            setReportFields(response.fields);
+          } else {
+            Toast.error('Failed to fetch report fields');
+          }
+        },
+        (error) => { 
+          setIsLoadingData(false);
+          Toast.error('Failed to fetch report fields'); 
+          console.error('Failed to fetch report fields', error)
+        },
+      );
+    };
+
+    fetchReportData();
+  }, []);
+
+
 
   const handleSmallGroupChange = (name: string, value: any) => {
     setFormData((prevFormData) => ({
@@ -47,7 +73,7 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
       data: { ...values },
     };
     // Validate required fields
-    const requiredFields = fields.filter((field) => field.required);
+    const requiredFields = reportFields.filter((field) => field.required);
     const emptyFields = requiredFields.filter(
       (field) => !values[field.name]
     );
@@ -62,18 +88,11 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
       reportSubmissionData,
       () => {
         Toast.info('Report submitted successfully');
-       //dispatch({
-       //  type: crmConstants.crmAddAddress,
-       //  payload: { ...data },
-       //});
-       onSubmit();
+        history.push(localRoutes.reports);
       },
       () => {
         Toast.error('Sorry, there was an error when submitting the report. Please retry.')
-      },
-      () => {
-        // handle error or complete state updates
-      },
+      }
     );
   };
 
@@ -181,21 +200,27 @@ const ReportSubmissionForm: React.FC<ReportSubmissionFormProps> = ({ reportId, f
         return null;
     }
   }
+
+  if (isLoadingData) {
+    return <Loading />;
+  }
   
   return (
-    <XForm
-      onSubmit={handleSubmit}
-      submitButtonAlignment="left"
-      initialValues={formData}
-    >
-        <Grid container spacing={2}>
-          {fields.map((field) => (
-            <Grid item xs={12} md={8} key={field.name}>
-              {getFieldComponent(field, formData, handleChange)}
-            </Grid>
-          ))}
-        </Grid>
-    </XForm>
+    <Layout title='Report Submission Form'>
+      <XForm
+        onSubmit={handleSubmit}
+        submitButtonAlignment="left"
+        initialValues={formData}
+      >
+          <Grid container spacing={2}>
+            {reportFields.map((field) => (
+              <Grid item xs={12} md={8} key={field.name}>
+                {getFieldComponent(field, formData, handleChange)}
+              </Grid>
+            ))}
+          </Grid>
+      </XForm>
+    </Layout>
   );
 };
 
