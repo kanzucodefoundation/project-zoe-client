@@ -39,9 +39,6 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const ReportList: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [reports, setReports] = useState<IReport[]>([]);
-  const [selectedReport, setSelectedReport] = useState<IReport | null>(null);
-  const [isViewingReportSubmissions, setIsViewingReportSubmissions] = useState<boolean>(false);
-  const [reportFields, setReportFields] = useState<IReportField[]>([]);
   const classes = useStyles();
   const user = useSelector((state: IState) => state.core.user);
   const history = useHistory();
@@ -53,7 +50,10 @@ const ReportList: React.FC = () => {
         (response: any) => {
           setReports(response);
         },
-        (error: any) => console.error('Failed to fetch reports', error),
+        (error: any) => {
+          Toast.error('Failed to fetch reports');
+          console.error('Failed to fetch reports', error);
+        },
         () => setLoading(false),
       );
     };
@@ -67,12 +67,6 @@ const ReportList: React.FC = () => {
 
   const handleViewSubmissions = async (report: IReport) => {
     history.push(`${localRoutes.reports}/${report.id}/submissions`);
-  };
-
-  const handleBackToList = () => {
-    setSelectedReport(null);
-    setReportFields([]);
-    setIsViewingReportSubmissions(false);
   };
 
   if (loading) {

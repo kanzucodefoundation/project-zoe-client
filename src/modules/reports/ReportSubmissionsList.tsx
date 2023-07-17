@@ -19,8 +19,6 @@ import { IEvent } from '../events/types';
 import { IReportState, reportsConstants } from '../../data/reports/reducer';
 import { localRoutes, remoteRoutes } from '../../data/constants';
 import { search } from '../../utils/ajax';
-import { ReportProps } from './types';
-import ReportSubmissionDetail from './ReportSubmissionDetail';
 import { useHistory, useParams } from 'react-router';
 import Layout from '../../components/layout/Layout';
 import XBreadCrumbs from '../../components/XBreadCrumbs';
@@ -47,7 +45,6 @@ const ReportSubmissions = () => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
-  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const history = useHistory();
   const { reportId } = useParams<any>();
 
@@ -56,7 +53,6 @@ const ReportSubmissions = () => {
   );
 
   const handleRowSelection = (reportSubmissionId: string) => {
-    setSelectedRowId(reportSubmissionId);
     history.push(`${localRoutes.reports}/${reportId}/submissions/${reportSubmissionId}`);
   };
   
