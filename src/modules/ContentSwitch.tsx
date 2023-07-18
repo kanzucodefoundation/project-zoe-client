@@ -113,24 +113,20 @@ const ContentSwitch = () => {
 
 
         {hasAnyRole(user, [
-          appPermissions.roleEventView,
-          appPermissions.roleEventEdit,
+          appPermissions.roleReportView,
         ]) && <Route path={localRoutes.reportSubmit} component={ReportSubmissionForm} />}
 
         {hasAnyRole(user, [
-          appPermissions.roleEventView,
-          appPermissions.roleEventEdit,
+          appPermissions.roleReportViewSubmissions
         ]) && <Route path={localRoutes.reportSubmissionDetails} component={ReportSubmissionDetail} />}
 
         {hasAnyRole(user, [
-          appPermissions.roleEventView,
-          appPermissions.roleEventEdit,
+          appPermissions.roleReportViewSubmissions
         ]) && <Route path={localRoutes.reportSubmissions} component={ReportSubmissions} />}
 
 
         {hasAnyRole(user, [
-          appPermissions.roleEventView,
-          appPermissions.roleEventEdit,
+          appPermissions.roleReportView,
         ]) && <Route path={localRoutes.reports} component={ReportList} />}
 
          <Route path={localRoutes.manageHelp} component={ManageHelp} />

@@ -15,6 +15,8 @@ import { IState } from '../../data/types';
 import { useHistory } from 'react-router';
 import Toast from '../../utils/Toast';
 import XBreadCrumbs from '../../components/XBreadCrumbs';
+import { hasAnyRole } from '../../data/appRoles';
+import { appPermissions } from '../../data/constants';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -99,7 +101,7 @@ const ReportList: React.FC = () => {
                     onClick={() => handleSubmitReport(report)}>
                     Submit Report
                   </Button>
-                  {user.roles.includes('RoleAdmin') && (
+                  {hasAnyRole(user, [appPermissions.roleReportViewSubmissions]) && (
                     <IconButton
                       size="medium"
                       color="primary"

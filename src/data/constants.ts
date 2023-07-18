@@ -17,10 +17,13 @@ export const appPermissions = {
   roleGroupView: 'GROUP_VIEW',
   roleGroupEdit: 'GROUP_EDIT',
 
-  roleMcView: 'MC_VIEW',
+  roleSmallGroupView: 'MC_VIEW',
 
   roleEventView: 'EVENT_VIEW',
   roleEventEdit: 'EVENT_EDIT',
+
+  roleReportView: 'REPORT_VIEW',
+  roleReportViewSubmissions: 'REPORT_VIEW_SUBMISSIONS',
 
   manageHelp: 'MANAGE_HELP',
 };

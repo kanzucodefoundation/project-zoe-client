@@ -117,8 +117,8 @@ export default function Details() {
     return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
   };
 
-  const canViewMc = () => {
-    return hasAnyRole(profile, [appPermissions.roleMcView]);
+  const canViewSmallGroup = () => {
+    return hasAnyRole(profile, [appPermissions.roleSmallGroupView]);
   };
 
   function handleClose() {
@@ -207,7 +207,7 @@ export default function Details() {
     });
   }
 
-  if (canViewMc() && !isLeader()) {
+  if (canViewSmallGroup() && !isLeader()) {
     tabs.push({
       name: 'Requests',
       component: <MemberRequests group={data} />,
