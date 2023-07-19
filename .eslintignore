@@ -6,3 +6,5 @@ packages/react-scripts/fixtures
 fixtures/
 coverage/
 commitlint.config.js
+/project-zoe-client/src/modules/dashboard/*.tsx
+/project-zoe-client/src/data/constants.ts
