@@ -145,7 +145,7 @@ const Users = () => {
   useEffect(() => {
     setLoading(true);
     search(
-      remoteRoutes.users,
+      `${remoteRoutes.users}?limit=200`,
       filter,
       (resp) => {
         setData(resp);

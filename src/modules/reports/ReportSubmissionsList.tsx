@@ -115,7 +115,6 @@ const ReportSubmissions = () => {
           enableFiltering={false}
           loading={loading}
         />
-        <Hidden smDown>
           <Box pt={1}>
             {loading || !data.data ? (
               <Loading />
@@ -124,40 +123,13 @@ const ReportSubmissions = () => {
               <XTable
                 headCells={data.columns || []}
                 data={data.data || []}
-                initialRowsPerPage={10}
+                initialRowsPerPage={200}
+                usePagination={true}
                 handleSelection={handleRowSelection}
                 initialSortBy="smallGroupName"
               />
             )}
           </Box>
-        </Hidden>
-        <Hidden mdUp>
-          <List>
-            {loading || !data?.data ? (
-              <Loading />
-            ) : (
-              data.data.map((row: any) => {
-                const mobileRow = toMobileRow(row);
-                return (
-                  <Fragment key={row.id}>
-                    <ListItem
-                      alignItems="flex-start"
-                      button
-                      disableGutters
-                    >
-                      <ListItemAvatar>{mobileRow.avatar}</ListItemAvatar>
-                      <ListItemText
-                        primary={mobileRow.primary}
-                        secondary={mobileRow.secondary}
-                      />
-                    </ListItem>
-                    <Divider component="li" />
-                  </Fragment>
-                );
-              })
-            )}
-          </List>
-        </Hidden>
       </Box>
     </Layout>
   );
