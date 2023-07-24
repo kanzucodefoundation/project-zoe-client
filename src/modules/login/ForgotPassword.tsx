@@ -27,14 +27,13 @@ export default function ForgotPassword() {
       remoteRoutes.forgotPassword,
       data,
       (resp) => {
-        Toast.success('Reset Password Link Sent to Email');
+        Toast.success('An email has been sent to the provided address if it exists in the platform');
         const { token } = resp;
         localStorage.setItem('password_token', token);
-        console.log(resp);
         actions.resetForm();
       },
       () => {
-        Toast.error('Error: Message Not Set. Try Again Later');
+        Toast.error('Sorry, we encountered an issue while processing your password reset request. Please double-check the email address you provided and try again. If the problem persists, please contact the platform administrator for further assistance.');
         actions.setSubmitting(false);
         actions.resetForm();
       },
