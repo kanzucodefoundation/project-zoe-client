@@ -19,7 +19,7 @@ import { appPermissions, localRoutes } from '../../data/constants';
 import Loading from '../../components/Loading';
 import EditDialog from '../../components/EditDialog';
 import { IMobileRow } from '../../components/DataList';
-import { hasValue } from '../../components/inputs/inputHelpers';
+import { hasValue } from '../../components/inputs/sutils';
 import { printDate, printDateTime } from '../../utils/dateHelpers';
 import GroupLink from '../../components/GroupLink';
 import PersonAvatar from '../../components/PersonAvatar';
@@ -33,20 +33,22 @@ import { IEvent } from './types';
 import { eventsFetchAsync, IEventState } from '../../data/events/eventsReducer';
 import EventRegisterButton from './EventRegister';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    flexGrow: 1,
-  },
-  filterPaper: {
-    borderRadius: 0,
-    padding: theme.spacing(2),
-  },
-  fab: {
-    position: 'absolute',
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    filterPaper: {
+      borderRadius: 0,
+      padding: theme.spacing(2),
+    },
+    fab: {
+      position: 'absolute',
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+  }),
+);
 
 const headCells: XHeadCell[] = [
   {
@@ -66,7 +68,8 @@ const headCells: XHeadCell[] = [
   {
     name: 'group',
     label: 'Group',
-    render: (value) => (hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-'),
+    render: (value) =>
+      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
   },
   {
     name: 'submittedBy',
@@ -74,7 +77,7 @@ const headCells: XHeadCell[] = [
   },
   {
     name: 'id',
-    render: (value, rec) => <EventRegisterButton id={value} />,
+    render: (value) => <EventRegisterButton id={value} />,
     label: 'Registration',
   },
 ];
@@ -83,15 +86,15 @@ const toMobileRow = (data: IEvent): IMobileRow => ({
   avatar: <PersonAvatar data={data} />,
   primary: data.name,
   secondary: (
-      <>
-        <Typography variant="caption" color="textSecondary" display="block">
-          Group: {data.group.name}
-        </Typography>
-        <Typography variant="caption" color="textSecondary" display="block">
-          {data.category.name}: {printDateTime(data.startDate)}
-        </Typography>
-        <EventRegisterButton id={data.id} />
-      </>
+    <>
+      <Typography variant="caption" color="textSecondary" display="block">
+        Group: {data.group.name}
+      </Typography>
+      <Typography variant="caption" color="textSecondary" display="block">
+        {data.category.name}: {printDateTime(data.startDate)}
+      </Typography>
+      <EventRegisterButton id={data.id} />
+    </>
   ),
 });
 

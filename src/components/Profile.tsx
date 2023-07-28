@@ -8,14 +8,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import HiddenJs from '@material-ui/core/Hidden/HiddenJs';
 import { useHistory } from 'react-router';
 import { IState } from '../data/types';
-import { IPersonState } from '../modules/contacts/types';
 import { getInitials } from '../utils/stringHelpers';
 import { handleLogout } from '../data/coreActions';
 import { localRoutes } from '../data/constants';
 
-export const BarView = (props: any) => {
+const BarView = (props: any) => {
   const profile = useSelector((state: IState) => state.core.user);
-  const user = useSelector((state: IPersonState) => state.core.user);
   const dispatch = useDispatch();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -37,40 +35,47 @@ export const BarView = (props: any) => {
     history.push(localRoutes.profile);
   }
 
-  return <div>
-        <IconButton
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            onClick={handleMenu}
-            color="inherit"
-        >
-            <AccountCircle className={props.textClass}/>
-            &nbsp;
-            <HiddenJs xsDown>
-                <Typography className={props.textClass}>{profile.fullName}</Typography>
-            </HiddenJs>
-            <HiddenJs smUp>
-                <Typography className={props.textClass}>{getInitials(profile.fullName)}</Typography>
-            </HiddenJs>
-        </IconButton>
-        <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            open={menuOpen}
-            onClose={handleCloseMenu}
-        >
-            <MenuItem onClick={goToProfile}>Profile</MenuItem>
-            <MenuItem onClick={doLogout}>Logout</MenuItem>
-        </Menu>
-    </div>;
+  return (
+    <div>
+      <IconButton
+        aria-label="account of current user"
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
+        onClick={handleMenu}
+        color="inherit"
+      >
+        <AccountCircle className={props.textClass} />
+        &nbsp;
+        <HiddenJs xsDown>
+          <Typography className={props.textClass}>
+            {profile.fullName}
+          </Typography>
+        </HiddenJs>
+        <HiddenJs smUp>
+          <Typography className={props.textClass}>
+            {getInitials(profile.fullName)}
+          </Typography>
+        </HiddenJs>
+      </IconButton>
+      <Menu
+        id="menu-appbar"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={menuOpen}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem onClick={goToProfile}>Profile</MenuItem>
+        <MenuItem onClick={doLogout}>Logout</MenuItem>
+      </Menu>
+    </div>
+  );
 };
+export default BarView;

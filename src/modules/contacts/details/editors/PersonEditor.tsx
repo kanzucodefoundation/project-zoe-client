@@ -13,10 +13,7 @@ import {
 } from '../../../../data/comboCategories';
 import XForm from '../../../../components/forms/XForm';
 import XTextInput from '../../../../components/inputs/XTextInput';
-import {
-  hasValue,
-  toOptions,
-} from '../../../../components/inputs/inputHelpers';
+import { hasValue, toOptions } from '../../../../components/inputs/sutils';
 
 import { remoteRoutes } from '../../../../data/constants';
 import { crmConstants } from '../../../../data/contacts/reducer';
@@ -65,12 +62,12 @@ const PersonEditor = ({ data, done }: IProps) => {
     put(
       remoteRoutes.contactsPeople,
       toSave,
-      (data) => {
+      (NextData) => {
         Toast.info('Operation successful');
         actions.resetForm();
         dispatch({
           type: crmConstants.crmEditPerson,
-          payload: { ...data },
+          payload: { ...NextData },
         });
         if (done) done();
       },
@@ -86,8 +83,10 @@ const PersonEditor = ({ data, done }: IProps) => {
   if (hasValue(dateOfBirth)) {
     try {
       const dt: Date = parseISO(`${dateOfBirth}`);
-      initialData.birthDay = getDate(dt) < 10 ? `0${getDate(dt)}` : `${getDate(dt)}`;
-      initialData.birthMonth = getMonth(dt) < 10 ? `0${getMonth(dt) + 1}` : `${getMonth(dt) + 1}`;
+      initialData.birthDay =
+        getDate(dt) < 10 ? `0${getDate(dt)}` : `${getDate(dt)}`;
+      initialData.birthMonth =
+        getMonth(dt) < 10 ? `0${getMonth(dt) + 1}` : `${getMonth(dt) + 1}`;
     } catch (e) {
       console.log('invalid date');
     }

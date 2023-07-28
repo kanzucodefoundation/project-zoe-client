@@ -18,18 +18,20 @@ import {
   tagsStartLoading,
 } from '../../../data/tags/reducer';
 import InfoMessage from '../../../components/messages/InfoMessage';
-import { hasNoValue } from '../../../components/inputs/inputHelpers';
+import { hasNoValue } from '../../../components/inputs/sutils';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    backgroundColor: theme.palette.background.paper,
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      backgroundColor: theme.palette.background.paper,
+    },
+  }),
+);
 const Tags = () => {
   const classes = useStyles();
   const { data, loading }: ITagState = useSelector((state: any) => state.tags);
 
-  const [filter, setFilter] = useState({});
+  const [filter] = useState({});
   const [selected, setSelected] = useState<ITag | null>(null);
   const [dialog, setDialog] = useState(false);
   const dispatch = useDispatch();
@@ -54,34 +56,38 @@ const Tags = () => {
   };
 
   return (
-        <Box p={2} className={classes.root}>
-            <Header onAddNew={handleNew} title='Tags'/>
-            <div>
-                <List>
-                    {
-                        loading
-                          ? <Loading/>
-                          : <>{
-                                hasNoValue(data)
-                                  ? <InfoMessage text='No tags found'/>
-                                  : data.map((it) => <ListItem key={it.id} button onClick={handleClick(it)}>
-                                            <ListItemIcon>
-                                                <LabelIcon style={{ color: it.color }}/>
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={it.name}
-                                                secondary={it.category}
-                                            />
-                                        </ListItem>)
-
-                            }</>
-                    }
-                </List>
-            </div>
-            <EditDialog open={dialog} onClose={handleClose} title={selected ? 'Edit Tag' : 'New Tag'}>
-                <TagEditor data={selected} isNew={!selected} done={handleClose}/>
-            </EditDialog>
-        </Box>
+    <Box p={2} className={classes.root}>
+      <Header onAddNew={handleNew} title="Tags" />
+      <div>
+        <List>
+          {loading ? (
+            <Loading />
+          ) : (
+            <>
+              {hasNoValue(data) ? (
+                <InfoMessage text="No tags found" />
+              ) : (
+                data.map((it) => (
+                  <ListItem key={it.id} button onClick={handleClick(it)}>
+                    <ListItemIcon>
+                      <LabelIcon style={{ color: it.color }} />
+                    </ListItemIcon>
+                    <ListItemText primary={it.name} secondary={it.category} />
+                  </ListItem>
+                ))
+              )}
+            </>
+          )}
+        </List>
+      </div>
+      <EditDialog
+        open={dialog}
+        onClose={handleClose}
+        title={selected ? 'Edit Tag' : 'New Tag'}
+      >
+        <TagEditor data={selected} isNew={!selected} done={handleClose} />
+      </EditDialog>
+    </Box>
   );
 };
 

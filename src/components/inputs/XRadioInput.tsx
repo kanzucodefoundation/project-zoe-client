@@ -6,7 +6,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
-import { hasValue, IOption } from './inputHelpers';
+import { hasValue, IOption } from './sutils';
 
 interface IProps {
   label: string;
@@ -38,35 +38,29 @@ const XRadioInput = (props: IProps) => {
       }
     };
 
-    return <FormControl error={showError}>
-            <FormLabel htmlFor={name}>{label}</FormLabel>
-            <RadioGroup
-                {...field}
-                onBlur={handleBlur}
-                value={value || ''}
-                row
-                onChange={handleChange}
-            >
-                {
-                    options.map(
-                      (it) => <FormControlLabel
-                            key={it.id}
-                            value={it.id}
-                            label={it.name}
-                            control={<Radio color='primary'/>}
-                        />,
-                    )
-                }
-            </RadioGroup>
-            {
-                showError && <FormHelperText>{error}</FormHelperText>
-            }
-        </FormControl>;
+    return (
+      <FormControl error={showError}>
+        <FormLabel htmlFor={name}>{label}</FormLabel>
+        <RadioGroup
+          {...field}
+          onBlur={handleBlur}
+          value={value || ''}
+          row
+          onChange={handleChange}
+        >
+          {options.map((it) => (
+            <FormControlLabel
+              key={it.id}
+              value={it.id}
+              label={it.name}
+              control={<Radio color="primary" />}
+            />
+          ))}
+        </RadioGroup>
+        {showError && <FormHelperText>{error}</FormHelperText>}
+      </FormControl>
+    );
   };
-  return (
-        <Field {...rest}>
-            {render}
-        </Field>
-  );
+  return <Field {...rest}>{render}</Field>;
 };
 export default XRadioInput;

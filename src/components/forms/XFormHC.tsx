@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Form, Formik, FormikHelpers } from 'formik';
-
 import { Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-import { hasValue } from '../inputs/inputHelpers';
+import { hasValue } from '../inputs/sutils';
 
 interface IProps {
   schema?: any;
@@ -35,7 +34,9 @@ const XFormHC = (props: IProps) => {
   function handleDelete() {
     if (count === 1) {
       setCount(0);
-      props.onDelete && props.onDelete();
+      if (props.onDelete) {
+        props.onDelete();
+      }
     } else {
       setCount(count + 1);
     }
@@ -49,9 +50,7 @@ const XFormHC = (props: IProps) => {
       validateOnBlur
       enableReinitialize
     >
-      {({
-        submitForm, isSubmitting, values, errors, touched, submitCount,
-      }) => (
+      {({ submitForm, isSubmitting, values, errors, touched, submitCount }) => (
         <Form autoComplete="food">
           <Grid container spacing={0} className={classes.root}>
             {submitCount > 0 && hasValue(errors) && (

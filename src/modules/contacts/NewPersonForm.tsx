@@ -13,16 +13,16 @@ import {
 import XForm from '../../components/forms/XForm';
 import XTextInput from '../../components/inputs/XTextInput';
 import XSelectInput from '../../components/inputs/XSelectInput';
-import { toOptions } from '../../components/inputs/inputHelpers';
+import { toOptions } from '../../components/inputs/sutils';
 import { remoteRoutes } from '../../data/constants';
 import { crmConstants } from '../../data/contacts/reducer';
 import { post } from '../../utils/ajax';
 import Toast from '../../utils/Toast';
 import XRadioInput from '../../components/inputs/XRadioInput';
-import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
+import XRemoteSelect from '../../components/inputs/XRemoteSelect';
 import { ICreatePersonDto } from './types';
 import { getDayList, getMonthsList } from '../../utils/dateHelpers';
-import { XMapsInput } from '../../components/inputs/XMapsInput';
+import XMapsInput from '../../components/inputs/XMapsInput';
 import { parseGooglePlace } from '../../components/plain-inputs/PMapsInput';
 
 interface IProps {

@@ -5,7 +5,7 @@ import XTextInput from '../inputs/XTextInput';
 import XDateTimeInput from '../inputs/XDateTimeInput';
 import XDateInput from '../inputs/XDateInput';
 import XTextAreaInput from '../inputs/XTextAreaInput';
-import { hasValue } from '../inputs/inputHelpers';
+import { hasValue } from '../inputs/sutils';
 
 export type FormField = {
   name: string;

@@ -18,16 +18,18 @@ export const strToDate = (str: string): Date | null => {
 
 export const getMonthsList = () => {
   const monthsList = [];
-  for (let i = 1; i <= 12; i++) {
+  for (let i = 1; i <= 12; ) {
     monthsList.push(`${i}`.padStart(2, '0'));
+    i += 1;
   }
   return monthsList;
 };
 
 export const getDayList = () => {
   const monthsList = [];
-  for (let i = 1; i <= 31; i++) {
+  for (let i = 1; i <= 31; ) {
     monthsList.push(`${i}`.padStart(2, '0'));
+    i += 1;
   }
   return monthsList;
 };

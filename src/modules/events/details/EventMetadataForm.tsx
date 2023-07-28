@@ -3,7 +3,7 @@ import { Alert } from '@material-ui/lab';
 import { remoteRoutes } from '../../../data/constants';
 import FormFields from '../../../components/forms/FormFields';
 import { get } from '../../../utils/ajax';
-import { hasNoValue, hasValue } from '../../../components/inputs/inputHelpers';
+import { hasNoValue, hasValue } from '../../../components/inputs/sutils';
 
 interface IProps {
   eventCategory: string;
@@ -19,7 +19,8 @@ const EventMetadataForm = ({ eventCategory }: IProps) => {
     }
   }, [eventCategory]);
 
-  if (hasNoValue(fields)) return <Alert severity="info">Select a category for more options</Alert>;
+  if (hasNoValue(fields))
+    return <Alert severity="info">Select a category for more options</Alert>;
   return <FormFields fields={fields} spacing={2} parentField="metaData" />;
 };
 

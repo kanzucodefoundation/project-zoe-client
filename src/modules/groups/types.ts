@@ -1,4 +1,4 @@
-import { IOption } from '../../components/inputs/inputHelpers';
+import { IOption } from '../../components/inputs/sutils';
 
 export interface IGroup {
   id: string;

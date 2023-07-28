@@ -10,7 +10,7 @@ import { post, put } from '../../../../utils/ajax';
 import Toast from '../../../../utils/Toast';
 import { GroupRole, IGroup } from '../../../groups/types';
 import XSelectInput from '../../../../components/inputs/XSelectInput';
-import { toOptions } from '../../../../components/inputs/inputHelpers';
+import { toOptions } from '../../../../components/inputs/sutils';
 import { enumToArray } from '../../../../utils/stringHelpers';
 
 interface IProps {
@@ -26,9 +26,7 @@ const schema = yup.object().shape({
   tag: reqString,
 });
 
-const GroupEditor = ({
-  data, isNew, onGroupAdded, onGroupEdited,
-}: IProps) => {
+const GroupEditor = ({ data, isNew, onGroupAdded, onGroupEdited }: IProps) => {
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: IGroup = {
       categoryId: '',

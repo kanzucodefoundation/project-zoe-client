@@ -14,7 +14,7 @@ import XTextInput from '../../components/inputs/XTextInput';
 import { put } from '../../utils/ajax';
 import { localRoutes, remoteRoutes } from '../../data/constants';
 import Toast from '../../utils/Toast';
-import { hasNoValue } from '../../components/inputs/inputHelpers';
+import { hasNoValue } from '../../components/inputs/sutils';
 import Error from '../../components/Error';
 import { reqString } from '../../data/validations';
 
@@ -67,7 +67,6 @@ function ResetPassword() {
           onSubmit={onSubmit}
         >
           {(formState) => (
-
             <Form className={classes.form}>
               <XTextInput
                 type="text"

@@ -6,7 +6,7 @@ import { reqString } from '../../../data/validations';
 import XForm from '../../../components/forms/XForm';
 import XTextInput from '../../../components/inputs/XTextInput';
 import XSelectInput from '../../../components/inputs/XSelectInput';
-import { toOptions } from '../../../components/inputs/inputHelpers';
+import { toOptions } from '../../../components/inputs/sutils';
 import { remoteRoutes } from '../../../data/constants';
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
 import { helpFileCategories } from '../../../data/comboCategories';
@@ -48,7 +48,11 @@ function checkUrl(str: string) {
 }
 
 const AddHelpFileButton = ({
-  data, isNew, onCreated, onUpdated, done,
+  data,
+  isNew,
+  onCreated,
+  onUpdated,
+  done,
 }: IProps) => {
   // Function to handle submissions
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
@@ -67,12 +71,12 @@ const AddHelpFileButton = ({
       values: toSave,
       actions,
       isNew,
-      onAjaxComplete: (data: any) => {
+      onAjaxComplete: (ajaxData: any) => {
         if (isNew) {
-          onCreated && onCreated(data);
+          onCreated?.(ajaxData);
         } else {
-          onUpdated && onUpdated(data);
-          if (done) done();
+          onUpdated?.(ajaxData);
+          done?.();
           window.location.reload();
         }
         actions.resetForm();
@@ -81,46 +85,46 @@ const AddHelpFileButton = ({
     };
 
     handleSubmission(submission);
-    if (done) done();
+    done?.();
   }
 
   return (
     <XForm
-    onSubmit={handleSubmit}
-    schema={schema}
-    initialValues={{ ...initialValues, ...data.value }}
-    onCancel={done}
-  >
-    <Grid spacing={2} container className="min-width-100">
-      <Grid item xs={12}>
-        <XTextInput
-          name="title"
-          label = "Title"
-          type="text"
-          variant="outlined"
-          margin="none"
-        />
+      onSubmit={handleSubmit}
+      schema={schema}
+      initialValues={{ ...initialValues, ...data.value }}
+      onCancel={done}
+    >
+      <Grid spacing={2} container className="min-width-100">
+        <Grid item xs={12}>
+          <XTextInput
+            name="title"
+            label="Title"
+            type="text"
+            variant="outlined"
+            margin="none"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <XTextInput
+            name="url"
+            label="URL"
+            type="text"
+            variant="outlined"
+            margin="none"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <XSelectInput
+            name="category"
+            label="Category"
+            options={toOptions(helpFileCategories)}
+            variant="outlined"
+            margin="none"
+          />
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <XTextInput
-          name="url"
-          label = "URL"
-          type="text"
-          variant="outlined"
-          margin="none"
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <XSelectInput
-          name="category"
-          label = "Category"
-          options = {toOptions(helpFileCategories)}
-          variant="outlined"
-          margin="none"
-        />
-      </Grid>
-    </Grid>
-  </XForm>
+    </XForm>
   );
 };
 

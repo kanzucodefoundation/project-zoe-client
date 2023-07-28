@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
-import { hasValue } from '../inputs/inputHelpers';
+import { hasValue } from '../inputs/sutils';
 
 interface IProps {
   schema?: any;
@@ -44,7 +44,8 @@ const XForm = (props: IProps) => {
     }
   }
 
-  const buttonAlignment = props.submitButtonAlignment === 'left' ? 'flex-start' : 'flex-end';
+  const buttonAlignment =
+    props.submitButtonAlignment === 'left' ? 'flex-start' : 'flex-end';
 
   return (
     <Formik
@@ -54,9 +55,7 @@ const XForm = (props: IProps) => {
       validateOnBlur
       enableReinitialize
     >
-      {({
-        submitForm, isSubmitting, values, errors, touched, submitCount,
-      }) => (
+      {({ submitForm, isSubmitting, values, errors, touched, submitCount }) => (
         <Form autoComplete="food">
           <Grid container spacing={0} className={classes.root}>
             {submitCount > 0 && hasValue(errors) && (

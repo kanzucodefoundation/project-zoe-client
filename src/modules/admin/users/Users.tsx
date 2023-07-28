@@ -19,7 +19,7 @@ import {
   localRoutes,
   remoteRoutes,
 } from '../../../data/constants';
-import { hasValue } from '../../../components/inputs/inputHelpers';
+import { hasValue } from '../../../components/inputs/sutils';
 import EditDialog from '../../../components/EditDialog';
 import UserEditor from './UserEditor';
 import Loading from '../../../components/Loading';
@@ -71,7 +71,8 @@ const columns: XHeadCell[] = [
   {
     name: 'roles',
     label: 'Roles',
-    render: (roles: string[]) => roles?.map((it) => (
+    render: (roles: string[]) =>
+      roles?.map((it) => (
         <Chip
           color={it.includes(': is disabled') ? 'default' : 'primary'}
           variant="outlined"
@@ -80,7 +81,7 @@ const columns: XHeadCell[] = [
           size="small"
           label={it}
         />
-    )),
+      )),
   },
 ];
 
@@ -165,9 +166,7 @@ const Users = () => {
   }
 
   const handleEdit = (dt: any) => {
-    const {
-      id, username, contactId, fullName, roles, isActive,
-    } = dt;
+    const { id, username, contactId, fullName, roles, isActive } = dt;
     const toEdit = {
       id,
       username,
@@ -183,6 +182,11 @@ const Users = () => {
     history.push(`${localRoutes.contacts}/${dt.id}`);
   };
 
+  const handleClose = () => {
+    // setSelected(null);
+    setDialog(false);
+  };
+
   const handleComplete = (dt: any) => {
     if (selected) {
       const newData = data.map((it: any) => {
@@ -195,10 +199,6 @@ const Users = () => {
       setData(newData);
     }
     handleClose();
-  };
-  const handleClose = () => {
-    // setSelected(null);
-    setDialog(false);
   };
 
   function handleDeleted(dt: any) {

@@ -8,15 +8,15 @@ import XTextInput from '../../../components/inputs/XTextInput';
 import { remoteRoutes } from '../../../data/constants';
 import { GroupPrivacy, IGroup } from '../types';
 import XSelectInput from '../../../components/inputs/XSelectInput';
-import { toOptions } from '../../../components/inputs/inputHelpers';
+import { toOptions } from '../../../components/inputs/sutils';
 import { enumToArray } from '../../../utils/stringHelpers';
-import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
+import XRemoteSelect from '../../../components/inputs/XRemoteSelect';
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
 import { del } from '../../../utils/ajax';
 import Toast from '../../../utils/Toast';
 import { cleanComboValue } from '../../../utils/dataHelpers';
 import { parseGooglePlace } from '../../../components/plain-inputs/PMapsInput';
-import { XMapsInput } from '../../../components/inputs/XMapsInput';
+import XMapsInput from '../../../components/inputs/XMapsInput';
 
 interface IProps {
   data?: Partial<IGroup>;
@@ -71,11 +71,11 @@ const GroupEditor = ({
       values: toSave,
       actions,
       isNew,
-      onAjaxComplete: (data: any) => {
+      onAjaxComplete: (ajaxData: any) => {
         if (isNew) {
-          onCreated && onCreated(data);
+          onCreated?.(ajaxData);
         } else {
-          onUpdated && onUpdated(data);
+          onUpdated?.(ajaxData);
         }
         actions.resetForm();
         actions.setSubmitting(false);
@@ -87,10 +87,10 @@ const GroupEditor = ({
   function handleDelete() {
     setLoading(true);
     del(
-      `${remoteRoutes.groups}/${data?.id}`,
+      `${remoteRoutes.groups}/${data?.id ?? ''}`,
       () => {
         Toast.success('Operation succeeded');
-        onDeleted && onDeleted(data?.id);
+        onDeleted?.(data?.id);
       },
       undefined,
       () => {

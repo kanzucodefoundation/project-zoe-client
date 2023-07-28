@@ -2,7 +2,7 @@ import * as React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { lastDayOfWeek, startOfWeek } from 'date-fns/esm';
 import PDateInput from '../../components/plain-inputs/PDateInput';
-import { useFilter } from '../../utils/fitlerUtilities';
+import useFilter from '../../utils/fitlerUtilities';
 import { remoteRoutes } from '../../data/constants';
 import { PRemoteSelect } from '../../components/plain-inputs/PRemoteSelect';
 
@@ -12,7 +12,12 @@ interface IProps {
 
 const initialData: any = {
   query: '',
-  'cellGroups[]': ['All', 'No. Of Teenagers', 'No. Of Children', 'No. of Adults'],
+  'cellGroups[]': [
+    'All',
+    'No. Of Teenagers',
+    'No. Of Children',
+    'No. of Adults',
+  ],
 
   startDate: startOfWeek(new Date()),
   endDate: lastDayOfWeek(new Date()),
@@ -30,22 +35,22 @@ const ReportFilter = ({ onFilter }: IProps) => {
     <form>
       <Grid spacing={2} container>
         <Grid item xs={12} md>
-        <PDateInput
+          <PDateInput
             name="startDate"
             label="Start Date"
             inputVariant="outlined"
             value={data.from}
             onChange={(value) => handleDateChange('from', value)}
-        />
+          />
         </Grid>
         <Grid item xs={12} md>
-        <PDateInput
+          <PDateInput
             name="startDate"
             label="End Date"
             inputVariant="outlined"
             value={data.to}
             onChange={(value) => handleDateChange('to', value)}
-        />
+          />
         </Grid>
         <Grid item xs={12} md>
           <PRemoteSelect

@@ -9,7 +9,7 @@ import XForm from '../../../../components/forms/XForm';
 import XTextInput from '../../../../components/inputs/XTextInput';
 import XDateInput from '../../../../components/inputs/XDateInput';
 import XSelectInput from '../../../../components/inputs/XSelectInput';
-import { toOptions } from '../../../../components/inputs/inputHelpers';
+import { toOptions } from '../../../../components/inputs/sutils';
 import XCheckBoxInput from '../../../../components/inputs/XCheckBoxInput';
 import { IIdentification } from '../../types';
 import { remoteRoutes } from '../../../../data/constants';
@@ -24,19 +24,15 @@ interface IProps {
   done?: () => any;
 }
 
-const schema = yup.object().shape(
-  {
-    category: reqString.oneOf(idCategories),
-    value: reqString,
-    issuingCountry: reqString,
-    startDate: reqDate,
-    expiryDate: reqDate,
-  },
-);
+const schema = yup.object().shape({
+  category: reqString.oneOf(idCategories),
+  value: reqString,
+  issuingCountry: reqString,
+  startDate: reqDate,
+  expiryDate: reqDate,
+});
 
-const IdentificationEditor = ({
-  data, isNew, contactId, done,
-}: IProps) => {
+const IdentificationEditor = ({ data, isNew, contactId, done }: IProps) => {
   const dispatch = useDispatch();
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
@@ -47,7 +43,9 @@ const IdentificationEditor = ({
       isNew,
       onAjaxComplete: (data: any) => {
         dispatch({
-          type: isNew ? crmConstants.crmAddIdentification : crmConstants.crmEditIdentification,
+          type: isNew
+            ? crmConstants.crmAddIdentification
+            : crmConstants.crmEditIdentification,
           payload: { ...data },
         });
         if (done) done();
@@ -64,61 +62,54 @@ const IdentificationEditor = ({
   });
 
   return (
-        <XForm
-            onSubmit={handleSubmit}
-            schema={schema}
-            initialValues={data}
-            onCancel={done}
-            loading={deleteActions.loading}
-            onDelete={deleteActions.handleDelete}
-        >
-            <Grid spacing={1} container>
-                <Grid item xs={12}>
-                    <XSelectInput
-                        name="category"
-                        label="Category"
-                        options={toOptions(idCategories)}
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="value"
-                        label="Id Number"
-                        type="text"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XTextInput
-                        name="issuingCountry"
-                        label="Issuing Country"
-                        type="text"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <XDateInput
-                        name="startDate"
-                        label="Issue Date"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <XDateInput
-                        name="expiryDate"
-                        label="Expiry Date"
-                        variant='outlined'
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <XCheckBoxInput
-                        name="isPrimary"
-                        label="Primary/Default"
-                    />
-                </Grid>
-            </Grid>
-        </XForm>
+    <XForm
+      onSubmit={handleSubmit}
+      schema={schema}
+      initialValues={data}
+      onCancel={done}
+      loading={deleteActions.loading}
+      onDelete={deleteActions.handleDelete}
+    >
+      <Grid spacing={1} container>
+        <Grid item xs={12}>
+          <XSelectInput
+            name="category"
+            label="Category"
+            options={toOptions(idCategories)}
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <XTextInput
+            name="value"
+            label="Id Number"
+            type="text"
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <XTextInput
+            name="issuingCountry"
+            label="Issuing Country"
+            type="text"
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <XDateInput name="startDate" label="Issue Date" variant="outlined" />
+        </Grid>
+        <Grid item xs={6}>
+          <XDateInput
+            name="expiryDate"
+            label="Expiry Date"
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <XCheckBoxInput name="isPrimary" label="Primary/Default" />
+        </Grid>
+      </Grid>
+    </XForm>
   );
 };
 

@@ -5,7 +5,7 @@ import Autocomplete, {
 import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { search } from '../../utils/ajax';
-import { hasNoValue, IOption } from '../inputs/inputHelpers';
+import { hasNoValue, IOption } from '../inputs/sutils';
 import { ComboValue, PComboProps } from './PComboInput';
 
 const filter = createFilterOptions<IOption | string>();
@@ -37,7 +37,8 @@ function hashCode(str: string): number {
   return str
     .split('')
     .reduce(
-      (prevHash, currVal) => ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0,
+      (prevHash, currVal) =>
+        ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0,
       0,
     );
 }
@@ -53,30 +54,30 @@ export function PRemoteSelect(props: IPRemoteProps) {
   const [dataCache, setDataCache] = React.useState<any>({});
 
   const isInCache = useCallback(
-    (filter: any) => {
-      const key = hashCode(JSON.stringify(filter));
+    (filterParams: any) => {
+      const key = hashCode(JSON.stringify(filterParams));
       if (dataCache[key]) {
         return dataCache[key];
       }
+      return null;
     },
     [dataCache],
   );
 
   const addToCache = useCallback(
-    (filter: any, resp: any) => {
-      const key = hashCode(JSON.stringify(filter));
+    (newFilter: any, resp: any) => {
+      const key = hashCode(JSON.stringify(newFilter));
       const newData = { ...dataCache, [key]: resp };
       setDataCache(newData);
     },
     [dataCache],
   );
-
   const fetch = useCallback(
-    (query: string) => {
+    (searchQuery: string) => {
       if (hasNoValue(props.remote)) {
         return;
       }
-      const newFilter = { ...(props.filter || {}), query, limit: 300 };
+      const newFilter = { ...(props.filter || {}), searchQuery, limit: 300 };
       const cached = isInCache(newFilter);
       if (cached) {
         setIOptions(cached);
@@ -110,12 +111,15 @@ export function PRemoteSelect(props: IPRemoteProps) {
   useEffect(() => {
     fetch(query);
   }, [fetch, query]);
-
   const handleTouched = () => {
-    props.onBlur && props.onBlur();
+    props.onBlur?.();
+    return undefined;
   };
-
-  function handleChange(event: ChangeEvent<{}>, value: ComboValue, _: any) {
+  function handleChange(
+    event: ChangeEvent<unknown>,
+    value: ComboValue,
+    _: any,
+  ) {
     onChange(value);
   }
 
@@ -160,12 +164,11 @@ export function PRemoteSelect(props: IPRemoteProps) {
     defaultValue,
     ...autoProps
   } = props;
-  // TODO fix this type
-  const _value: any = value || (multiple ? [] : null);
+  const Myvalue: any = value || (multiple ? [] : null);
   return (
     <Autocomplete
       {...autoProps}
-      value={_value}
+      value={Myvalue}
       multiple={multiple}
       onChange={handleChange}
       inputValue={inputValue}
@@ -184,31 +187,31 @@ export function PRemoteSelect(props: IPRemoteProps) {
       autoComplete
       loading={loading}
       renderInput={(params) => (
-          <TextField
-            {...params}
-            {...textFieldProps}
-            margin={margin}
-            label={label}
-            fullWidth
-            onBlur={handleTouched}
-            error={showError}
-            helperText={showError && helperText}
-            variant={props.variant}
-            autoComplete="nope"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <React.Fragment>
-                  {loading ? (
-                    <CircularProgress color="inherit" size={20} />
-                  ) : (
-                    <FakeProgress />
-                  )}
-                  {params.InputProps.endAdornment}
-                </React.Fragment>
-              ),
-            }}
-          />
+        <TextField
+          {...params}
+          {...textFieldProps}
+          margin={margin}
+          label={label}
+          fullWidth
+          onBlur={handleTouched}
+          error={showError}
+          helperText={showError && helperText}
+          variant={props.variant}
+          autoComplete="nope"
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {loading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : (
+                  <FakeProgress />
+                )}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+          }}
+        />
       )}
     />
   );

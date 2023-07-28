@@ -9,7 +9,7 @@ import parse from 'autosuggest-highlight/parse';
 import throttle from 'lodash/throttle';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
-import { hasValue } from '../inputs/inputHelpers';
+import { hasValue } from '../inputs/sutils';
 
 function loadScript(src: string, position: HTMLElement | null, id: string) {
   if (!position) {
@@ -80,21 +80,21 @@ export interface IProps {
 
 type OptionalBool = boolean | undefined;
 type BaseProps = AutocompleteProps<
-GooglePlace,
-OptionalBool,
-OptionalBool,
-OptionalBool
+  GooglePlace,
+  OptionalBool,
+  OptionalBool,
+  OptionalBool
 >;
 type AutoProps = Omit<
-BaseProps,
-| 'variant'
-| 'multiple'
-| 'renderInput'
-| 'onChange'
-| 'value'
-| 'options'
-| 'onInputChange'
-| 'renderOption'
+  BaseProps,
+  | 'variant'
+  | 'multiple'
+  | 'renderInput'
+  | 'onChange'
+  | 'value'
+  | 'options'
+  | 'onInputChange'
+  | 'renderOption'
 >;
 export type PMapsProps = IProps & AutoProps;
 
@@ -119,12 +119,13 @@ export default function PMapsInput(props: PMapsProps) {
   }
 
   const fetch = React.useMemo(
-    () => throttle((request: any, callback: (results?: GooglePlace[]) => void) => {
-      (autocompleteService.current as any).getPlacePredictions(
-        request,
-        callback,
-      );
-    }, 200),
+    () =>
+      throttle((request: any, callback: (results?: GooglePlace[]) => void) => {
+        (autocompleteService.current as any).getPlacePredictions(
+          request,
+          callback,
+        );
+      }, 200),
     [],
   );
 
@@ -132,7 +133,9 @@ export default function PMapsInput(props: PMapsProps) {
     let active = true;
 
     if (!autocompleteService.current && (window as any).google) {
-      autocompleteService.current = new (window as any).google.maps.places.AutocompleteService();
+      autocompleteService.current = new (
+        window as any
+      ).google.maps.places.AutocompleteService();
     }
     if (!autocompleteService.current) {
       return undefined;
@@ -170,15 +173,14 @@ export default function PMapsInput(props: PMapsProps) {
     };
   }, [props.value, inputValue, fetch]);
   const handleTouched = () => {
-    props.onBlur && props.onBlur();
+    props.onBlur?.();
   };
 
-  const {
-    label, variant, helperText, showError, margin = 'normal',
-  } = props;
+  const { label, variant, helperText, showError, margin = 'normal' } = props;
   return (
     <Autocomplete
-      getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)
+      getOptionLabel={(option) =>
+        typeof option === 'string' ? option : option.description
       }
       filterOptions={(x) => x}
       options={options}
@@ -208,7 +210,8 @@ export default function PMapsInput(props: PMapsProps) {
       onBlur={handleTouched}
       renderOption={(option) => {
         if (option.structured_formatting) {
-          const matches = option.structured_formatting.main_text_matched_substrings;
+          const matches =
+            option.structured_formatting.main_text_matched_substrings;
           const parts = parse(
             option.structured_formatting.main_text,
             matches.map((match: any) => [
@@ -239,16 +242,16 @@ export default function PMapsInput(props: PMapsProps) {
           );
         }
         return (
-            <Grid container alignItems="center">
-              <Grid item>
-                <LocationOnIcon className={classes.icon} />
-              </Grid>
-              <Grid item xs>
-                <Typography variant="body2" color="textSecondary">
-                  {option.description}
-                </Typography>
-              </Grid>
+          <Grid container alignItems="center">
+            <Grid item>
+              <LocationOnIcon className={classes.icon} />
             </Grid>
+            <Grid item xs>
+              <Typography variant="body2" color="textSecondary">
+                {option.description}
+              </Typography>
+            </Grid>
+          </Grid>
         );
       }}
     />

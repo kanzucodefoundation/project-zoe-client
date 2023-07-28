@@ -1,9 +1,10 @@
 import * as superagent from 'superagent';
 import Toast from './Toast';
 import { AUTH_TOKEN_KEY } from '../data/constants';
-import { hasNoValue, hasValue } from '../components/inputs/inputHelpers';
+import { hasNoValue, hasValue } from '../components/inputs/sutils';
 
-export const getToken = (): string | null => localStorage.getItem(AUTH_TOKEN_KEY);
+export const getToken = (): string | null =>
+  localStorage.getItem(AUTH_TOKEN_KEY);
 
 type CallbackFunction = (data?: any) => void;
 type ErrorCallback = (err: any, res: superagent.Response) => void;
@@ -36,17 +37,18 @@ export const handleError = (err: any = {}, res: superagent.Response) => {
     const msg = extractBadRequestErrorMessage(message, errors);
     Toast.error(msg || defaultMessage, ajaxError);
   } else if (
-    (res && res.clientError)
-    || (res && res.notAcceptable)
-    || (res && res.error)
+    (res && res.clientError) ||
+    (res && res.notAcceptable) ||
+    (res && res.error)
   ) {
     const { message } = res.body || {};
     Toast.error(message || defaultMessage, ajaxError);
   } else {
     const message = err.message || 'Unknown error, contact admin';
-    const finalMessage = message.indexOf('offline') !== -1
-      ? "Can't reach server, Check connectivity"
-      : message;
+    const finalMessage =
+      message.indexOf('offline') !== -1
+        ? "Can't reach server, Check connectivity"
+        : message;
     Toast.error(finalMessage, ajaxError);
   }
 };
@@ -61,29 +63,31 @@ export const isAuthError = (err: any = {}, res: superagent.Response) => {
   return (res && res.forbidden) || (res && res.unauthorized);
 };
 
-export const handleResponse = (
-  callBack: CallbackFunction,
-  errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback,
-) => (err: any, res: superagent.Response) => {
-  try {
-    if (err || !res.ok) {
-      if (errorCallBack) {
-        errorCallBack(err, res);
+export const handleResponse =
+  (
+    callBack: CallbackFunction,
+    errorCallBack?: ErrorCallback,
+    endCallBack?: EndCallback,
+  ) =>
+  (err: any, res: superagent.Response) => {
+    try {
+      if (err || !res.ok) {
+        if (errorCallBack) {
+          errorCallBack(err, res);
+        } else {
+          handleError(err, res);
+        }
       } else {
-        handleError(err, res);
+        callBack(res.body);
       }
-    } else {
-      callBack(res.body);
+    } catch (e) {
+      console.error('Failed to process response', e);
+    } finally {
+      if (endCallBack) {
+        endCallBack();
+      }
     }
-  } catch (e) {
-    console.error('Failed to process response', e);
-  } finally {
-    if (endCallBack) {
-      endCallBack();
-    }
-  }
-};
+  };
 
 export const get = (
   url: string,
@@ -98,9 +102,8 @@ export const get = (
     .timeout(timeout)
     .end(handleResponse(callBack, errorCallBack, endCallBack));
 };
-const cleanUp = (data: any = {}) => Object.fromEntries(
-  Object.entries(data).filter(([, v]) => v !== undefined),
-);
+const cleanUp = (data: any = {}) =>
+  Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
 
 export const search = (
   url: string,

@@ -6,9 +6,9 @@ import { reqObject, reqString } from '../../../data/validations';
 import XForm from '../../../components/forms/XForm';
 import XTextInput from '../../../components/inputs/XTextInput';
 import XSelectInput from '../../../components/inputs/XSelectInput';
-import { toOptions } from '../../../components/inputs/inputHelpers';
+import { toOptions } from '../../../components/inputs/sutils';
 import { remoteRoutes } from '../../../data/constants';
-import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
+import XRemoteSelect from '../../../components/inputs/XRemoteSelect';
 import {
   reportFieldTypes,
   responseCategories,
@@ -73,12 +73,12 @@ const NewReportCategories = ({
       values: toSave,
       actions,
       isNew,
-      onAjaxComplete: (data: any) => {
+      onAjaxComplete: (ajaxData: any) => {
         if (isNew) {
-          onCreated && onCreated(data);
+          onCreated?.(ajaxData);
         } else {
-          onUpdated && onUpdated(data);
-          if (done) done();
+          onUpdated?.(ajaxData);
+          done?.();
           window.location.reload();
         }
         actions.resetForm();
@@ -86,7 +86,7 @@ const NewReportCategories = ({
       },
     };
     handleSubmission(submission);
-    if (done) done();
+    done?.();
   }
 
   return (
