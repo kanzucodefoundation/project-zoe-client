@@ -20,6 +20,10 @@ import { reqString } from '../../data/validations';
 
 const schema = yup.object().shape({
   password: reqString.min(8, 'Password must be atleast 8 characters long'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Passwords must match')
+    .required('Confirm Password is required'),
 });
 
 function ResetPassword() {
@@ -28,9 +32,19 @@ function ResetPassword() {
   const { token } = useParams<any>();
 
   const onSubmit = (data: any, actions: FormikHelpers<any>) => {
+    const { password, confirmPassword } = data;
+
+    if (password !== confirmPassword) {
+      Toast.error('Passwords do not match');
+      actions.setSubmitting(false);
+      return;
+    }
+
+    console.log('This is the data being captured', data);
+
     put(
       `${remoteRoutes.resetPassword}/${token}`,
-      data,
+      { ...data },
       () => {
         actions.resetForm();
         localStorage.removeItem('password_token');
@@ -62,6 +76,7 @@ function ResetPassword() {
         <Formik
           initialValues={{
             password: '',
+            confirmPassword: '',
           }}
           validationSchema={schema}
           onSubmit={onSubmit}
@@ -78,6 +93,12 @@ function ResetPassword() {
                 type="password"
                 name="password"
                 label="Password"
+                margin="normal"
+              />
+              <XTextInput
+                type="password"
+                name="confirmPassword"
+                label="Confirm Password"
                 margin="normal"
               />
               <Button
