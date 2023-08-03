@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import React from 'react';
 import Table, { Size } from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,25 +17,63 @@ import Loading from '../Loading';
 import { parseXpath } from '../../utils/jsonHelpers';
 
 interface XTableProps {
-  initialSortBy?: string
-  initialOrder?: Order
-  initialRowsPerPage?: number
-  headCells: XHeadCell[]
-  title?: string
-  primaryKey?: string
-  data: any[]
-  useCheckbox?: boolean
-  handleSelection?: (id: any) => any
-  onFilterToggle?: () => any
-  usePagination?: boolean
-  headerSize?: Size
-  bodySize?: Size
-  loading?: boolean
+  initialSortBy?: string;
+  initialOrder?: Order;
+  initialRowsPerPage?: number;
+  headCells: XHeadCell[];
+  title?: string;
+  primaryKey?: string;
+  data: any[];
+  useCheckbox?: boolean;
+  handleSelection?: (id: any) => any;
+  onFilterToggle?: () => any;
+  usePagination?: boolean;
+  headerSize?: Size;
+  bodySize?: Size;
+  loading?: boolean;
 }
+
+// The data from the server might be inconsistent, so we need to sanitize it
+const isRenderable = (node: any): any => {
+  let renderable;
+  switch (typeof node) {
+    case 'string':
+    case 'number':
+    case undefined:
+    case null:
+      renderable = true;
+      break;
+    default:
+      if (Array.isArray(node) && node.length) {
+        renderable = node.reduce((acc, e) => acc && isRenderable(e), true);
+        break;
+      }
+      renderable = React.isValidElement(node);
+      break;
+  }
+  return renderable;
+};
+
+const sanitizeData = (data: any): any => {
+  if (isRenderable(data)) {
+    return data;
+  }
+  return null;
+};
 
 export default function XTable(props: XTableProps) {
   const {
-    primaryKey = 'id', usePagination = true, title, headCells, data, useCheckbox, initialSortBy = 'id', initialOrder = 'asc', initialRowsPerPage = 10, headerSize = 'medium', bodySize = 'medium',
+    primaryKey = 'id',
+    usePagination = true,
+    title,
+    headCells,
+    data,
+    useCheckbox,
+    initialSortBy = 'id',
+    initialOrder = 'asc',
+    initialRowsPerPage = 10,
+    headerSize = 'medium',
+    bodySize = 'medium',
   } = props;
   const classes = useTableStyles();
   const [order, setOrder] = React.useState<Order>(initialOrder);
@@ -43,7 +82,10 @@ export default function XTable(props: XTableProps) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(initialRowsPerPage);
 
-  function handleRequestSort(event: React.MouseEvent<unknown>, property: string) {
+  function handleRequestSort(
+    event: React.MouseEvent<unknown>,
+    property: string,
+  ) {
     const isDesc = orderBy === property && order === 'desc';
     setOrder(isDesc ? 'asc' : 'desc');
     setOrderBy(property);
@@ -58,15 +100,10 @@ export default function XTable(props: XTableProps) {
     }
   }
 
-  function handleClick(event: React.MouseEvent<unknown>, id: string) {
-    if (useCheckbox) {
-      handleCheckboxSelection(event, id);
-    } else if (props.handleSelection) {
-      props.handleSelection(id);
-    }
-  }
-
-  function handleCheckboxSelection(event: React.MouseEvent<unknown>, id: string) {
+  function handleCheckboxSelection(
+    event: React.MouseEvent<unknown>,
+    id: string,
+  ) {
     const selectedIndex = selected.indexOf(id);
     let newSelected: string[] = [];
     if (selectedIndex === -1) {
@@ -82,6 +119,14 @@ export default function XTable(props: XTableProps) {
       );
     }
     setSelected(newSelected);
+  }
+
+  function handleClick(event: React.MouseEvent<unknown>, id: string) {
+    if (useCheckbox) {
+      handleCheckboxSelection(event, id);
+    } else if (props.handleSelection) {
+      props.handleSelection(id);
+    }
   }
 
   function handleChangePage(event: unknown, newPage: number) {
@@ -101,10 +146,13 @@ export default function XTable(props: XTableProps) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper} elevation={0}>
-        {
-          title
-          && <XToolbar numSelected={selected.length} title={title} onFilterToggle={props.onFilterToggle} />
-        }
+        {title && (
+          <XToolbar
+            numSelected={selected.length}
+            title={title}
+            onFilterToggle={props.onFilterToggle}
+          />
+        )}
 
         <div className={classes.tableWrapper}>
           <Table
@@ -123,76 +171,80 @@ export default function XTable(props: XTableProps) {
               onRequestSort={handleRequestSort}
               rowCount={data.length}
             />
-            {
-              props.loading
-                ? <TableBody>
-                  <TableRow style={{ height: 49 * emptyRows }}>
+            {props.loading ? (
+              <TableBody>
+                <TableRow style={{ height: 49 * emptyRows }}>
+                  <TableCell colSpan={headCells.length}>
+                    <Loading />
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            ) : (
+              <TableBody>
+                {data.length > 0 ? (
+                  stableSort(data, getSorting(order, orderBy))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row: any, index: number) => {
+                      const isItemSelected = isSelected(row[primaryKey]);
+                      const labelId = `enhanced-table-checkbox-${index}`;
+                      return (
+                        <TableRow
+                          hover
+                          onClick={(event) => handleClick(event, row[primaryKey])
+                          }
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          key={row[primaryKey]}
+                          selected={isItemSelected}
+                          style={{
+                            backgroundColor: isEven(index) ? 'white' : grey[50],
+                          }}
+                        >
+                          {useCheckbox && (
+                            <TableCell padding="checkbox" size={bodySize}>
+                              <Checkbox
+                                checked={isItemSelected}
+                                inputProps={{ 'aria-labelledby': labelId }}
+                              />
+                            </TableCell>
+                          )}
+                          {headCells.map((it) => (
+                            <TableCell
+                              size={bodySize}
+                              key={it.name}
+                              align={it.numeric ? 'right' : 'left'}
+                              style={{ whiteSpace: 'nowrap' }}
+                              {...it.cellProps}
+                            >
+                              {it.render
+                                ? sanitizeData(
+                                  it.render(parseXpath(row, it.name), row),
+                                )
+                                : sanitizeData(parseXpath(row, it.name))}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      );
+                    })
+                ) : (
+                  <TableRow style={{ height: 49 * 2 }}>
                     <TableCell colSpan={headCells.length}>
-                      <Loading />
+                      <Alert severity="warning">No records to display</Alert>
                     </TableCell>
                   </TableRow>
-                </TableBody>
-                : <TableBody>
-                  {
-                    data.length > 0
-                      ? stableSort(data, getSorting(order, orderBy))
-                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                        .map((row: any, index: number) => {
-                          const isItemSelected = isSelected(row[primaryKey]);
-                          const labelId = `enhanced-table-checkbox-${index}`;
-                          return (
-                            <TableRow
-                              hover
-                              onClick={(event) => handleClick(event, row[primaryKey])}
-                              role="checkbox"
-                              aria-checked={isItemSelected}
-                              tabIndex={-1}
-                              key={row[primaryKey]}
-                              selected={isItemSelected}
-                              style={{ backgroundColor: isEven(index) ? 'white' : grey[50] }}
-                            >
-                              {
-                                useCheckbox
-                                && <TableCell padding="checkbox" size={bodySize}>
-                                  <Checkbox
-                                    checked={isItemSelected}
-                                    inputProps={{ 'aria-labelledby': labelId }}
-                                  />
-                                </TableCell>
-                              }
-                              {
-                                headCells.map((it) => (
-                                  <TableCell
-                                    size={bodySize}
-                                    key={it.name}
-                                    align={it.numeric ? 'right' : 'left'}
-                                    style={{ whiteSpace: 'nowrap' }}
-                                    {...it.cellProps}>
-                                    {it.render ? it.render(parseXpath(row, it.name), row) : parseXpath(row, it.name)}
-                                  </TableCell>
-                                ))
-                              }
-                            </TableRow>
-                          );
-                        })
-                      : <TableRow style={{ height: 49 * 2 }}>
-                        <TableCell colSpan={headCells.length}>
-                          <Alert severity="warning">No records to display</Alert>
-                        </TableCell>
-                      </TableRow>
-                  }
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 49 * emptyRows }}>
-                      <TableCell colSpan={headCells.length} />
-                    </TableRow>
-                  )}
-                </TableBody>
-            }
-
+                )}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 49 * emptyRows }}>
+                    <TableCell colSpan={headCells.length} />
+                  </TableRow>
+                )}
+              </TableBody>
+            )}
           </Table>
         </div>
-        {
-          usePagination && <TablePagination
+        {usePagination && (
+          <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             count={data.length}
             rowsPerPage={rowsPerPage}
@@ -207,8 +259,7 @@ export default function XTable(props: XTableProps) {
             onPageChange={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />
-        }
-
+        )}
       </Paper>
     </div>
   );
