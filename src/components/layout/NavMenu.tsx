@@ -72,10 +72,20 @@ const routes: IAppRoute[] = [
 
   // },
   {
-    requiredRoles: [appPermissions.roleReportView],
+    requiredRoles: [
+      appPermissions.roleEventView,
+      appPermissions.roleEventEdit,
+      appPermissions.roleUserView,
+    ],
     name: 'Reports',
-    route: localRoutes.reports,
+    route: localRoutes.events,
     icon: AssessmentIcon,
+    // items: [
+    //   {
+    //     name: 'Small Group Submitted Reports',
+    //     route: localRoutes.reportSubmissions,
+    //   },
+    // ],
   },
   {
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
@@ -104,6 +114,10 @@ const routes: IAppRoute[] = [
         name: 'Manage Help',
         route: localRoutes.manageHelp,
       },
+      // {
+      //   name: 'Reports',
+      //   route: localRoutes.reports,
+      // }
     ],
   },
   // {
