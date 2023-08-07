@@ -80,7 +80,10 @@ const ContentSwitch = () => {
         <Route path={localRoutes.reports} component={ReportList} />
         <Route path={localRoutes.reportSubmissions} component={ReportList} />
         <Route path={localRoutes.events} component={EventReports} />
-
+        <Route
+          path={localRoutes.reportSubmit}
+          component={ReportSubmissionForm}
+        />
         <Route path={localRoutes.calendar} component={MembersCalendar} />
 
         <Route path={localRoutes.contactsDetails} component={ContactDetails} />

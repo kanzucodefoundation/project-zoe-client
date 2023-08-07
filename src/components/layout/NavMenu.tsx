@@ -79,6 +79,10 @@ const routes: IAppRoute[] = [
     ],
     name: 'Reports',
     route: localRoutes.events,
+    //route: localRoutes.reportSubmissions,
+    // <Route
+    //path={localRoutes.reportSubmit}
+    //component={ReportSubmissionForm}
     icon: AssessmentIcon,
     // items: [
     //   {
@@ -87,6 +91,21 @@ const routes: IAppRoute[] = [
     //   },
     // ],
   },
+  {
+    requiredRoles: [
+      appPermissions.roleEventView,
+      appPermissions.roleEventEdit,
+      appPermissions.roleUserView,
+    ],
+    name: 'Small Group Submitted Reports',
+    route: localRoutes.reportSubmit,
+    //route: localRoutes.reportSubmissions,
+    // <Route
+    //path={localRoutes.reportSubmit}
+    //component={ReportSubmissionForm}
+    icon: AssessmentIcon,
+  },
+
   {
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
     name: 'Admin',
