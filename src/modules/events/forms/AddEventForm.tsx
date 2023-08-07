@@ -6,13 +6,13 @@ import { useSelector } from 'react-redux';
 
 import { remoteRoutes } from '../../../data/constants';
 import { GroupPrivacy } from '../../groups/types';
-import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
+import XRemoteSelect from '../../../components/inputs/XRemoteSelect';
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
 import { del, search } from '../../../utils/ajax';
 import Toast from '../../../utils/Toast';
 import { cleanComboValue } from '../../../utils/dataHelpers';
 import { parseGooglePlace } from '../../../components/plain-inputs/PMapsInput';
-import { XMapsInput } from '../../../components/inputs/XMapsInput';
+import XMapsInput from '../../../components/inputs/XMapsInput';
 import { IEvent } from '../types';
 import XDateTimeInput from '../../../components/inputs/XDateTimeInput';
 import XTextInput from '../../../components/inputs/XTextInput';
@@ -27,9 +27,8 @@ interface IProps {
   onUpdated?: (g: any) => any;
   onDeleted?: (g: any) => any;
   onCancel?: () => any;
-  cal?: any
-  scheduleData?: any
-
+  cal?: any;
+  scheduleData?: any;
 }
 
 const schema = yup.object().shape({
@@ -63,8 +62,6 @@ const EventForm = ({
   onUpdated,
   onDeleted,
   onCancel,
-  cal,
-  scheduleData,
 }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [frequency, setFrequency] = useState('');
@@ -72,21 +69,21 @@ const EventForm = ({
   const [group, setGroup] = useState<any>();
   const [event, setEvent] = useState<any>();
 
-  useEffect(() => {
-    if (event && group) {
-      getFrequency(event, group);
-    }
-  }, [event, group]);
-
-  function getFrequency(event: any, group: any) {
+  function getFrequency(OTevent: any, OTgroup: any) {
     const filter = {
-      eventCategory: event.id,
-      groupCategory: group.categoryId,
+      eventCategory: OTevent.id,
+      groupCategory: OTgroup.categoryId,
     };
     search(remoteRoutes.groupReportFrequency, filter, (resp) => {
       setFrequency(resp[0].frequency);
     });
   }
+
+  useEffect(() => {
+    if (event && group) {
+      getFrequency(event, group);
+    }
+  }, [event, group]);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: any = {
@@ -112,11 +109,11 @@ const EventForm = ({
       values: toSave,
       actions,
       isNew,
-      onAjaxComplete: (data: any) => {
+      onAjaxComplete: (ajaxData: any) => {
         if (isNew) {
-          onCreated && onCreated(data);
+          onCreated?.(ajaxData);
         } else {
-          onUpdated && onUpdated(data);
+          onUpdated?.(ajaxData);
         }
         actions.resetForm();
         actions.setSubmitting(false);
@@ -131,7 +128,7 @@ const EventForm = ({
       `${remoteRoutes.events}/${data?.id}`,
       () => {
         Toast.success('Operation succeeded');
-        onDeleted && onDeleted(data?.id);
+        onDeleted?.(data?.id);
       },
       undefined,
       () => {

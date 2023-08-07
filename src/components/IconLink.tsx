@@ -5,12 +5,12 @@ import { EditiIcon } from './EditIconButton';
 
 interface IProps {
   id: string;
-  name:string;
+  name: string;
 }
 
-const IconLink = ({ id, name }: IProps) => (
+const IconLink = ({ id }: IProps) => (
   <Link style={{ textDecoration: 'none' }} to={`${localRoutes.contacts}/${id}`}>
-    <EditiIcon/>
+    <EditiIcon />
   </Link>
 );
 

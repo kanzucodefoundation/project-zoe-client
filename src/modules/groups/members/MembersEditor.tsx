@@ -18,33 +18,35 @@ import { IPersonComboValue } from '../../contacts/types';
 import PersonAvatar from '../../../components/PersonAvatar';
 import { remoteRoutes } from '../../../data/constants';
 import { post, search } from '../../../utils/ajax';
-import { hasNoValue } from '../../../components/inputs/inputHelpers';
+import { hasNoValue } from '../../../components/inputs/sutils';
 import { GroupRole, ICreateBatchMembership, IGroupMembership } from '../types';
 import Toast from '../../../utils/Toast';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    width: '100%',
-    maxWidth: 360,
-    minHeight: 300,
-    backgroundColor: theme.palette.background.paper,
-  },
-  details: {
-    minHeight: 100,
-    borderRadius: 5,
-    border: '1px solid',
-    backgroundColor: grey[50],
-    padding: theme.spacing(2),
-  },
-  selBox: {
-    width: 70,
-    position: 'relative',
-  },
-  closeIcon: {
-    position: 'absolute',
-    zIndex: 200,
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: '100%',
+      maxWidth: 360,
+      minHeight: 300,
+      backgroundColor: theme.palette.background.paper,
+    },
+    details: {
+      minHeight: 100,
+      borderRadius: 5,
+      border: '1px solid',
+      backgroundColor: grey[50],
+      padding: theme.spacing(2),
+    },
+    selBox: {
+      width: 70,
+      position: 'relative',
+    },
+    closeIcon: {
+      position: 'absolute',
+      zIndex: 200,
+    },
+  }),
+);
 
 interface IProps {
   group: any;
@@ -60,14 +62,14 @@ const MembersEditor = (props: IProps) => {
   const [selectedIdList, setSelectedIdList] = useState<string[]>([]);
   const [peopleData, setPeopleData] = useState<IPersonComboValue[]>([]);
   const [membership, setMembership] = useState<IGroupMembership[]>([]);
-  const [query, setQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const fetchData = useCallback((query: string) => {
     setFetchingPeople(true);
     search(
       remoteRoutes.contactsPeopleCombo,
       {
-        query,
+        searchQuery: query,
       },
       (data) => {
         setPeopleData(data);
@@ -97,8 +99,8 @@ const MembersEditor = (props: IProps) => {
   }, [props.group.id]);
 
   useEffect(() => {
-    fetchData(query);
-  }, [fetchData, query]);
+    fetchData(searchQuery);
+  }, [fetchData, searchQuery]);
 
   const isAlreadyAdded = (psn: IPersonComboValue): boolean => {
     const mbr = membership.find((it) => it.contactId === psn.id);
@@ -106,7 +108,7 @@ const MembersEditor = (props: IProps) => {
   };
 
   function handleSearch(v: string) {
-    setQuery(v);
+    setSearchQuery(v);
   }
 
   const handleAddNew = (dt: IPersonComboValue) => () => {
@@ -147,32 +149,32 @@ const MembersEditor = (props: IProps) => {
           <Box flexGrow={1} mr={3}>
             <Box className={classes.details} width="100%" display="flex">
               {selected.map((it) => (
-                  <Box className={classes.selBox} mr={1} key={it.id}>
-                    <Box
-                      width="100%"
-                      display="flex"
-                      justifyContent="flex-end"
-                      pr={1}
+                <Box className={classes.selBox} mr={1} key={it.id}>
+                  <Box
+                    width="100%"
+                    display="flex"
+                    justifyContent="flex-end"
+                    pr={1}
+                  >
+                    <IconButton
+                      aria-label="delete"
+                      size="small"
+                      onClick={handleDelete(it.id)}
+                      className={classes.closeIcon}
                     >
-                      <IconButton
-                        aria-label="delete"
-                        size="small"
-                        onClick={handleDelete(it.id)}
-                        className={classes.closeIcon}
-                      >
-                        <CloseIcon
-                          style={{ fontSize: '0.9rem', color: red[900] }}
-                        />
-                      </IconButton>
-                    </Box>
-
-                    <Box width="100%" display="flex" pl={1}>
-                      <PersonAvatar data={it} />
-                    </Box>
-                    <Typography noWrap variant="body2">
-                      {it.name}
-                    </Typography>
+                      <CloseIcon
+                        style={{ fontSize: '0.9rem', color: red[900] }}
+                      />
+                    </IconButton>
                   </Box>
+
+                  <Box width="100%" display="flex" pl={1}>
+                    <PersonAvatar data={it} />
+                  </Box>
+                  <Typography noWrap variant="body2">
+                    {it.name}
+                  </Typography>
+                </Box>
               ))}
             </Box>
           </Box>
@@ -193,20 +195,20 @@ const MembersEditor = (props: IProps) => {
       <Grid item xs={12}>
         <List dense className={classes.root}>
           {peopleData.map((person) => (
-              <ListItem
-                disabled={isAlreadyAdded(person) || isLoading}
-                key={person.id}
-                button
-                onClick={handleAddNew(person)}
-              >
-                <ListItemAvatar>
-                  <PersonAvatar data={person} />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={person.name}
-                  secondary={isAlreadyAdded(person) ? <i>Already added</i> : ''}
-                />
-              </ListItem>
+            <ListItem
+              disabled={isAlreadyAdded(person) || isLoading}
+              key={person.id}
+              button
+              onClick={handleAddNew(person)}
+            >
+              <ListItemAvatar>
+                <PersonAvatar data={person} />
+              </ListItemAvatar>
+              <ListItemText
+                primary={person.name}
+                secondary={isAlreadyAdded(person) ? <i>Already added</i> : ''}
+              />
+            </ListItem>
           ))}
         </List>
       </Grid>

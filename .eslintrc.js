@@ -18,6 +18,8 @@ module.exports = {
     rules: {
       'react/jsx-filename-extension': 'off',
       'no-unused-vars': 'off',
+    'linebreak-style': ['error', 'windows'],
+    'max-len': 'off',
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
         'warn',

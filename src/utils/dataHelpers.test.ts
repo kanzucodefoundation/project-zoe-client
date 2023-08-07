@@ -1,5 +1,5 @@
 import { cleanComboValue, removeEmptyFields } from './dataHelpers';
-import { hasValue, IOption } from '../components/inputs/inputHelpers';
+import { hasValue, IOption } from '../components/inputs/sutils';
 
 describe('removeEmptyFields', () => {
   it('removeEmptyFields can clean up data', () => {

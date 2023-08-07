@@ -3,7 +3,7 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { AutocompleteProps } from '@material-ui/lab/Autocomplete/Autocomplete';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
-import { IOption } from '../inputs/inputHelpers';
+import { IOption } from '../inputs/sutils';
 
 export type ComboValue = string | IOption | (string | IOption)[] | null;
 
@@ -25,14 +25,14 @@ interface IProps {
 
 type OptionalBool = boolean | undefined;
 type BaseProps = AutocompleteProps<
-string | IOption,
-OptionalBool,
-OptionalBool,
-OptionalBool
+  string | IOption,
+  OptionalBool,
+  OptionalBool,
+  OptionalBool
 >;
 type AutoProps = Omit<
-BaseProps,
-'variant' | 'multiple' | 'renderInput' | 'onChange' | 'value'
+  BaseProps,
+  'variant' | 'multiple' | 'renderInput' | 'onChange' | 'value'
 >;
 export type PComboProps = IProps & AutoProps;
 const PComboInput = (props: PComboProps) => {
@@ -51,8 +51,12 @@ const PComboInput = (props: PComboProps) => {
     ...extraProps
   } = props;
 
-  function handleChange(event: ChangeEvent<{}>, value: ComboValue, _: any) {
-    onChange(value);
+  function handleChange(
+    event: ChangeEvent<unknown>,
+    Myvalue: ComboValue,
+    _: any,
+  ) {
+    onChange(Myvalue);
   }
 
   function getOptionLabel(o: string | IOption): string {

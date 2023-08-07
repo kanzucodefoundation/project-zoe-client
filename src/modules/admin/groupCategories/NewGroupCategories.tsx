@@ -8,7 +8,7 @@ import XTextInput from '../../../components/inputs/XTextInput';
 import { remoteRoutes } from '../../../data/constants';
 
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
-import { hasValue } from '../../../components/inputs/inputHelpers';
+import { hasValue } from '../../../components/inputs/sutils';
 
 interface IProps {
   data?: any | null;
@@ -41,19 +41,19 @@ const NewGroupCategories = ({
     return s.replace(/\s+/g, '');
   }
 
-  function handleSubmit(values: any, actions: FormikHelpers<any>) {
-    const removeAllSpaces = removeStringSpaces(values.name);
+  function handleSubmit(formValues: any, actions: FormikHelpers<any>) {
+    const removeAllSpaces = removeStringSpaces(formValues.name);
     const categoryId = toLowerCase(removeAllSpaces);
     let toSave;
     if (hasValue(data)) {
       toSave = {
-        id: values.id,
-        name: values.name,
+        id: formValues.id,
+        name: formValues.name,
       };
     } else {
       toSave = {
         id: categoryId,
-        name: values.name,
+        name: formValues.name,
       };
     }
 
@@ -62,12 +62,12 @@ const NewGroupCategories = ({
       values: toSave,
       actions,
       isNew,
-      onAjaxComplete: (data: any) => {
+      onAjaxComplete: (ajaxData: any) => {
         if (isNew) {
-          onCreated && onCreated(data);
+          onCreated?.(ajaxData);
         } else {
-          onUpdated && onUpdated(data);
-          if (done) done();
+          onUpdated?.(ajaxData);
+          done?.();
           window.location.reload();
         }
         actions.resetForm();
@@ -75,7 +75,7 @@ const NewGroupCategories = ({
       },
     };
     handleSubmission(submission);
-    if (done) done();
+    done?.();
   }
 
   return (

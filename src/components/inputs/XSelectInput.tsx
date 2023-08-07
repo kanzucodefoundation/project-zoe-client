@@ -5,24 +5,28 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { hasValue, IOption } from './inputHelpers';
+import { hasValue, IOption } from './sutils';
 
 interface IProps {
   label: string;
-  name: string;  
+  name: string;
   options: IOption[];
   multiple?: boolean;
   required?: boolean;
   variant?: 'standard' | 'outlined' | 'filled';
   size?: 'small' | 'medium';
   margin?: 'none' | 'dense' | 'normal';
-  onChange?: (value: any) => void; 
+  onChange?: (value: any) => void;
 }
 
 const XSelectInput = (props: IProps) => {
- 
   const {
-    name, options, variant, margin = 'normal', onChange, ...rest
+    name,
+    options,
+    variant,
+    margin = 'normal',
+    onChange,
+    ...rest
   } = props;
   const [field, meta, helpers] = useField({ name });
   const error = hasValue(meta.error) ? meta.error : undefined;
@@ -34,38 +38,42 @@ const XSelectInput = (props: IProps) => {
   }, []);
 
   const handleChange = (event: React.ChangeEvent<{ value: any }>) => {
-    const value = event.target.value;
+    const { value } = event.target;
     helpers.setValue(value); // Update formik field value
     onChange?.(value); // Invoke the onChange prop
-
   };
 
-  return <FormControl error={showError} fullWidth variant={variant} margin={margin} size={props.size}>
-        <InputLabel htmlFor={name} ref={inputLabel}>{rest.label}</InputLabel>
-        <Select
-            {...rest}
-            value={meta.value || (props.multiple ? [] : '')}
-            onChange={handleChange}
-            onBlur={field.onBlur}
-            fullWidth
-            multiple={rest.multiple}
-            inputProps={{ name }}
-            labelWidth={labelWidth}
-            autoComplete="off"
-        >
-            {
-                options.map(
-                  (it) => <MenuItem
-                        value={it.id}
-                        key={it.id}
-                    >{it.name}</MenuItem>,
-                )
-            }
-        </Select>
-        {
-            showError && <FormHelperText>{error}</FormHelperText>
-        }
-    </FormControl>;
+  return (
+    <FormControl
+      error={showError}
+      fullWidth
+      variant={variant}
+      margin={margin}
+      size={props.size}
+    >
+      <InputLabel htmlFor={name} ref={inputLabel}>
+        {rest.label}
+      </InputLabel>
+      <Select
+        {...rest}
+        value={meta.value || (props.multiple ? [] : '')}
+        onChange={handleChange}
+        onBlur={field.onBlur}
+        fullWidth
+        multiple={rest.multiple}
+        inputProps={{ name }}
+        labelWidth={labelWidth}
+        autoComplete="off"
+      >
+        {options.map((it) => (
+          <MenuItem value={it.id} key={it.id}>
+            {it.name}
+          </MenuItem>
+        ))}
+      </Select>
+      {showError && <FormHelperText>{error}</FormHelperText>}
+    </FormControl>
+  );
 };
 
 export default XSelectInput;

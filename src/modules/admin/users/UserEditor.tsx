@@ -7,9 +7,9 @@ import XForm from '../../../components/forms/XForm';
 import XTextInput from '../../../components/inputs/XTextInput';
 import XCheckBoxInput from '../../../components/inputs/XCheckBoxInput';
 import { remoteRoutes } from '../../../data/constants';
-import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
+import XRemoteSelect from '../../../components/inputs/XRemoteSelect';
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
-import { comboParser } from '../../../components/inputs/inputHelpers';
+import { comboParser } from '../../../components/inputs/sutils';
 import { del, get } from '../../../utils/ajax';
 import Toast from '../../../utils/Toast';
 import XComboInput from '../../../components/inputs/XComboInput';
@@ -40,14 +40,14 @@ const initialValues = {
   roles: [],
   isActive: true,
 };
-const UserEditor = ({
-  data, isNew, done, onDeleted, onCancel,
-}: IProps) => {
+const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const userRoles: string[] = [];
 
   useEffect(() => {
-    get(remoteRoutes.roles, (resp: IRoles[]) => resp.map((it: IRoles) => it.isActive && userRoles.push(it.role)));
+    get(remoteRoutes.roles, (resp: IRoles[]) =>
+      resp.map((it: IRoles) => it.isActive && userRoles.push(it.role)),
+    );
   }, [userRoles]);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {

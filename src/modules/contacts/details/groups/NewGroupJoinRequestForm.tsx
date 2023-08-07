@@ -6,8 +6,8 @@ import { FormikHelpers } from 'formik';
 import EditDialog from '../../../../components/EditDialog';
 import XForm from '../../../../components/forms/XForm';
 import { reqObject } from '../../../../data/validations';
-import { XMapsInput } from '../../../../components/inputs/XMapsInput';
-import { XRemoteSelect } from '../../../../components/inputs/XRemoteSelect';
+import XMapsInput from '../../../../components/inputs/XMapsInput';
+import XRemoteSelect from '../../../../components/inputs/XRemoteSelect';
 import { remoteRoutes } from '../../../../data/constants';
 import { post } from '../../../../utils/ajax';
 import Toast from '../../../../utils/Toast';
@@ -40,20 +40,23 @@ const NewGroupJoinRequestForm = (props: IProps) => {
 
   const getPrimaryEmail = () => {
     const emailList = props.contact.emails;
-    for (let i = 0; i < emailList.length; i++) {
+    for (let i = 0; i < emailList.length; ) {
       if (emailList[i].isPrimary) {
         return emailList[i].value;
       }
+      i += 1;
     }
+
     return emailList[0].value;
   };
 
   const getPrimaryPhone = () => {
     const phoneList = props.contact.phones;
-    for (let i = 0; i < phoneList.length; i++) {
+    for (let i = 0; i < phoneList.length; ) {
       if (phoneList[i].isPrimary) {
         return phoneList[i].value;
       }
+      i += 1;
     }
     return phoneList[0].value;
   };
@@ -89,7 +92,6 @@ const NewGroupJoinRequestForm = (props: IProps) => {
             New Request &nbsp;&nbsp;
           </Button>
         </Box>
-
       </Box>
       <EditDialog
         open={dialog}

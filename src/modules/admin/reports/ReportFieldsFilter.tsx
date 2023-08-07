@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { useFilter } from '../../../utils/fitlerUtilities';
+import useFilter from '../../../utils/fitlerUtilities';
 import { PRemoteSelect } from '../../../components/plain-inputs/PRemoteSelect';
 import { remoteRoutes } from '../../../data/constants';
 

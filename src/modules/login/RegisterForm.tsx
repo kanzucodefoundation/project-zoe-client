@@ -15,16 +15,16 @@ import {
 import XForm from '../../components/forms/XForm';
 import XTextInput from '../../components/inputs/XTextInput';
 import XSelectInput from '../../components/inputs/XSelectInput';
-import { hasValue, toOptions } from '../../components/inputs/inputHelpers';
+import { hasValue, toOptions } from '../../components/inputs/sutils';
 
 import { remoteRoutes } from '../../data/constants';
 import { post } from '../../utils/ajax';
 import Toast from '../../utils/Toast';
 import XRadioInput from '../../components/inputs/XRadioInput';
-import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
+import XRemoteSelect from '../../components/inputs/XRemoteSelect';
 import { getDayList, getMonthsList } from '../../utils/dateHelpers';
 import { ICreatePersonDto } from '../contacts/types';
-import { XMapsInput } from '../../components/inputs/XMapsInput';
+import XMapsInput from '../../components/inputs/XMapsInput';
 import { parseGooglePlace } from '../../components/plain-inputs/PMapsInput';
 import XRemoteSelectLoadOnOpen from '../../components/inputs/XRemoteSelectLoadOnOpen';
 
@@ -72,7 +72,8 @@ const processName = (name: string): string[] => {
   const [lastName, ...otherNames] = name.split(' ');
   if (hasValue(otherNames)) {
     return [lastName, otherNames.join(' ')];
-  } return [lastName];
+  }
+  return [lastName];
 };
 
 const RegisterForm = ({ done }: IProps) => {
@@ -110,10 +111,12 @@ const RegisterForm = ({ done }: IProps) => {
     post(
       remoteRoutes.register,
       toSave,
-      (data) => {
-        Toast.info('Registration successful. Please check your email for a link to setup a password');
+      () => {
+        Toast.info(
+          'Registration successful. Please check your email for a link to setup a password',
+        );
         actions.resetForm();
-        if (done) done();
+        done?.();
       },
       undefined,
       () => {
@@ -124,8 +127,8 @@ const RegisterForm = ({ done }: IProps) => {
 
   // Does visitor belong to/want to join a missional community function
   const changeMCStatus = (value: any) => {
-    value === 'Yes' ? setIsInMc(true) : setIsInMc(false);
-    value === 'No' ? setIsJoinMc(true) : setIsJoinMc(false);
+    setIsInMc(value === 'Yes');
+    setIsJoinMc(value === 'No');
   };
 
   const isChurchNameValid = () => {
@@ -163,7 +166,7 @@ const RegisterForm = ({ done }: IProps) => {
               type="text"
               variant="outlined"
               margin="none"
-              onBlurCapture={saveChurchName} // For some reason, onBlur stops validation from immediately triggering so we use onBlurCapture
+              onBlurCapture={saveChurchName}
             />
           </Grid>
           <Grid item xs={12} md={6}>

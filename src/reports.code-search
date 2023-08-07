@@ -1,0 +1,1018 @@
+# Query: reports
+# ContextLines: 1
+
+409 results - 40 files
+
+project-zoe-client\package-lock.json:
+   2241          "istanbul-lib-source-maps": "^4.0.0",
+   2242:         "istanbul-reports": "^3.1.3",
+   2243          "jest-haste-map": "^27.5.1",
+
+   2348          "@types/istanbul-lib-coverage": "^2.0.0",
+   2349:         "@types/istanbul-reports": "^3.0.0",
+   2350          "@types/node": "*",
+
+   9425      },
+   9426:     "@types/istanbul-reports": {
+   9427        "version": "3.0.1",
+   9428:       "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.1.tgz",
+   9429        "integrity": "sha512-c3mAZEuK0lvBp8tmuL74XRKn1+y2dcwOUpH7x4WrF6gk1GIgiluDRgMYQtw2OFcBvAJWlt6ASU3tSqxp0Uu0Aw==",
+
+  11598          "istanbul-lib-report": "^3.0.0",
+  11599:         "istanbul-reports": "^3.1.4",
+  11600          "rimraf": "^3.0.2",
+
+  17202      },
+  17203:     "istanbul-reports": {
+  17204        "version": "3.1.4",
+  17205:       "resolved": "https://registry.npmjs.org/istanbul-reports/-/istanbul-reports-3.1.4.tgz",
+  17206        "integrity": "sha512-r1/DshN4KSE7xWEknZLLLLDn5CJybV3nw01VTkp6D5jzLuELlcbudfj/eSQFvrKsJuTVCGnePO7ho82Nw9zzfw==",
+
+  17926              "@types/istanbul-lib-coverage": "^2.0.0",
+  17927:             "@types/istanbul-reports": "^3.0.0",
+  17928              "@types/node": "*",
+
+project-zoe-client\src\components\inputs\sutils.ts:
+  1  import { isEmpty, isNumber } from 'lodash';
+  2: import { IReportFieldOption } from '../../modules/reports/types';
+  3  
+
+project-zoe-client\src\components\layout\NavMenu.tsx:
+  75      requiredRoles: [appPermissions.roleReportView],
+  76:     name: 'Reports',
+  77:     route: localRoutes.reports,
+  78      icon: AssessmentIcon,
+
+project-zoe-client\src\data\constants.ts:
+   55  
+   56:   groupsReports: '/groups',
+   57  
+
+   61  
+   62:   reports: '/reports',
+   63:   reportsDetails: '/reports/:reportId',
+   64:   reportSubmit: '/reports/:reportId/submit',
+   65:   reportSubmissions: '/reports/:reportId/submissions',
+   66:   reportSubmissionDetails: '/reports/:reportId/submissions/:reportSubmissionId',
+   67  
+
+  124    groupsRequest: `${apiBaseUrl}/api/groups/request`,
+  125:   groupReports: `${apiBaseUrl}/api/groups/groupreports`,
+  126    groupReportFrequency: `${apiBaseUrl}/api/groups/reportfrequency`,
+
+  137  
+  138:   reports: `${apiBaseUrl}/api/reports`,
+  139:   reportsSubmit: `${apiBaseUrl}/api/reports/submit`,
+  140:   reportsCategories: `${apiBaseUrl}api/reports/category`,
+  141  
+
+project-zoe-client\src\data\store.ts:
+   5  import events from './events/eventsReducer';
+   6: import groupReports from './events/groupReportsReducer';
+   7  import tags from './tags/reducer';
+   8: import reports from './reports/reducer';
+   9  
+
+  15  const reducers: any = {
+  16:   core, crm, tags, events, groupReports, reports,
+  17  };
+
+project-zoe-client\src\data\events\groupReportsReducer.ts:
+  17  
+  18: export interface IGroupReportState {
+  19    data: IGroupReport[];
+
+  23  
+  24: const initialState: IGroupReportState = {
+  25    data: [],
+
+  64    search(
+  65:     remoteRoutes.groupReports,
+  66      filter,
+
+project-zoe-client\src\data\reports\reducer.ts:
+   1: import { IReport } from '../../modules/reports/types';
+   2  
+   3: export const reportsConstants = {
+   4:   reportsFetchAll: 'reportsFetchAll',
+   5:   reportsFetchLoading: 'reportsFetchLoading',
+   6:   reportsFetchOne: 'reportsFetchOne',
+   7  };
+   8  
+   9: export interface IReportState {
+  10    data: IReport;
+
+  13  
+  14: const initialState: IReportState = {
+  15    data: {
+
+  22    switch (action.type) {
+  23:     case reportsConstants.reportsFetchAll: {
+  24        const data: IReport[] = action.payload;
+
+  27  
+  28:     case reportsConstants.reportsFetchLoading: {
+  29        return { ...state, loading: action.payload };
+
+  31  
+  32:     case reportsConstants.reportsFetchOne: {
+  33        const data: IReport = action.payload;
+
+project-zoe-client\src\modules\ContentSwitch.tsx:
+    9  import MembersCalendar from './groups/members/MembersCalendar';
+   10: import ReportList from './reports/ReportList';
+   11: import ReportSubmissions from './reports/ReportSubmissionsList';
+   12: import ReportSubmissionDetail from './reports/ReportSubmissionDetail';
+   13: import ReportSubmissionForm from './reports/ReportSubmissionForm';
+   14  // const Events= React.lazy(() => import( "./events/EventsList"));
+   15: // const GroupReports = React.lazy(() => import("./events/GroupEvents"));
+   16  
+
+   35  const EventDetails = React.lazy(() => import('./events/details/EventDetails'));
+   36: const EventReports = React.lazy(() => import('./events/EventReports'));
+   37  const Help = React.lazy(() => import('./help/Help'));
+
+   41  const ReportFields = React.lazy(
+   42:   () => import('./admin/reports/reportCategories'),
+   43  );
+
+  111            appPermissions.roleEventEdit,
+  112:         ]) && <Route path={localRoutes.events} component={EventReports} />}
+  113  
+
+  116            appPermissions.roleReportView,
+  117:         ]) && <Route path={localRoutes.reportSubmit} component={ReportSubmissionForm} />}
+  118  
+
+  120            appPermissions.roleReportViewSubmissions
+  121:         ]) && <Route path={localRoutes.reportSubmissionDetails} component={ReportSubmissionDetail} />}
+  122  
+
+  124            appPermissions.roleReportViewSubmissions
+  125:         ]) && <Route path={localRoutes.reportSubmissions} component={ReportSubmissions} />}
+  126  
+
+  129            appPermissions.roleReportView,
+  130:         ]) && <Route path={localRoutes.reports} component={ReportList} />}
+  131  
+
+project-zoe-client\src\modules\events\EventReports.tsx:
+   3  import Layout from '../../components/layout/Layout';
+   4: import UnsubmittedReports from './UnsubmittedReports';
+   5  import EventsList from './EventsList';
+   6  
+   7: export default function EventReports() {
+   8    const tabs = [
+
+  13      {
+  14:       name: 'Missing Reports',
+  15:       component: <UnsubmittedReports />,
+  16      },
+
+project-zoe-client\src\modules\events\EventsList.tsx:
+  141          <ListHeader
+  142:           title="Submitted Group Reports"
+  143            onFilter={setFilter}
+
+project-zoe-client\src\modules\events\UnsubmittedReports.tsx:
+   22  import {
+   23:   IGroupReportState,
+   24    unsubEventsFetchAsync,
+   25: } from '../../data/events/groupReportsReducer';
+   26  import { localRoutes } from '../../data/constants';
+
+   85  });
+   86: const UnsubmittedReports = () => {
+   87    const today = new Date();
+
+   92    const history = useHistory();
+   93:   const { data, loading }: IGroupReportState = useSelector(
+   94:     (state: any) => state.groupReports,
+   95    );
+
+  116        <ListHeader
+  117:         title="Missing Group Reports"
+  118          onFilter={setFilter}
+
+  169  
+  170: export default UnsubmittedReports;
+
+project-zoe-client\src\modules\groups\Details.tsx:
+  201        name: 'Events',
+  202:       component: <GroupEventsList reports={data.reports ? data.reports : []} />,
+  203      });
+
+project-zoe-client\src\modules\groups\GroupEventsList.tsx:
+  32  interface IProps {
+  33:   reports: any[];
+  34  }
+
+  58  
+  59: const GroupEventsList = ({ reports }: IProps) => {
+  60    const classes = useStyles();
+
+  71            <Box pt={1}>
+  72:             {reports.length === 0 ? (
+  73                <ListItem>
+
+  80                  headCells={headCells}
+  81:                 data={reports}
+  82                  initialRowsPerPage={10}
+
+  90            <List>
+  91:             {reports.length === 0 ? (
+  92                <ListItem>
+
+  97              ) : (
+  98:               reports.map((row: any) => {
+  99                  const mobileRow = toMobileRow(row);
+
+project-zoe-client\src\modules\groups\GroupReportsList.tsx:
+   3  
+   4: const GroupReportsList = () => (
+   5      <div>
+
+   9  
+  10: export default GroupReportsList;
+
+project-zoe-client\src\modules\groups\types.ts:
+  19    percentageAttendance?: number;
+  20:   reports?: any[];
+  21  }
+
+project-zoe-client\src\modules\reports\ReportList.tsx:
+  42    const [loading, setLoading] = useState(true);
+  43:   const [reports, setReports] = useState<IReport[]>([]);
+  44    const classes = useStyles();
+
+  48    useEffect(() => {
+  49:     const fetchReports = async () => {
+  50        get(
+  51:         remoteRoutes.reports,
+  52          (response: any) => {
+  53:           setReports(response);
+  54          },
+  55          (error: any) => {
+  56:           Toast.error('Failed to fetch reports');
+  57:           console.error('Failed to fetch reports', error);
+  58          },
+
+  62  
+  63:     fetchReports();
+  64    }, []);
+
+  66    const handleSubmitReport = async (report: IReport) => {
+  67:     history.push(`${localRoutes.reports}/${report.id}/submit`);
+  68    };
+
+  70    const handleViewSubmissions = async (report: IReport) => {
+  71:     history.push(`${localRoutes.reports}/${report.id}/submissions`);
+  72    };
+
+  82            <XBreadCrumbs
+  83:             title="Reports"
+  84              paths={[
+
+  93            <List>
+  94:             {reports.map((report) => (
+  95                <ListItem key={report.id} alignItems="flex-start" disableGutters>
+
+project-zoe-client\src\modules\reports\ReportSubmissionDetail.tsx:
+   5  import { useParams } from 'react-router';
+   6: import { ReportSubmissionData } from './types';
+   7  import Loading from '../../components/Loading';
+
+  14  
+  15: const ReportSubmissionDetail = () => {
+  16    const [submissionData, setSubmissionData] = useState<IRec[]>([]);
+  17:   const { reportId, reportSubmissionId } = useParams<any>();
+  18    const [ isLoadingData, setIsLoadingData ] = useState<boolean>(true);
+
+  22        get(
+  23:           `${remoteRoutes.reports}/${reportId}/submissions/${reportSubmissionId}`,
+  24:           (resp: ReportSubmissionData) => {
+  25              setIsLoadingData(false);
+
+  69                  {
+  70:                   path: localRoutes.reports,
+  71:                   label: 'Reports',
+  72                  },
+  73                  {
+  74:                   path: `${localRoutes.reports}/${reportId}/submissions`,
+  75                    label: 'Report Submissions',
+
+  93  
+  94: export default ReportSubmissionDetail;
+
+project-zoe-client\src\modules\reports\ReportSubmissionForm.tsx:
+   12  import Toast from '../../utils/Toast';
+   13: import { ICreateReportSubmissionDto, IReportField } from './types';
+   14  import { reportOptionToFieldOptions } from '../../components/inputs/sutils';
+
+   19  
+   20: const ReportSubmissionForm = () => {
+   21    const [formData, setFormData] = useState<Record<string, string>>({});
+
+   36        get(
+   37:         `${remoteRoutes.reports}/${reportId}`,
+   38          (response: any) => {
+
+   65    const handleSubmit = (values: any) => {
+   66:     const reportSubmissionData: ICreateReportSubmissionDto = {
+   67        reportId,
+
+   79      post(
+   80:       remoteRoutes.reportsSubmit,
+   81:       reportSubmissionData,
+   82        () => {
+   83          Toast.info('Report submitted successfully');
+   84:         history.push(localRoutes.reports);
+   85        },
+
+  232  
+  233: export default ReportSubmissionForm;
+
+project-zoe-client\src\modules\reports\ReportSubmissionsList.tsx:
+   18  import { IEvent } from '../events/types';
+   19: import { IReportState, reportsConstants } from '../../data/reports/reducer';
+   20  import { localRoutes, remoteRoutes } from '../../data/constants';
+
+   43  
+   44: const ReportSubmissions = () => {
+   45    const dispatch = useDispatch();
+
+   50  
+   51:   const { data, loading }: IReportState = useSelector(
+   52:     (state: any) => state.reports,
+   53    );
+   54  
+   55:   const handleRowSelection = (reportSubmissionId: string) => {
+   56:     history.push(`${localRoutes.reports}/${reportId}/submissions/${reportSubmissionId}`);
+   57    };
+
+   69      dispatch({
+   70:       type: reportsConstants.reportsFetchLoading,
+   71        payload: true,
+
+   73      search(
+   74:       `${remoteRoutes.reports}/${reportId}/submissions`,
+   75        filter,
+
+   77          dispatch({
+   78:           type: reportsConstants.reportsFetchOne,
+   79            payload: resp,
+
+   84          dispatch({
+   85:           type: reportsConstants.reportsFetchLoading,
+   86            payload: false,
+
+  103                  {
+  104:                   path: localRoutes.reports,
+  105:                   label: 'Reports',
+  106                  }
+
+  165  
+  166: export default ReportSubmissions;
+
+project-zoe-client\src\modules\reports\types.ts:
+  33  
+  34: export interface ICreateReportSubmissionDto{
+  35    reportId: string,
+
+  38  
+  39: export interface IReportsFilter {
+  40    query?: string;
+
+  49  
+  50: export interface ReportSubmissionData{
+  51      id: number;
+
+project-zoe-server\package-lock.json:
+   1332              "@types/istanbul-lib-coverage": "^2.0.0",
+   1333:             "@types/istanbul-reports": "^3.0.0",
+   1334              "@types/node": "*",
+
+   1338          },
+   1339:         "@types/istanbul-reports": {
+   1340            "version": "3.0.0",
+   1341:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   1342            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   1402              "@types/istanbul-lib-coverage": "^2.0.0",
+   1403:             "@types/istanbul-reports": "^3.0.0",
+   1404              "@types/node": "*",
+
+   1408          },
+   1409:         "@types/istanbul-reports": {
+   1410            "version": "3.0.0",
+   1411:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   1412            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   1454              "@types/istanbul-lib-coverage": "^2.0.0",
+   1455:             "@types/istanbul-reports": "^3.0.0",
+   1456              "@types/node": "*",
+
+   1460          },
+   1461:         "@types/istanbul-reports": {
+   1462            "version": "3.0.0",
+   1463:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   1464            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   1502              "@types/istanbul-lib-coverage": "^2.0.0",
+   1503:             "@types/istanbul-reports": "^3.0.0",
+   1504              "@types/node": "*",
+
+   1508          },
+   1509:         "@types/istanbul-reports": {
+   1510            "version": "3.0.0",
+   1511:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   1512            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   1547              "@types/istanbul-lib-coverage": "^2.0.0",
+   1548:             "@types/istanbul-reports": "^3.0.0",
+   1549              "@types/node": "*",
+
+   1553          },
+   1554:         "@types/istanbul-reports": {
+   1555            "version": "3.0.0",
+   1556:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   1557            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   1594          "istanbul-lib-source-maps": "^4.0.0",
+   1595:         "istanbul-reports": "^3.0.2",
+   1596          "jest-haste-map": "^26.6.2",
+
+   1614              "@types/istanbul-lib-coverage": "^2.0.0",
+   1615:             "@types/istanbul-reports": "^3.0.0",
+   1616              "@types/node": "*",
+
+   1620          },
+   1621:         "@types/istanbul-reports": {
+   1622            "version": "3.0.0",
+   1623:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   1624            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   1697              "@types/istanbul-lib-coverage": "^2.0.0",
+   1698:             "@types/istanbul-reports": "^3.0.0",
+   1699              "@types/node": "*",
+
+   1703          },
+   1704:         "@types/istanbul-reports": {
+   1705            "version": "3.0.0",
+   1706:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   1707            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   1775              "@types/istanbul-lib-coverage": "^2.0.0",
+   1776:             "@types/istanbul-reports": "^3.0.0",
+   1777              "@types/node": "*",
+
+   1781          },
+   1782:         "@types/istanbul-reports": {
+   1783            "version": "3.0.0",
+   1784:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   1785            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   1821          "@types/istanbul-lib-coverage": "^2.0.0",
+   1822:         "@types/istanbul-reports": "^1.1.1",
+   1823          "@types/yargs": "^15.0.0",
+
+   2941      },
+   2942:     "@types/istanbul-reports": {
+   2943        "version": "1.1.1",
+   2944:       "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-1.1.1.tgz",
+   2945        "integrity": "sha512-UpYjBi8xefVChsCoBpKShdxTllC9pwISirfoZsUa2AAdQg/Jd2KQGtSbw+ya7GPo7x/wAPlH6JBhKhAsXUEZNA==",
+
+   3845              "@types/istanbul-lib-coverage": "^2.0.0",
+   3846:             "@types/istanbul-reports": "^3.0.0",
+   3847              "@types/node": "*",
+
+   3851          },
+   3852:         "@types/istanbul-reports": {
+   3853            "version": "3.0.0",
+   3854:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   3855            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   6414              "@types/istanbul-lib-coverage": "^2.0.0",
+   6415:             "@types/istanbul-reports": "^3.0.0",
+   6416              "@types/node": "*",
+
+   6420          },
+   6421:         "@types/istanbul-reports": {
+   6422            "version": "3.0.0",
+   6423:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   6424            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8314      },
+   8315:     "istanbul-reports": {
+   8316        "version": "3.0.2",
+   8317:       "resolved": "https://registry.npmjs.org/istanbul-reports/-/istanbul-reports-3.0.2.tgz",
+   8318        "integrity": "sha512-9tZvz7AiR3PEDNGiV9vIouQ/EAcqMXFmkcA1CDFTwOB98OZVDL0PH9glHotf5Ugp6GCOTypfzGWI/OqjWNCRUw==",
+
+   8347              "@types/istanbul-lib-coverage": "^2.0.0",
+   8348:             "@types/istanbul-reports": "^3.0.0",
+   8349              "@types/node": "*",
+
+   8353          },
+   8354:         "@types/istanbul-reports": {
+   8355            "version": "3.0.0",
+   8356:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8357            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8419              "@types/istanbul-lib-coverage": "^2.0.0",
+   8420:             "@types/istanbul-reports": "^3.0.0",
+   8421              "@types/node": "*",
+
+   8425          },
+   8426:         "@types/istanbul-reports": {
+   8427            "version": "3.0.0",
+   8428:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8429            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8479              "@types/istanbul-lib-coverage": "^2.0.0",
+   8480:             "@types/istanbul-reports": "^3.0.0",
+   8481              "@types/node": "*",
+
+   8485          },
+   8486:         "@types/istanbul-reports": {
+   8487            "version": "3.0.0",
+   8488:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8489            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8583              "@types/istanbul-lib-coverage": "^2.0.0",
+   8584:             "@types/istanbul-reports": "^3.0.0",
+   8585              "@types/node": "*",
+
+   8589          },
+   8590:         "@types/istanbul-reports": {
+   8591            "version": "3.0.0",
+   8592:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8593            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8662              "@types/istanbul-lib-coverage": "^2.0.0",
+   8663:             "@types/istanbul-reports": "^3.0.0",
+   8664              "@types/node": "*",
+
+   8668          },
+   8669:         "@types/istanbul-reports": {
+   8670            "version": "3.0.0",
+   8671:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8672            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8710              "@types/istanbul-lib-coverage": "^2.0.0",
+   8711:             "@types/istanbul-reports": "^3.0.0",
+   8712              "@types/node": "*",
+
+   8716          },
+   8717:         "@types/istanbul-reports": {
+   8718            "version": "3.0.0",
+   8719:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8720            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8772              "@types/istanbul-lib-coverage": "^2.0.0",
+   8773:             "@types/istanbul-reports": "^3.0.0",
+   8774              "@types/node": "*",
+
+   8778          },
+   8779:         "@types/istanbul-reports": {
+   8780            "version": "3.0.0",
+   8781:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8782            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8838              "@types/istanbul-lib-coverage": "^2.0.0",
+   8839:             "@types/istanbul-reports": "^3.0.0",
+   8840              "@types/node": "*",
+
+   8844          },
+   8845:         "@types/istanbul-reports": {
+   8846            "version": "3.0.0",
+   8847:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8848            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8906              "@types/istanbul-lib-coverage": "^2.0.0",
+   8907:             "@types/istanbul-reports": "^3.0.0",
+   8908              "@types/node": "*",
+
+   8912          },
+   8913:         "@types/istanbul-reports": {
+   8914            "version": "3.0.0",
+   8915:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8916            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   8982              "@types/istanbul-lib-coverage": "^2.0.0",
+   8983:             "@types/istanbul-reports": "^3.0.0",
+   8984              "@types/node": "*",
+
+   8988          },
+   8989:         "@types/istanbul-reports": {
+   8990            "version": "3.0.0",
+   8991:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   8992            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9081              "@types/istanbul-lib-coverage": "^2.0.0",
+   9082:             "@types/istanbul-reports": "^3.0.0",
+   9083              "@types/node": "*",
+
+   9087          },
+   9088:         "@types/istanbul-reports": {
+   9089            "version": "3.0.0",
+   9090:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9091            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9155              "@types/istanbul-lib-coverage": "^2.0.0",
+   9156:             "@types/istanbul-reports": "^3.0.0",
+   9157              "@types/node": "*",
+
+   9161          },
+   9162:         "@types/istanbul-reports": {
+   9163            "version": "3.0.0",
+   9164:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9165            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9217              "@types/istanbul-lib-coverage": "^2.0.0",
+   9218:             "@types/istanbul-reports": "^3.0.0",
+   9219              "@types/node": "*",
+
+   9223          },
+   9224:         "@types/istanbul-reports": {
+   9225            "version": "3.0.0",
+   9226:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9227            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9348              "@types/istanbul-lib-coverage": "^2.0.0",
+   9349:             "@types/istanbul-reports": "^3.0.0",
+   9350              "@types/node": "*",
+
+   9354          },
+   9355:         "@types/istanbul-reports": {
+   9356            "version": "3.0.0",
+   9357:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9358            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9410              "@types/istanbul-lib-coverage": "^2.0.0",
+   9411:             "@types/istanbul-reports": "^3.0.0",
+   9412              "@types/node": "*",
+
+   9416          },
+   9417:         "@types/istanbul-reports": {
+   9418            "version": "3.0.0",
+   9419:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9420            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9485              "@types/istanbul-lib-coverage": "^2.0.0",
+   9486:             "@types/istanbul-reports": "^3.0.0",
+   9487              "@types/node": "*",
+
+   9491          },
+   9492:         "@types/istanbul-reports": {
+   9493            "version": "3.0.0",
+   9494:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9495            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9573              "@types/istanbul-lib-coverage": "^2.0.0",
+   9574:             "@types/istanbul-reports": "^3.0.0",
+   9575              "@types/node": "*",
+
+   9579          },
+   9580:         "@types/istanbul-reports": {
+   9581            "version": "3.0.0",
+   9582:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9583            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9684              "@types/istanbul-lib-coverage": "^2.0.0",
+   9685:             "@types/istanbul-reports": "^3.0.0",
+   9686              "@types/node": "*",
+
+   9690          },
+   9691:         "@types/istanbul-reports": {
+   9692            "version": "3.0.0",
+   9693:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9694            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9738              "@types/istanbul-lib-coverage": "^2.0.0",
+   9739:             "@types/istanbul-reports": "^3.0.0",
+   9740              "@types/node": "*",
+
+   9744          },
+   9745:         "@types/istanbul-reports": {
+   9746            "version": "3.0.0",
+   9747:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9748            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+   9823              "@types/istanbul-lib-coverage": "^2.0.0",
+   9824:             "@types/istanbul-reports": "^3.0.0",
+   9825              "@types/node": "*",
+
+   9829          },
+   9830:         "@types/istanbul-reports": {
+   9831            "version": "3.0.0",
+   9832:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+   9833            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+  14164              "@types/istanbul-lib-coverage": "^2.0.0",
+  14165:             "@types/istanbul-reports": "^3.0.0",
+  14166              "@types/node": "*",
+
+  14170          },
+  14171:         "@types/istanbul-reports": {
+  14172            "version": "3.0.0",
+  14173:           "resolved": "https://registry.npmjs.org/@types/istanbul-reports/-/istanbul-reports-3.0.0.tgz",
+  14174            "integrity": "sha512-nwKNbvnwJ2/mndE9ItP/zc2TCzw6uuodnF4EHYWD+gCQDVBuRQL5UzbZD0/ezy1iKsFU2ZQiDqg4M9dN4+wZgA==",
+
+project-zoe-server\src\app.module.ts:
+  27  import { JwtTenantHeaderMiddleware } from "./middleware/jwtTenantHeader.middleware";
+  28: import { ReportsModule } from "./reports/reports.module";
+  29  
+
+  56      TenantsModule,
+  57:     ReportsModule,
+  58    ],
+
+project-zoe-server\src\config.ts:
+   6  import { helpEntities } from "./help/help.helpers";
+   7: import { reportsEntities } from "./reports/reports.helpers";
+   8  
+
+  49    ...eventEntities,
+  50:   ...reportsEntities,
+  51    ...helpEntities,
+
+project-zoe-server\src\events\events.service.ts:
+  93  
+  94:     // TODO use user object to filter reports
+  95      if (hasValue(req.groupIdList)) {
+
+project-zoe-server\src\groups\dto\group-missing-report-search.dto.ts:
+  2  
+  3: export class GroupMissingReportSearchDto extends SearchDto {
+  4    //TODO @Herbert, add validation for both string and number arrays( @Type(() => Number) @IsNumber({}, { each: true }) @IsOptional() @IsArray()) //
+
+project-zoe-server\src\groups\services\group-missing-reports.service.spec.ts:
+   1  import { Test, TestingModule } from '@nestjs/testing';
+   2: import { GroupMissingReportsService } from './group-missing-reports.service';
+   3: import { GroupMissingReportSearchDto } from '../dto/group-missing-report-search.dto';
+   4  import { TypeOrmModule } from '@nestjs/typeorm';
+
+   7  
+   8: describe('GroupMissingReportsService', () => {
+   9:   let service: GroupMissingReportsService;
+  10  
+
+  22        ],
+  23:       providers: [GroupMissingReportsService],
+  24      }).compile();
+  25  
+  26:     service = module.get<GroupMissingReportsService>(GroupMissingReportsService);
+  27    });
+
+  32  
+  33:   it('should be able to findMissingReports', async () => {
+  34:     const dto: GroupMissingReportSearchDto = {
+  35        from: new Date(2021,4,19),
+
+  40      };
+  41:     const response = await service.findMissingReports(dto);
+  42      expect(response.length).toBe(2);
+
+  45    it('should be able to getIntervalStartDates', () => {
+  46:     const dto: GroupMissingReportSearchDto = {
+  47        from: new Date(2021,4,19),
+
+project-zoe-server\src\groups\services\groups.service.ts:
+  198        );
+  199:       groupData.reports = await this.eventRepository.find({
+  200          relations: ["category", "attendance"],
+
+project-zoe-server\src\reports\reports.controller.spec.ts:
+   1  import { Test, TestingModule } from "@nestjs/testing";
+   2: import { ReportsController } from "./reports.controller";
+   3  
+   4: describe("ReportsController", () => {
+   5:   let controller: ReportsController;
+   6  
+
+   8      const module: TestingModule = await Test.createTestingModule({
+   9:       controllers: [ReportsController],
+  10      }).compile();
+  11  
+  12:     controller = module.get<ReportsController>(ReportsController);
+  13    });
+
+project-zoe-server\src\reports\reports.controller.ts:
+  17  import { ApiTags } from "@nestjs/swagger";
+  18: import { ReportsService } from "./reports.service";
+  19  import { Repository, Connection } from "typeorm";
+  20: import { ReportSubmissionDto } from "./dto/report-submission.dto";
+  21  import { ReportDto } from "./dto/report.dto";
+
+  24    ApiResponse,
+  25:   ReportSubmissionsApiResponse,
+  26  } from "./types/report-api.types";
+
+  30  @UseGuards(JwtAuthGuard)
+  31: @ApiTags("Reports")
+  32: @Controller("api/reports")
+  33: export class ReportsController {
+  34:   constructor(private readonly reportService: ReportsService) {}
+  35  
+
+  40    ): Promise<Report> {
+  41:     return this.reportService.createReport(reportDto, request.user);
+  42    }
+
+  45    async submitReport(
+  46:     @Body() submissionDto: ReportSubmissionDto,
+  47      @Request() request,
+  48    ): Promise<void> {
+  49:     await this.reportService.submitReport(submissionDto, request.user);
+  50    }
+
+  53    async getReport(@Param("reportId") reportId: number): Promise<Report> {
+  54:     return await this.reportService.getReport(reportId);
+  55    }
+
+  61    ): Promise<void> {
+  62:     return await this.reportService.updateReport(id, updateDto);
+  63    }
+
+  65    @Get()
+  66:   async getAllReports(): Promise<Report[]> {
+  67:     return await this.reportService.getAllReports();
+  68    }
+
+  70    @Get(":reportId/submissions")
+  71:   async getReportSubmissions(
+  72      @Param("reportId", ParseIntPipe) reportId: number,
+
+  74      @Query("endDate") endDate?: string,
+  75:   ): Promise<ReportSubmissionsApiResponse> {
+  76      const formattedStartDate = startDate ? new Date(startDate) : undefined;
+  77      const formattedEndDate = endDate ? new Date(endDate) : undefined;
+  78:     return await this.reportService.getReportSubmissions(
+  79        reportId,
+
+  85    @Get(":reportId/submissions/:submissionId")
+  86:   async getReportSubmission(
+  87      @Param("reportId") reportId: number,
+
+  89    ) {
+  90:     return this.reportService.getReportSubmission(reportId, submissionId);
+  91    }
+
+  95    @Get(":reportId/weekly-small-group-attendance")
+  96:   async getWeeklyMCReports(@Param("reportId") reportId: number): Promise<any> {
+  97:     const submissions = await this.reportService.getReportSubmissions(reportId);
+  98      const dateColumns = [];
+
+project-zoe-server\src\reports\reports.helpers.ts:
+  1  import { Report } from "./entities/report.entity";
+  2: import { ReportSubmission } from "./entities/report.submission.entity";
+  3: export const reportsEntities = [Report, ReportSubmission];
+
+project-zoe-server\src\reports\reports.module.ts:
+   1  import { HttpModule, Module } from "@nestjs/common";
+   2: import { ReportsController } from "./reports.controller";
+   3: import { ReportsService } from "./reports.service";
+   4  import { VendorModule } from "src/vendor/vendor.module";
+
+  13    ],
+  14:   controllers: [ReportsController],
+  15:   providers: [ReportsService],
+  16  })
+  17: export class ReportsModule {}
+
+project-zoe-server\src\reports\reports.service.spec.ts:
+   1  import { Test, TestingModule } from "@nestjs/testing";
+   2: import { ReportsService } from "./reports.service";
+   3  
+   4: describe("ReportsService", () => {
+   5:   let service: ReportsService;
+   6  
+
+   8      const module: TestingModule = await Test.createTestingModule({
+   9:       providers: [ReportsService],
+  10      }).compile();
+  11  
+  12:     service = module.get<ReportsService>(ReportsService);
+  13    });
+
+project-zoe-server\src\reports\reports.service.ts:
+    6  import { Report } from "./entities/report.entity";
+    7: import { ReportSubmission } from "./entities/report.submission.entity";
+    8: import { ReportSubmissionDto } from "./dto/report-submission.dto";
+    9  import { ReportDto, ReportFieldDto } from "./dto/report.dto";
+
+   11  import { User } from "src/users/entities/user.entity";
+   12: import { ReportSubmissionsApiResponse } from "./types/report-api.types";
+   13  import { ReportFieldType } from "./enums/report.enum";
+
+   15  @Injectable()
+   16: export class ReportsService {
+   17    private readonly reportRepository: Repository<Report>;
+   18:   private readonly reportSubmissionRepository: Repository<ReportSubmission>;
+   19    private readonly userRepository: Repository<User>;
+
+   22      this.reportRepository = connection.getRepository(Report);
+   23:     this.reportSubmissionRepository = connection.getRepository(
+   24:       ReportSubmission,
+   25      );
+
+   43    async submitReport(
+   44:     submissionDto: ReportSubmissionDto,
+   45      user: UserDto,
+
+   54  
+   55:     const reportSubmission = new ReportSubmission();
+   56:     reportSubmission.data = submissionDto.data;
+   57:     reportSubmission.submittedAt = new Date();
+   58:     reportSubmission.report = report;
+   59:     reportSubmission.user = await this.userRepository.findOne(user.id);
+   60:     await this.reportSubmissionRepository.save(reportSubmission);
+   61    }
+   62  
+   63:   async getAllReports(): Promise<Report[]> {
+   64      return await this.reportRepository.find();
+
+   74  
+   75:   async getReportSubmissions(
+   76      reportId: number,
+
+   78      endDate?: Date,
+   79:   ): Promise<ReportSubmissionsApiResponse> {
+   80      const report = await this.reportRepository.findOne(reportId);
+
+   83      }
+   84:     let query = this.reportSubmissionRepository
+   85        .createQueryBuilder("submission")
+
+  102  
+  103:     const submissions: ReportSubmission[] = await query.getMany();
+  104      const submissionResponses = submissions.map((submission) => {
+
+  129  
+  130:   async getReportSubmission(reportId: number, submissionId: number) {
+  131:     const submission = await this.reportSubmissionRepository.findOne({
+  132        where: { id: submissionId, report: { id: reportId } },
+
+project-zoe-server\src\reports\dto\report-submission.dto.ts:
+  2  
+  3: export class ReportSubmissionDto {
+  4    reportId: number;
+
+project-zoe-server\src\reports\dto\report.dto.ts:
+   3    ReportFieldType,
+   4:   ReportSubmissionFrequency,
+   5  } from "../enums/report.enum";
+
+  26    footer: string[];
+  27:   submissionFrequency: ReportSubmissionFrequency;
+  28  }
+
+project-zoe-server\src\reports\entities\report.entity.ts:
+   7  } from "typeorm";
+   8: import { ReportSubmission } from "./report.submission.entity";
+   9  import { User } from "src/users/entities/user.entity";
+
+  67  
+  68:   @OneToMany(() => ReportSubmission, (submission) => submission.report)
+  69:   submissions: ReportSubmission[];
+  70  
+  71:   @ManyToOne(() => User, (user) => user.reports)
+  72    user: User;
+
+project-zoe-server\src\reports\entities\report.submission.entity.ts:
+  11  @Entity()
+  12: export class ReportSubmission {
+  13    @PrimaryGeneratedColumn()
+
+  21  
+  22:   @ManyToOne(() => User, (user) => user.reportSubmissions)
+  23    @JoinColumn()
+
+project-zoe-server\src\reports\enums\report.enum.ts:
+  17  
+  18: export enum ReportSubmissionFrequency {
+  19    Daily = "daily",
+
+project-zoe-server\src\reports\types\report-api.types.ts:
+  1: import { ReportSubmissionDto } from "../dto/report-submission.dto";
+  2  
+
+  8  
+  9: export interface ReportSubmissionsApiResponse {
+  10    reportId: number;
+
+project-zoe-server\src\users\entities\user.entity.ts:
+  14  import UserRoles from "./userRoles.entity";
+  15: import { ReportSubmission } from "src/reports/entities/report.submission.entity";
+  16: import { Report } from "src/reports/entities/report.entity";
+  17  // authentication will take approximately 13 seconds
+
+  46    @OneToMany(
+  47:     () => ReportSubmission,
+  48:     (reportSubmission) => reportSubmission.user,
+  49    )
+  50:   reportSubmissions: ReportSubmission[];
+  51  
+  52    @OneToMany(() => Report, (report) => report.user)
+  53:   reports: Report[];
+  54  

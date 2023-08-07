@@ -2,9 +2,9 @@ import * as React from 'react';
 import { useState } from 'react';
 import { ComboValue } from '../components/plain-inputs/PComboInput';
 import { cleanComboValue } from './dataHelpers';
-import { hasValue } from '../components/inputs/inputHelpers';
+import { hasValue } from '../components/inputs/sutils';
 
-export function useFilter({
+function useFilter({
   initialData,
   onFilter: rawFilter,
   comboFields,
@@ -17,11 +17,13 @@ export function useFilter({
   const onFilter = (data: any) => {
     const filter = { ...data };
     if (comboFields && hasValue(comboFields)) {
-      for (const comboField of comboFields) {
+      comboFields.forEach((comboField) => {
         filter[comboField] = cleanComboValue(filter[comboField]);
-      }
+      });
       rawFilter(filter);
-    } else rawFilter(data);
+    } else {
+      rawFilter(data);
+    }
   };
 
   const [data, setData] = useState(initialData);
@@ -48,3 +50,4 @@ export function useFilter({
     data,
   };
 }
+export default useFilter;

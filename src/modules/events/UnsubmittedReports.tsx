@@ -9,12 +9,10 @@ import Typography from '@material-ui/core/Typography/Typography';
 import ListItem from '@material-ui/core/ListItem/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar/ListItemAvatar';
 import { Divider, ListItemText } from '@material-ui/core';
-import {
-  addDays, format, lastDayOfWeek, startOfWeek,
-} from 'date-fns';
+import { format, lastDayOfWeek, startOfWeek } from 'date-fns';
 import XTable from '../../components/table/XTable';
 import { XHeadCell } from '../../components/table/XTableHead';
-import { hasValue } from '../../components/inputs/inputHelpers';
+import { hasValue } from '../../components/inputs/sutils';
 import { IGroupReport } from './types';
 import { IMobileRow } from '../../components/DataList';
 import GroupLink from '../../components/GroupLink';
@@ -28,26 +26,29 @@ import {
 import { localRoutes } from '../../data/constants';
 import UnsubEventsFilter from './UnsubEventsFilter';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    flexGrow: 1,
-  },
-  filterPaper: {
-    borderRadius: 0,
-    padding: theme.spacing(2),
-  },
-  fab: {
-    position: 'absolute',
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    filterPaper: {
+      borderRadius: 0,
+      padding: theme.spacing(2),
+    },
+    fab: {
+      position: 'absolute',
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+  }),
+);
 
 const headCells: XHeadCell[] = [
   {
     name: 'group',
     label: 'Group',
-    render: (value) => (hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-'),
+    render: (value) =>
+      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
   },
 
   {
@@ -72,19 +73,19 @@ const toMobileRow = (data: IGroupReport): IMobileRow => ({
   avatar: <PersonAvatar data={data} />,
   primary: data.group.name,
   secondary: (
-      <>
-        <Typography variant="caption" color="textSecondary" display="block">
-          {data.info}
-        </Typography>
-        <Typography variant="caption" color="textPrimary" display="block">
-          Leader: {data.groupLeader}
-        </Typography>
-      </>
+    <>
+      <Typography variant="caption" color="textSecondary" display="block">
+        {data.info}
+      </Typography>
+      <Typography variant="caption" color="textPrimary" display="block">
+        Leader: {data.groupLeader}
+      </Typography>
+    </>
   ),
 });
 const UnsubmittedReports = () => {
   const today = new Date();
-  const lastWeekDate = addDays(today, -7);
+  // const lastWeekDate = addDays(today, -7);
   const startPeriod = startOfWeek(today);
   const endPeriod = lastDayOfWeek(today);
   const dispatch = useDispatch();

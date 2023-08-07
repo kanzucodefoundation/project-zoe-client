@@ -1,11 +1,11 @@
 import React from 'react';
 import { useField } from 'formik';
-import { hasValue } from './inputHelpers';
+import { hasValue } from './sutils';
 import PComboInput, { PComboProps } from '../plain-inputs/PComboInput';
 
 type XComboProps = Omit<
-PComboProps,
-'onChange' | 'value' | 'onBlur' | 'helperText' | 'showError'
+  PComboProps,
+  'onChange' | 'value' | 'onBlur' | 'helperText' | 'showError'
 >;
 const XComboInput = (props: XComboProps) => {
   const [field, meta, helpers] = useField({ name: props.name });
@@ -13,14 +13,14 @@ const XComboInput = (props: XComboProps) => {
   const showError = Boolean(error && meta.touched);
 
   return (
-        <PComboInput
-            {...props}
-            showError={showError}
-            helperText={error}
-            onChange={(value:any) => helpers.setValue(value)}
-            onBlur={() => helpers.setTouched(true)}
-            value={field.value }
-        />
+    <PComboInput
+      {...props}
+      showError={showError}
+      helperText={error}
+      onChange={(value: any) => helpers.setValue(value)}
+      onBlur={() => helpers.setTouched(true)}
+      value={field.value}
+    />
   );
 };
 

@@ -8,7 +8,7 @@ import XForm from '../../../components/forms/XFormHC';
 import XTextInput from '../../../components/inputs/XTextInput';
 import { remoteRoutes } from '../../../data/constants';
 import { GroupPrivacy } from '../../groups/types';
-import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
+import XRemoteSelect from '../../../components/inputs/XRemoteSelect';
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
 import { del, search } from '../../../utils/ajax';
 import Toast from '../../../utils/Toast';
@@ -26,9 +26,8 @@ interface IProps {
   onUpdated?: (g: any) => any;
   onDeleted?: (g: any) => any;
   onCancel?: () => any;
-  cal?: any
-  scheduleData?: any
-
+  cal?: any;
+  scheduleData?: any;
 }
 
 const schema = yup.object().shape({
@@ -62,22 +61,14 @@ const EventForm = ({
   onUpdated,
   onDeleted,
   onCancel,
-  cal,
-  scheduleData,
 }: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [frequency, setFrequency] = useState('');
   const user = useSelector((state: IState) => state.core.user);
   const [group, setGroup] = useState<any>();
+  const [selectedEvent, setSelectedEvent] = useState<any>(); // Add the missing state declaration
   const [event, setEvent] = useState<any>();
-
-  useEffect(() => {
-    if (event && group) {
-      getFrequency(event, group);
-    }
-  }, [event, group]);
-
-  function getFrequency(event: any, group: any) {
+  function getFrequency(selectedEvent: any, group: any) {
     const filter = {
       eventCategory: event.id,
       groupCategory: group.categoryId,
@@ -86,6 +77,12 @@ const EventForm = ({
       setFrequency(resp[0].frequency);
     });
   }
+
+  useEffect(() => {
+    if (selectedEvent && group) {
+      getFrequency(selectedEvent, group);
+    }
+  }, [selectedEvent, group]);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: any = {
@@ -113,11 +110,11 @@ const EventForm = ({
       values: toSave,
       actions,
       isNew,
-      onAjaxComplete: (data: any) => {
+      onAjaxComplete: (ajaxData: any) => {
         if (isNew) {
-          onCreated && onCreated(data);
+          onCreated?.(ajaxData);
         } else {
-          onUpdated && onUpdated(data);
+          onUpdated?.(ajaxData);
         }
         actions.resetForm();
         actions.setSubmitting(false);
@@ -129,10 +126,10 @@ const EventForm = ({
   const handleDelete = () => {
     setLoading(true);
     del(
-      `${remoteRoutes.events}/${data?.id}`,
+      `${remoteRoutes.events}/${data?.id ?? ''}`,
       () => {
         Toast.success('Operation succeeded');
-        onDeleted && onDeleted(data?.id);
+        onDeleted?.(data?.id);
       },
       undefined,
       () => {

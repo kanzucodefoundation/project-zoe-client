@@ -4,7 +4,7 @@ import { FormikHelpers } from 'formik';
 import { Grid } from '@material-ui/core';
 import { remoteRoutes } from '../../../data/constants';
 import XForm from '../../../components/forms/XForm';
-import { toOption } from '../../../components/inputs/inputHelpers';
+import { toOption } from '../../../components/inputs/sutils';
 
 import { put } from '../../../utils/ajax';
 import XComboInput from '../../../components/inputs/XComboInput';
@@ -18,22 +18,16 @@ interface IProps {
   done: any;
 }
 
-const MemberEventActivitiesUnAssignForm = ({
-  isNew,
-  done,
-  onUpdated,
-  onCancel,
-  data,
-}: IProps) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [dialog, setDialog] = useState<boolean>(false);
+const MemberEventActivitiesUnAssignForm = ({ onCancel, data }: IProps) => {
+  const [loading] = useState<boolean>(false);
+  // const [dialog, setDialog] = useState<boolean>(false);
   const [createDialog, setCreateDialog] = useState(false);
-  const [selected, setSelected] = useState<any | null>(null);
+  // const [selected, setSelected] = useState<any | null>(null);
   const [members, setMembers] = useState<any[]>([]);
 
-  const handleEdit = () => {
-    setCreateDialog(true);
-  };
+  // const handleEdit = () => {
+  //   setCreateDialog(true);
+  // };
 
   const initialValues = {
     person: members,

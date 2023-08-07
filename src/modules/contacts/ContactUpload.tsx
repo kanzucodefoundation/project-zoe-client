@@ -6,10 +6,13 @@ import Grid from '@material-ui/core/Grid';
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import { DropzoneArea } from 'material-ui-dropzone';
-import { hasNoValue } from '../../components/inputs/inputHelpers';
+import { hasNoValue } from '../../components/inputs/sutils';
 import { remoteRoutes } from '../../data/constants';
 import {
-  downLoad, postFile, triggerDownLoad, extractBadRequestErrorMessage,
+  downLoad,
+  postFile,
+  triggerDownLoad,
+  extractBadRequestErrorMessage,
 } from '../../utils/ajax';
 import EditDialog from '../../components/EditDialog';
 import { getRandomStr } from '../../utils/stringHelpers';
@@ -23,17 +26,20 @@ interface IProps {
   onDone: () => any;
 }
 
-const useStyles = makeStyles(() => createStyles({
-  zone: {
-    width: 400,
-  },
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    zone: {
+      width: 400,
+    },
+  }),
+);
 
 const ContactUpload = ({ show, onClose, onDone }: IProps) => {
   const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
-  const [uploadErrorMessage, setUploadErrorMessage] = useState<string>('Upload failed');
+  const [uploadErrorMessage, setUploadErrorMessage] =
+    useState<string>('Upload failed');
   const [files, setFiles] = useState<any[] | null>(null);
 
   const onDrop = useCallback((uploadedFiles: any[]) => {

@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { hasNoValue } from '../../components/inputs/inputHelpers';
+import { hasNoValue } from '../../components/inputs/sutils';
 import { remoteRoutes } from '../../data/constants';
 import { IState } from '../../data/types';
 import { get, post } from '../../utils/ajax';
@@ -36,11 +36,12 @@ const EventRegisterButton = ({ id }: IProps) => {
     get(
       `${remoteRoutes.eventsRegistration}/?contactId=${user.contactId}`,
       (data) => {
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; ) {
           // check if the event was already registered to
           if (data[i].event.id === id) {
             setRegister(data[i].event.id);
           }
+          i += 1;
         }
       },
       undefined,

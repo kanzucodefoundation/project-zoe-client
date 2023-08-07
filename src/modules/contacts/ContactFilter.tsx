@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { TextField } from '@material-ui/core';
 import { remoteRoutes } from '../../data/constants';
 import { PRemoteSelect } from '../../components/plain-inputs/PRemoteSelect';
-import { useFilter } from '../../utils/fitlerUtilities';
+import useFilter from '../../utils/fitlerUtilities';
 
 interface IProps {
   onFilter: (data: any) => any;

@@ -4,8 +4,8 @@ import { Grid } from '@material-ui/core';
 import { remoteRoutes } from '../../../data/constants';
 import XForm from '../../../components/forms/XForm';
 import { handleSubmission, ISubmission } from '../../../utils/formHelpers';
-import { XRemoteSelect } from '../../../components/inputs/XRemoteSelect';
-import { comboParser } from '../../../components/inputs/inputHelpers';
+import XRemoteSelect from '../../../components/inputs/XRemoteSelect';
+import { comboParser } from '../../../components/inputs/sutils';
 
 interface IProps {
   data?: any | null;
@@ -25,11 +25,9 @@ const MemberEventActivitiesForm = ({
   done,
   isNew,
   onCreated,
-  onCancel,
   onUpdated,
 }: IProps) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [dialog, setDialog] = useState<boolean>(false);
+  const [loading] = useState<boolean>(false);
 
   const handleSubmit = (values: any, actions: FormikHelpers<any>) => {
     console.log(values);
@@ -44,12 +42,12 @@ const MemberEventActivitiesForm = ({
       values: toSave,
       actions,
       isNew,
-      onAjaxComplete: (data: any) => {
+      onAjaxComplete: (ajaxData: any) => {
         if (isNew) {
-          onCreated && onCreated(data);
+          onCreated?.(ajaxData);
         } else {
-          onUpdated && onUpdated(data);
-          if (done) done();
+          onUpdated?.(ajaxData);
+          done?.();
           window.location.reload();
         }
         actions.resetForm();
@@ -57,7 +55,7 @@ const MemberEventActivitiesForm = ({
       },
     };
     handleSubmission(submission);
-    if (done) done();
+    done?.();
   };
 
   return (

@@ -8,7 +8,7 @@ import { phoneCategories } from '../../../../data/comboCategories';
 import XForm from '../../../../components/forms/XForm';
 import XPhoneInput from '../../../../components/inputs/XPhoneInput';
 import XSelectInput from '../../../../components/inputs/XSelectInput';
-import { toOptions } from '../../../../components/inputs/inputHelpers';
+import { toOptions } from '../../../../components/inputs/sutils';
 import XCheckBoxInput from '../../../../components/inputs/XCheckBoxInput';
 import { IPhone } from '../../types';
 import { remoteRoutes } from '../../../../data/constants';
@@ -28,34 +28,33 @@ const schema = yup.object().shape({
   category: reqString.oneOf(phoneCategories),
 });
 
-const PhoneEditor = ({
-  data, isNew, contactId, done,
-}: IProps) => {
+const PhoneEditor = ({ data, isNew, contactId, done }: IProps) => {
   const dispatch = useDispatch();
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
-    !values.isPrimary && (values.isPrimary = false);
+    const updatedValues = { ...values };
+    updatedValues.isPrimary = updatedValues.isPrimary || false;
 
     const submission: ISubmission = {
       url: remoteRoutes.contactsPhone,
-      values: { ...values, contactId },
+      values: { ...updatedValues, contactId },
       actions,
       isNew,
-      onAjaxComplete: (data: any) => {
+      onAjaxComplete: (ajaxData: any) => {
         dispatch({
           type: isNew ? crmConstants.crmAddPhone : crmConstants.crmEditPhone,
-          payload: [...data],
+          payload: [...ajaxData],
         });
-        if (done) done();
+        done?.();
       },
     };
     handleSubmission(submission);
   }
 
   const deleteActions = useDelete({
-    url: `${remoteRoutes.contactsPhone}/${data?.id}`,
+    url: `${remoteRoutes.contactsPhone}/${data?.id ?? ''}`,
     onDone: done,
-    id: data?.id!,
+    id: data?.id ?? '',
     action: crmConstants.crmDeletePhone,
   });
 

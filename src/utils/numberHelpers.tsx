@@ -1,5 +1,5 @@
 import React from 'react';
-import { hasNoValue } from '../components/inputs/inputHelpers';
+import { hasNoValue } from '../components/inputs/sutils';
 
 export const printMoney = (money: number) => {
   try {
@@ -33,8 +33,8 @@ export const printDecimal = (number: number) => {
     if (hasNoValue(number)) return '';
     return number
       ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(
-        number,
-      )
+          number,
+        )
       : '';
   } catch (e) {
     return '';
@@ -46,8 +46,8 @@ export const printInteger = (number: number) => {
     if (hasNoValue(number)) return '';
     return number
       ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(
-        number,
-      )
+          number,
+        )
       : '';
   } catch (e) {
     return '';

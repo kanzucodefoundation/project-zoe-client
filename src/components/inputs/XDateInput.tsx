@@ -8,7 +8,7 @@ import {
 } from '@material-ui/pickers';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { KeyboardDatePickerProps } from '@material-ui/pickers/DatePicker/DatePicker';
-import { hasValue } from './inputHelpers';
+import { hasValue } from './sutils';
 import { dateFormat } from '../../utils/dateHelpers';
 
 interface IProps {
@@ -21,7 +21,11 @@ type PickerProps = Omit<KeyboardDatePickerProps, 'variant' | 'inputVariant'>;
 
 const XDateInput = (props: IProps & Partial<PickerProps>) => {
   const {
-    variant, pickerVariant, margin = 'normal', onChange, ...rest
+    variant,
+    pickerVariant,
+    margin = 'normal',
+    onChange,
+    ...rest
   } = props;
   const [field, meta, helpers] = useField({ name: props.name });
   const error = hasValue(meta.error) ? meta.error : undefined;

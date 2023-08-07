@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useField } from 'formik';
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import { hasValue } from './inputHelpers';
+import { hasValue } from './sutils';
 
 interface IProps {
   name: string;

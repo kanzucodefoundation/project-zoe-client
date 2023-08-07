@@ -31,7 +31,7 @@ import Loading from '../../components/Loading';
 import EditDialog from '../../components/EditDialog';
 import NewPersonForm from './NewPersonForm';
 import { IMobileRow } from '../../components/DataList';
-import { hasValue } from '../../components/inputs/inputHelpers';
+import { hasValue } from '../../components/inputs/sutils';
 import { crmConstants, ICrmState } from '../../data/contacts/reducer';
 import { printBirthday } from '../../utils/dateHelpers';
 import GroupLink from '../../components/GroupLink';
@@ -42,20 +42,22 @@ import ListHeader from '../../components/ListHeader';
 import ContactFilter from './ContactFilter';
 import ContactUpload from './ContactUpload';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    flexGrow: 1,
-  },
-  filterPaper: {
-    borderRadius: 0,
-    padding: theme.spacing(2),
-  },
-  fab: {
-    position: 'absolute',
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    filterPaper: {
+      borderRadius: 0,
+      padding: theme.spacing(2),
+    },
+    fab: {
+      position: 'absolute',
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+  }),
+);
 
 const headCells: XHeadCell[] = [
   {
@@ -68,17 +70,21 @@ const headCells: XHeadCell[] = [
   {
     name: 'cellGroup',
     label: 'MC',
-    render: (value) => (hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-'),
+    render: (value) =>
+      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
   },
   {
     name: 'location',
     label: 'Location',
-    render: (value) => (hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-'),
+    render: (value) =>
+      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
   },
   {
     name: 'id',
     label: '',
-    render: (value) => <IconLink id={`${value}?showEdit=true`} name={value.name}/>,
+    render: (value) => (
+      <IconLink id={`${value}?showEdit=true`} name={value.name} />
+    ),
   },
 ];
 
@@ -86,14 +92,14 @@ const toMobileRow = (data: IContactListDto): IMobileRow => ({
   avatar: <PersonAvatar data={data} />,
   primary: data.name,
   secondary: (
-      <>
-        <Typography variant="caption" color="textSecondary" display="block">
-          {data.email}
-        </Typography>
-        <Typography variant="caption" color="textSecondary">
-          {data.phone}
-        </Typography>
-      </>
+    <>
+      <Typography variant="caption" color="textSecondary" display="block">
+        {data.email}
+      </Typography>
+      <Typography variant="caption" color="textSecondary">
+        {data.phone}
+      </Typography>
+    </>
   ),
 });
 
@@ -161,9 +167,7 @@ const Contacts = () => {
   }
 
   const handleEdit = (dt: any) => {
-    const {
-      id, name, phone, dateOfBirth, contactId,
-    } = dt;
+    const { id, name, phone, dateOfBirth, contactId } = dt;
     const toEdit = {
       id,
       name,

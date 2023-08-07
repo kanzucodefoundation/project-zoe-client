@@ -1,13 +1,14 @@
-import { hasValue } from '../components/inputs/inputHelpers';
+import { hasValue } from '../components/inputs/sutils';
 
 export const removeEmptyFields = (data: any): any => {
   if (hasValue(data)) {
     const cleanData: any = {};
-    for (const key in data) {
-      if (data.hasOwnProperty(key) && hasValue(data[key])) {
-        cleanData[key] = data[key];
+    Object.keys(data).forEach((key) => {
+      const value = data[key];
+      if (Object.prototype.hasOwnProperty.call(data, key) && hasValue(value)) {
+        cleanData[key] = value;
       }
-    }
+    });
     return cleanData;
   }
   return {} as any;
@@ -15,11 +16,17 @@ export const removeEmptyFields = (data: any): any => {
 
 export const cleanComboValue = (value: any): any => {
   if (Array.isArray(value)) {
-    return value.map(cleanComboValue);
-  } if (value && typeof value === 'object') {
+    // Use Array.map() instead of the for...of loop
+    return value.map((item: any) => cleanComboValue(item));
+  }
+
+  if (value && typeof value === 'object') {
     return value.id;
-  } if (typeof value === 'string' || typeof value === 'number') {
+  }
+
+  if (typeof value === 'string' || typeof value === 'number') {
     return value;
   }
+
   return null;
 };

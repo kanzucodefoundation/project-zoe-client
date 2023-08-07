@@ -7,14 +7,14 @@ import { reqString } from '../../../../data/validations';
 import { addressCategories } from '../../../../data/comboCategories';
 import XForm from '../../../../components/forms/XForm';
 import XSelectInput from '../../../../components/inputs/XSelectInput';
-import { toOptions } from '../../../../components/inputs/inputHelpers';
+import { toOptions } from '../../../../components/inputs/sutils';
 import XCheckBoxInput from '../../../../components/inputs/XCheckBoxInput';
 import { IAddress } from '../../types';
 import { remoteRoutes } from '../../../../data/constants';
 import { crmConstants } from '../../../../data/contacts/reducer';
 import { handleSubmission, ISubmission } from '../../../../utils/formHelpers';
 import { useDelete } from '../../../../data/hooks/useDelete';
-import { XMapsInput } from '../../../../components/inputs/XMapsInput';
+import XMapsInput from '../../../../components/inputs/XMapsInput';
 
 interface IProps {
   contactId: string;
@@ -28,29 +28,29 @@ const schema = yup.object().shape({
   freeForm: reqString,
 });
 
-const AddressEditor = ({
-  data, isNew, contactId, done,
-}: IProps) => {
+const AddressEditor = ({ data, isNew, contactId, done }: IProps) => {
   const dispatch = useDispatch();
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
-    !values.isPrimary && (values.isPrimary = false);
+    const updatedValues = { ...values };
+    updatedValues.isPrimary = values.isPrimary || false;
     const { freeForm } = values;
-    values.freeForm = freeForm.description;
-    values.placeId = freeForm.place_id;
+    updatedValues.freeForm = freeForm.description;
+    updatedValues.placeId = freeForm.place_id;
+
     const submission: ISubmission = {
       url: remoteRoutes.contactsAddress,
-      values: { ...values, contactId },
+      values: { ...updatedValues, contactId },
       actions,
       isNew,
-      onAjaxComplete: (data: any) => {
+      onAjaxComplete: (ajaxData: any) => {
         dispatch({
           type: isNew
             ? crmConstants.crmAddAddress
             : crmConstants.crmEditAddress,
-          payload: { ...data },
+          payload: { ...ajaxData },
         });
-        if (done) done();
+        done?.();
       },
     };
     handleSubmission(submission);
@@ -59,7 +59,7 @@ const AddressEditor = ({
   const deleteActions = useDelete({
     url: `${remoteRoutes.contactsAddress}/${data?.id}`,
     onDone: done,
-    id: data?.id!,
+    id: data?.id ?? null,
     action: crmConstants.crmDeleteEmail,
   });
 
