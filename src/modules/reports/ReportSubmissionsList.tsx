@@ -19,6 +19,7 @@ import XBreadCrumbs from '../../components/XBreadCrumbs';
 import EventsFilter from '../events/EventsFilter';
 import PDateInput from '../../components/plain-inputs/PDateInput';
 import { useFilter } from '../../utils/fitlerUtilities';
+import { format, lastDayOfWeek, startOfWeek } from 'date-fns';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -38,28 +39,17 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
-const initialData: any = {
-  query: '',
-  groupIdList: [],
-  categoryIdList: [],
-  from: `${format(new Date(startPeriod), 'PP')}`,
-  to: `${format(new Date(endPeriod), 'PP')}`,
-  limit: 200,
-  skip: 0,
-};
-
+const today = new Date();
+const startPeriod = startOfWeek(today);
+const endPeriod = lastDayOfWeek(today);
+ 
 const ReportSubmissions = () => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
   const history = useHistory();
   const { reportId } = useParams<any>();
-  const { handleDateChange } = useFilter({
-    initialData,
-    onFilter,
-    comboFields: ['categoryIdList', 'groupIdList'],
-  });
-
+ 
   const { data, loading }: IReportState = useSelector(
     (state: any) => state.reports,
   );
@@ -68,14 +58,6 @@ const ReportSubmissions = () => {
     history.push(`${localRoutes.reports}/${reportId}/submissions/${reportSubmissionId}`);
   };
   
-  const toMobileRow = (personData: IEvent): IMobileRow => ({
-    avatar: <PersonAvatar data={personData} />,
-    primary: 'Report',
-    secondary: (
-        <>
-        </>
-    ),
-  });
 
   useEffect(() => {
     dispatch({
@@ -128,13 +110,6 @@ const ReportSubmissions = () => {
           enableFiltering={false}
           loading={loading}
         />
-          <PDateInput
-            name="from"
-            value={data.from}
-            onChange={(value) => handleDateChange('from', value)}
-            label="From"
-            inputVariant="outlined"
-          />
           <Box pt={1}>
             {loading || !data.data ? (
               <Loading />
