@@ -3,12 +3,6 @@ import {
   createStyles, Button, makeStyles, Theme, Typography,
 } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import Hidden from '@material-ui/core/Hidden';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
 import { useDispatch, useSelector } from 'react-redux';
 import XTable from '../../components/table/XTable';
 import Loading from '../../components/Loading';
@@ -22,6 +16,10 @@ import { search } from '../../utils/ajax';
 import { useHistory, useParams } from 'react-router';
 import Layout from '../../components/layout/Layout';
 import XBreadCrumbs from '../../components/XBreadCrumbs';
+import EventsFilter from '../events/EventsFilter';
+import PDateInput from '../../components/plain-inputs/PDateInput';
+import { useFilter } from '../../utils/fitlerUtilities';
+import { format, lastDayOfWeek, startOfWeek } from 'date-fns';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -41,13 +39,17 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
 }));
 
+const today = new Date();
+const startPeriod = startOfWeek(today);
+const endPeriod = lastDayOfWeek(today);
+ 
 const ReportSubmissions = () => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
   const history = useHistory();
   const { reportId } = useParams<any>();
-
+ 
   const { data, loading }: IReportState = useSelector(
     (state: any) => state.reports,
   );
@@ -56,14 +58,6 @@ const ReportSubmissions = () => {
     history.push(`${localRoutes.reports}/${reportId}/submissions/${reportSubmissionId}`);
   };
   
-  const toMobileRow = (personData: IEvent): IMobileRow => ({
-    avatar: <PersonAvatar data={personData} />,
-    primary: 'Report',
-    secondary: (
-        <>
-        </>
-    ),
-  });
 
   useEffect(() => {
     dispatch({
@@ -111,6 +105,7 @@ const ReportSubmissions = () => {
           title="Report Submissions"
           onFilter={setFilter}
           filter={filter}
+          filterComponent={<EventsFilter onFilter={setFilter} />}
           showBreadCrumbs={false}
           enableFiltering={false}
           loading={loading}

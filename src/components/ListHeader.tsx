@@ -24,11 +24,12 @@ interface IProps {
   title: string;
   showBreadCrumbs?: boolean;
   enableFiltering?: boolean;
+  showFilterButton?: boolean;
 }
 
 const ListHeader = (props: IProps) => {
-  const [showFilter, setShowFilter] = useState(false);
-  const { showBreadCrumbs = true, enableFiltering = true } = props;
+  const [showFilter, setShowFilter] = useState(true);
+  const { showBreadCrumbs = true, enableFiltering = true, showFilterButton = false } = props;
   const profile = useSelector((state: IState) => state.core.user);
 
   function handleFilterToggle() {
@@ -85,7 +86,7 @@ const ListHeader = (props: IProps) => {
               justifyContent="flex-end"
               width="100%"
             >
-              {props.filterComponent && (
+              {props.filterComponent && showFilterButton && (
                 <Button
                   variant="text"
                   color="primary"

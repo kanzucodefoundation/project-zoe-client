@@ -8,6 +8,8 @@ import { useFilter } from '../../utils/fitlerUtilities';
 
 interface IProps {
   onFilter: (data: any) => any;
+  showCategoriesFilter?: boolean;
+  showGroupsFilter?: boolean;
 }
 
 const today = new Date();
@@ -23,7 +25,7 @@ const initialData: any = {
   limit: 200,
   skip: 0,
 };
-const EventsFilter = ({ onFilter }: IProps) => {
+const EventsFilter = ({ onFilter, showCategoriesFilter, showGroupsFilter }: IProps) => {
   const { data, handleComboChange, handleDateChange } = useFilter({
     initialData,
     onFilter,
@@ -32,34 +34,38 @@ const EventsFilter = ({ onFilter }: IProps) => {
   return (
     <form>
       <Grid spacing={2} container>
-        <Grid item xs={12} md>
-          <PRemoteSelect
-            remote={remoteRoutes.eventsCategories}
-            name="categoryIdList"
-            label="Categories"
-            variant="outlined"
-            size="small"
-            margin="none"
-            multiple
-            onChange={(value) => handleComboChange('categoryIdList', value)}
-            value={data.categoryIdList}
-            searchOnline
-          />
-        </Grid>
-        <Grid item xs={12} md>
-          <PRemoteSelect
-            remote={remoteRoutes.groupsCombo}
-            name="groupIdList"
-            label="Groups"
-            variant="outlined"
-            size="small"
-            margin="none"
-            multiple
-            onChange={(value) => handleComboChange('groupIdList', value)}
-            value={data.groupIdList}
-            searchOnline
-          />
-        </Grid>
+      { showCategoriesFilter && (
+          <Grid item xs={12} md>
+            <PRemoteSelect
+              remote={remoteRoutes.eventsCategories}
+              name="categoryIdList"
+              label="Categories"
+              variant="outlined"
+              size="small"
+              margin="none"
+              multiple
+              onChange={(value) => handleComboChange('categoryIdList', value)}
+              value={data.categoryIdList}
+              searchOnline
+            />
+          </Grid>
+        )}
+        {showGroupsFilter && (
+          <Grid item xs={12} md>
+            <PRemoteSelect
+              remote={remoteRoutes.groupsCombo}
+              name="groupIdList"
+              label="Groups"
+              variant="outlined"
+              size="small"
+              margin="none"
+              multiple
+              onChange={(value) => handleComboChange('groupIdList', value)}
+              value={data.groupIdList}
+              searchOnline
+            />
+          </Grid>
+        )}
         <Grid item xs={12} md>
           <PDateInput
             name="from"
