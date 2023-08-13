@@ -49,7 +49,7 @@ const EventsFilter = ({ onFilter, showCategoriesFilter, showGroupsFilter }: IPro
               searchOnline
             />
           </Grid>
-        )}
+      )}
         {showGroupsFilter && (
           <Grid item xs={12} md>
             <PRemoteSelect

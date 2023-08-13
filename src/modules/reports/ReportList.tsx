@@ -3,20 +3,19 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { ListItem, List, ListItemText } from '@material-ui/core';
-import { localRoutes, remoteRoutes } from '../../data/constants';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import IconButton from '@material-ui/core/IconButton';
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
+import { localRoutes, remoteRoutes, appPermissions } from '../../data/constants';
 import { get } from '../../utils/ajax';
 import Layout from '../../components/layout/Layout';
 import { IReport } from './types';
 import Loading from '../../components/Loading';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import IconButton from '@material-ui/core/IconButton';
-import { useSelector } from 'react-redux';
 import { IState } from '../../data/types';
-import { useHistory } from 'react-router';
 import Toast from '../../utils/Toast';
 import XBreadCrumbs from '../../components/XBreadCrumbs';
 import { hasAnyRole } from '../../data/appRoles';
-import { appPermissions } from '../../data/constants';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -85,7 +84,7 @@ const ReportList: React.FC = () => {
               {
                 path: localRoutes.home,
                 label: 'Dashboard',
-              }
+              },
             ]}
           />
         </Box>
@@ -95,7 +94,7 @@ const ReportList: React.FC = () => {
               <ListItem key={report.id} alignItems="flex-start" disableGutters>
                 <ListItemText primary={report.name} />
                 <div className={classes.buttonContainer}>
-                  <Button 
+                  <Button
                     variant="outlined"
                     color="primary"
                     onClick={() => handleSubmitReport(report)}>

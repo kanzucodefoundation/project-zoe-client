@@ -9,18 +9,17 @@ import { hasValue, IOption } from './inputHelpers';
 
 interface IProps {
   label: string;
-  name: string;  
+  name: string;
   options: IOption[];
   multiple?: boolean;
   required?: boolean;
   variant?: 'standard' | 'outlined' | 'filled';
   size?: 'small' | 'medium';
   margin?: 'none' | 'dense' | 'normal';
-  onChange?: (value: any) => void; 
+  onChange?: (value: any) => void;
 }
 
 const XSelectInput = (props: IProps) => {
- 
   const {
     name, options, variant, margin = 'normal', onChange, ...rest
   } = props;
@@ -34,10 +33,9 @@ const XSelectInput = (props: IProps) => {
   }, []);
 
   const handleChange = (event: React.ChangeEvent<{ value: any }>) => {
-    const value = event.target.value;
+    const { value } = event.target;
     helpers.setValue(value); // Update formik field value
     onChange?.(value); // Invoke the onChange prop
-
   };
 
   return <FormControl error={showError} fullWidth variant={variant} margin={margin} size={props.size}>

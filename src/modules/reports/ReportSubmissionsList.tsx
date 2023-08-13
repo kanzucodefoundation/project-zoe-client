@@ -1,25 +1,20 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  createStyles, Button, makeStyles, Theme, Typography,
+  createStyles, makeStyles, Theme,
 } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router';
+import { lastDayOfWeek, startOfWeek } from 'date-fns';
 import XTable from '../../components/table/XTable';
 import Loading from '../../components/Loading';
-import { IMobileRow } from '../../components/DataList';
-import PersonAvatar from '../../components/PersonAvatar';
 import ListHeader from '../../components/ListHeader';
-import { IEvent } from '../events/types';
 import { IReportState, reportsConstants } from '../../data/reports/reducer';
 import { localRoutes, remoteRoutes } from '../../data/constants';
 import { search } from '../../utils/ajax';
-import { useHistory, useParams } from 'react-router';
 import Layout from '../../components/layout/Layout';
 import XBreadCrumbs from '../../components/XBreadCrumbs';
 import EventsFilter from '../events/EventsFilter';
-import PDateInput from '../../components/plain-inputs/PDateInput';
-import { useFilter } from '../../utils/fitlerUtilities';
-import { format, lastDayOfWeek, startOfWeek } from 'date-fns';
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
@@ -42,14 +37,14 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 const today = new Date();
 const startPeriod = startOfWeek(today);
 const endPeriod = lastDayOfWeek(today);
- 
+
 const ReportSubmissions = () => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useState<any>({ limit: 5000 });
   const classes = useStyles();
   const history = useHistory();
   const { reportId } = useParams<any>();
- 
+
   const { data, loading }: IReportState = useSelector(
     (state: any) => state.reports,
   );
@@ -57,7 +52,6 @@ const ReportSubmissions = () => {
   const handleRowSelection = (reportSubmissionId: string) => {
     history.push(`${localRoutes.reports}/${reportId}/submissions/${reportSubmissionId}`);
   };
-  
 
   useEffect(() => {
     dispatch({
@@ -97,7 +91,7 @@ const ReportSubmissions = () => {
                 {
                   path: localRoutes.reports,
                   label: 'Reports',
-                }
+                },
               ]}
             />
           </Box>

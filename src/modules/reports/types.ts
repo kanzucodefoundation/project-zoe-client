@@ -3,7 +3,7 @@ export interface IReportColumn {
   label: string
 }
 
-export interface IReportField{
+export interface IReportField {
   name: string,
   label: string,
   type: string,
@@ -31,7 +31,7 @@ export interface IReport {
   columns?: Array<IReportColumn> | []
 }
 
-export interface ICreateReportSubmissionDto{
+export interface ICreateReportSubmissionDto {
   reportId: string,
   data: any[]
 }
@@ -47,27 +47,27 @@ export interface ReportProps {
   onBackToList: () => void,
 }
 
-export interface ReportSubmissionData{
-    id: number;
-    data: {
-      date: string;
-      mcHostHome: string;
-      smallGroupId: number;
-      mcHuddleCount: string;
-      mcTestimonies: string;
-      smallGroupName: string;
-      mcAttendeeNames: string;
-      mcFrontierStory: string;
-      mcPrayerRequest: string;
-      mcWordHighlights: string;
-      mcGeneralFeedback: string;
-      smallGroupAttendanceCount: string;
-      smallGroupNumberOfMembers: string;
-    };
-    labels: {
-      name: string;
-      label: string;
-    }[];
-    submittedAt: string;
-    submittedBy: string;  
-};
+export interface ReportSubmissionData {
+  id: number;
+  data: {
+    date: string;
+    mcHostHome: string;
+    smallGroupId: number;
+    mcHuddleCount: string;
+    mcTestimonies: string;
+    smallGroupName: string;
+    mcAttendeeNames: string;
+    mcFrontierStory: string;
+    mcPrayerRequest: string;
+    mcWordHighlights: string;
+    mcGeneralFeedback: string;
+    smallGroupAttendanceCount: string;
+    smallGroupNumberOfMembers: string;
+  };
+  labels: {
+    name: string;
+    label: string;
+  }[];
+  submittedAt: string;
+  submittedBy: string;
+}

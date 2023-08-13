@@ -102,7 +102,7 @@ export default function Details() {
   }, [groupId]);
 
   const isLeader = () => {
-    if (data?.canEditGroup){
+    if (data?.canEditGroup) {
       return true;
     }
     if (data?.leaders && data?.leaders.length === 0) {
@@ -117,9 +117,7 @@ export default function Details() {
     return isLeader || hasAnyRole(profile, [appPermissions.roleGroupEdit]);
   };
 
-  const canViewSmallGroup = () => {
-    return hasAnyRole(profile, [appPermissions.roleSmallGroupView]);
-  };
+  const canViewSmallGroup = () => hasAnyRole(profile, [appPermissions.roleSmallGroupView]);
 
   function handleClose() {
     setDialog(false);
