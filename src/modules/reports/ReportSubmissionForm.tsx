@@ -111,8 +111,7 @@ const ReportSubmissionForm = () => {
           name="smallGroupName"
           label={label}
           variant="outlined"
-          customOnChange={(Myvalue: string) =>
-            handleSmallGroupChange(name, Myvalue)
+          customOnChange={(Myvalue: string) => handleSmallGroupChange(name, Myvalue)
           }
           margin="none"
         />
@@ -126,8 +125,7 @@ const ReportSubmissionForm = () => {
             id={name}
             name={name}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             label={label}
             variant="outlined"
@@ -141,8 +139,7 @@ const ReportSubmissionForm = () => {
             id={name}
             name={name}
             value={value}
-            onChange={(Xvalue: MaterialUiPickersDate) =>
-              handleChange(name, Xvalue)
+            onChange={(Xvalue: MaterialUiPickersDate) => handleChange(name, Xvalue)
             }
             label={label}
             variant="outlined"
@@ -154,8 +151,7 @@ const ReportSubmissionForm = () => {
         return (
           <XRadioInput
             name={name}
-            customOnChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            customOnChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             label={label}
             options={options}
@@ -167,8 +163,7 @@ const ReportSubmissionForm = () => {
           <XSelectInput
             name={name}
             label={label}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             options={options}
             required={field.required}
@@ -180,8 +175,7 @@ const ReportSubmissionForm = () => {
             id={name}
             name={name}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             label={label}
             variant="outlined"
@@ -194,8 +188,7 @@ const ReportSubmissionForm = () => {
             id={name}
             name={name}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             label={label}
             variant="outlined"

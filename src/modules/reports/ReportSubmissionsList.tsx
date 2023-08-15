@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import {
-  createStyles, Button, makeStyles, Theme, Typography,
+  createStyles, makeStyles, Theme,
 } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
@@ -10,6 +10,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router';
 import XTable from '../../components/table/XTable';
 import Loading from '../../components/Loading';
 import { IMobileRow } from '../../components/DataList';
@@ -19,7 +20,6 @@ import { IEvent } from '../events/types';
 import { IReportState, reportsConstants } from '../../data/reports/reducer';
 import { localRoutes, remoteRoutes } from '../../data/constants';
 import { search } from '../../utils/ajax';
-import { useHistory, useParams } from 'react-router';
 import Layout from '../../components/layout/Layout';
 import XBreadCrumbs from '../../components/XBreadCrumbs';
 
@@ -55,7 +55,7 @@ const ReportSubmissions = () => {
   const handleRowSelection = (reportSubmissionId: string) => {
     history.push(`${localRoutes.reports}/${reportId}/submissions/${reportSubmissionId}`);
   };
-  
+
   const toMobileRow = (personData: IEvent): IMobileRow => ({
     avatar: <PersonAvatar data={personData} />,
     primary: 'Report',
@@ -103,7 +103,7 @@ const ReportSubmissions = () => {
                 {
                   path: localRoutes.reports,
                   label: 'Reports',
-                }
+                },
               ]}
             />
           </Box>

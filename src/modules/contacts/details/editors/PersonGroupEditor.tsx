@@ -26,7 +26,9 @@ const schema = yup.object().shape({
   tag: reqString,
 });
 
-const GroupEditor = ({ data, isNew, onGroupAdded, onGroupEdited }: IProps) => {
+const GroupEditor = ({
+  data, isNew, onGroupAdded, onGroupEdited,
+}: IProps) => {
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
     const toSave: IGroup = {
       categoryId: '',

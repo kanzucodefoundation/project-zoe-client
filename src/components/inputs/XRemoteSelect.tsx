@@ -5,8 +5,8 @@ import { IPRemoteProps, PRemoteSelect } from '../plain-inputs/PRemoteSelect';
 import { ComboValue } from '../plain-inputs/PComboInput';
 
 type XRemoteProps = Omit<
-  IPRemoteProps,
-  'onChange' | 'value' | 'onBlur' | 'helperText' | 'showError'
+IPRemoteProps,
+'onChange' | 'value' | 'onBlur' | 'helperText' | 'showError'
 >;
 
 const XRemoteSelect = (props: XRemoteProps) => {

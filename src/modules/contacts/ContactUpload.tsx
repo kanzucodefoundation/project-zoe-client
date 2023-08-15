@@ -26,20 +26,17 @@ interface IProps {
   onDone: () => any;
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    zone: {
-      width: 400,
-    },
-  }),
-);
+const useStyles = makeStyles(() => createStyles({
+  zone: {
+    width: 400,
+  },
+}));
 
 const ContactUpload = ({ show, onClose, onDone }: IProps) => {
   const classes = useStyles();
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
-  const [uploadErrorMessage, setUploadErrorMessage] =
-    useState<string>('Upload failed');
+  const [uploadErrorMessage, setUploadErrorMessage] = useState<string>('Upload failed');
   const [files, setFiles] = useState<any[] | null>(null);
 
   const onDrop = useCallback((uploadedFiles: any[]) => {

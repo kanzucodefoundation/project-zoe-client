@@ -20,13 +20,11 @@ import {
 import InfoMessage from '../../../components/messages/InfoMessage';
 import { hasNoValue } from '../../../components/inputs/sutils';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      backgroundColor: theme.palette.background.paper,
-    },
-  }),
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    backgroundColor: theme.palette.background.paper,
+  },
+}));
 const Tags = () => {
   const classes = useStyles();
   const { data, loading }: ITagState = useSelector((state: any) => state.tags);

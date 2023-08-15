@@ -11,24 +11,22 @@ interface IProps {
   data: IContact;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      padding: theme.spacing(2),
-      borderRadius: 0,
-    },
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    padding: theme.spacing(2),
+    borderRadius: 0,
+  },
 
-    image: {
-      height: 50,
-      width: 50,
-      marginRight: theme.spacing(1),
-      marginTop: theme.spacing(1),
-    },
-    nameHolder: {
-      paddingTop: theme.spacing(1),
-    },
-  }),
-);
+  image: {
+    height: 50,
+    width: 50,
+    marginRight: theme.spacing(1),
+    marginTop: theme.spacing(1),
+  },
+  nameHolder: {
+    paddingTop: theme.spacing(1),
+  },
+}));
 
 const Profile = ({ data }: IProps) => {
   const classes = useStyles();

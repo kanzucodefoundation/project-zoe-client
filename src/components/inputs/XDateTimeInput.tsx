@@ -20,7 +20,9 @@ interface IProps {
 type PickerProps = Omit<KeyboardDatePickerProps, 'variant' | 'inputVariant'>;
 
 const XDateTimeInput = (props: IProps & Partial<PickerProps>) => {
-  const { variant, pickerVariant, margin = 'normal', ...rest } = props;
+  const {
+    variant, pickerVariant, margin = 'normal', ...rest
+  } = props;
   const [field, meta, helpers] = useField({ name: props.name });
   const error = hasValue(meta.error) ? meta.error : undefined;
   const showError = Boolean(error && meta.touched);

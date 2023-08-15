@@ -7,13 +7,12 @@ interface IProps {
   data: any;
 }
 
-const PersonAvatar = ({ data }: IProps) =>
-  hasValue(data.avatar) ? (
+const PersonAvatar = ({ data }: IProps) => (hasValue(data.avatar) ? (
     <Avatar alt="Avatar" src={data.avatar} />
-  ) : (
+) : (
     <Avatar>
       <PersonIcon />
     </Avatar>
-  );
+));
 
 export default PersonAvatar;

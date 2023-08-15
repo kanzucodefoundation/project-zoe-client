@@ -71,8 +71,7 @@ const columns: XHeadCell[] = [
   {
     name: 'roles',
     label: 'Roles',
-    render: (roles: string[]) =>
-      roles?.map((it) => (
+    render: (roles: string[]) => roles?.map((it) => (
         <Chip
           color={it.includes(': is disabled') ? 'default' : 'primary'}
           variant="outlined"
@@ -81,7 +80,7 @@ const columns: XHeadCell[] = [
           size="small"
           label={it}
         />
-      )),
+    )),
   },
 ];
 
@@ -166,7 +165,9 @@ const Users = () => {
   }
 
   const handleEdit = (dt: any) => {
-    const { id, username, contactId, fullName, roles, isActive } = dt;
+    const {
+      id, username, contactId, fullName, roles, isActive,
+    } = dt;
     const toEdit = {
       id,
       username,

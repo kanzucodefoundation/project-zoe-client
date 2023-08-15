@@ -33,8 +33,8 @@ export const printDecimal = (number: number) => {
     if (hasNoValue(number)) return '';
     return number
       ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(
-          number,
-        )
+        number,
+      )
       : '';
   } catch (e) {
     return '';
@@ -46,8 +46,8 @@ export const printInteger = (number: number) => {
     if (hasNoValue(number)) return '';
     return number
       ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(
-          number,
-        )
+        number,
+      )
       : '';
   } catch (e) {
     return '';

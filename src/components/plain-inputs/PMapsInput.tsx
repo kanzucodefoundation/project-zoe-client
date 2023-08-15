@@ -80,21 +80,21 @@ export interface IProps {
 
 type OptionalBool = boolean | undefined;
 type BaseProps = AutocompleteProps<
-  GooglePlace,
-  OptionalBool,
-  OptionalBool,
-  OptionalBool
+GooglePlace,
+OptionalBool,
+OptionalBool,
+OptionalBool
 >;
 type AutoProps = Omit<
-  BaseProps,
-  | 'variant'
-  | 'multiple'
-  | 'renderInput'
-  | 'onChange'
-  | 'value'
-  | 'options'
-  | 'onInputChange'
-  | 'renderOption'
+BaseProps,
+| 'variant'
+| 'multiple'
+| 'renderInput'
+| 'onChange'
+| 'value'
+| 'options'
+| 'onInputChange'
+| 'renderOption'
 >;
 export type PMapsProps = IProps & AutoProps;
 
@@ -119,13 +119,12 @@ export default function PMapsInput(props: PMapsProps) {
   }
 
   const fetch = React.useMemo(
-    () =>
-      throttle((request: any, callback: (results?: GooglePlace[]) => void) => {
-        (autocompleteService.current as any).getPlacePredictions(
-          request,
-          callback,
-        );
-      }, 200),
+    () => throttle((request: any, callback: (results?: GooglePlace[]) => void) => {
+      (autocompleteService.current as any).getPlacePredictions(
+        request,
+        callback,
+      );
+    }, 200),
     [],
   );
 
@@ -176,11 +175,12 @@ export default function PMapsInput(props: PMapsProps) {
     props.onBlur?.();
   };
 
-  const { label, variant, helperText, showError, margin = 'normal' } = props;
+  const {
+    label, variant, helperText, showError, margin = 'normal',
+  } = props;
   return (
     <Autocomplete
-      getOptionLabel={(option) =>
-        typeof option === 'string' ? option : option.description
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)
       }
       filterOptions={(x) => x}
       options={options}
@@ -210,8 +210,7 @@ export default function PMapsInput(props: PMapsProps) {
       onBlur={handleTouched}
       renderOption={(option) => {
         if (option.structured_formatting) {
-          const matches =
-            option.structured_formatting.main_text_matched_substrings;
+          const matches = option.structured_formatting.main_text_matched_substrings;
           const parts = parse(
             option.structured_formatting.main_text,
             matches.map((match: any) => [

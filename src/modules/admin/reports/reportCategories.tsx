@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
+import {
+  Button, createStyles, makeStyles, Theme,
+} from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
 import AddIcon from '@material-ui/icons/Add';
@@ -19,22 +21,20 @@ import Navigation from '../../../components/layout/Layout';
 import ReportFieldsFilter from './ReportFieldsFilter';
 import { hasValue } from '../../../components/inputs/sutils';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    filterPaper: {
-      borderRadius: 0,
-      padding: theme.spacing(2),
-    },
-    fab: {
-      position: 'absolute',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  }),
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    flexGrow: 1,
+  },
+  filterPaper: {
+    borderRadius: 0,
+    padding: theme.spacing(2),
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 const headCells: XHeadCell[] = [
   {
