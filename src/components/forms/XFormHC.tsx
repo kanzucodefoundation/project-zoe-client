@@ -50,7 +50,9 @@ const XFormHC = (props: IProps) => {
       validateOnBlur
       enableReinitialize
     >
-      {({ submitForm, isSubmitting, values, errors, touched, submitCount }) => (
+      {({
+        submitForm, isSubmitting, values, errors, touched, submitCount,
+      }) => (
         <Form autoComplete="food">
           <Grid container spacing={0} className={classes.root}>
             {submitCount > 0 && hasValue(errors) && (

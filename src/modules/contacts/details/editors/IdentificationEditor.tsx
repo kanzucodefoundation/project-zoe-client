@@ -32,7 +32,9 @@ const schema = yup.object().shape({
   expiryDate: reqDate,
 });
 
-const IdentificationEditor = ({ data, isNew, contactId, done }: IProps) => {
+const IdentificationEditor = ({
+  data, isNew, contactId, done,
+}: IProps) => {
   const dispatch = useDispatch();
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {

@@ -117,7 +117,7 @@
     "storybook": "start-storybook -p 9009 -s public",
     "build-storybook": "build-storybook -s public",
     "prepare": "husky install",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+    "lint": "eslint --quiet --ext .js,.jsx,.ts,.tsx --fix ."
   },
   "browserslist": {
     "production": [

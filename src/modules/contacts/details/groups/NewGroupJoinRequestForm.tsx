@@ -40,7 +40,7 @@ const NewGroupJoinRequestForm = (props: IProps) => {
 
   const getPrimaryEmail = () => {
     const emailList = props.contact.emails;
-    for (let i = 0; i < emailList.length; ) {
+    for (let i = 0; i < emailList.length;) {
       if (emailList[i].isPrimary) {
         return emailList[i].value;
       }
@@ -52,7 +52,7 @@ const NewGroupJoinRequestForm = (props: IProps) => {
 
   const getPrimaryPhone = () => {
     const phoneList = props.contact.phones;
-    for (let i = 0; i < phoneList.length; ) {
+    for (let i = 0; i < phoneList.length;) {
       if (phoneList[i].isPrimary) {
         return phoneList[i].value;
       }

@@ -33,22 +33,20 @@ import { IEvent } from './types';
 import { eventsFetchAsync, IEventState } from '../../data/events/eventsReducer';
 import EventRegisterButton from './EventRegister';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    filterPaper: {
-      borderRadius: 0,
-      padding: theme.spacing(2),
-    },
-    fab: {
-      position: 'absolute',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  }),
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    flexGrow: 1,
+  },
+  filterPaper: {
+    borderRadius: 0,
+    padding: theme.spacing(2),
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 const headCells: XHeadCell[] = [
   {
@@ -68,8 +66,7 @@ const headCells: XHeadCell[] = [
   {
     name: 'group',
     label: 'Group',
-    render: (value) =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
+    render: (value) => (hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-'),
   },
   {
     name: 'submittedBy',

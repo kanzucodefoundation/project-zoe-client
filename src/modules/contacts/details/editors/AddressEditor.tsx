@@ -28,7 +28,9 @@ const schema = yup.object().shape({
   freeForm: reqString,
 });
 
-const AddressEditor = ({ data, isNew, contactId, done }: IProps) => {
+const AddressEditor = ({
+  data, isNew, contactId, done,
+}: IProps) => {
   const dispatch = useDispatch();
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {

@@ -26,29 +26,26 @@ import {
 import { localRoutes } from '../../data/constants';
 import UnsubEventsFilter from './UnsubEventsFilter';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    filterPaper: {
-      borderRadius: 0,
-      padding: theme.spacing(2),
-    },
-    fab: {
-      position: 'absolute',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  }),
-);
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    flexGrow: 1,
+  },
+  filterPaper: {
+    borderRadius: 0,
+    padding: theme.spacing(2),
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+  },
+}));
 
 const headCells: XHeadCell[] = [
   {
     name: 'group',
     label: 'Group',
-    render: (value) =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
+    render: (value) => (hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-'),
   },
 
   {

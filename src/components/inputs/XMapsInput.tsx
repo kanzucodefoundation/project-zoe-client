@@ -7,8 +7,8 @@ import PMapsInput, {
 } from '../plain-inputs/PMapsInput';
 
 type XRemoteProps = Omit<
-  PMapsProps,
-  'onChange' | 'value' | 'onBlur' | 'helperText' | 'showError'
+PMapsProps,
+'onChange' | 'value' | 'onBlur' | 'helperText' | 'showError'
 >;
 
 const XMapsInput = (props: XRemoteProps) => {

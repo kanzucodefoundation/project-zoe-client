@@ -44,8 +44,7 @@ const XForm = (props: IProps) => {
     }
   }
 
-  const buttonAlignment =
-    props.submitButtonAlignment === 'left' ? 'flex-start' : 'flex-end';
+  const buttonAlignment = props.submitButtonAlignment === 'left' ? 'flex-start' : 'flex-end';
 
   return (
     <Formik
@@ -55,7 +54,9 @@ const XForm = (props: IProps) => {
       validateOnBlur
       enableReinitialize
     >
-      {({ submitForm, isSubmitting, values, errors, touched, submitCount }) => (
+      {({
+        submitForm, isSubmitting, values, errors, touched, submitCount,
+      }) => (
         <Form autoComplete="food">
           <Grid container spacing={0} className={classes.root}>
             {submitCount > 0 && hasValue(errors) && (

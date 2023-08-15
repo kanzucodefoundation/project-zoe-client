@@ -25,14 +25,14 @@ interface IProps {
 
 type OptionalBool = boolean | undefined;
 type BaseProps = AutocompleteProps<
-  string | IOption,
-  OptionalBool,
-  OptionalBool,
-  OptionalBool
+string | IOption,
+OptionalBool,
+OptionalBool,
+OptionalBool
 >;
 type AutoProps = Omit<
-  BaseProps,
-  'variant' | 'multiple' | 'renderInput' | 'onChange' | 'value'
+BaseProps,
+'variant' | 'multiple' | 'renderInput' | 'onChange' | 'value'
 >;
 export type PComboProps = IProps & AutoProps;
 const PComboInput = (props: PComboProps) => {

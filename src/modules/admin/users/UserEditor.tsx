@@ -40,14 +40,14 @@ const initialValues = {
   roles: [],
   isActive: true,
 };
-const UserEditor = ({ data, isNew, done, onDeleted, onCancel }: IProps) => {
+const UserEditor = ({
+  data, isNew, done, onDeleted, onCancel,
+}: IProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const userRoles: string[] = [];
 
   useEffect(() => {
-    get(remoteRoutes.roles, (resp: IRoles[]) =>
-      resp.map((it: IRoles) => it.isActive && userRoles.push(it.role)),
-    );
+    get(remoteRoutes.roles, (resp: IRoles[]) => resp.map((it: IRoles) => it.isActive && userRoles.push(it.role)));
   }, [userRoles]);
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {

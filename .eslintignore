@@ -6,4 +6,3 @@ packages/react-scripts/fixtures
 fixtures/
 coverage/
 commitlint.config.js
-**/*.tsx

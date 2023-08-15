@@ -28,7 +28,9 @@ const schema = yup.object().shape({
   category: reqString.oneOf(emailCategories),
 });
 
-const EmailEditor = ({ data, isNew, contactId, done }: IProps) => {
+const EmailEditor = ({
+  data, isNew, contactId, done,
+}: IProps) => {
   const dispatch = useDispatch();
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {

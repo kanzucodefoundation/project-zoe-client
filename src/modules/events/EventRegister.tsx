@@ -36,7 +36,7 @@ const EventRegisterButton = ({ id }: IProps) => {
     get(
       `${remoteRoutes.eventsRegistration}/?contactId=${user.contactId}`,
       (data) => {
-        for (let i = 0; i < data.length; ) {
+        for (let i = 0; i < data.length;) {
           // check if the event was already registered to
           if (data[i].event.id === id) {
             setRegister(data[i].event.id);
