@@ -99,7 +99,7 @@ const ReportSubmissions = () => {
           title="Report Submissions"
           onFilter={setFilter}
           filter={filter}
-          filterComponent={<EventsFilter onFilter={setFilter} />}
+          filterComponent={<EventsFilter onFilter={setFilter} showParentGroupsFilter={true} parentGroupName='Zone' />}
           showBreadCrumbs={false}
           enableFiltering={false}
           loading={loading}

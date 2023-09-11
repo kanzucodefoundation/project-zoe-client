@@ -10,6 +10,8 @@ interface IProps {
   onFilter: (data: any) => any;
   showCategoriesFilter?: boolean;
   showGroupsFilter?: boolean;
+  showParentGroupsFilter?: boolean;
+  parentGroupName?: string;
 }
 
 const today = new Date();
@@ -20,16 +22,17 @@ const initialData: any = {
   query: '',
   groupIdList: [],
   categoryIdList: [],
+  parentGroupIdList: [],
   from: `${format(new Date(startPeriod), 'PP')}`,
   to: `${format(new Date(endPeriod), 'PP')}`,
   limit: 200,
   skip: 0,
 };
-const EventsFilter = ({ onFilter, showCategoriesFilter, showGroupsFilter }: IProps) => {
+const EventsFilter = ({ onFilter, showCategoriesFilter, showGroupsFilter, showParentGroupsFilter, parentGroupName }: IProps) => {
   const { data, handleComboChange, handleDateChange } = useFilter({
     initialData,
     onFilter,
-    comboFields: ['categoryIdList', 'groupIdList'],
+    comboFields: ['categoryIdList', 'groupIdList','parentGroupIdList'],
   });
   return (
     <form>
@@ -75,7 +78,6 @@ const EventsFilter = ({ onFilter, showCategoriesFilter, showGroupsFilter }: IPro
             inputVariant="outlined"
           />
         </Grid>
-
         <Grid item xs={12} md>
           <PDateInput
             name="to"
@@ -85,6 +87,22 @@ const EventsFilter = ({ onFilter, showCategoriesFilter, showGroupsFilter }: IPro
             onChange={(value) => handleDateChange('to', value)}
           />
         </Grid>
+        {showParentGroupsFilter && (
+          <Grid item xs={12} md>
+            <PRemoteSelect
+              remote={`${remoteRoutes.groupsCombo}?categories=${parentGroupName}`} 
+              name="parentGroupIdList"
+              label={parentGroupName || 'Zone'}
+              variant="outlined"
+              size="small"
+              margin="none"
+              multiple
+              onChange={(value) => handleComboChange('parentGroupIdList', value)}
+              value={data.parentGroupIdList}
+              searchOnline
+            />
+          </Grid>
+        )}
       </Grid>
     </form>
   );
