@@ -45,7 +45,6 @@ export const redux = {
 };
 
 export const localRoutes = {
-
   dashboard: '/dashboard',
   contacts: '/people/contacts',
   profile: '/people/contacts/me',
@@ -85,13 +84,12 @@ export const localRoutes = {
   reportCategories: '/admin/report-categories',
   groupsCategories: '/admin/group-categories',
   eventCategories: '/admin/event-categories',
-
 };
 
 const isDevelopmentMode = process.env.NODE_ENV !== 'production';
 const apiBaseUrl = isDevelopmentMode
-  ? 'http://localhost:4002'
-  : 'https://projectzoe.kanzucodefoundation.org/server';
+  ? 'https://projectzoe.kanzucodefoundation.org/server'
+  : 'http://localhost:4002';
 
 export const remoteRoutes = {
   authServer: apiBaseUrl,
@@ -147,5 +145,4 @@ export const remoteRoutes = {
   chat: `${apiBaseUrl}/api/chat/email`,
   eventsRegistration: `${apiBaseUrl}/api/events/registration`,
   help: `${apiBaseUrl}/api/help`,
-
 };

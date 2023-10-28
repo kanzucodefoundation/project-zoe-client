@@ -26,6 +26,7 @@ import Loading from '../../../components/Loading';
 import ListHeader from '../../../components/ListHeader';
 import { hasAnyRole } from '../../../data/appRoles';
 import { IState } from '../../../data/types';
+import { IUserDto } from './types';
 
 const columns: XHeadCell[] = [
   {
@@ -90,7 +91,7 @@ interface IMobileRow {
   secondary: any;
 }
 
-const toMobile = (data: any): IMobileRow => {
+const toMobile = (data: IUserDto): IMobileRow => {
   const hasAvatar = hasValue(data.avatar);
   return {
     avatar: hasAvatar ? (
@@ -183,6 +184,11 @@ const Users = () => {
     history.push(`${localRoutes.contacts}/${dt.id}`);
   };
 
+  const handleClose = () => {
+    // setSelected(null);
+    setDialog(false);
+  };
+
   const handleComplete = (dt: any) => {
     if (selected) {
       const newData = data.map((it: any) => {
@@ -195,10 +201,6 @@ const Users = () => {
       setData(newData);
     }
     handleClose();
-  };
-  const handleClose = () => {
-    // setSelected(null);
-    setDialog(false);
   };
 
   function handleDeleted(dt: any) {
