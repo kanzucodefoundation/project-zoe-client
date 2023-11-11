@@ -90,7 +90,7 @@ export const localRoutes = {
 
 const isDevelopmentMode = process.env.NODE_ENV !== 'production';
 const apiBaseUrl = isDevelopmentMode
-  ? 'http://localhost:4002'
+  ? 'https://projectzoe.kanzucodefoundation.org/server'
   : 'https://projectzoe.kanzucodefoundation.org/server';
 
 export const remoteRoutes = {
