@@ -5,6 +5,13 @@ export interface IUser {
   id?: string;
   roles: string[];
 }
+export interface IUserDto {
+  fullName: string;
+  isActive: boolean;
+  avatar: string;
+  id?: string;
+  roles: string[];
+}
 
 export interface IRoles {
   id: number;

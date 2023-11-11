@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { useTheme } from '@material-ui/core';
+import { Paper, TablePagination, useTheme } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery/useMediaQuery';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -14,7 +14,10 @@ import TableBody from '@material-ui/core/TableBody';
 import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import { Alert } from '@material-ui/lab';
 import { XHeadCell } from './table/XTableHead';
+import { getSorting, stableSort } from './table/helpers';
+import { useTableStyles } from './table/tableStyles';
 
 interface IProps {
   data: any[];
@@ -22,6 +25,8 @@ interface IProps {
   columns: XHeadCell[];
   onEditClick?: (data: any) => any;
   onViewClick?: (data: any) => any;
+  initialRowsPerPage?: number;
+  usePagination?: boolean;
 }
 
 const DataList = ({
@@ -30,129 +35,181 @@ const DataList = ({
   toMobileRow,
   onEditClick,
   onViewClick,
+  usePagination = true,
+  initialRowsPerPage = 50,
 }: IProps) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-  return (
-    <>
-      {isSmall ? (
-        <List>
-          {data.map((row: any) => {
-            const mobileRow = toMobileRow(row);
-            return (
-              <Fragment key={row.id}>
-                <ListItem alignItems="flex-start" disableGutters>
-                  {mobileRow.avatar && (
-                    <>
-                      <ListItemAvatar>{mobileRow.avatar}</ListItemAvatar>
-                    </>
-                  )}
 
-                  <ListItemText
-                    disableTypography
-                    primary={mobileRow.primary}
-                    secondary={mobileRow.secondary}
-                  />
+  const classes = useTableStyles();
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(initialRowsPerPage);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  return (
+    <div className={classes.root}>
+      <Paper className={classes.paper} elevation={0}>
+        <Fragment>
+          {isSmall ? (
+            <List>
+              {data.map((row: any) => {
+                const mobileRow = toMobileRow(row);
+                return (
+                  <Fragment key={row.id}>
+                    <ListItem alignItems="flex-start" disableGutters>
+                      {mobileRow.avatar && (
+                        <>
+                          <ListItemAvatar>{mobileRow.avatar}</ListItemAvatar>
+                        </>
+                      )}
+
+                      <ListItemText
+                        disableTypography
+                        primary={mobileRow.primary}
+                        secondary={mobileRow.secondary}
+                      />
+                      {onViewClick && (
+                        <IconButton
+                          onClick={() => onViewClick && onViewClick(row)}
+                          size="medium"
+                          color="primary"
+                          aria-label="edit"
+                          component="span"
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                      )}
+                      {onEditClick && row.role !== 'RoleAdmin' && (
+                        <IconButton
+                          onClick={() => onEditClick && onEditClick(row)}
+                          size="medium"
+                          color="primary"
+                          aria-label="edit"
+                          component="span"
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      )}
+                    </ListItem>
+                    <Divider component="li" />
+                  </Fragment>
+                );
+              })}
+            </List>
+          ) : (
+            <Table aria-label="simple table" size="small">
+              <TableHead>
+                <TableRow>
+                  {columns.map((it) => (
+                    <TableCell
+                      key={it.name}
+                      align={it.numeric ? 'right' : 'left'}
+                      component="th"
+                      {...it.cellProps}
+                    >
+                      {it.label}
+                    </TableCell>
+                  ))}
                   {onViewClick && (
-                    <IconButton
-                      onClick={() => onViewClick && onViewClick(row)}
-                      size="medium"
-                      color="primary"
-                      aria-label="edit"
-                      component="span"
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
+                    <TableCell align="center" component="th">
+                      &nbsp;
+                    </TableCell>
                   )}
-                  {onEditClick && row.role !== 'RoleAdmin' && (
-                    <IconButton
-                      onClick={() => onEditClick && onEditClick(row)}
-                      size="medium"
-                      color="primary"
-                      aria-label="edit"
-                      component="span"
-                    >
-                      <EditIcon />
-                    </IconButton>
+                  {onEditClick && (
+                    <TableCell align="center" component="th">
+                      &nbsp;
+                    </TableCell>
                   )}
-                </ListItem>
-                <Divider component="li" />
-              </Fragment>
-            );
-          })}
-        </List>
-      ) : (
-        <Table aria-label="simple table" size="small">
-          <TableHead>
-            <TableRow>
-              {columns.map((it) => (
-                <TableCell
-                  key={it.name}
-                  align={it.numeric ? 'right' : 'left'}
-                  component="th"
-                  {...it.cellProps}
-                >
-                  {it.label}
-                </TableCell>
-              ))}
-              {onViewClick && (
-                <TableCell align="center" component="th">
-                  &nbsp;
-                </TableCell>
-              )}
-              {onEditClick && (
-                <TableCell align="center" component="th">
-                  &nbsp;
-                </TableCell>
-              )}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((row: any) => (
-              <TableRow key={row.id}>
-                {columns.map((it) => (
-                  <TableCell
-                    key={it.name}
-                    align={it.numeric ? 'right' : 'left'}
-                    {...it.cellProps}
-                  >
-                    {it.render ? it.render(row[it.name], row) : row[it.name]}
-                  </TableCell>
-                ))}
-                {onViewClick && (
-                  <TableCell align="center">
-                    <IconButton
-                      size="medium"
-                      color="primary"
-                      aria-label="edit"
-                      component="span"
-                      onClick={() => onViewClick && onViewClick(row)}
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
-                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.length > 0 ? (
+                  stableSort(data, getSorting('asc', 'id'))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row: any) => (
+                      <TableRow key={row.id}>
+                        {columns.map((it) => (
+                          <TableCell
+                            key={it.name}
+                            align={it.numeric ? 'right' : 'left'}
+                            {...it.cellProps}
+                          >
+                            {it.render
+                              ? it.render(row[it.name], row)
+                              : row[it.name]}
+                          </TableCell>
+                        ))}
+                        {onViewClick && (
+                          <TableCell align="center">
+                            <IconButton
+                              size="medium"
+                              color="primary"
+                              aria-label="edit"
+                              component="span"
+                              onClick={() => onViewClick && onViewClick(row)}
+                            >
+                              <VisibilityIcon />
+                            </IconButton>
+                          </TableCell>
+                        )}
+                        {onEditClick && (
+                          <TableCell align="center">
+                            {row.role !== 'RoleAdmin' && (
+                              <IconButton
+                                size="medium"
+                                color="primary"
+                                aria-label="edit"
+                                component="span"
+                                onClick={() => onEditClick && onEditClick(row)}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            )}
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))
+                ) : (
+                  <TableRow style={{ height: 49 * 2 }}>
+                    <TableCell colSpan={columns.length}>
+                      <Alert severity="warning">No records to display</Alert>
+                    </TableCell>
+                  </TableRow>
                 )}
-                {onEditClick && (
-                  <TableCell align="center">
-                    {row.role !== 'RoleAdmin' && (
-                      <IconButton
-                        size="medium"
-                        color="primary"
-                        aria-label="edit"
-                        component="span"
-                        onClick={() => onEditClick && onEditClick(row)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    )}
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
-    </>
+              </TableBody>
+            </Table>
+          )}
+        </Fragment>
+        {usePagination && (
+          <TablePagination
+            component="div"
+            rowsPerPageOptions={[10, 50, 100]}
+            count={data.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            backIconButtonProps={{
+              'aria-label': 'previous page',
+            }}
+            nextIconButtonProps={{
+              'aria-label': 'next page',
+            }}
+            onChangePage={handleChangePage}
+            onPageChange={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        )}
+      </Paper>
+    </div>
   );
 };
 
