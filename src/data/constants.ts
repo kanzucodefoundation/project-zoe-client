@@ -45,7 +45,6 @@ export const redux = {
 };
 
 export const localRoutes = {
-
   dashboard: '/dashboard',
   contacts: '/people/contacts',
   profile: '/people/contacts/me',
@@ -85,7 +84,7 @@ export const localRoutes = {
   reportCategories: '/admin/report-categories',
   groupsCategories: '/admin/group-categories',
   eventCategories: '/admin/event-categories',
-
+  taskManagement: '/admin/task-management',
 };
 
 const isDevelopmentMode = process.env.NODE_ENV !== 'production';
@@ -147,5 +146,4 @@ export const remoteRoutes = {
   chat: `${apiBaseUrl}/api/chat/email`,
   eventsRegistration: `${apiBaseUrl}/api/events/registration`,
   help: `${apiBaseUrl}/api/help`,
-
 };

@@ -46,7 +46,11 @@ const fields: AgField[] = [
     name: 'totalGarageAttendance',
   },
 ];
-const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => {
+const DashboardData = ({
+  currDataEvents,
+  prevDataEvents,
+  interval,
+}: IProps) => {
   const currentData = aggregateValues(currDataEvents, fields);
   const previousData = aggregateValues(prevDataEvents, fields);
   const totalMcAttendance = aggregateValue(
@@ -111,8 +115,10 @@ const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => 
         previousData.totalGarageAttendance,
         currentData.totalGarageAttendance,
       ),
+
       icon: People,
     },
+
     {
       title: 'Giving',
       value: printMoney(currentData.giving),
@@ -125,7 +131,7 @@ const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => 
     <Grid container spacing={2}>
       {data.map((it) => (
         <Grid item xs={12} sm={6} md={4} lg={3} key={it.title}>
-          <Widget interval={interval} {...it}/>
+          <Widget interval={interval} {...it} />
         </Grid>
       ))}
     </Grid>

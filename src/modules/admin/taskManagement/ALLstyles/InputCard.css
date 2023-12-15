@@ -1,0 +1,26 @@
+.card{
+    padding: 10px  ;
+    margin: 0px 16px 16px 16px;
+}
+.confirm>button{
+    background: #5aac44;
+    color: #fff;
+    padding: 10px;
+    margin-left: -20px;
+    margin-top: 5px;
+    
+}
+.confirm>input{
+    margin-left: -28px;
+    position: relative;
+    overflow: hidden;
+    padding: 6px 70px 42px;
+    position: relative;
+}
+.confirm>button:hover{
+    background:fade(#5aac44,0.25);
+}
+.confirm{
+    margin: 0px 16px 16px 16px;
+
+}
