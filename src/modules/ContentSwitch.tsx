@@ -12,9 +12,8 @@ import ReportSubmissions from './reports/ReportSubmissionsList';
 import ReportSubmissionDetail from './reports/ReportSubmissionDetail';
 import ReportSubmissionForm from './reports/ReportSubmissionForm';
 import TaskManager from '../components/TaskManager/componets/TaskList';
-// import TaskManagement from './admin/taskManagement/TaskManagement';
-const Events = React.lazy(() => import('./events/EventsList'));
-const GroupReports = React.lazy(() => import('./events/EventReports'));
+// const Events = React.lazy(() => import('./events/EventsList'));
+// const GroupReports = React.lazy(() => import('./events/EventReports'));
 const UserControl = React.lazy(() => import('./admin/users/UserControl'));
 const Dashboard = React.lazy(() => import('./dashboard/Dashboard'));
 const Contacts = React.lazy(() => import('./contacts/Contacts'));
@@ -63,8 +62,8 @@ const Testing = () => (
 
 const NoMatch = () => (
   <Layout>
-    <Link to="/">Dashboard</Link>
-    <h2>Task Management</h2>
+    <h2>Oops nothing here!!</h2>
+    <Link to="/">Take me home</Link>
   </Layout>
 );
 
@@ -96,44 +95,37 @@ const ContentSwitch = () => {
           appPermissions.roleGroupEdit,
           appPermissions.roleGroupView,
         ]) && <Route path={localRoutes.groups} component={Groups} />}
-
         {hasAnyRole(user, [
           appPermissions.roleEventView,
           appPermissions.roleEventEdit,
         ]) && (
           <Route path={localRoutes.eventsDetails} component={EventDetails} />
         )}
-
         {hasAnyRole(user, [
           appPermissions.roleEventView,
           appPermissions.roleEventEdit,
         ]) && <Route path={localRoutes.events} component={EventReports} />}
-
         {hasAnyRole(user, [appPermissions.roleReportView]) && (
           <Route
             path={localRoutes.reportSubmit}
             component={ReportSubmissionForm}
           />
         )}
-
         {hasAnyRole(user, [appPermissions.roleReportViewSubmissions]) && (
           <Route
             path={localRoutes.reportSubmissionDetails}
             component={ReportSubmissionDetail}
           />
         )}
-
         {hasAnyRole(user, [appPermissions.roleReportViewSubmissions]) && (
           <Route
             path={localRoutes.reportSubmissions}
             component={ReportSubmissions}
           />
         )}
-
         {hasAnyRole(user, [appPermissions.roleReportView]) && (
           <Route path={localRoutes.reports} component={ReportList} />
         )}
-
         <Route path={localRoutes.manageHelp} component={ManageHelp} />
         <Route path={localRoutes.settings} component={Settings} />
         <Route
@@ -152,8 +144,7 @@ const ContentSwitch = () => {
           component={UpdatePasswordConfirmation}
         />
         <Route path={localRoutes.help} component={Help} />
-        <Route path={localRoutes.taskManagement} component={TaskManager} />
-
+        <Route path={localRoutes.taskManagement} component={TaskManager} /> f
         <Route component={NoMatch} />
       </Switch>
     </Suspense>
