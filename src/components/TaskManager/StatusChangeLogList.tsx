@@ -1,18 +1,39 @@
 // src/components/StatusChangeLogList.tsx
 import React from 'react';
-import { StatusChangeLog } from '../models/StatusChangeLogModel';
-import { List, ListItem, ListItemText } from '@material-ui/core';
+import { StatusChangeLog } from './models/StatusChangeLogModel';
+import {
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Theme,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 
 interface StatusChangeLogListProps {
   statusChangeLogs: StatusChangeLog[];
 }
 
+const useStyles = makeStyles((theme: Theme) => ({
+  title: {
+    fontWeight: 500,
+  },
+}));
+
 const StatusChangeLogList: React.FC<StatusChangeLogListProps> = ({
   statusChangeLogs,
 }) => {
+  const classes = useStyles();
   return (
     <div>
-      <h2>Status Change Log</h2>
+      <Typography
+        className={classes.title}
+        color="textSecondary"
+        gutterBottom
+        variant="body2"
+      >
+        STATUS CHANGE LOG
+      </Typography>
       <List>
         {statusChangeLogs.map((log) => (
           <ListItem key={`${log.userId}-${log.timeOfChange.toISOString()}`}>

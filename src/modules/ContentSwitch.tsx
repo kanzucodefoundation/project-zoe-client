@@ -11,7 +11,7 @@ import ReportList from './reports/ReportList';
 import ReportSubmissions from './reports/ReportSubmissionsList';
 import ReportSubmissionDetail from './reports/ReportSubmissionDetail';
 import ReportSubmissionForm from './reports/ReportSubmissionForm';
-import TaskManager from '../components/TaskManager/componets/TaskList';
+import TaskManager from '../components/TaskManager/TaskManager';
 // const Events = React.lazy(() => import('./events/EventsList'));
 // const GroupReports = React.lazy(() => import('./events/EventReports'));
 const UserControl = React.lazy(() => import('./admin/users/UserControl'));

@@ -1,13 +1,29 @@
 // src/components/TaskReportList.tsx
 import React from 'react';
-import { TaskReport } from '../models/TaskReportModel';
-import { List, ListItem, ListItemText, Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import { TaskReport } from './models/TaskReportModel';
+import {
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+  Typography,
+  Theme,
+} from '@material-ui/core';
 
 interface TaskReportListProps {
   taskReports: TaskReport[];
 }
 
+const useStyles = makeStyles((theme: Theme) => ({
+  title: {
+    fontWeight: 500,
+  },
+}));
+
 const TaskReportList: React.FC<TaskReportListProps> = ({ taskReports }) => {
+  const classes = useStyles();
+
   const handleDownload = async (attachment: string, reportDetail: string) => {
     try {
       // Make a network request to fetch the file
@@ -33,14 +49,21 @@ const TaskReportList: React.FC<TaskReportListProps> = ({ taskReports }) => {
 
   return (
     <div>
-      <h2>Task Reports</h2>
+      <Typography
+        className={classes.title}
+        color="textSecondary"
+        gutterBottom
+        variant="body2"
+      >
+        TASK REPORTS
+      </Typography>
       <List>
         {taskReports.map((report) => (
           <ListItem
             key={`${report.taskId}-${report.submittedOn.toISOString()}`}
           >
             <ListItemText primary={`Submitted by: ${report.submittedBy}`} />
-            <ListItemText primary={`Task ID: ${report.taskId}`} />
+            <ListItemText primary={`Task: ${report.taskId}`} />
             <ListItemText primary={`Report Detail: ${report.reportDetail}`} />
             <ListItemText
               primary={`Submitted on: ${report.submittedOn.toDateString()}`}

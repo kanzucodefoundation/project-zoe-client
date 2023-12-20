@@ -1,6 +1,6 @@
 // src/components/StatusList.tsx
 import React from 'react';
-import { Status } from '../models/StatusModel';
+import { Status } from './models/StatusModel';
 import { List, ListItem, ListItemText } from '@material-ui/core';
 
 interface StatusListProps {

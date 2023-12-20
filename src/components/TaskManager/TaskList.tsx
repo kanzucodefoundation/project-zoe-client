@@ -1,6 +1,6 @@
 // src/components/TaskList.tsx
 import React from 'react';
-import { Task } from '../models/TaskModel';
+import { Task } from './models/TaskModel';
 import { List, ListItem, ListItemText } from '@material-ui/core';
 
 interface TaskListProps {
@@ -10,9 +10,8 @@ interface TaskListProps {
 const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
   return (
     <div>
-      <h2>Task List</h2>
       <List>
-        {tasks.map((task) => (
+        {tasks?.map((task) => (
           <ListItem key={task.id}>
             <ListItemText primary={task.name} secondary={task.description} />
             <ListItemText

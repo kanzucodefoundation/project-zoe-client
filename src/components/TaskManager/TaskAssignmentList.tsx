@@ -1,6 +1,6 @@
 // src/components/TaskAssignmentList.tsx
 import React from 'react';
-import { TaskAssignment } from '../models/TaskAssignmentModel';
+import { TaskAssignment } from './models/TaskAssignmentModel';
 import { List, ListItem, ListItemText } from '@material-ui/core';
 
 interface TaskAssignmentListProps {
