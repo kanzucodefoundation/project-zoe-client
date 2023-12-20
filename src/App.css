@@ -1,0 +1,32 @@
+/* src/App.css */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .paper {
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+  
+  .gridItem {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2000px;
+  }
+  
+  .divider {
+    margin: 20px 0;
+  }
+  
+  .taskList {
+    margin-bottom: 20px;
+  }
+  

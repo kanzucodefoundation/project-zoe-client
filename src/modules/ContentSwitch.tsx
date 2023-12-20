@@ -11,12 +11,11 @@ import ReportList from './reports/ReportList';
 import ReportSubmissions from './reports/ReportSubmissionsList';
 import ReportSubmissionDetail from './reports/ReportSubmissionDetail';
 import ReportSubmissionForm from './reports/ReportSubmissionForm';
-import TaskManagement from './admin/taskManagement/TaskManagement';
-// const Events= React.lazy(() => import( "./events/EventsList"));
-// const GroupReports = React.lazy(() => import("./events/GroupEvents"));
-
+import TaskManager from '../components/TaskManager/componets/TaskList';
+// import TaskManagement from './admin/taskManagement/TaskManagement';
+const Events = React.lazy(() => import('./events/EventsList'));
+const GroupReports = React.lazy(() => import('./events/EventReports'));
 const UserControl = React.lazy(() => import('./admin/users/UserControl'));
-
 const Dashboard = React.lazy(() => import('./dashboard/Dashboard'));
 const Contacts = React.lazy(() => import('./contacts/Contacts'));
 const ContactDetails = React.lazy(
@@ -153,7 +152,7 @@ const ContentSwitch = () => {
           component={UpdatePasswordConfirmation}
         />
         <Route path={localRoutes.help} component={Help} />
-        <Route path={localRoutes.taskManagement} component={TaskManagement} />
+        <Route path={localRoutes.taskManagement} component={TaskManager} />
 
         <Route component={NoMatch} />
       </Switch>
