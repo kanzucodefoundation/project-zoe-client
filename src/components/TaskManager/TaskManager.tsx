@@ -120,10 +120,9 @@ const TaskManager: React.FC = () => {
       <Container component="main" maxWidth="md">
         <CssBaseline />
         <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
-          <Typography component="div" align="center" gutterBottom>
-            Church Task Management App
+          <Typography variant="button" component="div">
+            TASK MANAGEMENT
           </Typography>
-
           {/* Task creation form */}
           <Typography
             className={classes.title}
@@ -160,7 +159,6 @@ const TaskManager: React.FC = () => {
           </Grid>
           <Divider style={{ margin: '20px 0' }} />
 
-          {/* Task Assignment form */}
           <Typography
             className={classes.title}
             color="textSecondary"

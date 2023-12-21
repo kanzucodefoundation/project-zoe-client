@@ -1,4 +1,4 @@
-// src/models/StatusChangeLogModel.ts
+//StatusChangeLogModel.ts
 import { v4 as uuidv4 } from 'uuid';
 
 export interface StatusChangeLog {

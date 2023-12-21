@@ -1,4 +1,4 @@
-// src/models/UserModel.ts
+// UserModel.ts
 export interface UserModel {
   status: string;
 }

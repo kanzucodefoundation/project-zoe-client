@@ -1,18 +1,40 @@
-// src/components/TaskAssignmentList.tsx
+//TaskAssignmentList.tsx
 import React from 'react';
 import { TaskAssignment } from './models/TaskAssignmentModel';
-import { List, ListItem, ListItemText } from '@material-ui/core';
+import {
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Theme,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 
 interface TaskAssignmentListProps {
   taskAssignments: TaskAssignment[];
 }
 
+const useStyles = makeStyles((theme: Theme) => ({
+  title: {
+    fontWeight: 500,
+  },
+}));
+
 const TaskAssignmentList: React.FC<TaskAssignmentListProps> = ({
   taskAssignments,
 }) => {
+  const classes = useStyles();
+
   return (
     <div>
-      <h2>Task Assignments</h2>
+      <Typography
+        className={classes.title}
+        color="textSecondary"
+        gutterBottom
+        variant="body2"
+      >
+        TASK ASSIGNMENTS
+      </Typography>
       <List>
         {taskAssignments.map((assignment) => (
           <ListItem

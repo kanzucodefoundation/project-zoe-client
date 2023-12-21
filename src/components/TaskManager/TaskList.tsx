@@ -1,4 +1,4 @@
-// src/components/TaskList.tsx
+//TaskList.tsx
 import React from 'react';
 import { Task } from './models/TaskModel';
 import { List, ListItem, ListItemText } from '@material-ui/core';
@@ -6,7 +6,6 @@ import { List, ListItem, ListItemText } from '@material-ui/core';
 interface TaskListProps {
   tasks: Task[];
 }
-
 const TaskList: React.FC<TaskListProps> = ({ tasks }) => {
   return (
     <div>

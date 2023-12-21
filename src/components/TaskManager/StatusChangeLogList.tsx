@@ -1,4 +1,4 @@
-// src/components/StatusChangeLogList.tsx
+//StatusChangeLogList.tsx
 import React from 'react';
 import { StatusChangeLog } from './models/StatusChangeLogModel';
 import {
