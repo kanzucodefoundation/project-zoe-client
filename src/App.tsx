@@ -20,32 +20,29 @@ const App: React.FC = () => {
     return <Splash />;
   }
   return (
-      <Router>
-        <ToastContainer />
-        <>
-          <LoaderDialog open={globalLoader} />
-          {user ? (
-            <ContentSwitch />
-          ) : (
-            <Switch>
-              <Route
-                path={localRoutes.updatePassword}
-                component={UpdatePasswordConfirmation}
-              />
-              <Route
-                path={localRoutes.resetPassword}
-                component={ResetPassword}
-              />
-              <Route
-                path={localRoutes.forgotPassword}
-                component={ForgotPassword}
-              />
-              <Route path={localRoutes.register} component={Register} />
-              <Route component={Login} />
-            </Switch>
-          )}
-        </>
-      </Router>
+    <Router>
+      <ToastContainer />
+      <>
+        <LoaderDialog open={globalLoader} />
+        {user ? (
+          <ContentSwitch />
+        ) : (
+          <Switch>
+            <Route
+              path={localRoutes.updatePassword}
+              component={UpdatePasswordConfirmation}
+            />
+            <Route path={localRoutes.resetPassword} component={ResetPassword} />
+            <Route
+              path={localRoutes.forgotPassword}
+              component={ForgotPassword}
+            />
+            <Route path={localRoutes.register} component={Register} />
+            <Route component={Login} />
+          </Switch>
+        )}
+      </>
+    </Router>
   );
 };
 

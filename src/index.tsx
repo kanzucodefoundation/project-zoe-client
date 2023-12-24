@@ -19,13 +19,11 @@ if (process.env.REACT_APP_ENVIRONMENT === 'production') {
   Sentry.init({
     dsn: process.env.REACT_APP_SENTRY_DSN,
     autoSessionTracking: SENTRY_STATUS,
-    integrations: [
-      new Integrations.BrowserTracing(),
-    ],
+    integrations: [new Integrations.BrowserTracing()],
     tracesSampleRate: 0.5,
     beforeSend: (event) => {
       if (
-      // Exclude "localhost" envs from issue tracker
+        // Exclude "localhost" envs from issue tracker
         window.location.hostname === 'localhost'
       ) {
         return null;
@@ -35,14 +33,17 @@ if (process.env.REACT_APP_ENVIRONMENT === 'production') {
   });
 }
 
-ReactDOM.render(<Provider store={store}>
-        <ThemeProvider theme={theme}>
-            <>
-                <CssBaseline/>
-                <App/>
-            </>
-        </ThemeProvider>
-    </Provider>, document.getElementById('root'));
+ReactDOM.render(
+  <Provider store={store}>
+    <ThemeProvider theme={theme}>
+      <>
+        <CssBaseline />
+        <App />
+      </>
+    </ThemeProvider>
+  </Provider>,
+  document.getElementById('root'),
+);
 
 serviceWorker.register({
   onUpdate: (registration) => {

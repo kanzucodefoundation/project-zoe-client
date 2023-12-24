@@ -3,7 +3,10 @@ import { Grid } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import {
-  differenceInDays, format, lastDayOfWeek, startOfWeek,
+  differenceInDays,
+  format,
+  lastDayOfWeek,
+  startOfWeek,
   subDays,
 } from 'date-fns';
 import Loading from '../../components/Loading';
@@ -26,7 +29,11 @@ const Dashboard = () => {
     from: format(startPeriod, 'yyyy-MM-dd'),
     to: format(endPeriod, 'yyyy-MM-dd'),
   };
-  const [filter, setFilter] = useState<any>({ from: currFilter.from, to: currFilter.to, limit: 5000 });
+  const [filter, setFilter] = useState<any>({
+    from: currFilter.from,
+    to: currFilter.to,
+    limit: 5000,
+  });
 
   useEffect(() => {
     setLoading(true);
@@ -43,7 +50,10 @@ const Dashboard = () => {
       to: format(prevTo, 'yyyy-MM-dd'),
       groupIdList: filter.groupIdList,
     };
-    setInterval({ from: format(prevFrom, 'dd/MM'), to: format(prevTo, 'dd/MM') });
+    setInterval({
+      from: format(prevFrom, 'dd/MM'),
+      to: format(prevTo, 'dd/MM'),
+    });
 
     search(remoteRoutes.eventsMetricsRaw, prevFilter, (resp) => {
       setPrevData(resp);
@@ -59,10 +69,14 @@ const Dashboard = () => {
             <Typography variant="button" component="div">
               Dashboard
             </Typography>
-            <Typography variant="caption" component="div" style={{ marginBottom: '10px' }}>
+            <Typography
+              variant="caption"
+              component="div"
+              style={{ marginBottom: '10px' }}
+            >
               Here's what's happening
             </Typography>
-            <DashboardFilter onFilter={setFilter}/>
+            <DashboardFilter onFilter={setFilter} />
           </Grid>
           {loading ? (
             <Loading />

@@ -26,7 +26,7 @@ It was bootstrapped with [Create React App](https://github.com/facebook/create-r
 > You should set the `REACT_APP_ENVIRONMENT=local` if you are running the app locally.
 
 4. Finally, spin up the project with:
-joe
+
 > `npm start`
 
 **Please Note:** 
