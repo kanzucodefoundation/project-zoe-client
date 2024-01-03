@@ -3,7 +3,7 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { themeBackground } from '../../theme/custom-colors';
 
 export const drawerWidth = 240;
-export const navBackgroundColor = grey[900];
+export const navBackgroundColor = grey[800];
 export const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
     display: 'flex',

@@ -6,15 +6,15 @@ const white = '#FFFFFF';
 const palette = {
   primary: {
     contrastText: white,
-    dark: colors.teal[900],
-    main: colors.teal[500],
-    light: colors.teal[100],
+    dark: colors.blue[900],
+    main: colors.blue[500],
+    light: colors.blue[100],
   },
   secondary: {
     contrastText: white,
-    dark: colors.blue[900],
-    main: colors.blue.A400,
-    light: colors.blue.A400,
+    dark: colors.blueGrey[900],
+    main: colors.blueGrey.A400,
+    light: colors.blueGrey.A400,
   },
   error: {
     contrastText: white,
