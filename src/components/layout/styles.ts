@@ -1,4 +1,4 @@
-import grey from '@material-ui/core/colors/grey';
+import { grey, blue } from '@material-ui/core/colors';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { themeBackground } from '../../theme/custom-colors';
 
@@ -28,7 +28,7 @@ export const useStyles = makeStyles((theme: Theme) => createStyles({
     flexGrow: 1,
   },
   menuButton: {
-    color: grey[50],
+    color: blue[500],
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },
