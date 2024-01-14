@@ -29,6 +29,7 @@ import {
   Grid,
   Divider,
   Theme,
+  MenuItem,
 } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -41,78 +42,45 @@ const TaskManager: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [taskAssignments, setTaskAssignments] = useState<TaskAssignment[]>([]);
   const [taskReports, setTaskReports] = useState<TaskReport[]>([]);
-  const [statuses, setStatuses] = useState<Status[]>([]);
-  const [statusChangeLogs, setStatusChangeLogs] = useState<StatusChangeLog[]>(
-    [],
-  );
   const [newTaskName, setNewTaskName] = useState<string>('');
   const [newTaskDescription, setNewTaskDescription] = useState<string>('');
   const [assignedTo, setAssignedTo] = useState<string>('');
   const [reportDetail, setReportDetail] = useState<string>('');
-  const [userStatus, setUserStatus] = useState<string>('');
-  const classes = useStyles();
+  const users = [
+    {
+      value: 'Frank',
+      label: 'Frank',
+    },
+    {
+      value: 'Roland',
+      label: 'Roland',
+    },
+    {
+      value: 'Peter',
+      label: 'Peter',
+    },
+    {
+      value: 'Joe',
+      label: 'Joe',
+    },
+  ];
 
-  const addTask = () => {
+  const addTask = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     const newTask = createTask(
       newTaskName,
       newTaskDescription,
-      new Date(),
-      true,
-      new Date(),
+      new Date().toLocaleString(),
+      assignedTo,
     );
     setTasks([...tasks, newTask]);
     setNewTaskName('');
     setNewTaskDescription('');
   };
 
-  const addTaskAssignment = () => {
-    if (tasks.length === 0) {
-      alert('No tasks available to assign.');
-      return;
-    }
-
-    const taskIndex = Math.floor(Math.random() * tasks.length);
-    const assignedTask = tasks[taskIndex];
-
-    const newTaskAssignment = createTaskAssignment(
-      assignedTo,
-      assignedTask.id,
-      new Date(),
-      new Date(),
-    );
-    setTaskAssignments([...taskAssignments, newTaskAssignment]);
-    setAssignedTo('');
-  };
-
-  const submitTaskReport = () => {
-    if (taskAssignments.length === 0) {
-      alert('No task assignments available to submit a report.');
-      return;
-    }
-
-    const assignmentIndex = Math.floor(Math.random() * taskAssignments.length);
-    const assignedTaskAssignment = taskAssignments[assignmentIndex];
-
-    const newTaskReport = createTaskReport(
-      assignedTaskAssignment.assignedTo,
-      assignedTaskAssignment.taskId,
-      reportDetail,
-      'attachment.pdf',
-      new Date(),
-    );
-    setTaskReports([...taskReports, newTaskReport]);
-    setReportDetail('');
-  };
-
-  const updateUserStatus = () => {
-    const newStatus = createStatusChangeLog(
-      'user1',
-      statuses[statuses.length - 1]?.name || 'Initial Status',
-      userStatus,
-      new Date(),
-    );
-    setStatusChangeLogs([...statusChangeLogs, newStatus]);
-    setUserStatus('');
+  const handleReset = () => {
+    setNewTaskName('');
+    setNewTaskDescription('');
   };
 
   return (
@@ -121,141 +89,76 @@ const TaskManager: React.FC = () => {
         <CssBaseline />
         <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
           <Typography variant="button" component="div">
-            TASK MANAGEMENT
+            CREATE TASKS
           </Typography>
-          {/* Task creation form */}
-          <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
-            variant="body2"
-          >
-            ADD TASK
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={8}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                label="Task Name"
-                value={newTaskName}
-                onChange={(e) => setNewTaskName(e.target.value)}
-              />
+          <form onSubmit={addTask} autoComplete="off">
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  label="Task Name"
+                  value={newTaskName}
+                  onChange={(e) => setNewTaskName(e.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  placeholder="Enter Task description"
+                  multiline
+                  variant="outlined"
+                  fullWidth
+                  label="Task Description"
+                  minRows={2}
+                  maxRows={4}
+                  required
+                  value={newTaskDescription}
+                  onChange={(e) => setNewTaskDescription(e.target.value)}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={8}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                label="Task Description"
-                value={newTaskDescription}
-                onChange={(e) => setNewTaskDescription(e.target.value)}
-              />
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  id="username"
+                  select
+                  label="Assigned To (User Name)"
+                  value={assignedTo}
+                  variant="outlined"
+                  fullWidth
+                  required
+                  onChange={(e) => setAssignedTo(e.target.value)}
+                >
+                  {users.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
             </Grid>
-            <Grid item xs={4}>
-              <Button variant="contained" color="primary" onClick={addTask}>
-                Add Task
-              </Button>
+            <Divider style={{ margin: '20px 0' }} />
+            <Grid container spacing={2} style={{ textAlign: 'center' }}>
+              <Grid item xs={6}>
+                <Button type="submit" variant="contained" color="primary">
+                  Submit Task
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleReset}
+                >
+                  Reset Form
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
+          </form>
           <Divider style={{ margin: '20px 0' }} />
 
-          <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
-            variant="body2"
-          >
-            ASSIGN TASK
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={8}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                label="Assigned To (User ID)"
-                value={assignedTo}
-                onChange={(e) => setAssignedTo(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={addTaskAssignment}
-              >
-                Assign Task
-              </Button>
-            </Grid>
-          </Grid>
-          <Divider style={{ margin: '20px 0' }} />
-
-          {/* Task Report form */}
-          <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
-            variant="body2"
-          >
-            SUBMIT TASK REPORT
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={8}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                label="Report Detail"
-                value={reportDetail}
-                onChange={(e) => setReportDetail(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={submitTaskReport}
-              >
-                Submit Report
-              </Button>
-            </Grid>
-          </Grid>
-          <Divider style={{ margin: '20px 0' }} />
-
-          {/* Update User Status form */}
-          <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
-            variant="body2"
-          >
-            UPDATE USER STATUS
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={8}>
-              <TextField
-                variant="outlined"
-                fullWidth
-                label="New Status"
-                value={userStatus}
-                onChange={(e) => setUserStatus(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={updateUserStatus}
-              >
-                Update Status
-              </Button>
-            </Grid>
-          </Grid>
-
-          {/* Display other components */}
           <TaskList tasks={tasks} />
-          <TaskAssignmentList taskAssignments={taskAssignments} />
-          <TaskReportList taskReports={taskReports} />
-          <StatusList statuses={statuses} />
-          <StatusChangeLogList statusChangeLogs={statusChangeLogs} />
         </Paper>
       </Container>
     </Layout>

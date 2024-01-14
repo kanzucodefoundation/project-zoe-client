@@ -6,7 +6,7 @@ export interface TaskReport {
   taskId: string;
   reportDetail: string;
   reportAttachment: string;
-  submittedOn: Date;
+  submittedOn: string;
 }
 
 export function createTaskReport(
@@ -14,7 +14,7 @@ export function createTaskReport(
   taskId: string,
   reportDetail: string,
   reportAttachment: string,
-  submittedOn: Date,
+  submittedOn: string,
 ): TaskReport {
   return {
     submittedBy,

@@ -59,14 +59,12 @@ const TaskReportList: React.FC<TaskReportListProps> = ({ taskReports }) => {
       </Typography>
       <List>
         {taskReports.map((report) => (
-          <ListItem
-            key={`${report.taskId}-${report.submittedOn.toISOString()}`}
-          >
+          <ListItem key={`${report.taskId}-${report.submittedOn.toString()}`}>
             <ListItemText primary={`Submitted by: ${report.submittedBy}`} />
             <ListItemText primary={`Task: ${report.taskId}`} />
             <ListItemText primary={`Report Detail: ${report.reportDetail}`} />
             <ListItemText
-              primary={`Submitted on: ${report.submittedOn.toDateString()}`}
+              primary={`Submitted on: ${report.submittedOn.toString()}`}
             />
             <Button
               variant="outlined"

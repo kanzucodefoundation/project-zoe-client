@@ -5,24 +5,21 @@ export interface Task {
   id: string;
   name: string;
   description: string;
-  dueDate: Date;
-  requireReport: boolean;
-  reportDueDate: Date;
+  date: string;
+  assignee: string;
 }
 
 export function createTask(
   name: string,
   description: string,
-  dueDate: Date,
-  requireReport: boolean,
-  reportDueDate: Date,
+  date: string,
+  assignee: string,
 ): Task {
   return {
     id: uuidv4(),
     name,
     description,
-    dueDate,
-    requireReport,
-    reportDueDate,
+    date,
+    assignee,
   };
 }
