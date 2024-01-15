@@ -52,12 +52,12 @@ const TaskManager: React.FC = () => {
       label: 'Frank',
     },
     {
-      value: 'Roland',
-      label: 'Roland',
+      value: 'Famba',
+      label: 'Famba',
     },
     {
-      value: 'Peter',
-      label: 'Peter',
+      value: 'Marvin',
+      label: 'Marvin',
     },
     {
       value: 'Joe',
