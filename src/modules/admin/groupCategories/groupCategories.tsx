@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button, createStyles, makeStyles, Theme,
-} from '@material-ui/core';
+import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
 import AddIcon from '@material-ui/icons/Add';
@@ -17,31 +15,33 @@ import EventsFilter from '../../events/EventsFilter';
 import { eventsFetchAsync } from '../../../data/events/eventsReducer';
 import { hasAnyRole } from '../../../data/appRoles';
 import { IState } from '../../../data/types';
-import EditReportCategories from './editGroupCategories';
+import EditGroupCategories from './editGroupCategories';
 import { get } from '../../../utils/ajax';
 import Navigation from '../../../components/layout/Layout';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    flexGrow: 1,
-  },
-  filterPaper: {
-    borderRadius: 0,
-    padding: theme.spacing(2),
-  },
-  fab: {
-    position: 'absolute',
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    filterPaper: {
+      borderRadius: 0,
+      padding: theme.spacing(2),
+    },
+    fab: {
+      position: 'absolute',
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+  }),
+);
 
 const headCells: XHeadCell[] = [
   { name: 'name', label: 'Category Name' },
   {
     name: '_id',
     label: '',
-    render: (value, rec) => <EditReportCategories value={rec} />,
+    render: (value, rec) => <EditGroupCategories value={rec} />,
   },
 ];
 

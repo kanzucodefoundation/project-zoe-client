@@ -1,5 +1,5 @@
 import { FormikHelpers } from 'formik';
-import { handleError, post, put } from './ajax';
+import { handleError, post, patch } from './ajax';
 import Toast from './Toast';
 
 export interface ISubmission {
@@ -11,9 +11,7 @@ export interface ISubmission {
 }
 
 export function handleSubmission(submission: ISubmission) {
-  const {
-    isNew, actions, values, onAjaxComplete, url,
-  } = submission;
+  const { isNew, actions, values, onAjaxComplete, url } = submission;
   if (isNew) {
     post(
       url,
@@ -31,11 +29,12 @@ export function handleSubmission(submission: ISubmission) {
       },
     );
   } else {
-    put(
+    patch(
       url,
       values,
       (data) => {
         Toast.info('Update successful');
+        console.log(data);
         actions.resetForm();
         onAjaxComplete && onAjaxComplete(data);
       },

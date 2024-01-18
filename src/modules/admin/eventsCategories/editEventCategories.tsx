@@ -7,7 +7,7 @@ import EditDialog from '../../../components/EditDialog';
 import { remoteRoutes } from '../../../data/constants';
 import Toast from '../../../utils/Toast';
 import { del } from '../../../utils/ajax';
-import NewEventCategories from './NewEventCategories';
+import EditEventCategory from './EditEventCategory';
 
 const EditEventCategories = (data: any) => {
   const [createDialog, setCreateDialog] = useState(false);
@@ -51,7 +51,7 @@ const EditEventCategories = (data: any) => {
         open={createDialog}
         onClose={closeCreateDialog}
       >
-        <NewEventCategories
+        <EditEventCategory
           data={data}
           isNew={false}
           onUpdated={handleEdit}
