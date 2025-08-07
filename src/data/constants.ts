@@ -86,7 +86,7 @@ export const localRoutes = {
   eventCategories: '/admin/event-categories',
 };
 
-export const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';
+export const apiBaseUrl = process.env.REACT_APP_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';
 
 export const remoteRoutes = {
   authServer: apiBaseUrl,
