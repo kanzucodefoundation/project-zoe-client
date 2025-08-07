@@ -86,10 +86,7 @@ export const localRoutes = {
   eventCategories: '/admin/event-categories',
 };
 
-const isDevelopmentMode = process.env.NODE_ENV !== 'production';
-const apiBaseUrl = isDevelopmentMode
-  ? 'http://localhost:4002'
-  : 'https://projectzoe.kanzucodefoundation.org/server';
+export const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';
 
 export const remoteRoutes = {
   authServer: apiBaseUrl,
