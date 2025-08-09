@@ -9,10 +9,14 @@ import {
 } from '@material-ui/icons';
 import { filter } from 'lodash';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { printInteger, printMoney } from '../../utils/numberHelpers';
 import { IEvent, IInterval } from '../events/types';
 import Widget from './Widget';
 import { AgField, aggregateValue, aggregateValues } from './utils';
+import { hasAnyRole } from '../../data/appRoles';
+import { appPermissions } from '../../data/constants';
+import { IState } from '../../data/types';
 
 interface IProps {
   currDataEvents: IEvent[];
@@ -46,7 +50,11 @@ const fields: AgField[] = [
     name: 'totalGarageAttendance',
   },
 ];
-const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => {
+const DashboardData = ({
+  currDataEvents,
+  prevDataEvents,
+  interval,
+}: IProps) => {
   const currentData = aggregateValues(currDataEvents, fields);
   const previousData = aggregateValues(prevDataEvents, fields);
   const totalMcAttendance = aggregateValue(
@@ -69,7 +77,7 @@ const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => 
     }
     return 0;
   };
-
+  const user = useSelector((state: IState) => state.core.user);
   const data = [
     {
       title: 'Small Group Attendance',
@@ -122,13 +130,30 @@ const DashboardData = ({ currDataEvents, prevDataEvents, interval }: IProps) => 
   ];
 
   return (
-    <Grid container spacing={2}>
-      {data.map((it) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={it.title}>
-          <Widget interval={interval} {...it}/>
+    <>
+      <Grid container spacing={2}>
+        {data.map((it) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={it.title}>
+            <Widget interval={interval} {...it} />
+          </Grid>
+        ))}
+      </Grid>
+      {hasAnyRole(user, [appPermissions.roleReportViewSubmissions]) && (
+        <Grid item xs={12}>
+          <iframe
+            src="http://reports.kanzucodefoundation.org/public/dashboard/4b26ad5c-f052-4fa7-a893-d4a591c6281d#refresh=10&bordered=false&background=false"
+            frameBorder="0"
+            style={{
+              width: '90%',
+              height: '800px',
+              border: 'none',
+            }}
+            title="Missonal Ccommunity Dashboard"
+            allowTransparency={true}
+          />
         </Grid>
-      ))}
-    </Grid>
+      )}
+    </>
   );
 };
 
