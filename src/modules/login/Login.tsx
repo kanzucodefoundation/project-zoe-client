@@ -55,71 +55,74 @@ function Login() {
   }
 
   return (
-    <div style={{
-      backgroundImage: `url(${image})`,
-      backgroundSize: 'cover',
-      height: '100%',
-      backgroundPosition: 'top center',
-    }}>
-    <main className={classes.main}>
-      <CssBaseline />
-      <Paper className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockIcon />
-        </Avatar>
-        <Typography component="h1">Sign in</Typography>
-        <Formik
-          initialValues={{}}
-          validationSchema={schema}
-          onSubmit={onSubmit}
-        >
-          {(formState) => (
-            <Form className={classes.form}>
-              <XTextInput
-                type="text"
-                name="churchName"
-                label="Church Name"
-                autoComplete="off"
-                autoFocus
-                margin="normal"
-              />
-              <XTextInput
-                type="email"
-                name="username"
-                label="Email"
-                autoComplete="off"
-                autoFocus
-                margin="normal"
-              />
+    <div
+      style={{
+        backgroundImage: `url(${image})`,
+        backgroundSize: 'cover',
+        height: '100%',
+        backgroundPosition: 'top center',
+      }}
+    >
+      <main className={classes.main}>
+        <CssBaseline />
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockIcon />
+          </Avatar>
+          <Typography component="h1">Sign in</Typography>
+          <Formik
+            initialValues={{}}
+            validationSchema={schema}
+            onSubmit={onSubmit}
+          >
+            {(formState) => (
+              <Form className={classes.form}>
+                <XTextInput
+                  type="text"
+                  name="churchName"
+                  label="Church Name"
+                  autoComplete="off"
+                  autoFocus
+                  margin="normal"
+                />
+                <XTextInput
+                  type="email"
+                  name="username"
+                  label="Email"
+                  autoComplete="off"
+                  autoFocus
+                  margin="normal"
+                />
 
-              <XTextInput
-                type="password"
-                name="password"
-                label="Password"
-                autoComplete="off"
-                margin="normal"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                disabled={formState.isSubmitting}
-              >
-                Sign in
-              </Button>
-              <Link className={classes.link} onClick={handleForgotPassword}>
-                Forgot Password?
-              </Link>
-              <Link className={classes.link} onClick={handleRegister}>
-              {' '}Sign-up
-              </Link>
-            </Form>
-          )}
-        </Formik>
-      </Paper>
-    </main>
+                <XTextInput
+                  name="password"
+                  label="Password"
+                  autoComplete="off"
+                  margin="normal"
+                  isPassword
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  disabled={formState.isSubmitting}
+                >
+                  Sign in
+                </Button>
+                <Link className={classes.link} onClick={handleForgotPassword}>
+                  Forgot Password?
+                </Link>
+                <Link className={classes.link} onClick={handleRegister}>
+                  {' '}
+                  Sign-up
+                </Link>
+              </Form>
+            )}
+          </Formik>
+        </Paper>
+      </main>
     </div>
   );
 }
