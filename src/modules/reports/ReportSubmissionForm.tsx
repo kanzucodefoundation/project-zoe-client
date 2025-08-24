@@ -16,6 +16,7 @@ import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 import { get, post } from '../../utils/ajax';
 import Loading from '../../components/Loading';
 import Layout from '../../components/layout/Layout';
+import XDateTimeInput from '../../components/inputs/XDateTimeInput';
 
 const ReportSubmissionForm = () => {
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -54,11 +55,13 @@ const ReportSubmissionForm = () => {
     fetchReportData();
   }, []);
 
-  const handleSmallGroupChange = (name: string, value: any) => {
+  const handleSmallGroupChange = (value: any) => {
+    const smallGroupName = value?.name;
+    const smallGroupId = value?.id;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      smallGroupName: value?.name,
-      smallGroupId: value?.id,
+      smallGroupName: smallGroupName,
+      smallGroupId: smallGroupId,
     }));
   };
 
@@ -84,7 +87,7 @@ const ReportSubmissionForm = () => {
       reportSubmissionData,
       () => {
         Toast.info('Report submitted successfully');
-        history.push(localRoutes.reports);
+        history.push(localRoutes.reportsListView);
       },
       () => {
         Toast.error(
@@ -105,23 +108,20 @@ const ReportSubmissionForm = () => {
       ? reportOptionToFieldOptions(field.options)
       : [];
 
-    if (name == 'smallGroupName') {
+    if (field.name === 'smallGroupName') {
       return (
         <XRemoteSelect
           remote={remoteRoutes.groupsCombo}
-          filter={{ 'categories[]': 'Missional Community' }}
+          filter={{ 'categories[]': `${label}` }}
           parser={({ name, id }: any) => ({ name, id })}
           name={name}
           label={label}
           variant="outlined"
-          customOnChange={(value: string) =>
-            handleSmallGroupChange(name, value)
-          }
+          customOnChange={(value: string) => handleSmallGroupChange(value)}
           margin="none"
         />
       );
     }
-
     switch (type) {
       case 'text':
         return (
@@ -143,6 +143,21 @@ const ReportSubmissionForm = () => {
       case 'date':
         return (
           <XDateInput
+            id={name}
+            name={name}
+            value={value}
+            onChange={(value: MaterialUiPickersDate) =>
+              handleChange(name, value)
+            }
+            label={label}
+            variant="outlined"
+            margin="none"
+            required={field.required}
+          />
+        );
+      case 'datetime':
+        return (
+          <XDateTimeInput
             id={name}
             name={name}
             value={value}

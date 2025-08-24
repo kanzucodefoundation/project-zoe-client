@@ -127,3 +127,33 @@ export const printPrettyTime = (value: any): string => {
   if (isValid(value)) return format(value, 'p');
   return '';
 };
+
+export const transformDateTime = (datetime: Date | string): String => {
+  const dateObj = new Date(datetime);
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sept',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  const month = months[dateObj.getUTCMonth()];
+  const day = dateObj.getUTCDate();
+  const year = dateObj.getUTCFullYear();
+  const hours = dateObj.getUTCHours();
+  const minutes = dateObj.getUTCMinutes().toString().padStart(2, '0');
+  const seconds = dateObj.getUTCSeconds().toString().padStart(2, '0');
+
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 || 12;
+
+  return `${month} ${day}, ${year} at ${formattedHours}:${minutes}:${seconds} ${period} GMT`;
+};

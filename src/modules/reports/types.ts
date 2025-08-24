@@ -1,15 +1,15 @@
 export interface IReportColumn {
-  name: string,
-  label: string
+  name: string;
+  label: string;
 }
 
 export interface IReportField {
-  name: string,
-  label: string,
-  type: string,
-  options?: IReportFieldOption[],
-  required?: boolean
-  hidden?: boolean
+  name: string;
+  label: string;
+  type: string;
+  options?: IReportFieldOption[];
+  required?: boolean;
+  hidden?: boolean;
 }
 
 export interface IReportFieldOption {
@@ -18,24 +18,25 @@ export interface IReportFieldOption {
 }
 
 export interface IReportMetadata {
-  name?: string,
-  columns: Array<IReportColumn> | []
+  name?: string;
+  columns: Array<IReportColumn> | [];
 }
 
 export interface IReport {
   id: number;
-  fields?: IReportField[],
+  fields?: IReportField[];
   title?: string;
   name?: string;
-  metadata?: IReportMetadata,
-  data?: any[],
-  footer?: string[],
-  columns?: Array<IReportColumn> | []
+  metadata?: IReportMetadata;
+  viewType?: string;
+  data?: any[];
+  footer?: string[];
+  columns?: Array<IReportColumn> | [];
 }
 
 export interface ICreateReportSubmissionDto {
-  reportId: string,
-  data: any[]
+  reportId: string;
+  data: any[];
 }
 
 export interface IReportsFilter {
@@ -45,11 +46,24 @@ export interface IReportsFilter {
 }
 
 export interface ReportProps {
-  report: IReport,
-  onBackToList: () => void,
+  report: IReport;
+  onBackToList: () => void;
+}
+export interface ReportSubmissionData {
+  id: number;
+  data: any[];
+  labels: {
+    name: string;
+    label: string;
+  }[];
+  submittedAt: string;
+  submittedBy: string;
 }
 
-export interface ReportSubmissionData {
+/**
+ * Deprecated! Canot be used, for generic data varaiable.
+ */
+export interface ReportSubmissionDataDeprecated {
   id: number;
   data: {
     date: string;

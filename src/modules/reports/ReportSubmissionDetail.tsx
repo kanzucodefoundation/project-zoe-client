@@ -10,6 +10,7 @@ import DetailView, { IRec } from '../../components/DetailView';
 import DataCard from '../../components/DataCard';
 import Toast from '../../utils/Toast';
 import XBreadCrumbs from '../../components/XBreadCrumbs';
+import { transformDateTime } from '../../utils/dateHelpers';
 
 const ReportSubmissionDetail = () => {
   const [submissionData, setSubmissionData] = useState<IRec[]>([]);
@@ -28,7 +29,9 @@ const ReportSubmissionDetail = () => {
             return;
           }
           Object.entries(resp.data).forEach(([key, value]) => {
-            const label = resp.labels.find((item: { name: string }) => item.name === key)?.label || key;
+            const label =
+              resp.labels.find((item: { name: string }) => item.name === key)
+                ?.label || key;
             const rec: IRec = {
               label,
               value,
@@ -36,12 +39,18 @@ const ReportSubmissionDetail = () => {
             submissionDetails.push(rec);
           });
           submissionDetails.push(
-            { label: 'submittedAt', value: resp.submittedAt },
+            {
+              label: 'submittedAt',
+              value: transformDateTime(resp.submittedAt),
+            },
             { label: 'submittedBy', value: resp.submittedBy },
           );
           setSubmissionData(submissionDetails);
         },
-        () => { setIsLoadingData(false); Toast.error('Error fetching submission data'); },
+        () => {
+          setIsLoadingData(false);
+          Toast.error('Error fetching submission data');
+        },
       );
     };
 
@@ -53,36 +62,36 @@ const ReportSubmissionDetail = () => {
   }
 
   return (
-    <Layout title='Report Submission Details'>
+    <Layout title="Report Submission Details">
       <Box p={2}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-          <Box pb={2}>
-            <XBreadCrumbs
-              title="Report Submission Details"
-              paths={[
-                {
-                  path: localRoutes.home,
-                  label: 'Dashboard',
-                },
-                {
-                  path: localRoutes.reports,
-                  label: 'Reports',
-                },
-                {
-                  path: `${localRoutes.reports}/${reportId}/submissions`,
-                  label: 'Report Submissions',
-                },
-              ]}
-            />
-          </Box>
-              {submissionData.length ? (
-                <DataCard useActionContent={false} title="" buttons={''}>
-                  <DetailView data={submissionData} />
-                </DataCard>
-              ) : (
-                <Typography>No submission found</Typography>
-              )}
+            <Box pb={2}>
+              <XBreadCrumbs
+                title="Report Submission Details"
+                paths={[
+                  {
+                    path: localRoutes.home,
+                    label: 'Dashboard',
+                  },
+                  {
+                    path: localRoutes.reportsListView,
+                    label: 'Reports',
+                  },
+                  {
+                    path: `${localRoutes.reports}/${reportId}/submissions`,
+                    label: 'Report Submissions',
+                  },
+                ]}
+              />
+            </Box>
+            {submissionData.length ? (
+              <DataCard useActionContent={false} title="" buttons={''}>
+                <DetailView data={submissionData} />
+              </DataCard>
+            ) : (
+              <Typography>No submission found</Typography>
+            )}
           </Grid>
         </Grid>
       </Box>

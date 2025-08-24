@@ -140,7 +140,8 @@ export default function XTable(props: XTableProps) {
 
   const isSelected = (id: string) => selected.indexOf(id) !== -1;
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
   const isEven = (num: number) => num % 2 !== 0;
   return (
@@ -190,7 +191,8 @@ export default function XTable(props: XTableProps) {
                       return (
                         <TableRow
                           hover
-                          onClick={(event) => handleClick(event, row[primaryKey])
+                          onClick={(event) =>
+                            handleClick(event, row[primaryKey])
                           }
                           role="checkbox"
                           aria-checked={isItemSelected}
@@ -219,8 +221,8 @@ export default function XTable(props: XTableProps) {
                             >
                               {it.render
                                 ? sanitizeData(
-                                  it.render(parseXpath(row, it.name), row),
-                                )
+                                    it.render(parseXpath(row, it.name), row),
+                                  )
                                 : sanitizeData(parseXpath(row, it.name))}
                             </TableCell>
                           ))}
