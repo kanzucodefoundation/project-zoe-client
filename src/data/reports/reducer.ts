@@ -1,8 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable linebreak-style */
-/* eslint-disable @typescript-eslint/default-param-last */
-/* eslint-disable linebreak-style */
 import { IReport } from '../../modules/reports/types';
 
 export const reportsConstants = {
@@ -10,6 +5,7 @@ export const reportsConstants = {
   reportsFetchLoading: 'reportsFetchLoading',
   reportsFetchOne: 'reportsFetchOne',
 };
+
 export interface IReportState {
   data: IReport;
   loading: boolean;
@@ -17,11 +13,7 @@ export interface IReportState {
 
 const initialState: IReportState = {
   data: {
-    id: 0,
-    data: [],
-    metadata: { columns: [] },
-    footer: [],
-    columns: [],
+    id: 0, data: [], metadata: { columns: [] }, footer: [], columns: [],
   },
   loading: true,
 };
