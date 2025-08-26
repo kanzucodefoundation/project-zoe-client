@@ -1,7 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable linebreak-style */
-/* eslint-disable max-len */
 import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
