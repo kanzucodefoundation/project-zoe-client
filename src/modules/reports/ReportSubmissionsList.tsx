@@ -112,7 +112,7 @@ const ReportSubmissions = () => {
               <XTable
                 headCells={data.columns || []}
                 data={data.data || []}
-                initialRowsPerPage={200}
+                initialRowsPerPage={20}
                 usePagination={true}
                 handleSelection={handleRowSelection}
                 initialSortBy="smallGroupName"
