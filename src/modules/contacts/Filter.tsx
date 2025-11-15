@@ -117,7 +117,7 @@ const Filter = ({ onFilter, loading }: IProps) => {
             <Grid item xs={12}>
               <XRemoteSelect
                 remote={remoteRoutes.groupsCombo}
-                filter={{ 'categories[]': 'MC' }}
+                filter={{ 'categories[]': 'Missional Community' }}
                 parser={({ name, id }: any) => ({ name, id })}
                 name="cellGroups"
                 label="Missional Communities"

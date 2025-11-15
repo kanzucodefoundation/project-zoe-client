@@ -48,7 +48,7 @@ const ContactFilter = ({ onFilter }: IProps) => {
         <Grid item xs={12} md>
           <PRemoteSelect
             remote={remoteRoutes.groupsCombo}
-            filter={{ 'categories[]': 'MC' }}
+            filter={{ 'categories[]': 'Missional Community' }}
             parser={({ name, id }: any) => ({ name, id })}
             name="cellGroups[]"
             label="MC"
