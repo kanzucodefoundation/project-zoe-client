@@ -7,7 +7,12 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import IconButton from '@material-ui/core/IconButton';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import { localRoutes, remoteRoutes, appPermissions } from '../../data/constants';
+import { Alert } from '@material-ui/lab';
+import {
+  localRoutes,
+  remoteRoutes,
+  appPermissions,
+} from '../../data/constants';
 import { get } from '../../utils/ajax';
 import Layout from '../../components/layout/Layout';
 import { IReport } from './types';
@@ -75,7 +80,7 @@ const ReportList: React.FC = () => {
   }
 
   return (
-    <Layout title='Report List'>
+    <Layout title="Report List">
       <Box className={classes.root}>
         <Box pb={2}>
           <XBreadCrumbs
@@ -89,18 +94,26 @@ const ReportList: React.FC = () => {
           />
         </Box>
         <Box mt={2} className={classes.reportList}>
+          {reports.length === 0 && (
+            <Alert severity="info">Sorry, No Reports Found!</Alert>
+          )}
           <List>
             {reports.map((report) => (
               <ListItem key={report.id} alignItems="flex-start" disableGutters>
                 <ListItemText primary={report.name} />
                 <div className={classes.buttonContainer}>
-                  {report.fields && report.fields.length && (<Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleSubmitReport(report)}>
-                    Submit Report
-                  </Button>)}
-                  {hasAnyRole(user, [appPermissions.roleReportViewSubmissions]) && (
+                  {report.fields && report.fields.length && (
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => handleSubmitReport(report)}
+                    >
+                      Submit Report
+                    </Button>
+                  )}
+                  {hasAnyRole(user, [
+                    appPermissions.roleReportViewSubmissions,
+                  ]) && (
                     <IconButton
                       size="medium"
                       color="primary"
