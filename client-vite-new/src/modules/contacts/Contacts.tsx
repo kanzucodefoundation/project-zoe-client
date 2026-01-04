@@ -31,8 +31,11 @@ import {
   Email as EmailIcon,
   CloudUpload as UploadIcon,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { search } from '../../utils/ajax';
-import { remoteRoutes } from '../../data/constants';
+import { remoteRoutes, localRoutes } from '../../data/constants';
+import ContactForm from './ContactForm';
+import BulkUpload from './BulkUpload';
 
 interface Contact {
   id: string;
@@ -59,6 +62,7 @@ interface ContactFilter {
 const Contacts = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
   
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
@@ -174,7 +178,12 @@ const Contacts = () => {
                     {getInitials(contact.name)}
                   </Avatar>
                   <Box flex={1}>
-                    <Typography variant="h6" noWrap>
+                    <Typography 
+                      variant="h6" 
+                      noWrap 
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() => navigate(`${localRoutes.contacts}/${contact.id}`)}
+                    >
                       {contact.name}
                     </Typography>
                     {contact.cellGroup && (
@@ -186,7 +195,10 @@ const Contacts = () => {
                       />
                     )}
                   </Box>
-                  <IconButton size="small">
+                  <IconButton 
+                    size="small"
+                    onClick={() => navigate(`${localRoutes.contacts}/${contact.id}`)}
+                  >
                     <EditIcon />
                   </IconButton>
                 </Box>
@@ -246,7 +258,10 @@ const Contacts = () => {
                 }
               />
               <ListItemSecondaryAction>
-                <IconButton edge="end">
+                <IconButton 
+                  edge="end"
+                  onClick={() => navigate(`${localRoutes.contacts}/${contact.id}`)}
+                >
                   <EditIcon />
                 </IconButton>
               </ListItemSecondaryAction>
@@ -281,27 +296,33 @@ const Contacts = () => {
       )}
 
       {/* New Contact Dialog */}
-      <Dialog open={createDialog} onClose={() => setCreateDialog(false)} maxWidth="sm" fullWidth>
+      <Dialog open={createDialog} onClose={() => setCreateDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle>Add New Contact</DialogTitle>
         <DialogContent>
-          <Typography>Contact form will go here</Typography>
+          <ContactForm
+            onSave={() => {
+              setCreateDialog(false);
+              // Refresh contacts list
+              setFilter({ ...filter });
+            }}
+            onCancel={() => setCreateDialog(false)}
+          />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCreateDialog(false)}>Cancel</Button>
-          <Button variant="contained">Save</Button>
-        </DialogActions>
       </Dialog>
 
       {/* Upload Dialog */}
-      <Dialog open={uploadDialog} onClose={() => setUploadDialog(false)} maxWidth="sm" fullWidth>
+      <Dialog open={uploadDialog} onClose={() => setUploadDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle>Upload Contacts</DialogTitle>
         <DialogContent>
-          <Typography>Bulk upload feature will go here</Typography>
+          <BulkUpload
+            onComplete={() => {
+              setUploadDialog(false);
+              // Refresh contacts list
+              setFilter({ ...filter });
+            }}
+            onCancel={() => setUploadDialog(false)}
+          />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setUploadDialog(false)}>Cancel</Button>
-          <Button variant="contained">Upload</Button>
-        </DialogActions>
       </Dialog>
     </Container>
   );

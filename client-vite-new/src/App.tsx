@@ -12,6 +12,9 @@ import Login from './modules/login/Login';
 import Dashboard from './modules/dashboard/Dashboard';
 import Layout from './components/layout/Layout';
 import Contacts from './modules/contacts/Contacts';
+import ContactDetail from './modules/contacts/ContactDetail';
+import Reports from './modules/reports/Reports';
+import UserManagement from './modules/admin/users/UserManagement';
 const Register = () => <div>Register - Coming Soon</div>;
 const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
@@ -78,6 +81,9 @@ function App() {
           <Routes>
             <Route path={localRoutes.dashboard} element={<Dashboard />} />
             <Route path={localRoutes.contacts} element={<Contacts />} />
+            <Route path={`${localRoutes.contacts}/:contactId`} element={<ContactDetail />} />
+            <Route path={localRoutes.reports} element={<Reports />} />
+            <Route path={localRoutes.users} element={<UserManagement />} />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />
