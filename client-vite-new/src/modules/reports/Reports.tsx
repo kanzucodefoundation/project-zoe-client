@@ -30,7 +30,7 @@ import {
   Send as SubmitIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { get, post } from '../../utils/ajax';
+import { get, post, search } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 
 interface ReportField {
@@ -76,11 +76,31 @@ const Reports = () => {
   }, []);
 
   const fetchReports = () => {
+    const url = remoteRoutes.reports;
+    console.log('Fetching reports from:', url);
+    
     get(
-      remoteRoutes.reports,
+      url,
       (response) => {
         console.log('Reports response:', response);
-        setReports(response || []);
+        console.log('Response type:', typeof response);
+        console.log('Is array:', Array.isArray(response));
+        console.log('Response.reports:', response?.reports);
+        console.log('Is response.reports array:', Array.isArray(response?.reports));
+        
+        // Handle both array response and object with reports property
+        const reportsData = Array.isArray(response) ? response : (response?.reports || []);
+        console.log('Final reportsData:', reportsData);
+        console.log('Final reportsData type:', typeof reportsData);
+        console.log('Final reportsData is array:', Array.isArray(reportsData));
+        
+        // Debug individual report structure
+        if (reportsData.length > 0) {
+          console.log('First report structure:', reportsData[0]);
+          console.log('Report properties:', Object.keys(reportsData[0]));
+        }
+        
+        setReports(reportsData);
         setLoading(false);
       },
       (error) => {
@@ -91,22 +111,52 @@ const Reports = () => {
   };
 
   const fetchSubmissions = (reportId: string) => {
+    // First fetch the specific report to get its structure, then get submissions
     get(
-      `${remoteRoutes.reports}/${reportId}/submissions`,
-      (response) => {
-        setSubmissions(response || []);
+      `${remoteRoutes.reports}/${reportId}`,
+      (reportResponse) => {
+        console.log('Report details:', reportResponse);
+        // Now fetch submissions for this report
+        search(
+          `${remoteRoutes.reports}/${reportId}/submissions`,
+          {},
+          (submissionsResponse) => {
+            console.log('Submissions response:', submissionsResponse);
+            // The old codebase expects submissions data in submissionsResponse.data
+            const submissionsData = submissionsResponse?.data || submissionsResponse || [];
+            setSubmissions(submissionsData);
+          },
+          (error) => {
+            console.error('Submissions error:', error);
+            setSubmissions([]);
+          }
+        );
       },
       (error) => {
-        console.error('Submissions error:', error);
+        console.error('Report fetch error:', error);
         setSubmissions([]);
       }
     );
   };
 
   const handleSubmitReport = (report: Report) => {
-    setSelectedReport(report);
-    setFormData({});
-    setSubmitDialog(true);
+    // Fetch the full report structure to get field definitions
+    get(
+      `${remoteRoutes.reports}/${report.id}`,
+      (fullReport) => {
+        console.log('Full report structure:', fullReport);
+        setSelectedReport(fullReport);
+        setFormData({});
+        setSubmitDialog(true);
+      },
+      (error) => {
+        console.error('Error fetching report details:', error);
+        // Fallback to using the basic report data
+        setSelectedReport(report);
+        setFormData({});
+        setSubmitDialog(true);
+      }
+    );
   };
 
   const handleViewSubmissions = (report: Report) => {
@@ -123,9 +173,16 @@ const Reports = () => {
     if (!selectedReport) return;
 
     setSubmitting(true);
+    
+    // Prepare submission data in the format expected by the old API
+    const submissionData = {
+      reportId: parseInt(selectedReport.id),
+      data: formData,
+    };
+
     post(
-      `${remoteRoutes.reports}/${selectedReport.id}/submit`,
-      formData,
+      remoteRoutes.reportsSubmit,
+      submissionData,
       (response) => {
         console.log('Submit success:', response);
         setSubmitDialog(false);
@@ -183,7 +240,7 @@ const Reports = () => {
         </Box>
       ) : (
         <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(400px, 1fr))" gap={3}>
-          {reports.map((report) => (
+          {(Array.isArray(reports) ? reports : []).map((report) => (
             <Card key={report.id} elevation={2}>
               <CardContent>
                 <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
@@ -207,7 +264,7 @@ const Reports = () => {
                 )}
 
                 <Typography variant="caption" color="text.secondary" display="block" mb={2}>
-                  {report.fields.length} field{report.fields.length !== 1 ? 's' : ''} to complete
+                  {report.fields?.length || 0} field{(report.fields?.length || 0) !== 1 ? 's' : ''} to complete
                 </Typography>
 
                 {report.lastSubmission && (
@@ -217,16 +274,15 @@ const Reports = () => {
                 )}
 
                 <Box display="flex" gap={1} mt={2}>
-                  {report.canSubmit && (
-                    <Button
-                      variant="contained"
-                      startIcon={<SubmitIcon />}
-                      onClick={() => handleSubmitReport(report)}
-                      size="small"
-                    >
-                      Submit
-                    </Button>
-                  )}
+                  {/* Show submit button for all reports for now */}
+                  <Button
+                    variant="contained"
+                    startIcon={<SubmitIcon />}
+                    onClick={() => handleSubmitReport(report)}
+                    size="small"
+                  >
+                    Submit
+                  </Button>
                   <Button
                     variant="outlined"
                     startIcon={<ViewIcon />}
@@ -252,7 +308,7 @@ const Reports = () => {
         <DialogTitle>Submit Report: {selectedReport?.name}</DialogTitle>
         <DialogContent>
           <Box pt={1}>
-            {selectedReport?.fields.map((field) => (
+            {selectedReport?.fields?.map((field) => (
               <Box key={field.id} mb={2}>
                 {field.type === 'select' ? (
                   <FormControl fullWidth>
