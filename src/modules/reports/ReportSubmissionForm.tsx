@@ -11,7 +11,7 @@ import XTextAreaInput from '../../components/inputs/XTextAreaInput';
 import { localRoutes, remoteRoutes } from '../../data/constants';
 import Toast from '../../utils/Toast';
 import { ICreateReportSubmissionDto, IReportField } from './types';
-import { reportOptionToFieldOptions } from '../../components/inputs/inputHelpers';
+import { reportOptionToFieldOptions, toOptions } from '../../components/inputs/inputHelpers';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 import { get, post } from '../../utils/ajax';
 import Loading from '../../components/Loading';
@@ -80,7 +80,7 @@ const ReportSubmissionForm = () => {
     }
 
     post(
-      remoteRoutes.reportsSubmit,
+      `${remoteRoutes.reports}/${reportId}/submissions`,
       reportSubmissionData,
       () => {
         Toast.info('Report submitted successfully');
@@ -102,7 +102,7 @@ const ReportSubmissionForm = () => {
     const { name, label, type, hidden } = field;
     const value = formData[name] || '';
     const options = field.options
-      ? reportOptionToFieldOptions(field.options)
+      ? toOptions(field.options)
       : [];
 
     if (name == 'smallGroupName') {
@@ -173,7 +173,7 @@ const ReportSubmissionForm = () => {
             name={name}
             label={label}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+              handleChange(name, e.target?.value)
             }
             options={options}
             required={field.required}
