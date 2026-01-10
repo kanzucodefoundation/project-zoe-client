@@ -18,7 +18,7 @@ import XTextAreaInput from '../../components/inputs/XTextAreaInput';
 import { localRoutes, remoteRoutes } from '../../data/constants';
 import Toast from '../../utils/Toast';
 import { ICreateReportSubmissionDto, IReportField } from './types';
-import { reportOptionToFieldOptions } from '../../components/inputs/inputHelpers';
+import { reportOptionToFieldOptions, toOptions } from '../../components/inputs/inputHelpers';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 import { get, post } from '../../utils/ajax';
 import Loading from '../../components/Loading';
@@ -153,7 +153,7 @@ const ReportSubmissionForm = () => {
     } = field;
     const value = formData[name] || '';
     const options = field.options
-      ? reportOptionToFieldOptions(field.options)
+      ? toOptions(field.options)
       : [];
     const hasError = !!validationErrors[name];
 

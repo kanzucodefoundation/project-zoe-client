@@ -4,10 +4,11 @@ export interface IReportColumn {
 }
 
 export interface IReportField {
+  id?: number,
   name: string,
   label: string,
   type: string,
-  options?: IReportFieldOption[],
+  options?:  string[],
   required?: boolean
   hidden?: boolean
 }
@@ -31,6 +32,7 @@ export interface IReport {
   data?: any[],
   footer?: string[],
   columns?: Array<IReportColumn> | []
+  fieldCount?:number
 }
 
 export interface ICreateReportSubmissionDto {
