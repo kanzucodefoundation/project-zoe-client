@@ -18,7 +18,9 @@ import XTextAreaInput from '../../components/inputs/XTextAreaInput';
 import { localRoutes, remoteRoutes } from '../../data/constants';
 import Toast from '../../utils/Toast';
 import { ICreateReportSubmissionDto, IReportField } from './types';
-import { reportOptionToFieldOptions, toOptions } from '../../components/inputs/inputHelpers';
+import {
+  toOptions,
+} from '../../components/inputs/inputHelpers';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 import { get, post } from '../../utils/ajax';
 import Loading from '../../components/Loading';
@@ -90,42 +92,27 @@ const ReportSubmissionForm = () => {
     setValidationErrors({});
   };
 
-  const handleSubmit = async () => {
-    setValidationErrors({});
-
-    const errors: Record<string, string> = {};
-    reportFields.forEach((field) => {
-      if (field.required) {
-        const value = formData[field.name];
-        if (
-          value === undefined
-          || value === null
-          || value === ''
-          || (Array.isArray(value) && value.length === 0)
-        ) {
-          errors[field.name] = `${field.label || field.name} is required.`;
-        }
-      }
-    });
-
-    if (Object.keys(errors).length > 0) {
-      setValidationErrors(errors);
-      Toast.error('Please fill out all missing fields.');
+  const handleSubmit = async (values: any) => {
+    const reportSubmissionData: ICreateReportSubmissionDto = {
+      reportId,
+      data: { ...values },
+    };
+    // Validate required fields
+    const requiredFields = reportFields.filter((field) => field.required);
+    const emptyFields = requiredFields.filter((field) => !values[field.name]);
+    if (emptyFields.length > 0) {
+      const emptyFieldLabels = emptyFields.map((field) => field.label);
+      const labelsCommaSeparated = emptyFieldLabels.join(', ');
+      Toast.error(
+        `Looks like some required fields are missing: ${labelsCommaSeparated}. Please complete these and try again.`,
+      );
       return;
     }
 
     try {
-      const reportSubmissionData: ICreateReportSubmissionDto = {
-        reportId,
-        data: Object.entries(formData).map(([name, value]) => ({
-          name,
-          value,
-        })),
-      };
-
       await new Promise((resolve, reject) => {
         post(
-          remoteRoutes.reportsSubmit,
+          `${remoteRoutes.reports}/${reportId}/submissions`,
           reportSubmissionData,
           (response: any) => resolve(response),
           (error: any) => reject(error),
@@ -144,17 +131,15 @@ const ReportSubmissionForm = () => {
   };
 
   function getFieldComponent(
-    field: IReportField,
-    formData: any,
-    handleChange: any,
+    fieldI: IReportField,
+    formDataI: any,
+    handleChangeI: any,
   ) {
     const {
       name, label, type, hidden,
-    } = field;
-    const value = formData[name] || '';
-    const options = field.options
-      ? toOptions(field.options)
-      : [];
+    } = fieldI;
+    const value = formDataI[name] || '';
+    const options = fieldI.options ? toOptions(fieldI.options) : [];
     const hasError = !!validationErrors[name];
 
     if (name === 'smallGroupName') {
@@ -181,14 +166,14 @@ const ReportSubmissionForm = () => {
             id={name}
             name={name}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeI(name, e.target.value)
             }
             label={label}
             variant="outlined"
             margin="none"
             isHidden={hidden}
             type="text"
-            required={field.required}
+            required={fieldI.required}
             error={hasError}
             helperText={validationErrors[name]}
           />
@@ -200,12 +185,12 @@ const ReportSubmissionForm = () => {
             id={name}
             name={name}
             value={value}
-            onChange={(value: MaterialUiPickersDate) => handleChange(name, value)
+            onChange={(value: MaterialUiPickersDate) => handleChangeI(name, value)
             }
             label={label}
             variant="outlined"
             margin="none"
-            required={field.required}
+            required={fieldI.required}
             error={hasError}
             helperText={validationErrors[name]}
           />
@@ -215,11 +200,11 @@ const ReportSubmissionForm = () => {
           // eslint-disable-next-line
           <XRadioInput
             name={name}
-            customOnChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
+            customOnChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeI(name, e.target.value)
             }
             label={label}
             options={options}
-            required={field.required}
+            required={fieldI.required}
           />
         );
       case 'select':
@@ -228,10 +213,10 @@ const ReportSubmissionForm = () => {
           <XSelectInput
             name={name}
             label={label}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeI(name, e.target.value)
             }
             options={options}
-            required={field.required}
+            required={fieldI.required}
           />
         );
       case 'textarea':
@@ -241,7 +226,7 @@ const ReportSubmissionForm = () => {
             id={name}
             name={name}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeI(name, e.target.value)
             }
             label={label}
             variant="outlined"
@@ -258,7 +243,7 @@ const ReportSubmissionForm = () => {
             name={name}
             required={false}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeI(name, e.target.value)
             }
             label={label}
             variant="outlined"
