@@ -245,7 +245,7 @@ export default function XTable(props: XTableProps) {
         </div>
         {usePagination && (
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[10, 50, 100]}
             count={data.length}
             rowsPerPage={rowsPerPage}
             page={page}

@@ -1,7 +1,14 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable max-len */
+/* eslint-disable linebreak-style */
 import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 import { useParams, useHistory } from 'react-router';
+import { ToastContainer } from 'react-toastify';
 import XForm from '../../components/forms/XForm';
 import XTextInput from '../../components/inputs/XTextInput';
 import XDateInput from '../../components/inputs/XDateInput';
@@ -11,24 +18,34 @@ import XTextAreaInput from '../../components/inputs/XTextAreaInput';
 import { localRoutes, remoteRoutes } from '../../data/constants';
 import Toast from '../../utils/Toast';
 import { ICreateReportSubmissionDto, IReportField } from './types';
-import { reportOptionToFieldOptions } from '../../components/inputs/inputHelpers';
+import { reportOptionToFieldOptions, toOptions } from '../../components/inputs/inputHelpers';
 import { XRemoteSelect } from '../../components/inputs/XRemoteSelect';
 import { get, post } from '../../utils/ajax';
 import Loading from '../../components/Loading';
 import Layout from '../../components/layout/Layout';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ReportSubmissionForm = () => {
-  const [formData, setFormData] = useState<Record<string, string>>({});
+  const [formData, setFormData] = useState<Record<string, any>>({});
   const { reportId } = useParams<any>();
   const [isLoadingData, setIsLoadingData] = useState<boolean>(true);
   const [reportFields, setReportFields] = useState<IReportField[]>([]);
   const history = useHistory();
+  const [validationErrors, setValidationErrors] = useState<
+  Record<string, string>
+  >({});
+  const [reportName, setReportName] = useState<string>('');
 
   const handleChange = (name: string, value: any) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
+    setValidationErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors[name];
+      return newErrors;
+    });
   };
 
   useEffect(() => {
@@ -39,6 +56,7 @@ const ReportSubmissionForm = () => {
           setIsLoadingData(false);
           if (Array.isArray(response.fields)) {
             setReportFields(response.fields);
+            setReportName(response.name);
           } else {
             Toast.error('Failed to fetch report fields');
           }
@@ -52,7 +70,7 @@ const ReportSubmissionForm = () => {
     };
 
     fetchReportData();
-  }, []);
+  }, [reportId]);
 
   const handleSmallGroupChange = (name: string, value: any) => {
     setFormData((prevFormData) => ({
@@ -60,38 +78,69 @@ const ReportSubmissionForm = () => {
       smallGroupName: value?.name,
       smallGroupId: value?.id,
     }));
+    setValidationErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors.smallGroupName;
+      return newErrors;
+    });
   };
 
-  const handleSubmit = (values: any) => {
-    const reportSubmissionData: ICreateReportSubmissionDto = {
-      reportId,
-      data: { ...values },
-    };
-    // Validate required fields
-    const requiredFields = reportFields.filter((field) => field.required);
-    const emptyFields = requiredFields.filter((field) => !values[field.name]);
-    if (emptyFields.length > 0) {
-      const emptyFieldLabels = emptyFields.map((field) => field.label);
-      const labelsCommaSeparated = emptyFieldLabels.join(', ');
-      Toast.error(
-        `Looks like some required fields are missing: ${labelsCommaSeparated}. Please complete these and try again.`,
-      );
+  const resetForm = () => {
+    setFormData({});
+    setValidationErrors({});
+  };
+
+  const handleSubmit = async () => {
+    setValidationErrors({});
+
+    const errors: Record<string, string> = {};
+    reportFields.forEach((field) => {
+      if (field.required) {
+        const value = formData[field.name];
+        if (
+          value === undefined
+          || value === null
+          || value === ''
+          || (Array.isArray(value) && value.length === 0)
+        ) {
+          errors[field.name] = `${field.label || field.name} is required.`;
+        }
+      }
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      Toast.error('Please fill out all missing fields.');
       return;
     }
 
-    post(
-      remoteRoutes.reportsSubmit,
-      reportSubmissionData,
-      () => {
-        Toast.info('Report submitted successfully');
-        history.push(localRoutes.reports);
-      },
-      () => {
-        Toast.error(
-          'Sorry, there was an error when submitting the report. Please retry.',
+    try {
+      const reportSubmissionData: ICreateReportSubmissionDto = {
+        reportId,
+        data: Object.entries(formData).map(([name, value]) => ({
+          name,
+          value,
+        })),
+      };
+
+      await new Promise((resolve, reject) => {
+        post(
+          remoteRoutes.reportsSubmit,
+          reportSubmissionData,
+          (response: any) => resolve(response),
+          (error: any) => reject(error),
         );
-      },
-    );
+      });
+
+      Toast.info('Report submitted successfully.');
+      resetForm();
+      history.push(localRoutes.reports);
+    } catch (error) {
+      console.error('Submission failed:', error);
+      const errorMessage = (error as any)?.response?.data?.message
+        || 'Failed to submit report. Please check your network connection.';
+      Toast.error(errorMessage);
+    }
   };
 
   function getFieldComponent(
@@ -99,13 +148,16 @@ const ReportSubmissionForm = () => {
     formData: any,
     handleChange: any,
   ) {
-    const { name, label, type, hidden } = field;
+    const {
+      name, label, type, hidden,
+    } = field;
     const value = formData[name] || '';
     const options = field.options
-      ? reportOptionToFieldOptions(field.options)
+      ? toOptions(field.options)
       : [];
+    const hasError = !!validationErrors[name];
 
-    if (name == 'smallGroupName') {
+    if (name === 'smallGroupName') {
       return (
         <XRemoteSelect
           remote={remoteRoutes.groupsCombo}
@@ -114,8 +166,7 @@ const ReportSubmissionForm = () => {
           name={name}
           label={label}
           variant="outlined"
-          customOnChange={(value: string) =>
-            handleSmallGroupChange(name, value)
+          customOnChange={(value: string) => handleSmallGroupChange(name, value)
           }
           margin="none"
         />
@@ -125,12 +176,12 @@ const ReportSubmissionForm = () => {
     switch (type) {
       case 'text':
         return (
+          // eslint-disable-next-line
           <XTextInput
             id={name}
             name={name}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             label={label}
             variant="outlined"
@@ -138,29 +189,33 @@ const ReportSubmissionForm = () => {
             isHidden={hidden}
             type="text"
             required={field.required}
+            error={hasError}
+            helperText={validationErrors[name]}
           />
         );
       case 'date':
         return (
+          // eslint-disable-next-line
           <XDateInput
             id={name}
             name={name}
             value={value}
-            onChange={(value: MaterialUiPickersDate) =>
-              handleChange(name, value)
+            onChange={(value: MaterialUiPickersDate) => handleChange(name, value)
             }
             label={label}
             variant="outlined"
             margin="none"
             required={field.required}
+            error={hasError}
+            helperText={validationErrors[name]}
           />
         );
       case 'radio':
         return (
+          // eslint-disable-next-line
           <XRadioInput
             name={name}
-            customOnChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            customOnChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             label={label}
             options={options}
@@ -169,11 +224,11 @@ const ReportSubmissionForm = () => {
         );
       case 'select':
         return (
+          // eslint-disable-next-line
           <XSelectInput
             name={name}
             label={label}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             options={options}
             required={field.required}
@@ -181,33 +236,37 @@ const ReportSubmissionForm = () => {
         );
       case 'textarea':
         return (
+          // eslint-disable-next-line
           <XTextAreaInput
             id={name}
             name={name}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             label={label}
             variant="outlined"
             margin="none"
+            error={hasError}
+            helperText={validationErrors[name]}
           />
         );
       case 'number':
         return (
+          // eslint-disable-next-line
           <XTextInput
             id={name}
             name={name}
             required={false}
             value={value}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange(name, e.target.value)
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(name, e.target.value)
             }
             label={label}
             variant="outlined"
             margin="none"
             isHidden={hidden}
             type="number"
+            error={hasError}
+            helperText={validationErrors[name]}
           />
         );
       default:
@@ -220,12 +279,9 @@ const ReportSubmissionForm = () => {
   }
 
   return (
-    <Layout title="Report Submission Form">
-      <XForm
-        onSubmit={handleSubmit}
-        submitButtonAlignment="left"
-        initialValues={formData}
-      >
+    <Layout title={reportName}>
+      <ToastContainer />
+      <XForm onSubmit={handleSubmit} submitButtonAlignment="left">
         <Grid container spacing={2}>
           {reportFields.map((field) => (
             <Grid item xs={12} md={8} key={field.name}>
@@ -239,3 +295,4 @@ const ReportSubmissionForm = () => {
 };
 
 export default ReportSubmissionForm;
+/* eslint-disable linebreak-style */

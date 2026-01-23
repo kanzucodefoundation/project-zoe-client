@@ -49,7 +49,7 @@ const ReportList: React.FC = () => {
       get(
         remoteRoutes.reports,
         (response: any) => {
-          setReports(response);
+          setReports(response.reports);
         },
         (error: any) => {
           Toast.error('Failed to fetch reports');
@@ -94,7 +94,7 @@ const ReportList: React.FC = () => {
               <ListItem key={report.id} alignItems="flex-start" disableGutters>
                 <ListItemText primary={report.name} />
                 <div className={classes.buttonContainer}>
-                  {report.fields && report.fields.length && (<Button
+                  {report.fieldCount && report.fieldCount > 0 &&  (<Button
                     variant="outlined"
                     color="primary"
                     onClick={() => handleSubmitReport(report)}>
