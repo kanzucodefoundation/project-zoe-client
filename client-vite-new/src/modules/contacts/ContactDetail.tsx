@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  Container,
   Typography,
   Box,
   Card,
@@ -28,54 +27,59 @@ import {
   Group as GroupIcon,
   CalendarToday as CalendarIcon,
   Work as WorkIcon,
-  Emergency as EmergencyIcon,
-  Notes as NotesIcon,
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 import { get } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import ContactForm from './ContactForm';
 
-interface ContactDetail {
-  id: string;
+interface ContactData {
+  id: number;
   firstName: string;
   lastName: string;
-  name: string;
   email: string;
   phone: string;
   dateOfBirth?: string;
   gender?: string;
-  maritalStatus?: string;
-  occupation?: string;
-  address?: {
-    street?: string;
-    city?: string;
-    state?: string;
-    postalCode?: string;
-    country?: string;
+  civilStatus?: string;
+  placeOfWork?: string;
+  ageGroup?: string;
+  address?: string;
+  groupMemberships?: Array<{ group?: { id: number; name: string } }>;
+}
+
+function mapApiResponse(response: any): ContactData {
+  const person = response.person || {};
+  const primaryEmail = response.emails?.find((e: any) => e.isPrimary) || response.emails?.[0];
+  const primaryPhone = response.phones?.find((p: any) => p.isPrimary) || response.phones?.[0];
+  const primaryAddress = response.addresses?.find((a: any) => a.isPrimary) || response.addresses?.[0];
+
+  const addressParts = [
+    primaryAddress?.freeForm,
+    primaryAddress?.district,
+    primaryAddress?.country,
+  ].filter(Boolean);
+
+  return {
+    id: response.id,
+    firstName: person.firstName || '',
+    lastName: person.lastName || '',
+    email: primaryEmail?.value || '',
+    phone: primaryPhone?.value || '',
+    dateOfBirth: person.dateOfBirth,
+    gender: person.gender,
+    civilStatus: person.civilStatus,
+    placeOfWork: person.placeOfWork,
+    ageGroup: person.ageGroup,
+    address: addressParts.length > 0 ? addressParts.join(', ') : undefined,
+    groupMemberships: response.groupMemberships,
   };
-  emergencyContact?: {
-    name?: string;
-    phone?: string;
-    relationship?: string;
-  };
-  cellGroup?: {
-    id: string;
-    name: string;
-  };
-  location?: {
-    id: string;
-    name: string;
-  };
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 const ContactDetail = () => {
   const { contactId } = useParams<{ contactId: string }>();
   const navigate = useNavigate();
-  const [contact, setContact] = useState<ContactDetail | null>(null);
+  const [contact, setContact] = useState<ContactData | null>(null);
   const [loading, setLoading] = useState(true);
   const [editDialog, setEditDialog] = useState(false);
 
@@ -91,8 +95,7 @@ const ContactDetail = () => {
     get(
       `${remoteRoutes.contacts}/${contactId}`,
       (response) => {
-        console.log('Contact detail response:', response);
-        setContact(response);
+        setContact(mapApiResponse(response));
         setLoading(false);
       },
       (error) => {
@@ -111,8 +114,10 @@ const ContactDetail = () => {
     fetchContact(); // Refresh data
   };
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName[0] || ''}${lastName[0] || ''}`.toUpperCase();
+  const getInitials = (contact: ContactData) => {
+    const first = contact.firstName?.[0] || '';
+    const last = contact.lastName?.[0] || '';
+    return `${first}${last}`.toUpperCase() || '?';
   };
 
   const formatDate = (dateString?: string) => {
@@ -120,31 +125,23 @@ const ContactDetail = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
-  const formatAddress = (address?: ContactDetail['address']) => {
-    if (!address) return 'Not provided';
-    const parts = [
-      address.street,
-      address.city,
-      address.state,
-      address.postalCode,
-      address.country
-    ].filter(Boolean);
-    return parts.length > 0 ? parts.join(', ') : 'Not provided';
-  };
+  const fullName = contact
+    ? `${contact.firstName} ${contact.lastName}`.trim() || 'Unknown'
+    : '';
 
   if (loading) {
     return (
-      <Container>
+      <Box>
         <Typography variant="h4" gutterBottom>
           Loading Contact...
         </Typography>
-      </Container>
+      </Box>
     );
   }
 
   if (!contact) {
     return (
-      <Container>
+      <Box>
         <Typography variant="h4" gutterBottom>
           Contact Not Found
         </Typography>
@@ -154,12 +151,12 @@ const ContactDetail = () => {
         >
           Back to Contacts
         </Button>
-      </Container>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="lg">
+    <Box>
       {/* Header */}
       <Box display="flex" alignItems="center" gap={2} mb={3}>
         <Button
@@ -195,10 +192,10 @@ const ContactDetail = () => {
                   fontSize: '2rem'
                 }}
               >
-                {getInitials(contact.firstName, contact.lastName)}
+                {getInitials(contact)}
               </Avatar>
               <Typography variant="h5" gutterBottom>
-                {contact.name}
+                {fullName}
               </Typography>
               
               <Box display="flex" flexDirection="column" gap={1} mt={3}>
@@ -218,14 +215,15 @@ const ContactDetail = () => {
                     size="small"
                   />
                 )}
-                {contact.cellGroup && (
+                {contact.groupMemberships?.map((gm) => gm.group && (
                   <Chip
+                    key={gm.group.id}
                     icon={<GroupIcon />}
-                    label={contact.cellGroup.name}
+                    label={gm.group.name}
                     color="primary"
                     size="small"
                   />
-                )}
+                ))}
               </Box>
             </CardContent>
           </Card>
@@ -241,37 +239,37 @@ const ContactDetail = () => {
               <List>
                 <ListItem>
                   <ListItemIcon><PersonIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Full Name" 
-                    secondary={`${contact.firstName} ${contact.lastName}`} 
+                  <ListItemText
+                    primary="Full Name"
+                    secondary={fullName}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemIcon><CalendarIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Date of Birth" 
-                    secondary={formatDate(contact.dateOfBirth)} 
+                  <ListItemText
+                    primary="Date of Birth"
+                    secondary={formatDate(contact.dateOfBirth)}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemIcon><PersonIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Gender" 
-                    secondary={contact.gender || 'Not specified'} 
+                  <ListItemText
+                    primary="Gender"
+                    secondary={contact.gender || 'Not specified'}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemIcon><PersonIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Marital Status" 
-                    secondary={contact.maritalStatus || 'Not specified'} 
+                  <ListItemText
+                    primary="Marital Status"
+                    secondary={contact.civilStatus || 'Not specified'}
                   />
                 </ListItem>
                 <ListItem>
                   <ListItemIcon><WorkIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Occupation" 
-                    secondary={contact.occupation || 'Not specified'} 
+                  <ListItemText
+                    primary="Place of Work"
+                    secondary={contact.placeOfWork || 'Not specified'}
                   />
                 </ListItem>
               </List>
@@ -298,9 +296,9 @@ const ContactDetail = () => {
                 </ListItem>
                 <ListItem>
                   <ListItemIcon><LocationIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Address" 
-                    secondary={formatAddress(contact.address)} 
+                  <ListItemText
+                    primary="Address"
+                    secondary={contact.address || 'Not provided'}
                   />
                 </ListItem>
               </List>
@@ -313,75 +311,34 @@ const ContactDetail = () => {
               <List>
                 <ListItem>
                   <ListItemIcon><GroupIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Cell Group" 
-                    secondary={contact.cellGroup?.name || 'Not assigned'} 
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon><LocationIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Location" 
-                    secondary={contact.location?.name || 'Not assigned'} 
+                  <ListItemText
+                    primary="Group Memberships"
+                    secondary={
+                      contact.groupMemberships && contact.groupMemberships.length > 0
+                        ? contact.groupMemberships.map(gm => gm.group?.name).filter(Boolean).join(', ')
+                        : 'Not assigned'
+                    }
                   />
                 </ListItem>
               </List>
 
-              {contact.emergencyContact && (contact.emergencyContact.name || contact.emergencyContact.phone) && (
+              {contact.ageGroup && (
                 <>
                   <Divider sx={{ my: 2 }} />
                   <Typography variant="h6" gutterBottom>
-                    Emergency Contact
+                    Additional Info
                   </Typography>
                   <List>
                     <ListItem>
-                      <ListItemIcon><EmergencyIcon /></ListItemIcon>
-                      <ListItemText 
-                        primary={contact.emergencyContact.name || 'Not provided'}
-                        secondary={
-                          <Box>
-                            {contact.emergencyContact.phone && (
-                              <Typography variant="body2">
-                                Phone: {contact.emergencyContact.phone}
-                              </Typography>
-                            )}
-                            {contact.emergencyContact.relationship && (
-                              <Typography variant="body2">
-                                Relationship: {contact.emergencyContact.relationship}
-                              </Typography>
-                            )}
-                          </Box>
-                        }
+                      <ListItemIcon><PersonIcon /></ListItemIcon>
+                      <ListItemText
+                        primary="Age Group"
+                        secondary={contact.ageGroup}
                       />
                     </ListItem>
                   </List>
                 </>
               )}
-
-              {contact.notes && (
-                <>
-                  <Divider sx={{ my: 2 }} />
-                  <Typography variant="h6" gutterBottom>
-                    Notes
-                  </Typography>
-                  <List>
-                    <ListItem>
-                      <ListItemIcon><NotesIcon /></ListItemIcon>
-                      <ListItemText 
-                        primary="Additional Notes" 
-                        secondary={contact.notes} 
-                      />
-                    </ListItem>
-                  </List>
-                </>
-              )}
-
-              <Divider sx={{ my: 2 }} />
-
-              <Typography variant="caption" color="text.secondary">
-                Created: {formatDate(contact.createdAt)} | 
-                Last Updated: {formatDate(contact.updatedAt)}
-              </Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -403,7 +360,7 @@ const ContactDetail = () => {
           />
         </DialogContent>
       </Dialog>
-    </Container>
+    </Box>
   );
 };
 

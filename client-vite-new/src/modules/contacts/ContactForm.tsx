@@ -24,23 +24,13 @@ interface ContactFormData {
   phone: string;
   dateOfBirth?: Date | null;
   gender?: string;
-  maritalStatus?: string;
-  occupation?: string;
+  civilStatus?: string;
+  placeOfWork?: string;
   address?: {
-    street?: string;
-    city?: string;
-    state?: string;
-    postalCode?: string;
     country?: string;
+    district?: string;
+    freeForm?: string;
   };
-  emergencyContact?: {
-    name?: string;
-    phone?: string;
-    relationship?: string;
-  };
-  cellGroupId?: string;
-  locationId?: string;
-  notes?: string;
 }
 
 interface ContactFormProps {
@@ -57,65 +47,43 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
     phone: '',
     dateOfBirth: null,
     gender: '',
-    maritalStatus: '',
-    occupation: '',
+    civilStatus: '',
+    placeOfWork: '',
     address: {
-      street: '',
-      city: '',
-      state: '',
-      postalCode: '',
       country: '',
+      district: '',
+      freeForm: '',
     },
-    emergencyContact: {
-      name: '',
-      phone: '',
-      relationship: '',
-    },
-    cellGroupId: '',
-    locationId: '',
-    notes: '',
   });
 
-  const [groups, setGroups] = useState<any[]>([]);
-  const [locations, setLocations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    // Load groups and locations
-    get(remoteRoutes.groupsCombo, (response) => setGroups(response || []));
-    get(`${remoteRoutes.authServer}/api/locations`, (response) => setLocations(response || []));
-
-    // Load existing contact data if editing
     if (contactId) {
       setLoading(true);
       get(
         `${remoteRoutes.contacts}/${contactId}`,
         (response) => {
+          const person = response.person || {};
+          const primaryEmail = response.emails?.find((e: any) => e.isPrimary) || response.emails?.[0];
+          const primaryPhone = response.phones?.find((p: any) => p.isPrimary) || response.phones?.[0];
+          const primaryAddress = response.addresses?.find((a: any) => a.isPrimary) || response.addresses?.[0];
+
           setFormData({
-            firstName: response.firstName || '',
-            lastName: response.lastName || '',
-            email: response.email || '',
-            phone: response.phone || '',
-            dateOfBirth: response.dateOfBirth ? new Date(response.dateOfBirth) : null,
-            gender: response.gender || '',
-            maritalStatus: response.maritalStatus || '',
-            occupation: response.occupation || '',
-            address: response.address || {
-              street: '',
-              city: '',
-              state: '',
-              postalCode: '',
-              country: '',
+            firstName: person.firstName || '',
+            lastName: person.lastName || '',
+            email: primaryEmail?.value || '',
+            phone: primaryPhone?.value || '',
+            dateOfBirth: person.dateOfBirth ? new Date(person.dateOfBirth) : null,
+            gender: person.gender || '',
+            civilStatus: person.civilStatus || '',
+            placeOfWork: person.placeOfWork || '',
+            address: {
+              country: primaryAddress?.country || '',
+              district: primaryAddress?.district || '',
+              freeForm: primaryAddress?.freeForm || '',
             },
-            emergencyContact: response.emergencyContact || {
-              name: '',
-              phone: '',
-              relationship: '',
-            },
-            cellGroupId: response.cellGroup?.id || '',
-            locationId: response.location?.id || '',
-            notes: response.notes || '',
           });
           setLoading(false);
         },
@@ -143,9 +111,24 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
     setSubmitting(true);
 
     const submitData = {
-      ...formData,
-      name: `${formData.firstName} ${formData.lastName}`.trim(),
-      dateOfBirth: formData.dateOfBirth?.toISOString(),
+      category: 'Person',
+      person: {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        gender: formData.gender || undefined,
+        civilStatus: formData.civilStatus || undefined,
+        placeOfWork: formData.placeOfWork || undefined,
+        dateOfBirth: formData.dateOfBirth?.toISOString()?.split('T')[0] || undefined,
+      },
+      emails: formData.email
+        ? [{ category: 'Personal', value: formData.email, isPrimary: true }]
+        : [],
+      phones: formData.phone
+        ? [{ category: 'Mobile', value: formData.phone, isPrimary: true }]
+        : [],
+      addresses: (formData.address?.country || formData.address?.district || formData.address?.freeForm)
+        ? [{ category: 'Home', isPrimary: true, ...formData.address }]
+        : [],
     };
 
     const apiCall = contactId
@@ -231,50 +214,19 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
 
         <Divider sx={{ my: 2 }} />
 
-        {/* Church Information */}
+        {/* Additional Information */}
         <Typography variant="h6" gutterBottom>
-          Church Information
+          Additional Information
         </Typography>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
-              <InputLabel>Cell Group</InputLabel>
-              <Select
-                value={formData.cellGroupId}
-                onChange={(e) => handleChange('cellGroupId', e.target.value)}
-              >
-                <MenuItem value="">None</MenuItem>
-                {groups.map((group) => (
-                  <MenuItem key={group.id} value={group.id}>
-                    {group.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Location</InputLabel>
-              <Select
-                value={formData.locationId}
-                onChange={(e) => handleChange('locationId', e.target.value)}
-              >
-                <MenuItem value="">None</MenuItem>
-                {locations.map((location) => (
-                  <MenuItem key={location.id} value={location.id}>
-                    {location.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
               <InputLabel>Marital Status</InputLabel>
               <Select
-                value={formData.maritalStatus}
-                onChange={(e) => handleChange('maritalStatus', e.target.value)}
+                value={formData.civilStatus}
+                onChange={(e) => handleChange('civilStatus', e.target.value)}
               >
+                <MenuItem value="">Not specified</MenuItem>
                 <MenuItem value="Single">Single</MenuItem>
                 <MenuItem value="Married">Married</MenuItem>
                 <MenuItem value="Divorced">Divorced</MenuItem>
@@ -284,10 +236,10 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Occupation"
+              label="Place of Work"
               fullWidth
-              value={formData.occupation}
-              onChange={(e) => handleChange('occupation', e.target.value)}
+              value={formData.placeOfWork}
+              onChange={(e) => handleChange('placeOfWork', e.target.value)}
             />
           </Grid>
         </Grid>
@@ -301,34 +253,18 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
         <Grid container spacing={2} sx={{ mb: 3 }}>
           <Grid item xs={12}>
             <TextField
-              label="Street Address"
+              label="Address"
               fullWidth
-              value={formData.address?.street}
-              onChange={(e) => handleNestedChange('address', 'street', e.target.value)}
+              value={formData.address?.freeForm}
+              onChange={(e) => handleNestedChange('address', 'freeForm', e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="City"
+              label="District"
               fullWidth
-              value={formData.address?.city}
-              onChange={(e) => handleNestedChange('address', 'city', e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="State/Province"
-              fullWidth
-              value={formData.address?.state}
-              onChange={(e) => handleNestedChange('address', 'state', e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Postal Code"
-              fullWidth
-              value={formData.address?.postalCode}
-              onChange={(e) => handleNestedChange('address', 'postalCode', e.target.value)}
+              value={formData.address?.district}
+              onChange={(e) => handleNestedChange('address', 'district', e.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -337,55 +273,6 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               fullWidth
               value={formData.address?.country}
               onChange={(e) => handleNestedChange('address', 'country', e.target.value)}
-            />
-          </Grid>
-        </Grid>
-
-        <Divider sx={{ my: 2 }} />
-
-        {/* Emergency Contact */}
-        <Typography variant="h6" gutterBottom>
-          Emergency Contact
-        </Typography>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Name"
-              fullWidth
-              value={formData.emergencyContact?.name}
-              onChange={(e) => handleNestedChange('emergencyContact', 'name', e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              label="Phone"
-              fullWidth
-              value={formData.emergencyContact?.phone}
-              onChange={(e) => handleNestedChange('emergencyContact', 'phone', e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Relationship"
-              fullWidth
-              value={formData.emergencyContact?.relationship}
-              onChange={(e) => handleNestedChange('emergencyContact', 'relationship', e.target.value)}
-            />
-          </Grid>
-        </Grid>
-
-        <Divider sx={{ my: 2 }} />
-
-        {/* Notes */}
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12}>
-            <TextField
-              label="Notes"
-              multiline
-              rows={3}
-              fullWidth
-              value={formData.notes}
-              onChange={(e) => handleChange('notes', e.target.value)}
             />
           </Grid>
         </Grid>

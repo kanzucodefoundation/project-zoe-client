@@ -112,15 +112,27 @@ const ReportSubmissionForm = () => {
 
     let url: string;
     if (config.scope === 'user') {
-      url = `${remoteRoutes.groupsMyGroups}?category=${encodeURIComponent(config.group_category)}`;
+      // Fetch user's groups from /api/groups/me, then filter by category client-side
+      url = remoteRoutes.groupsMyGroups;
     } else {
-      url = `${remoteRoutes.groupsCategories}/${encodeURIComponent(config.group_category)}`;
+      // Fetch all groups in category from /api/groups/categories/:categoryName
+      url = `${remoteRoutes.authServer}/api/groups/categories/${encodeURIComponent(config.group_category)}`;
     }
 
     get(
       url,
       (response: any) => {
-        const groups: DynamicGroup[] = Array.isArray(response) ? response : [];
+        let groups: DynamicGroup[] = Array.isArray(response) ? response : [];
+
+        // For user scope, filter by category client-side (case-insensitive)
+        if (config.scope === 'user' && config.group_category) {
+          const categoryLower = config.group_category.toLowerCase();
+          groups = groups.filter((g: any) => {
+            const groupCategory = (g.categoryName || g.category?.name || g.category || '').toLowerCase();
+            return groupCategory === categoryLower;
+          });
+        }
+
         setDynamicOptions((prev) => ({ ...prev, [field.name]: groups }));
         setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
 
