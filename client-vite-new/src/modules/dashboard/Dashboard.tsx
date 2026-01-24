@@ -11,6 +11,7 @@ import {
   ListItemText,
   ListItemIcon,
   Container,
+  Button,
 } from '@mui/material';
 import {
   People,
@@ -20,7 +21,11 @@ import {
   TrendingDown,
   Warning,
   Event,
+  Send,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../data/store';
 import { get } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 
@@ -55,7 +60,7 @@ interface DashboardData {
     type: string;
     memberCount: number;
     activeMembers: number;
-  };
+  } | null;
   pendingReports: string[];
   recentActivity: Array<{
     type: string;
@@ -105,24 +110,39 @@ const StatCard = ({ title, value, icon, trend }: {
   </Card>
 );
 
+interface IReport {
+  id: number;
+  name: string;
+  fieldCount?: number;
+}
+
 const Dashboard = () => {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [reports, setReports] = useState<IReport[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.core);
 
   useEffect(() => {
-    const url = remoteRoutes.dashboardSummary;
-    console.log('Dashboard API URL:', url);
-    
     get(
-      url,
+      remoteRoutes.dashboardSummary,
       (response) => {
-        console.log('Dashboard API Response:', response);
         setData(response);
         setLoading(false);
       },
       (error) => {
         console.error('Dashboard API Error:', error);
         setLoading(false);
+      }
+    );
+
+    get(
+      remoteRoutes.reports,
+      (response: any) => {
+        setReports(response.reports || []);
+      },
+      (error: any) => {
+        console.error('Failed to fetch reports:', error);
       }
     );
   }, []);
@@ -150,9 +170,35 @@ const Dashboard = () => {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
-        Dashboard
-      </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Welcome, {user?.fullName || user?.username || 'User'}
+        </Typography>
+        {reports.filter((r) => r.fieldCount && r.fieldCount > 0).length > 0 && (
+          <Box display="flex" alignItems="center" flexWrap="wrap" gap={1.5} mt={1}>
+            <Typography variant="subtitle1" color="textSecondary" sx={{ mr: 1 }}>
+              Submit Report:
+            </Typography>
+            {reports
+              .filter((r) => r.fieldCount && r.fieldCount > 0)
+              .map((report) => (
+                <Button
+                  key={report.id}
+                  variant="contained"
+                  startIcon={<Send />}
+                  onClick={() => navigate(`/reports/${report.id}/submit`)}
+                  sx={{
+                    backgroundColor: '#1b813e',
+                    '&:hover': { backgroundColor: '#15662f' },
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {report.name}
+                </Button>
+              ))}
+          </Box>
+        )}
+      </Box>
 
       {/* Overview Stats */}
       <Box 
@@ -244,21 +290,27 @@ const Dashboard = () => {
             <Typography variant="h6" gutterBottom>
               Your Group
             </Typography>
-            <Typography variant="h5" color="primary">
-              {data.group.name}
-            </Typography>
-            <Chip label={data.group.type} size="small" sx={{ mb: 2 }} />
-            
-            <Box display="flex" justifyContent="space-between" mt={2}>
-              <Box textAlign="center">
-                <Typography variant="h6">{data.group.memberCount}</Typography>
-                <Typography variant="body2" color="textSecondary">Total Members</Typography>
-              </Box>
-              <Box textAlign="center">
-                <Typography variant="h6">{data.group.activeMembers}</Typography>
-                <Typography variant="body2" color="textSecondary">Active Members</Typography>
-              </Box>
-            </Box>
+            {data.group ? (
+              <>
+                <Typography variant="h5" color="primary">
+                  {data.group.name}
+                </Typography>
+                <Chip label={data.group.type} size="small" sx={{ mb: 2 }} />
+
+                <Box display="flex" justifyContent="space-between" mt={2}>
+                  <Box textAlign="center">
+                    <Typography variant="h6">{data.group.memberCount}</Typography>
+                    <Typography variant="body2" color="textSecondary">Total Members</Typography>
+                  </Box>
+                  <Box textAlign="center">
+                    <Typography variant="h6">{data.group.activeMembers}</Typography>
+                    <Typography variant="body2" color="textSecondary">Active Members</Typography>
+                  </Box>
+                </Box>
+              </>
+            ) : (
+              <Typography color="textSecondary">No group assigned</Typography>
+            )}
           </CardContent>
         </Card>
       </Box>

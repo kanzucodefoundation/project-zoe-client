@@ -1,405 +1,260 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Typography,
   Box,
-  Card,
-  CardContent,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  IconButton,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
+  Tabs,
+  Tab,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
-  Alert,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
-import {
-  Assignment as ReportIcon,
-  Visibility as ViewIcon,
-  Add as AddIcon,
-  Send as SubmitIcon,
-} from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { get, post, search } from '../../utils/ajax';
-import { remoteRoutes, localRoutes } from '../../data/constants';
+import { format, subDays } from 'date-fns';
+import { toast } from 'react-toastify';
+import { get } from '../../utils/ajax';
+import { remoteRoutes } from '../../data/constants';
+import ReportsTable from './ReportsTable';
+import SubmissionDetailsModal from './SubmissionDetailsModal';
 
-interface ReportField {
-  id: string;
-  name: string;
-  type: 'text' | 'number' | 'date' | 'select';
-  required: boolean;
-  options?: string[];
-}
-
-interface Report {
-  id: string;
+interface ReportType {
+  id: number;
   name: string;
   description?: string;
-  frequency: 'weekly' | 'monthly' | 'quarterly';
-  fields: ReportField[];
-  canSubmit: boolean;
-  lastSubmission?: string;
+  fieldCount: number;
 }
 
-interface ReportSubmission {
-  id: string;
-  reportId: string;
-  submittedBy: string;
+interface Column {
+  name: string;
+  label: string;
+}
+
+interface SubmissionsResponse {
+  reportId: number;
+  data: Record<string, any>[];
+  columns: Column[];
+  footer?: Record<string, any>;
+}
+
+interface SubmissionDetails {
+  id: number;
+  data: Record<string, any>;
+  labels: { name: string; label: string }[];
   submittedAt: string;
-  data: { [key: string]: any };
-  status: 'draft' | 'submitted' | 'reviewed';
+  submittedBy: string;
+}
+
+type DateRange = 'all' | '7' | '30' | 'custom';
+
+interface TabCache {
+  data: Record<string, any>[];
+  columns: Column[];
+  dateRange: DateRange;
 }
 
 const Reports = () => {
-  const navigate = useNavigate();
-  const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [submitDialog, setSubmitDialog] = useState(false);
-  const [viewDialog, setViewDialog] = useState(false);
-  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
-  const [submissions, setSubmissions] = useState<ReportSubmission[]>([]);
-  const [formData, setFormData] = useState<{ [key: string]: any }>({});
-  const [submitting, setSubmitting] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const [reports, setReports] = useState<ReportType[]>([]);
+  const [activeTab, setActiveTab] = useState<number | null>(null);
+  const [dateRange, setDateRange] = useState<DateRange>('all');
+  const [loadingReports, setLoadingReports] = useState(true);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+  const [submissions, setSubmissions] = useState<Record<string, any>[]>([]);
+  const [columns, setColumns] = useState<Column[]>([]);
+  const [tabCache, setTabCache] = useState<Record<number, TabCache>>({});
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [submissionDetails, setSubmissionDetails] = useState<SubmissionDetails | null>(null);
+
+  // Fetch report types on mount
   useEffect(() => {
-    fetchReports();
+    get(
+      remoteRoutes.reports,
+      (response: any) => {
+        const list: ReportType[] = Array.isArray(response) ? response : (response?.reports || []);
+        setReports(list);
+        if (list.length > 0) {
+          setActiveTab(list[0].id);
+        }
+        setLoadingReports(false);
+      },
+      (error: any) => {
+        console.error('Failed to fetch reports:', error);
+        toast.error('Failed to load report types');
+        setLoadingReports(false);
+      },
+    );
   }, []);
 
-  const fetchReports = () => {
-    const url = remoteRoutes.reports;
-    console.log('Fetching reports from:', url);
-    
-    get(
-      url,
-      (response) => {
-        console.log('Reports response:', response);
-        console.log('Response type:', typeof response);
-        console.log('Is array:', Array.isArray(response));
-        console.log('Response.reports:', response?.reports);
-        console.log('Is response.reports array:', Array.isArray(response?.reports));
-        
-        // Handle both array response and object with reports property
-        const reportsData = Array.isArray(response) ? response : (response?.reports || []);
-        console.log('Final reportsData:', reportsData);
-        console.log('Final reportsData type:', typeof reportsData);
-        console.log('Final reportsData is array:', Array.isArray(reportsData));
-        
-        // Debug individual report structure
-        if (reportsData.length > 0) {
-          console.log('First report structure:', reportsData[0]);
-          console.log('Report properties:', Object.keys(reportsData[0]));
-        }
-        
-        setReports(reportsData);
-        setLoading(false);
-      },
-      (error) => {
-        console.error('Reports error:', error);
-        setLoading(false);
-      }
-    );
-  };
-
-  const fetchSubmissions = (reportId: string) => {
-    // First fetch the specific report to get its structure, then get submissions
-    get(
-      `${remoteRoutes.reports}/${reportId}`,
-      (reportResponse) => {
-        console.log('Report details:', reportResponse);
-        // Now fetch submissions for this report
-        search(
-          `${remoteRoutes.reports}/${reportId}/submissions`,
-          {},
-          (submissionsResponse) => {
-            console.log('Submissions response:', submissionsResponse);
-            // The old codebase expects submissions data in submissionsResponse.data
-            const submissionsData = submissionsResponse?.data || submissionsResponse || [];
-            setSubmissions(submissionsData);
-          },
-          (error) => {
-            console.error('Submissions error:', error);
-            setSubmissions([]);
-          }
-        );
-      },
-      (error) => {
-        console.error('Report fetch error:', error);
-        setSubmissions([]);
-      }
-    );
-  };
-
-  const handleSubmitReport = (report: Report) => {
-    // Fetch the full report structure to get field definitions
-    get(
-      `${remoteRoutes.reports}/${report.id}`,
-      (fullReport) => {
-        console.log('Full report structure:', fullReport);
-        setSelectedReport(fullReport);
-        setFormData({});
-        setSubmitDialog(true);
-      },
-      (error) => {
-        console.error('Error fetching report details:', error);
-        // Fallback to using the basic report data
-        setSelectedReport(report);
-        setFormData({});
-        setSubmitDialog(true);
-      }
-    );
-  };
-
-  const handleViewSubmissions = (report: Report) => {
-    setSelectedReport(report);
-    fetchSubmissions(report.id);
-    setViewDialog(true);
-  };
-
-  const handleFormChange = (fieldName: string, value: any) => {
-    setFormData(prev => ({ ...prev, [fieldName]: value }));
-  };
-
-  const handleSubmitForm = () => {
-    if (!selectedReport) return;
-
-    setSubmitting(true);
-    
-    // Prepare submission data in the format expected by the old API
-    const submissionData = {
-      reportId: parseInt(selectedReport.id),
-      data: formData,
-    };
-
-    post(
-      remoteRoutes.reportsSubmit,
-      submissionData,
-      (response) => {
-        console.log('Submit success:', response);
-        setSubmitDialog(false);
-        setFormData({});
-        fetchReports(); // Refresh reports list
-        setSubmitting(false);
-      },
-      (error) => {
-        console.error('Submit error:', error);
-        setSubmitting(false);
-      }
-    );
-  };
-
-  const getFrequencyColor = (frequency: string) => {
-    switch (frequency) {
-      case 'weekly': return 'primary';
-      case 'monthly': return 'secondary';
-      case 'quarterly': return 'warning';
-      default: return 'default';
+  const getDateParams = useCallback((): string => {
+    if (dateRange === 'all') return '';
+    const to = format(new Date(), 'yyyy-MM-dd');
+    let from: string;
+    if (dateRange === '7') {
+      from = format(subDays(new Date(), 7), 'yyyy-MM-dd');
+    } else if (dateRange === '30') {
+      from = format(subDays(new Date(), 30), 'yyyy-MM-dd');
+    } else {
+      return '';
     }
+    return `?from=${from}&to=${to}`;
+  }, [dateRange]);
+
+  // Fetch submissions when active tab or date range changes
+  useEffect(() => {
+    if (activeTab === null) return;
+
+    // Check cache
+    const cached = tabCache[activeTab];
+    if (cached && cached.dateRange === dateRange) {
+      setSubmissions(cached.data);
+      setColumns(cached.columns);
+      return;
+    }
+
+    setLoadingSubmissions(true);
+    const params = getDateParams();
+
+    get(
+      `${remoteRoutes.reports}/${activeTab}/submissions${params}`,
+      (response: SubmissionsResponse) => {
+        const data = response?.data || [];
+        const cols = response?.columns || [];
+        setSubmissions(data);
+        setColumns(cols);
+        setTabCache((prev) => ({
+          ...prev,
+          [activeTab]: { data, columns: cols, dateRange },
+        }));
+        setLoadingSubmissions(false);
+      },
+      (error: any) => {
+        console.error('Failed to fetch submissions:', error);
+        toast.error('Failed to load submissions');
+        setSubmissions([]);
+        setColumns([]);
+        setLoadingSubmissions(false);
+      },
+    );
+  }, [activeTab, dateRange, getDateParams]);
+
+  // Invalidate cache when date range changes
+  useEffect(() => {
+    setTabCache({});
+  }, [dateRange]);
+
+  const handleRowClick = (row: Record<string, any>) => {
+    if (!activeTab || !row.id) return;
+    setModalOpen(true);
+    setDetailsLoading(true);
+    setSubmissionDetails(null);
+
+    get(
+      `${remoteRoutes.reports}/${activeTab}/submissions/${row.id}`,
+      (response: SubmissionDetails) => {
+        setSubmissionDetails(response);
+        setDetailsLoading(false);
+      },
+      (error: any) => {
+        console.error('Failed to fetch submission details:', error);
+        toast.error('Failed to load submission details');
+        setDetailsLoading(false);
+      },
+    );
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
   };
 
-  if (loading) {
+  const activeReportName = reports.find((r) => r.id === activeTab)?.name || 'Report';
+
+  if (loadingReports) {
     return (
-      <Container>
-        <Typography variant="h4" gutterBottom>
-          Loading Reports...
-        </Typography>
+      <Container maxWidth="lg">
+        <Typography variant="h4" gutterBottom>Loading Reports...</Typography>
+      </Container>
+    );
+  }
+
+  if (reports.length === 0) {
+    return (
+      <Container maxWidth="lg">
+        <Typography variant="h4" gutterBottom>Reports</Typography>
+        <Typography color="textSecondary">No report types available</Typography>
       </Container>
     );
   }
 
   return (
     <Container maxWidth="lg">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" gutterBottom>
-          Reports ({reports.length})
-        </Typography>
+      {/* Header */}
+      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} flexWrap="wrap" gap={2}>
+        <Box>
+          <Typography variant="h4">Reports</Typography>
+          <Typography variant="body2" color="textSecondary">
+            View and manage report submissions
+          </Typography>
+        </Box>
+        <FormControl size="small" sx={{ minWidth: 150 }}>
+          <Select
+            value={dateRange}
+            onChange={(e) => setDateRange(e.target.value as DateRange)}
+          >
+            <MenuItem value="all">All Time</MenuItem>
+            <MenuItem value="7">Last 7 days</MenuItem>
+            <MenuItem value="30">Last 30 days</MenuItem>
+          </Select>
+        </FormControl>
       </Box>
 
-      {reports.length === 0 ? (
-        <Box textAlign="center" py={8}>
-          <ReportIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-          <Typography variant="h6" color="text.secondary" gutterBottom>
-            No reports available
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Reports will appear here when they're configured by your administrator
-          </Typography>
-        </Box>
+      {/* Tabs / Mobile Dropdown */}
+      {isMobile ? (
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <Select
+            value={activeTab ?? ''}
+            onChange={(e) => setActiveTab(Number(e.target.value))}
+          >
+            {reports.map((report) => (
+              <MenuItem key={report.id} value={report.id}>{report.name}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       ) : (
-        <Box display="grid" gridTemplateColumns="repeat(auto-fill, minmax(400px, 1fr))" gap={3}>
-          {(Array.isArray(reports) ? reports : []).map((report) => (
-            <Card key={report.id} elevation={2}>
-              <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                  <Box>
-                    <Typography variant="h6" gutterBottom>
-                      {report.name}
-                    </Typography>
-                    <Chip 
-                      label={report.frequency} 
-                      size="small" 
-                      color={getFrequencyColor(report.frequency) as any}
-                      sx={{ mb: 1 }}
-                    />
-                  </Box>
-                </Box>
-
-                {report.description && (
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    {report.description}
-                  </Typography>
-                )}
-
-                <Typography variant="caption" color="text.secondary" display="block" mb={2}>
-                  {report.fields?.length || 0} field{(report.fields?.length || 0) !== 1 ? 's' : ''} to complete
-                </Typography>
-
-                {report.lastSubmission && (
-                  <Typography variant="caption" color="text.secondary" display="block" mb={2}>
-                    Last submitted: {formatDate(report.lastSubmission)}
-                  </Typography>
-                )}
-
-                <Box display="flex" gap={1} mt={2}>
-                  {/* Show submit button for all reports for now */}
-                  <Button
-                    variant="contained"
-                    startIcon={<SubmitIcon />}
-                    onClick={() => handleSubmitReport(report)}
-                    size="small"
-                  >
-                    Submit
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<ViewIcon />}
-                    onClick={() => handleViewSubmissions(report)}
-                    size="small"
-                  >
-                    View
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}
+        >
+          {reports.map((report) => (
+            <Tab key={report.id} label={report.name} value={report.id} />
           ))}
-        </Box>
+        </Tabs>
       )}
 
-      {/* Submit Report Dialog */}
-      <Dialog 
-        open={submitDialog} 
-        onClose={() => setSubmitDialog(false)} 
-        maxWidth="sm" 
-        fullWidth
-      >
-        <DialogTitle>Submit Report: {selectedReport?.name}</DialogTitle>
-        <DialogContent>
-          <Box pt={1}>
-            {selectedReport?.fields?.map((field) => (
-              <Box key={field.id} mb={2}>
-                {field.type === 'select' ? (
-                  <FormControl fullWidth>
-                    <InputLabel>{field.name}{field.required && ' *'}</InputLabel>
-                    <Select
-                      value={formData[field.name] || ''}
-                      onChange={(e) => handleFormChange(field.name, e.target.value)}
-                      required={field.required}
-                    >
-                      {field.options?.map((option) => (
-                        <MenuItem key={option} value={option}>
-                          {option}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                ) : (
-                  <TextField
-                    fullWidth
-                    label={field.name}
-                    type={field.type}
-                    required={field.required}
-                    value={formData[field.name] || ''}
-                    onChange={(e) => handleFormChange(field.name, e.target.value)}
-                    multiline={field.type === 'text' && field.name.toLowerCase().includes('note')}
-                    rows={field.type === 'text' && field.name.toLowerCase().includes('note') ? 3 : 1}
-                  />
-                )}
-              </Box>
-            ))}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSubmitDialog(false)}>Cancel</Button>
-          <Button 
-            variant="contained" 
-            onClick={handleSubmitForm}
-            disabled={submitting}
-          >
-            {submitting ? 'Submitting...' : 'Submit Report'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Table */}
+      <ReportsTable
+        columns={columns}
+        data={submissions}
+        loading={loadingSubmissions}
+        onRowClick={handleRowClick}
+      />
 
-      {/* View Submissions Dialog */}
-      <Dialog 
-        open={viewDialog} 
-        onClose={() => setViewDialog(false)} 
-        maxWidth="md" 
-        fullWidth
-      >
-        <DialogTitle>Submissions: {selectedReport?.name}</DialogTitle>
-        <DialogContent>
-          {submissions.length === 0 ? (
-            <Typography color="text.secondary" sx={{ py: 3 }}>
-              No submissions found for this report.
-            </Typography>
-          ) : (
-            <List>
-              {submissions.map((submission) => (
-                <ListItem key={submission.id} divider>
-                  <ListItemText
-                    primary={`Submitted by ${submission.submittedBy}`}
-                    secondary={
-                      <Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {formatDate(submission.submittedAt)}
-                        </Typography>
-                        <Chip 
-                          label={submission.status} 
-                          size="small" 
-                          color={submission.status === 'submitted' ? 'success' : 'default'}
-                          sx={{ mt: 0.5 }}
-                        />
-                      </Box>
-                    }
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton edge="end">
-                      <ViewIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setViewDialog(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
+      {/* Details Modal */}
+      <SubmissionDetailsModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        details={submissionDetails}
+        loading={detailsLoading}
+        reportName={activeReportName}
+      />
     </Container>
   );
 };

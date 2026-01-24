@@ -124,6 +124,7 @@ export const remoteRoutes = {
   groupReports: `${apiBaseUrl}/api/groups/groupreports`,
   groupReportFrequency: `${apiBaseUrl}/api/groups/reportfrequency`,
   groupCategoriesCombo: `${apiBaseUrl}/api/groups/groupscombo`,
+  groupsMyGroups: `${apiBaseUrl}/api/groups/my-groups`,
 
   events: `${apiBaseUrl}/api/events/event`,
   eventsMetricsRaw: `${apiBaseUrl}/api/events/metrics/raw`,
