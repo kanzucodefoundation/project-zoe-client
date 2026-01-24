@@ -36,7 +36,7 @@ const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {
         return value;
       }
     }
-    if (typeof value === 'object') return JSON.stringify(value);
+    if (typeof value === 'object') return value.name || JSON.stringify(value);
     return String(value);
   };
 
@@ -66,6 +66,8 @@ const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {
                 {col.label}
               </TableCell>
             ))}
+            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Submitted By</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Submitted At</TableCell>
             <TableCell align="right" sx={{ fontWeight: 'bold' }}>Action</TableCell>
           </TableRow>
         </TableHead>
@@ -79,9 +81,15 @@ const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {
             >
               {columns.map((col) => (
                 <TableCell key={col.name} sx={{ whiteSpace: 'nowrap' }}>
-                  {formatCell(row[col.name])}
+                  {formatCell(row.data?.[col.name])}
                 </TableCell>
               ))}
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                {typeof row.submittedBy === 'object' ? row.submittedBy?.name || '-' : row.submittedBy || '-'}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                {formatCell(row.submittedAt)}
+              </TableCell>
               <TableCell align="right">
                 <IconButton size="small" onClick={(e) => { e.stopPropagation(); onRowClick(row); }}>
                   <MoreVert fontSize="small" />

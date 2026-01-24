@@ -30,11 +30,16 @@ interface Column {
   label: string;
 }
 
+interface PaginationInfo {
+  total: number;
+  limit: number;
+  offset: number;
+}
+
 interface SubmissionsResponse {
-  reportId: number;
-  data: Record<string, any>[];
+  submissions: Record<string, any>[];
   columns: Column[];
-  footer?: Record<string, any>;
+  pagination: PaginationInfo;
 }
 
 interface SubmissionDetails {
@@ -50,6 +55,7 @@ type DateRange = 'all' | '7' | '30' | 'custom';
 interface TabCache {
   data: Record<string, any>[];
   columns: Column[];
+  pagination: PaginationInfo;
   dateRange: DateRange;
 }
 
@@ -64,6 +70,7 @@ const Reports = () => {
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [submissions, setSubmissions] = useState<Record<string, any>[]>([]);
   const [columns, setColumns] = useState<Column[]>([]);
+  const [pagination, setPagination] = useState<PaginationInfo>({ total: 0, limit: 20, offset: 0 });
   const [tabCache, setTabCache] = useState<Record<number, TabCache>>({});
 
   // Modal state
@@ -91,8 +98,7 @@ const Reports = () => {
     );
   }, []);
 
-  const getDateParams = useCallback((): string => {
-    if (dateRange === 'all') return '';
+  const getDateRange = useCallback((): { from: string; to: string } => {
     const to = format(new Date(), 'yyyy-MM-dd');
     let from: string;
     if (dateRange === '7') {
@@ -100,9 +106,9 @@ const Reports = () => {
     } else if (dateRange === '30') {
       from = format(subDays(new Date(), 30), 'yyyy-MM-dd');
     } else {
-      return '';
+      from = '';
     }
-    return `?from=${from}&to=${to}`;
+    return { from, to };
   }, [dateRange]);
 
   // Fetch submissions when active tab or date range changes
@@ -114,22 +120,26 @@ const Reports = () => {
     if (cached && cached.dateRange === dateRange) {
       setSubmissions(cached.data);
       setColumns(cached.columns);
+      setPagination(cached.pagination);
       return;
     }
 
     setLoadingSubmissions(true);
-    const params = getDateParams();
+    const { from, to } = getDateRange();
+    const url = `${remoteRoutes.reports}/submissions/mygroups?reportId=${activeTab}&from=${from}&to=${to}&limit=20&offset=0`;
 
     get(
-      `${remoteRoutes.reports}/${activeTab}/submissions${params}`,
+      url,
       (response: SubmissionsResponse) => {
-        const data = response?.data || [];
+        const data = response?.submissions || [];
         const cols = response?.columns || [];
+        const pag = response?.pagination || { total: 0, limit: 20, offset: 0 };
         setSubmissions(data);
         setColumns(cols);
+        setPagination(pag);
         setTabCache((prev) => ({
           ...prev,
-          [activeTab]: { data, columns: cols, dateRange },
+          [activeTab]: { data, columns: cols, pagination: pag, dateRange },
         }));
         setLoadingSubmissions(false);
       },
@@ -141,7 +151,7 @@ const Reports = () => {
         setLoadingSubmissions(false);
       },
     );
-  }, [activeTab, dateRange, getDateParams]);
+  }, [activeTab, dateRange, getDateRange]);
 
   // Invalidate cache when date range changes
   useEffect(() => {
