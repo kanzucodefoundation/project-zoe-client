@@ -7,14 +7,17 @@ import {
   Typography,
   Box,
   Alert,
+  Link,
 } from '@mui/material';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../../data/coreSlice';
 import { post } from '../../utils/ajax';
-import { remoteRoutes } from '../../data/constants';
+import { remoteRoutes, localRoutes } from '../../data/constants';
 
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     churchName: '',
     username: '',
@@ -119,6 +122,18 @@ const Login = () => {
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
+            <Typography variant="body2" align="center" color="text.secondary" sx={{ mt: 1 }}>
+              Don&apos;t have an account?{' '}
+              <Link
+                component="button"
+                type="button"
+                variant="body2"
+                onClick={() => navigate(localRoutes.register)}
+                sx={{ cursor: 'pointer' }}
+              >
+                Sign up
+              </Link>
+            </Typography>
           </Box>
         </Paper>
       </Box>

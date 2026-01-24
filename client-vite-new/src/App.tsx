@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Import actual components
 import Login from './modules/login/Login';
+import SignUp from './modules/login/SignUp';
 import Dashboard from './modules/dashboard/Dashboard';
 import Layout from './components/layout/Layout';
 import Contacts from './modules/contacts/Contacts';
@@ -16,7 +17,6 @@ import ContactDetail from './modules/contacts/ContactDetail';
 import Reports from './modules/reports/Reports';
 import ReportSubmissionForm from './modules/reports/ReportSubmissionForm';
 import UserManagement from './modules/admin/users/UserManagement';
-const Register = () => <div>Register - Coming Soon</div>;
 const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
 const UpdatePasswordConfirmation = () => <div>Update Password - Coming Soon</div>;
@@ -105,7 +105,7 @@ function App() {
             path={localRoutes.forgotPassword}
             element={<ForgotPassword />}
           />
-          <Route path={localRoutes.register} element={<Register />} />
+          <Route path={localRoutes.register} element={<SignUp />} />
           <Route path="*" element={<Login />} />
         </Routes>
       )}
