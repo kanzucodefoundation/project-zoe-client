@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import AppNavbar from './AppNavbar';
 import Header from './Header';
-import MainGrid from './MainGrid';
 import SideMenu from './SideMenu';
 
 import {
@@ -23,7 +22,8 @@ const xThemeComponents = {
   ...treeViewCustomizations,
 };
 
-export default function LayoutV2(props: { disableCustomTheme?: boolean }) {
+export default function LayoutV2(props: { disableCustomTheme?: boolean, children: React.ReactNode }) {
+  const { children } = props;
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
@@ -53,9 +53,12 @@ export default function LayoutV2(props: { disableCustomTheme?: boolean }) {
               mx: 3,
               pb: 5,
               mt: { xs: 0, md: 0 },
+              pt:2
             }}
           >
-            <MainGrid />
+            <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1700px' } }}>
+              {children}
+            </Box>
           </Stack>
         </Box>
       </Box>

@@ -41,6 +41,7 @@ import type { RootState } from '../../data/store';
 import { get } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { toast } from 'react-toastify';
+import { useQuery } from '@tanstack/react-query';
 import type {$TsFixMe} from "../../utils/types.ts";
 
 interface SummaryMetrics {
@@ -115,9 +116,7 @@ const metricCards = [
 
 const Dashboard = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>('month');
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [reports, setReports] = useState<IReport[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -126,22 +125,26 @@ const Dashboard = () => {
   const [selectedRow, setSelectedRow] = useState<RecentSubmission | null>(null);
 
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.core);
+  const { user } = useSelector((state: RootState) => state.core); 
 
-  useEffect(() => {
-    setLoading(true);
-    get(
-      `${remoteRoutes.dashboardSummary}?timeRange=${timeRange}`,
-      (response: $TsFixMe) => {
-        setDashboardData(response);
-        setLoading(false);
-      },
-      (error: $TsFixMe) => {
-        console.error('Dashboard API Error:', error);
-        setLoading(false);
-      },
-    );
-  }, [timeRange]);
+  // React Query for dashboard data
+  const { data: dashboardData, isLoading: loading } = useQuery<DashboardData>({
+    queryKey: ['dashboardSummary', timeRange],
+    queryFn: () => {
+      return new Promise<DashboardData>((resolve, reject) => {
+        get(
+          `${remoteRoutes.dashboardSummary}?timeRange=${timeRange}`,
+          (response: $TsFixMe) => {
+            resolve(response);
+          },
+          (error: $TsFixMe) => {
+            console.error('Dashboard API Error:', error);
+            reject(error);
+          },
+        );
+      });
+    },
+  });
 
   useEffect(() => {
     get(
@@ -204,7 +207,7 @@ const Dashboard = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ backgroundColor: 'red'}}>
+    <Container maxWidth="xl">
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} flexWrap="wrap" gap={2}>
         <Box>

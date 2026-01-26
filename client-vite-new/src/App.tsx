@@ -11,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import Login from './modules/login/Login';
 import SignUp from './modules/login/SignUp';
 import Dashboard from './modules/dashboard/Dashboard';
-import Layout from './components/layout/Layout';
 import Contacts from './modules/contacts/Contacts';
 import ContactDetail from './modules/contacts/ContactDetail';
 import Reports from './modules/reports/Reports';
@@ -76,14 +75,12 @@ function App() {
     return <Splash />;
   }
 
-  return <LayoutV2/>
-
   return (
     <Router>
       <ToastContainer />
       <LoaderDialog open={globalLoader} />
       {user ? (
-        <Layout>
+        <LayoutV2 >
           <Routes>
             <Route path={localRoutes.dashboard} element={<Dashboard />} />
             <Route path={localRoutes.contacts} element={<Contacts />} />
@@ -97,7 +94,7 @@ function App() {
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />
           </Routes>
-        </Layout>
+        </LayoutV2>
       ) : (
         <Routes>
           <Route
