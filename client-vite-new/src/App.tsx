@@ -11,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import Login from './modules/login/Login';
 import SignUp from './modules/login/SignUp';
 import Dashboard from './modules/dashboard/Dashboard';
-import Layout from './components/layout/Layout';
 import Contacts from './modules/contacts/Contacts';
 import ContactDetail from './modules/contacts/ContactDetail';
 import Reports from './modules/reports/Reports';
@@ -19,28 +18,29 @@ import ReportSubmissionForm from './modules/reports/ReportSubmissionForm';
 import UserManagement from './modules/admin/users/UserManagement';
 import ReportConfiguration from './modules/admin/reports/ReportConfiguration';
 import Groups from './modules/groups/Groups';
+import LayoutV2 from "./components/layout-v2/LayoutV2.tsx";
 const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
 const UpdatePasswordConfirmation = () => <div>Update Password - Coming Soon</div>;
 const Splash = () => (
-  <div style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     height: '100vh',
     fontSize: '18px'
   }}>
     Loading...
   </div>
 );
-const LoaderDialog = ({ open }: { open: boolean }) => 
+const LoaderDialog = ({ open }: { open: boolean }) =>
   open ? (
-    <div style={{ 
-      position: 'fixed', 
-      top: 0, 
-      left: 0, 
-      right: 0, 
-      bottom: 0, 
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       backgroundColor: 'rgba(0,0,0,0.5)',
       display: 'flex',
       justifyContent: 'center',
@@ -80,7 +80,7 @@ function App() {
       <ToastContainer />
       <LoaderDialog open={globalLoader} />
       {user ? (
-        <Layout>
+        <LayoutV2 >
           <Routes>
             <Route path={localRoutes.dashboard} element={<Dashboard />} />
             <Route path={localRoutes.contacts} element={<Contacts />} />
@@ -94,7 +94,7 @@ function App() {
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />
           </Routes>
-        </Layout>
+        </LayoutV2>
       ) : (
         <Routes>
           <Route

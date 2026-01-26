@@ -81,6 +81,3 @@ We then get the contents of `.env.prod.encrypted` and add them as a Github Actio
 - You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 - To learn React, check out the [React documentation](https://reactjs.org/).
-
-npm install @mui/material @mui/icons-material @emotion/styled @emotion/react @mui/x-charts @mui/x-date-pickers @mui/x-data-grid @mui/x-tree-view dayjs 
-
