@@ -1,73 +1,86 @@
-# React + TypeScript + Vite
+# About project Zoe
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Project Zoe is a church management centered on what's at the heart of all ministry - people. The platform simplifies the process of managing people and their relationships between each other and the church, keeping track of data across the organization and creates a foundation for adding new features that are specific to your church.
 
-Currently, two official plugins are available:
+# The tech
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This repo holds the Project Zoe church relationship management system (RMS) client.
+It was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## React Compiler
+## Project Setup / Installation 🚀
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. Clone the repository:
 
-## Expanding the ESLint configuration
+> `git clone https://github.com/kanzucodefoundation/project-zoe-client.git`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+2. Checkout to the Develop branch
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+> `git checkout develop`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+4. Create a `.env` file based on the `.env.sample`.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+> You should set the `REACT_APP_ENVIRONMENT=local` if you are running the app locally.
+
+4. Finally, spin up the project with:
+
+> `npm start`
+
+**Please Note:**
+- If you don't have `node.js` installed, check out this guide https://nodejs.org/en/
+- This repo works with the server at https://github.com/kanzucodefoundation/project-zoe-server so be sure to set that up too.
+
+## Available npm scripts
+
+In the project directory, you can run:
+
+### `npm start`
+
+Runs the app in the development mode.<br />
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+The page will reload if you make edits.<br />
+You will also see any lint errors in the console.
+
+### `npm test`
+
+Launches the test runner in the interactive watch mode.<br />
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.<br />
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.<br />
+Your app is ready to be deployed!
+
+-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+## Contributing
+Before making any contribution to this codebase, please read through this [contributing guide](https://github.com/kanzucodefoundation/project-zoe-client/blob/master/contributing.md).
+
+## Commitizen friendly
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
+## Badges
+![Build & Deploy workflow](https://github.com/kanzucodefoundation/project-zoe-client/actions/workflows/main.yml/badge.svg)
+
+[![codecov](https://codecov.io/gh/kanzucodefoundation/project-zoe-client/branch/master/graph/badge.svg?token=4BBZPRO0YM)](https://codecov.io/gh/kanzucodefoundation/project-zoe-client)
+
+## Github Actions
+This repo is automatically deployed to the prod server using github actions. We create an `.env` file during the deployment process. Rather than add each environment variable to the file one by one, we copied a complete `.env` file and encrypted it using base64. We use the command:
+
+```
+openssl base64 -A -in .env -out .env.prod.encrypted
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+We then get the contents of `.env.prod.encrypted` and add them as a Github Action variable called `PROD_ENV_FILE`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Learn More
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+- To learn React, check out the [React documentation](https://reactjs.org/).
+
+npm install @mui/material @mui/icons-material @emotion/styled @emotion/react @mui/x-charts @mui/x-date-pickers @mui/x-data-grid @mui/x-tree-view dayjs 
+

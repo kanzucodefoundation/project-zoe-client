@@ -41,6 +41,7 @@ import type { RootState } from '../../data/store';
 import { get } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { toast } from 'react-toastify';
+import type {$TsFixMe} from "../../utils/types.ts";
 
 interface SummaryMetrics {
   avgAttendance: number;
@@ -131,11 +132,11 @@ const Dashboard = () => {
     setLoading(true);
     get(
       `${remoteRoutes.dashboardSummary}?timeRange=${timeRange}`,
-      (response: any) => {
+      (response: $TsFixMe) => {
         setDashboardData(response);
         setLoading(false);
       },
-      (error: any) => {
+      (error: $TsFixMe) => {
         console.error('Dashboard API Error:', error);
         setLoading(false);
       },
@@ -145,10 +146,10 @@ const Dashboard = () => {
   useEffect(() => {
     get(
       remoteRoutes.reports,
-      (response: any) => {
+      (response: $TsFixMe) => {
         setReports(response.reports || []);
       },
-      (error: any) => {
+      (error: $TsFixMe) => {
         console.error('Failed to fetch reports:', error);
       },
     );
@@ -387,7 +388,7 @@ const Dashboard = () => {
             </Box>
           ) : (
             <Paper variant="outlined" sx={{ borderRadius: 2 }}>
-              <TableContainer sx={{ overflowX: 'auto' }}>
+              <TableContainer sx={{ overflowX: 'auto', width:'100%' }}>
                 <Table size="small">
                   <TableHead>
                     <TableRow sx={{ backgroundColor: 'grey.50' }}>
