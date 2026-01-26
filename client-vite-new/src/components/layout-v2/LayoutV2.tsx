@@ -2,22 +2,16 @@ import type {} from '@mui/x-date-pickers/themeAugmentation';
 import type {} from '@mui/x-charts/themeAugmentation';
 import type {} from '@mui/x-tree-view/themeAugmentation';
 import { alpha } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import AppNavbar from './AppNavbar';
 import Header from './Header';
 import SideMenu from './SideMenu';
 
-import AppTheme from "../../theme-wh/AppTheme.tsx";
-
-
-
 export default function LayoutV2(props: { disableCustomTheme?: boolean, children: React.ReactNode }) {
   const { children } = props;
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
       <Box sx={{ display: 'flex' }}>
         <SideMenu />
         {/* Main content */}
@@ -53,6 +47,5 @@ export default function LayoutV2(props: { disableCustomTheme?: boolean, children
           </Stack>
         </Box>
       </Box>
-    </AppTheme>
   );
 }
