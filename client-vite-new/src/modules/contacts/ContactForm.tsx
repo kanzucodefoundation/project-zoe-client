@@ -10,11 +10,12 @@ import {
   MenuItem,
   Typography,
   Divider,
+  Autocomplete,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { get, post, put } from '../../utils/ajax';
+import { get, patch, post } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 
 interface ContactFormData {
@@ -39,6 +40,14 @@ interface ContactFormProps {
   onCancel?: () => void;
 }
 
+// Group types local to this component
+type GroupNode = {
+  id: number;
+  name: string;
+  children?: GroupNode[];
+};
+type GroupOption = { id: number; name: string };
+
 const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
   const [formData, setFormData] = useState<ContactFormData>({
     firstName: '',
@@ -59,6 +68,40 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // Groups state
+  const [groupsOptions, setGroupsOptions] = useState<GroupOption[]>([]);
+  const [selectedGroupIds, setSelectedGroupIds] = useState<number[]>([]);
+
+  // Flatten hierarchical groups into simple id/name array
+  const flattenGroups = (nodes: GroupNode[] | undefined): GroupOption[] => {
+    const out: GroupOption[] = [];
+    const stack: GroupNode[] = [...(nodes || [])];
+    while (stack.length) {
+      const n = stack.pop() as GroupNode;
+      out.push({ id: n.id, name: n.name });
+      if (n.children && n.children.length) {
+        for (let i = 0; i < n.children.length; i++) stack.push(n.children[i]);
+      }
+    }
+    out.sort((a, b) => a.name.localeCompare(b.name));
+    return out;
+  };
+
+  // Fetch groups once
+  useEffect(() => {
+    get(
+      remoteRoutes.groups,
+      (data: any) => {
+        const roots: GroupNode[] = Array.isArray(data) ? data : [data];
+        setGroupsOptions(flattenGroups(roots));
+      },
+      () => {
+        setGroupsOptions([]);
+      }
+    );
+  }, []);
+
+  // Load contact for edit
   useEffect(() => {
     if (contactId) {
       setLoading(true);
@@ -66,9 +109,12 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
         `${remoteRoutes.contacts}/${contactId}`,
         (response) => {
           const person = response.person || {};
-          const primaryEmail = response.emails?.find((e: any) => e.isPrimary) || response.emails?.[0];
-          const primaryPhone = response.phones?.find((p: any) => p.isPrimary) || response.phones?.[0];
-          const primaryAddress = response.addresses?.find((a: any) => a.isPrimary) || response.addresses?.[0];
+          const primaryEmail =
+            response.emails?.find((e: any) => e.isPrimary) || response.emails?.[0];
+          const primaryPhone =
+            response.phones?.find((p: any) => p.isPrimary) || response.phones?.[0];
+          const primaryAddress =
+            response.addresses?.find((a: any) => a.isPrimary) || response.addresses?.[0];
 
           setFormData({
             firstName: person.firstName || '',
@@ -85,6 +131,14 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               freeForm: primaryAddress?.freeForm || '',
             },
           });
+
+          // Try to preselect groups if present on the response
+          const groupsFromContact: number[] =
+            (response.groups?.map((g: any) => g.id)) ??
+            (response.groupMemberships?.map((m: any) => m.groupId)) ??
+            [];
+          setSelectedGroupIds(groupsFromContact);
+
           setLoading(false);
         },
         () => setLoading(false)
@@ -93,11 +147,11 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
   }, [contactId]);
 
   const handleChange = (field: keyof ContactFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleNestedChange = (parent: keyof ContactFormData, field: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [parent]: {
         ...(prev[parent] as any),
@@ -126,14 +180,17 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
       phones: formData.phone
         ? [{ category: 'Mobile', value: formData.phone, isPrimary: true }]
         : [],
-      addresses: (formData.address?.country || formData.address?.district || formData.address?.freeForm)
-        ? [{ category: 'Home', isPrimary: true, ...formData.address }]
-        : [],
+      addresses:
+        formData.address?.country || formData.address?.district || formData.address?.freeForm
+          ? [{ category: 'Home', isPrimary: true, ...formData.address }]
+          : [],
+      // Now groups is an array of numbers like [12, 13]
+      groups: selectedGroupIds.map(id => ({ id })),
     };
 
     const apiCall = contactId
-      ? put(`${remoteRoutes.contacts}/${contactId}`, submitData, onSave || (() => {}))
-      : post(remoteRoutes.contacts, submitData, onSave || (() => {}));
+      ? patch(`${remoteRoutes.contacts}/${contactId}`, submitData, onSave || (() => { }))
+      : post(remoteRoutes.contacts, submitData, onSave || (() => { }));
 
     apiCall
       ?.catch(() => {
@@ -191,10 +248,14 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <DatePicker
-              label="Date of Birth"
-              value={formData.dateOfBirth}
-              onChange={(date) => handleChange('dateOfBirth', date)}
-              slotProps={{ textField: { fullWidth: true } }}
+            label="Date of Birth" 
+            value={formData.dateOfBirth} 
+            onChange={(date) => handleChange('dateOfBirth', date)} 
+            openTo="year" 
+            views={['year', 'month', 'day']} 
+            minDate = { new Date(new Date().getFullYear() - 100, 0, 1) }
+            maxDate={new Date(new Date().getFullYear() - 5, new Date().getMonth(), 1)} 
+            slotProps={{ textField: { fullWidth: true } }} 
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
@@ -203,6 +264,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               <Select
                 value={formData.gender}
                 onChange={(e) => handleChange('gender', e.target.value)}
+                label="Gender"
               >
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
@@ -225,6 +287,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               <Select
                 value={formData.civilStatus}
                 onChange={(e) => handleChange('civilStatus', e.target.value)}
+                label="Marital Status"
               >
                 <MenuItem value="">Not specified</MenuItem>
                 <MenuItem value="Single">Single</MenuItem>
@@ -241,6 +304,33 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               value={formData.placeOfWork}
               onChange={(e) => handleChange('placeOfWork', e.target.value)}
             />
+          </Grid>
+
+          {/* Groups dropdown */}
+          <Grid size={{ xs: 12, sm: 12 }}>
+            <FormControl fullWidth>
+              <Autocomplete
+                multiple
+                options={groupsOptions}
+                // value needs the full option objects; derive from selectedGroupIds
+                value={groupsOptions.filter((g) => selectedGroupIds.includes(g.id))}
+                onChange={(_, newValue) => {
+                  setSelectedGroupIds(newValue.map((g) => g.id));
+                }}
+                getOptionLabel={(option) => option.name}
+                filterSelectedOptions
+                renderInput={(params) => (
+                  <TextField {...params} label="Groups" placeholder="Type to search groups" />
+                )}
+                // To show ID in option list
+                renderOption={(props, option) => (
+                  <li {...props} key={option.id}>
+                    {option.name}
+                  </li>
+                )}
+                isOptionEqualToValue={(opt, val) => opt.id === val.id}
+              />
+            </FormControl>
           </Grid>
         </Grid>
 
@@ -279,9 +369,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
 
         {/* Actions */}
         <Box display="flex" gap={2} justifyContent="flex-end">
-          <Button onClick={onCancel}>
-            Cancel
-          </Button>
+          <Button onClick={onCancel}>Cancel</Button>
           <Button
             type="submit"
             variant="contained"

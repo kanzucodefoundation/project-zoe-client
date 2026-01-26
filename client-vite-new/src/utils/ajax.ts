@@ -176,6 +176,23 @@ export const put = (
     });
 };
 
+export const patch = (
+  url: string,
+  data: any,
+  callBack: CallbackFunction,
+  errorCallBack?: ErrorCallback,
+) => {
+  return api.patch(url, data)
+    .then(response => callBack(response.data))
+    .catch(error => {
+      if (errorCallBack) {
+        errorCallBack(error, error.response);
+      } else {
+        handleError(error, error.response);
+      }
+    });
+};
+
 export const del = (
   url: string,
   callBack: CallbackFunction,
