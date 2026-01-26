@@ -20,20 +20,21 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: client-vite-new/node_modules
+          key: ${{ runner.os }}-client-vite-${{ hashFiles('client-vite-new/package-lock.json') }}
 
       - name: Install dependencies
+        working-directory: ./client-vite-new
         run: npm install
           
       - name: Create .env file
+        working-directory: ./client-vite-new
         env:
           PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
-        run: |
-          echo "VITE_API_URL=https://projectzoe.kanzucodefoundation.org/server/" > ./.env
+        run: echo "VITE_API_URL=https://projectzoe.kanzucodefoundation.org/server/" > ./.env
       
       - name: Build
+        working-directory: ./client-vite-new
         run: npm run build
 
       - name: Configure SSH
@@ -54,4 +55,4 @@ jobs:
           DO_HOST: ${{ secrets.DO_HOST }}
 
       - name: Deploy the app
-        run: rsync -rtvO ./dist/ project-zoe-prod-1:/opt/project-zoe-client/dist/
+        run: rsync -rtvO client-vite-new/dist/ project-zoe-prod-1:/opt/project-zoe-client/dist/
