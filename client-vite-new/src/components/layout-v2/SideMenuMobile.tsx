@@ -6,6 +6,10 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../data/store';
+import { logout } from '../../data/coreSlice';
 import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
 
@@ -15,6 +19,14 @@ interface SideMenuMobileProps {
 }
 
 export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobileProps) {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state: RootState) => state.core);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    toggleDrawer(false)();
+  };
+
   return (
     <Drawer
       anchor="left"
@@ -40,13 +52,16 @@ export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobilePro
             sx={{ gap: 1, alignItems: 'center', flexGrow: 1, p: 1 }}
           >
             <Avatar
-              sizes="small"
-              alt="Riley Carter"
-              src="/static/images/avatar/7.jpg"
-              sx={{ width: 24, height: 24 }}
-            />
-            <Typography component="p" variant="h6">
-              Riley Carter
+              sx={{ 
+                width: 24, 
+                height: 24,
+                borderRadius: 1,
+              }}
+            >
+              {user?.username?.charAt(0)?.toUpperCase() || user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+            </Avatar>
+            <Typography component="p" variant="h6" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {user?.fullName || user?.username || 'User'}
             </Typography>
           </Stack>
           <MenuButton showBadge>
@@ -54,12 +69,17 @@ export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobilePro
           </MenuButton>
         </Stack>
         <Divider />
-        <Stack sx={{ flexGrow: 1 }}>
+        <Stack sx={{ flexGrow: 1, overflow: 'auto' }}>
           <MenuContent />
           <Divider />
         </Stack>
         <Stack sx={{ p: 2 }}>
-          <Button variant="outlined" fullWidth startIcon={<LogoutRoundedIcon />}>
+          <Button 
+            variant="outlined" 
+            fullWidth 
+            startIcon={<LogoutRoundedIcon />}
+            onClick={handleLogout}
+          >
             Logout
           </Button>
         </Stack>

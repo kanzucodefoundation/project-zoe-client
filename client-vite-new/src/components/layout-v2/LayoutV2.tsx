@@ -9,23 +9,14 @@ import AppNavbar from './AppNavbar';
 import Header from './Header';
 import SideMenu from './SideMenu';
 
-import {
-  chartsCustomizations,
-  datePickersCustomizations,
-  treeViewCustomizations,
-} from '../../theme-wh/customizations';
 import AppTheme from "../../theme-wh/AppTheme.tsx";
 
-const xThemeComponents = {
-  ...chartsCustomizations,
-  ...datePickersCustomizations,
-  ...treeViewCustomizations,
-};
+
 
 export default function LayoutV2(props: { disableCustomTheme?: boolean, children: React.ReactNode }) {
   const { children } = props;
   return (
-    <AppTheme {...props} themeComponents={xThemeComponents}>
+    <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: 'flex' }}>
         <SideMenu />

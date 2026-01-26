@@ -5,6 +5,8 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../data/store';
 import SelectContent from './SelectContent';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
@@ -22,6 +24,8 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu() {
+  const { user } = useSelector((state: RootState) => state.core);
+
   return (
     <Drawer
       variant="permanent"
@@ -55,17 +59,38 @@ export default function SideMenu() {
         }}
       >
         <Avatar
-          sizes="small"
-          alt="Riley Carter"
-          src="/static/images/avatar/7.jpg"
-          sx={{ width: 36, height: 36 }}
-        />
-        <Box sx={{ mr: 'auto' }}>
-          <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
-            Riley Carter
+          sx={{ 
+            width: 36, 
+            height: 36,
+            borderRadius: 1,
+          }}
+        >
+          {user?.username?.charAt(0)?.toUpperCase() || user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+        </Avatar>
+        <Box sx={{ mr: 'auto', minWidth: 0 }}>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontWeight: 500, 
+              lineHeight: '16px',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {user?.fullName || user?.username || 'User'}
           </Typography>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            riley@email.com
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              color: 'text.secondary',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              display: 'block',
+            }}
+          >
+            {user?.email || ''}
           </Typography>
         </Box>
         <OptionsMenu />
