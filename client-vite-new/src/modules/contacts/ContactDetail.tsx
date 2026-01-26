@@ -204,7 +204,7 @@ const ContactDetail = () => {
                     icon={<EmailIcon />}
                     label={contact.email}
                     variant="outlined"
-                    size="small"
+                    size="medium"
                   />
                 )}
                 {contact.phone && (
@@ -212,7 +212,7 @@ const ContactDetail = () => {
                     icon={<PhoneIcon />}
                     label={contact.phone}
                     variant="outlined"
-                    size="small"
+                    size="medium"
                   />
                 )}
                 {contact.groupMemberships?.map((gm) => gm.group && (
@@ -221,7 +221,7 @@ const ContactDetail = () => {
                     icon={<GroupIcon />}
                     label={gm.group.name}
                     color="primary"
-                    size="small"
+                    size="medium"
                   />
                 ))}
               </Box>
@@ -237,36 +237,36 @@ const ContactDetail = () => {
                 Personal Information
               </Typography>
               <List>
-                <ListItem>
-                  <ListItemIcon><PersonIcon /></ListItemIcon>
+                <ListItem sx={{ gap: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
                   <ListItemText
                     primary="Full Name"
                     secondary={fullName}
                   />
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon><CalendarIcon /></ListItemIcon>
+                <ListItem sx={{ gap: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><CalendarIcon /></ListItemIcon>
                   <ListItemText
                     primary="Date of Birth"
                     secondary={formatDate(contact.dateOfBirth)}
                   />
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon><PersonIcon /></ListItemIcon>
+                <ListItem sx={{ gap: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
                   <ListItemText
                     primary="Gender"
                     secondary={contact.gender || 'Not specified'}
                   />
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon><PersonIcon /></ListItemIcon>
+                <ListItem sx={{ gap: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
                   <ListItemText
                     primary="Marital Status"
                     secondary={contact.civilStatus || 'Not specified'}
                   />
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon><WorkIcon /></ListItemIcon>
+                <ListItem sx={{ gap: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><WorkIcon /></ListItemIcon>
                   <ListItemText
                     primary="Place of Work"
                     secondary={contact.placeOfWork || 'Not specified'}
@@ -280,22 +280,22 @@ const ContactDetail = () => {
                 Contact Information
               </Typography>
               <List>
-                <ListItem>
-                  <ListItemIcon><EmailIcon /></ListItemIcon>
+                <ListItem sx={{ gap: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><EmailIcon /></ListItemIcon>
                   <ListItemText
                     primary="Email"
                     secondary={contact.email || 'Not provided'}
                   />
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon><PhoneIcon /></ListItemIcon>
+                <ListItem sx={{ gap: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PhoneIcon /></ListItemIcon>
                   <ListItemText
                     primary="Phone"
                     secondary={contact.phone || 'Not provided'}
                   />
                 </ListItem>
-                <ListItem>
-                  <ListItemIcon><LocationIcon /></ListItemIcon>
+                <ListItem sx={{ gap: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><LocationIcon /></ListItemIcon>
                   <ListItemText
                     primary="Address"
                     secondary={contact.address || 'Not provided'}
@@ -309,8 +309,8 @@ const ContactDetail = () => {
                 Church Information
               </Typography>
               <List>
-                <ListItem>
-                  <ListItemIcon><GroupIcon /></ListItemIcon>
+                <ListItem sx={{ gap: 2 }}>
+                  <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><GroupIcon /></ListItemIcon>
                   <ListItemText
                     primary="Group Memberships"
                     secondary={
@@ -331,8 +331,8 @@ const ContactDetail = () => {
                         Additional Info
                       </Typography>
                       <List>
-                        <ListItem>
-                          <ListItemIcon><PersonIcon /></ListItemIcon>
+                        <ListItem sx={{ gap: 2 }}>
+                          <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
                           <ListItemText
                             primary="Age Group"
                             secondary={contact.ageGroup}
