@@ -244,9 +244,11 @@ const UserManagement = () => {
       <Box display="flex" gap={2} mb={3}>
         <TextField
           fullWidth
-          placeholder="Search users..."
+          placeholder="Search by username, email, first name, or last name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          variant="outlined"
+          size="small"
           InputProps={{
             startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
           }}
