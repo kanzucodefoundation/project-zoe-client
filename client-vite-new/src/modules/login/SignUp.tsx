@@ -240,8 +240,27 @@ const SignUp = () => {
         toast.success('Account created successfully! Please log in.');
         navigate(localRoutes.login);
       },
-      () => {
+      (error, response) => {
         setIsSubmitting(false);
+
+        // Extract error message from backend response
+        let errorMessage = 'Signup failed. Please try again.';
+
+        // The actual backend error data is in error.response.data
+        const responseData = error?.response?.data || response?.data;
+
+        if (responseData?.message) {
+          errorMessage = responseData.message;
+        } else if (responseData?.errors && Array.isArray(responseData.errors) && responseData.errors.length > 0) {
+          errorMessage = responseData.errors[0];
+        } else if (error?.message && !error.message.includes('status code')) {
+          // Use axios error message only if it's not the generic "Request failed with status code"
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+
+        toast.error(errorMessage);
       },
     );
   };

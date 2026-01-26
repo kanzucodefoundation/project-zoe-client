@@ -1,0 +1,57 @@
+name: Build and deploy Project Zoe client
+
+on:
+  push:
+    branches: [ migrate-to-vite ]
+ 
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm install
+          
+      - name: Create .env file
+        env:
+          PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+        run: |
+          echo "VITE_API_URL=https://projectzoe.kanzucodefoundation.org/server/" > ./.env
+      
+      - name: Build
+        run: npm run build
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$DO_PRIVATE_KEY" > ~/.ssh/project-zoe-prod-1.key
+          chmod 600 ~/.ssh/project-zoe-prod-1.key
+          cat >>~/.ssh/config <<END
+          Host project-zoe-prod-1
+            HostName $DO_HOST
+            User $DO_USERNAME
+            IdentityFile ~/.ssh/project-zoe-prod-1.key
+            StrictHostKeyChecking no
+          END
+        env:
+          DO_USERNAME: ${{ secrets.DO_USERNAME }}
+          DO_PRIVATE_KEY: ${{ secrets.DO_PRIVATE_KEY }}
+          DO_HOST: ${{ secrets.DO_HOST }}
+
+      - name: Deploy the app
+        run: rsync -rtvO ./dist/ project-zoe-prod-1:/opt/project-zoe-client/dist/
