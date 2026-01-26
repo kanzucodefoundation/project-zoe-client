@@ -154,7 +154,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
           Basic Information
         </Typography>
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               label="First Name"
               required
@@ -163,7 +163,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               onChange={(e) => handleChange('firstName', e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               label="Last Name"
               required
@@ -172,7 +172,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               onChange={(e) => handleChange('lastName', e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               label="Email"
               type="email"
@@ -181,7 +181,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               onChange={(e) => handleChange('email', e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               label="Phone"
               fullWidth
@@ -189,7 +189,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               onChange={(e) => handleChange('phone', e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <DatePicker
               label="Date of Birth"
               value={formData.dateOfBirth}
@@ -197,7 +197,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               slotProps={{ textField: { fullWidth: true } }}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <FormControl fullWidth>
               <InputLabel>Gender</InputLabel>
               <Select
@@ -219,7 +219,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
           Additional Information
         </Typography>
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <FormControl fullWidth>
               <InputLabel>Marital Status</InputLabel>
               <Select
@@ -234,7 +234,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               label="Place of Work"
               fullWidth
@@ -251,7 +251,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
           Address
         </Typography>
         <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               label="Address"
               fullWidth
@@ -259,7 +259,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               onChange={(e) => handleNestedChange('address', 'freeForm', e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               label="District"
               fullWidth
@@ -267,7 +267,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               onChange={(e) => handleNestedChange('address', 'district', e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               label="Country"
               fullWidth
