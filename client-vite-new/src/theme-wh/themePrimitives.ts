@@ -19,6 +19,7 @@ declare module '@mui/material/styles' {
     900: string;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface PaletteColor extends ColorRange {}
 
   interface Palette {
@@ -30,30 +31,32 @@ const defaultTheme = createTheme();
 
 const customShadows: Shadows = [...defaultTheme.shadows];
 
+// Brand blue: rgba(20, 24, 41, .8) = RGB(20, 24, 41) = HSL(225, 34%, 12%)
 export const brand = {
-  50: 'hsl(210, 100%, 95%)',
-  100: 'hsl(210, 100%, 92%)',
-  200: 'hsl(210, 100%, 80%)',
-  300: 'hsl(210, 100%, 65%)',
-  400: 'hsl(210, 98%, 48%)',
-  500: 'hsl(210, 98%, 42%)',
-  600: 'hsl(210, 98%, 55%)',
-  700: 'hsl(210, 100%, 35%)',
-  800: 'hsl(210, 100%, 16%)',
-  900: 'hsl(210, 100%, 21%)',
+  50: 'hsl(225, 30%, 95%)',
+  100: 'hsl(225, 30%, 90%)',
+  200: 'hsl(225, 30%, 75%)',
+  300: 'hsl(225, 30%, 55%)',
+  400: 'hsl(225, 34%, 35%)',
+  500: 'hsl(225, 34%, 25%)',
+  600: 'hsl(225, 34%, 18%)',
+  700: 'hsl(225, 34%, 14%)',
+  800: 'hsl(225, 34%, 12%)', // Main brand color: rgba(20, 24, 41)
+  900: 'hsl(225, 34%, 8%)',
 };
 
+// Gray scale aligned with brand blue undertones
 export const gray = {
-  50: 'hsl(220, 35%, 97%)',
-  100: 'hsl(220, 30%, 94%)',
-  200: 'hsl(220, 20%, 88%)',
-  300: 'hsl(220, 20%, 80%)',
-  400: 'hsl(220, 20%, 65%)',
-  500: 'hsl(220, 20%, 42%)',
-  600: 'hsl(220, 20%, 35%)',
-  700: 'hsl(220, 20%, 25%)',
-  800: 'hsl(220, 30%, 6%)',
-  900: 'hsl(220, 35%, 3%)',
+  50: 'hsl(225, 20%, 98%)',
+  100: 'hsl(225, 20%, 95%)',
+  200: 'hsl(225, 20%, 90%)',
+  300: 'hsl(225, 20%, 80%)',
+  400: 'hsl(225, 20%, 65%)',
+  500: 'hsl(225, 20%, 50%)',
+  600: 'hsl(225, 20%, 35%)',
+  700: 'hsl(225, 20%, 25%)',
+  800: 'hsl(225, 30%, 15%)',
+  900: 'hsl(225, 35%, 8%)',
 };
 
 export const green = {
@@ -69,30 +72,46 @@ export const green = {
   900: 'hsl(120, 87%, 6%)',
 };
 
+// Accent orange: RGB(244, 139, 34) = HSL(25, 90%, 55%)
 export const orange = {
-  50: 'hsl(45, 100%, 97%)',
-  100: 'hsl(45, 92%, 90%)',
-  200: 'hsl(45, 94%, 80%)',
-  300: 'hsl(45, 90%, 65%)',
-  400: 'hsl(45, 90%, 40%)',
-  500: 'hsl(45, 90%, 35%)',
-  600: 'hsl(45, 91%, 25%)',
-  700: 'hsl(45, 94%, 20%)',
-  800: 'hsl(45, 95%, 16%)',
-  900: 'hsl(45, 93%, 12%)',
+  50: 'hsl(25, 90%, 97%)',
+  100: 'hsl(25, 90%, 92%)',
+  200: 'hsl(25, 90%, 85%)',
+  300: 'hsl(25, 90%, 70%)',
+  400: 'hsl(25, 90%, 55%)', // Main accent orange: RGB(244, 139, 34)
+  500: 'hsl(25, 90%, 48%)',
+  600: 'hsl(25, 90%, 42%)',
+  700: 'hsl(25, 90%, 35%)',
+  800: 'hsl(25, 90%, 28%)',
+  900: 'hsl(25, 90%, 20%)',
 };
 
+// Yellow/Gold for logo and secondary accents
+export const yellow = {
+  50: 'hsl(45, 100%, 97%)',
+  100: 'hsl(45, 100%, 92%)',
+  200: 'hsl(45, 100%, 85%)',
+  300: 'hsl(45, 100%, 75%)',
+  400: 'hsl(45, 100%, 65%)',
+  500: 'hsl(45, 100%, 55%)', // Bright yellow/gold for logo
+  600: 'hsl(45, 100%, 48%)',
+  700: 'hsl(45, 100%, 40%)',
+  800: 'hsl(45, 100%, 32%)',
+  900: 'hsl(45, 100%, 25%)',
+};
+
+// Red for status/highlight (e.g., "ON AIR" indicator)
 export const red = {
   50: 'hsl(0, 100%, 97%)',
-  100: 'hsl(0, 92%, 90%)',
-  200: 'hsl(0, 94%, 80%)',
-  300: 'hsl(0, 90%, 65%)',
-  400: 'hsl(0, 90%, 40%)',
-  500: 'hsl(0, 90%, 30%)',
-  600: 'hsl(0, 91%, 25%)',
-  700: 'hsl(0, 94%, 18%)',
-  800: 'hsl(0, 95%, 12%)',
-  900: 'hsl(0, 93%, 6%)',
+  100: 'hsl(0, 95%, 92%)',
+  200: 'hsl(0, 95%, 85%)',
+  300: 'hsl(0, 95%, 75%)',
+  400: 'hsl(0, 95%, 60%)',
+  500: 'hsl(0, 95%, 50%)', // Main red for status indicators
+  600: 'hsl(0, 95%, 45%)',
+  700: 'hsl(0, 95%, 38%)',
+  800: 'hsl(0, 95%, 30%)',
+  900: 'hsl(0, 95%, 20%)',
 };
 
 export const getDesignTokens = (mode: PaletteMode) => {
@@ -105,15 +124,15 @@ export const getDesignTokens = (mode: PaletteMode) => {
     palette: {
       mode,
       primary: {
-        light: brand[200],
-        main: brand[400],
-        dark: brand[700],
-        contrastText: brand[50],
+        light: brand[300],
+        main: brand[800], // Main brand blue: rgba(20, 24, 41)
+        dark: brand[900],
+        contrastText: '#FFFFFF',
         ...(mode === 'dark' && {
-          contrastText: brand[50],
-          light: brand[300],
-          main: brand[400],
-          dark: brand[700],
+          contrastText: '#FFFFFF',
+          light: brand[600],
+          main: brand[800],
+          dark: brand[900],
         }),
       },
       info: {
@@ -130,12 +149,14 @@ export const getDesignTokens = (mode: PaletteMode) => {
       },
       warning: {
         light: orange[300],
-        main: orange[400],
-        dark: orange[800],
+        main: orange[400], // Vibrant orange accent: RGB(244, 139, 34)
+        dark: orange[700],
+        contrastText: '#FFFFFF',
         ...(mode === 'dark' && {
-          light: orange[400],
-          main: orange[500],
-          dark: orange[700],
+          light: orange[300],
+          main: orange[400],
+          dark: orange[600],
+          contrastText: '#FFFFFF',
         }),
       },
       error: {
@@ -164,8 +185,11 @@ export const getDesignTokens = (mode: PaletteMode) => {
       divider: mode === 'dark' ? alpha(gray[700], 0.6) : alpha(gray[300], 0.4),
       background: {
         default: 'hsl(0, 0%, 99%)',
-        paper: 'hsl(220, 35%, 97%)',
-        ...(mode === 'dark' && { default: gray[900], paper: 'hsl(220, 30%, 7%)' }),
+        paper: 'hsl(225, 20%, 98%)',
+        ...(mode === 'dark' && {
+          default: brand[900], // Dark brand blue background
+          paper: brand[800] // Slightly lighter for paper surfaces
+        }),
       },
       text: {
         primary: gray[800],
@@ -242,10 +266,10 @@ export const colorSchemes = {
   light: {
     palette: {
       primary: {
-        light: brand[200],
-        main: brand[400],
-        dark: brand[700],
-        contrastText: brand[50],
+        light: brand[300],
+        main: brand[800], // Main brand blue: rgba(20, 24, 41)
+        dark: brand[900],
+        contrastText: '#FFFFFF',
       },
       info: {
         light: brand[100],
@@ -255,8 +279,9 @@ export const colorSchemes = {
       },
       warning: {
         light: orange[300],
-        main: orange[400],
-        dark: orange[800],
+        main: orange[400], // Vibrant orange accent: RGB(244, 139, 34)
+        dark: orange[700],
+        contrastText: '#FFFFFF',
       },
       error: {
         light: red[300],
@@ -274,7 +299,7 @@ export const colorSchemes = {
       divider: alpha(gray[300], 0.4),
       background: {
         default: 'hsl(0, 0%, 99%)',
-        paper: 'hsl(220, 35%, 97%)',
+        paper: 'hsl(225, 20%, 98%)',
       },
       text: {
         primary: gray[800],
@@ -292,10 +317,10 @@ export const colorSchemes = {
   dark: {
     palette: {
       primary: {
-        contrastText: brand[50],
-        light: brand[300],
-        main: brand[400],
-        dark: brand[700],
+        contrastText: '#FFFFFF',
+        light: brand[600],
+        main: brand[800], // Main brand blue: rgba(20, 24, 41)
+        dark: brand[900],
       },
       info: {
         contrastText: brand[300],
@@ -304,9 +329,10 @@ export const colorSchemes = {
         dark: brand[900],
       },
       warning: {
-        light: orange[400],
-        main: orange[500],
-        dark: orange[700],
+        light: orange[300],
+        main: orange[400], // Vibrant orange accent: RGB(244, 139, 34)
+        dark: orange[600],
+        contrastText: '#FFFFFF',
       },
       error: {
         light: red[400],
@@ -323,8 +349,8 @@ export const colorSchemes = {
       },
       divider: alpha(gray[700], 0.6),
       background: {
-        default: gray[900],
-        paper: 'hsl(220, 30%, 7%)',
+        default: brand[900], // Dark brand blue background
+        paper: brand[800], // Slightly lighter for paper surfaces
       },
       text: {
         primary: 'hsl(0, 0%, 100%)',
@@ -394,7 +420,7 @@ export const shape = {
   borderRadius: 8,
 };
 
-// @ts-ignore
+// @ts-expect-error to fix
 const defaultShadows: Shadows = [
   'none',
   'var(--template-palette-baseShadow)',
