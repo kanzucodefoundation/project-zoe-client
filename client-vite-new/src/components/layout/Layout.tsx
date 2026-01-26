@@ -77,11 +77,9 @@ const navItems: NavItem[] = [
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
     children: [
       { name: 'Manage Users', icon: <People />, path: localRoutes.users },
+      { name: 'Manage Reports', icon: <Assessment />, path: localRoutes.reportConfiguration },
       { name: 'Group Categories', icon: <Group />, path: localRoutes.groupsCategories },
-      { name: 'Event Categories', icon: <Assessment />, path: localRoutes.eventCategories },
-      { name: 'Report Fields', icon: <Assessment />, path: localRoutes.reportCategories },
       { name: 'Settings', icon: <Settings />, path: localRoutes.settings },
-      { name: 'Manage Help', icon: <Settings />, path: localRoutes.manageHelp },
     ],
   },
 ];

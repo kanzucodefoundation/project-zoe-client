@@ -8,9 +8,12 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Button,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import { Download as DownloadIcon } from '@mui/icons-material';
+import * as XLSX from 'xlsx';
 import { format, subDays } from 'date-fns';
 import { toast } from 'react-toastify';
 import { get } from '../../utils/ajax';
@@ -184,6 +187,44 @@ const Reports = () => {
 
   const activeReportName = reports.find((r) => r.id === activeTab)?.name || 'Report';
 
+  const handleDownload = () => {
+    if (submissions.length === 0) {
+      toast.warning('No data to export');
+      return;
+    }
+
+    // Build export data with proper column headers
+    const exportData = submissions.map((row) => {
+      const exportRow: Record<string, any> = {};
+
+      // Add dynamic columns from report fields
+      columns.forEach((col) => {
+        const value = row.data?.[col.name];
+        exportRow[col.label] = value ?? '';
+      });
+
+      // Add metadata columns
+      const submittedBy = typeof row.submittedBy === 'object' ? row.submittedBy?.name : row.submittedBy;
+      exportRow['Submitted By'] = submittedBy || '';
+      exportRow['Submitted At'] = row.submittedAt ? row.submittedAt.slice(0, 10) : '';
+
+      return exportRow;
+    });
+
+    // Create worksheet and workbook
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Submissions');
+
+    // Generate filename with report name and date
+    const dateStr = format(new Date(), 'yyyy-MM-dd');
+    const fileName = `${activeReportName.replace(/\s+/g, '_')}_${dateStr}.xlsx`;
+
+    // Download file
+    XLSX.writeFile(workbook, fileName);
+    toast.success('Report downloaded successfully');
+  };
+
   if (loadingReports) {
     return (
       <Container maxWidth="lg">
@@ -211,16 +252,28 @@ const Reports = () => {
             View and manage report submissions
           </Typography>
         </Box>
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <Select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value as DateRange)}
+        <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap">
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <Select
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value as DateRange)}
+            >
+              <MenuItem value="all">All Time</MenuItem>
+              <MenuItem value="7">Last 7 days</MenuItem>
+              <MenuItem value="30">Last 30 days</MenuItem>
+            </Select>
+          </FormControl>
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<DownloadIcon />}
+            onClick={handleDownload}
+            disabled={loadingSubmissions || submissions.length === 0}
+            sx={{ textTransform: 'none' }}
           >
-            <MenuItem value="all">All Time</MenuItem>
-            <MenuItem value="7">Last 7 days</MenuItem>
-            <MenuItem value="30">Last 30 days</MenuItem>
-          </Select>
-        </FormControl>
+            Download
+          </Button>
+        </Box>
       </Box>
 
       {/* Tabs / Mobile Dropdown */}

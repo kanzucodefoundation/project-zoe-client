@@ -28,6 +28,7 @@
     "react-router-dom": "^6.30.2",
     "react-toastify": "^11.0.5",
     "uuid": "^13.0.0",
+    "xlsx": "^0.18.5",
     "yup": "^1.7.1"
   },
   "devDependencies": {
