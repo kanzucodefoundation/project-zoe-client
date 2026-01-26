@@ -232,7 +232,7 @@ const Contacts = () => {
           <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ backgroundColor: 'grey.100' }}>
+                <TableRow>
                   <TableCell sx={{ width: 64, fontWeight: 'bold' }}>#</TableCell>
                   <TableCell sx={{ width: 56 }}></TableCell>
                   <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Name</TableCell>

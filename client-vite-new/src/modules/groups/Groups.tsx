@@ -222,7 +222,7 @@ const Groups = () => {
         <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ backgroundColor: 'grey.100' }}>
+              <TableRow >
                 <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Name</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Type</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Groups</TableCell>
@@ -238,7 +238,7 @@ const Groups = () => {
                   sx={{ cursor: 'pointer' }}
                   onClick={() => handleGroupClick(group)}
                 >
-                  <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold', color: 'primary.main' }}>
+                  <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold', color: 'primary' }}>
                     {group.name}
                   </TableCell>
                   <TableCell sx={{ whiteSpace: 'nowrap' }}>
