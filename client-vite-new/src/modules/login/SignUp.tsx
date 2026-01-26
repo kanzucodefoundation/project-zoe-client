@@ -35,6 +35,10 @@ interface Fob {
 }
 
 interface FormData {
+  churchName: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
   email: string;
   fob: string;
   location: string;
@@ -43,6 +47,10 @@ interface FormData {
 }
 
 interface FormErrors {
+  churchName?: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
   email?: string;
   fob?: string;
   location?: string;
@@ -54,6 +62,10 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
+    churchName: '',
+    firstName: '',
+    lastName: '',
+    gender: '',
     email: '',
     fob: '',
     location: '',
@@ -65,27 +77,50 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fobs, setFobs] = useState<Fob[]>([]);
-  const [isLoadingLocations, setIsLoadingLocations] = useState(true);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(false);
   const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
 
-  // Fetch locations from backend on mount
+  // Fetch locations from backend when church name is entered
   useEffect(() => {
     const fetchLocations = async () => {
+      if (!formData.churchName || formData.churchName.trim().length < 3) {
+        setFobs([]);
+        return;
+      }
+
       try {
         setIsLoadingLocations(true);
-        const response = await fetch(`${remoteRoutes.groupsCombo}/locations/public`);
+        const response = await fetch(
+          `${remoteRoutes.groupsCombo}/locations/public?churchName=${encodeURIComponent(formData.churchName)}`
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to load locations');
+        }
+
         const data = await response.json();
         setFobs(data.fobs || []);
-      } catch (error) {
+
+        if (!data.fobs || data.fobs.length === 0) {
+          toast.info('No locations found for this church');
+        }
+      } catch (error: any) {
         console.error('Failed to load locations:', error);
-        toast.error('Failed to load locations. Please refresh the page.');
+        toast.error(error.message || 'Failed to load locations. Please check the church name.');
+        setFobs([]);
       } finally {
         setIsLoadingLocations(false);
       }
     };
 
-    fetchLocations();
-  }, []);
+    // Debounce the fetch to avoid too many requests
+    const timeoutId = setTimeout(() => {
+      fetchLocations();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [formData.churchName]);
 
   const availableLocations = formData.fob
     ? fobs.find(f => f.name === formData.fob)?.locations || []
@@ -95,6 +130,14 @@ const SignUp = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+
+    // Reset location-dependent fields when church name changes
+    if (field === 'churchName') {
+      setFormData((prev) => ({ ...prev, fob: '', location: '' }));
+      setSelectedLocationId(null);
+      setFobs([]);
+      setErrors((prev) => ({ ...prev, fob: undefined, location: undefined }));
     }
   };
 
@@ -115,6 +158,24 @@ const SignUp = () => {
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
+
+    if (!formData.churchName) {
+      newErrors.churchName = 'Church name is required';
+    } else if (formData.churchName.trim().length < 3) {
+      newErrors.churchName = 'Church name must be at least 3 characters';
+    }
+
+    if (!formData.firstName) {
+      newErrors.firstName = 'First name is required';
+    }
+
+    if (!formData.lastName) {
+      newErrors.lastName = 'Last name is required';
+    }
+
+    if (!formData.gender) {
+      newErrors.gender = 'Gender is required';
+    }
 
     if (!formData.email) {
       newErrors.email = 'Email is required';
@@ -155,16 +216,24 @@ const SignUp = () => {
       return;
     }
 
+    if (fobs.length === 0) {
+      toast.error('No locations available for this church. Please check the church name.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     post(
       remoteRoutes.signup,
       {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        gender: formData.gender,
         email: formData.email,
         password: formData.password,
         groupId: selectedLocationId,
         groupRole: 'Leader',
-        churchName: 'Worship Harvest',
+        churchName: formData.churchName,
       },
       () => {
         setIsSubmitting(false);
@@ -230,6 +299,57 @@ const SignUp = () => {
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit}>
+            {/* Church Name */}
+            <TextField
+              fullWidth
+              label="Church Name"
+              placeholder="e.g., Worship Harvest"
+              value={formData.churchName}
+              onChange={(e) => handleChange('churchName', e.target.value)}
+              error={!!errors.churchName}
+              helperText={errors.churchName || 'Enter your church name to load locations'}
+              autoFocus
+              sx={{ mb: 2.5 }}
+            />
+
+            {/* First Name */}
+            <TextField
+              fullWidth
+              label="First Name"
+              placeholder="John"
+              value={formData.firstName}
+              onChange={(e) => handleChange('firstName', e.target.value)}
+              error={!!errors.firstName}
+              helperText={errors.firstName}
+              sx={{ mb: 2.5 }}
+            />
+
+            {/* Last Name */}
+            <TextField
+              fullWidth
+              label="Last Name"
+              placeholder="Doe"
+              value={formData.lastName}
+              onChange={(e) => handleChange('lastName', e.target.value)}
+              error={!!errors.lastName}
+              helperText={errors.lastName}
+              sx={{ mb: 2.5 }}
+            />
+
+            {/* Gender */}
+            <FormControl fullWidth error={!!errors.gender} sx={{ mb: 2.5 }}>
+              <InputLabel>Gender</InputLabel>
+              <Select
+                value={formData.gender}
+                label="Gender"
+                onChange={(e) => handleChange('gender', e.target.value as string)}
+              >
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+              </Select>
+              {errors.gender && <FormHelperText>{errors.gender}</FormHelperText>}
+            </FormControl>
+
             {/* Email */}
             <TextField
               fullWidth
@@ -244,13 +364,17 @@ const SignUp = () => {
             />
 
             {/* FOB */}
-            <FormControl fullWidth error={!!errors.fob} sx={{ mb: 2.5 }}>
+            <FormControl
+              fullWidth
+              error={!!errors.fob}
+              sx={{ mb: 2.5 }}
+              disabled={isLoadingLocations || fobs.length === 0}
+            >
               <InputLabel>FOB</InputLabel>
               <Select
                 value={formData.fob}
                 label="FOB"
                 onChange={(e) => handleFobChange(e.target.value as string)}
-                disabled={isLoadingLocations}
               >
                 {fobs.map((fob) => (
                   <MenuItem key={fob.name} value={fob.name}>
@@ -260,10 +384,21 @@ const SignUp = () => {
               </Select>
               {errors.fob && <FormHelperText>{errors.fob}</FormHelperText>}
               {isLoadingLocations && <FormHelperText>Loading locations...</FormHelperText>}
+              {!isLoadingLocations && fobs.length === 0 && formData.churchName && (
+                <FormHelperText>No locations found. Check church name.</FormHelperText>
+              )}
+              {!isLoadingLocations && fobs.length === 0 && !formData.churchName && (
+                <FormHelperText>Enter church name first</FormHelperText>
+              )}
             </FormControl>
 
             {/* Location */}
-            <FormControl fullWidth error={!!errors.location} sx={{ mb: 2.5 }} disabled={!formData.fob || isLoadingLocations}>
+            <FormControl
+              fullWidth
+              error={!!errors.location}
+              sx={{ mb: 2.5 }}
+              disabled={!formData.fob || isLoadingLocations || availableLocations.length === 0}
+            >
               <InputLabel>Location</InputLabel>
               <Select
                 value={formData.location}
@@ -279,6 +414,9 @@ const SignUp = () => {
               {errors.location && <FormHelperText>{errors.location}</FormHelperText>}
               {!formData.fob && !errors.location && (
                 <FormHelperText>Select FOB first</FormHelperText>
+              )}
+              {formData.fob && availableLocations.length === 0 && (
+                <FormHelperText>No locations available for this FOB</FormHelperText>
               )}
             </FormControl>
 
