@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -22,78 +22,17 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { post } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
+import loginBackground from '../../assets/images/login-background.jpg';
 
-const fobOptions = [
-  'Arua',
-  'Bugolobi',
-  'Entebbe',
-  'Fort Portal',
-  'Gayaza',
-  'Gulu',
-  'Hoima',
-  'Iganga',
-  'Jinja',
-  'Joggo',
-  'Kabubbu',
-  'Kajjansi',
-  'Kamuli',
-  'Kansanga',
-  'Kenya',
-  'Kira',
-  'Kitukutwe',
-  'Kungu',
-  'Makerere',
-  'Masaka',
-  'Matugga',
-  'Mbale',
-  'Mbarara',
-  'Mpigi',
-  'Mukono',
-  'Mukono Central',
-  'Naalya',
-  'Nakawa',
-  'Rest of Africa',
-  'Global West',
-  'Sentema',
-  'Wairaka',
-  'Wakiso',
-];
+interface Location {
+  id: number;
+  name: string;
+}
 
-const locationsByFob: Record<string, string[]> = {
-  Arua: ['WHARUA'],
-  Bugolobi: ['WHBUGO'],
-  Entebbe: ['WHABYT', 'WHBWYA', 'WHEBCT', 'WHENTB', 'WHGRUG', 'WHKGNG', 'WHKSNJ', 'WHNKWK'],
-  'Fort Portal': ['WHFTPL'],
-  Gayaza: ['WHGAYA'],
-  Gulu: ['WHGULU'],
-  Hoima: ['WHHOIM'],
-  Iganga: ['WHIGGA'],
-  Jinja: ['WHBDND', 'WHBGMB', 'WHBWNG', 'WHJNJA', 'WHKBBI', 'WHMBKO', 'WHMTAI', 'WHNJRU', 'WHNWPD'],
-  Joggo: ['WHBAJO', 'WHBKRR', 'WHBKSA', 'WHJOGO', 'WHNMVE', 'WHNSBW'],
-  Kabubbu: ['WHBSKM', 'WHBUSK', 'WHKBUB', 'WHNMLG', 'WHNMPG'],
-  Kajjansi: ['WHKAJJ'],
-  Kamuli: ['WHKMLI'],
-  Kansanga: ['WHKNSA'],
-  Kenya: ['WHKENY'],
-  Kira: ['WHKIRA'],
-  Kitukutwe: ['WHKITK', 'WHNKWR'],
-  Kungu: ['WHKNGU'],
-  Makerere: ['WHMKRE'],
-  Masaka: ['WHMSKA'],
-  Matugga: ['WHKITI', 'WHKLMZ', 'WHKVLE', 'WHKWMP', 'WHKWND', 'WHLGBA', 'WHMGJO', 'WHMTUG', 'WHNDJB', 'WHNKSK', 'WHTULA'],
-  Mbale: ['WHMBLE'],
-  Mbarara: ['WHBHRW', 'WHIBND', 'WHISHK', 'WHKBLE', 'WHKKBA', 'WHMBRR', 'WHNTMO'],
-  Mpigi: ['WHMPGI'],
-  Mukono: ['WHKBMB', 'WHKTKS', 'WHKYNG', 'WHLUGZ', 'WHMKNO', 'WHMCTY', 'WHNTWO', 'WHNKFM'],
-  'Mukono Central': ['WHMCCN'],
-  Naalya: ['WHBYGR', 'WHKITO', 'WHKWGA', 'WHMSDY', 'WHNTDA', 'WHSETA', 'WHSOND', 'WHNLYA', 'WHNLYG', 'WHNKWR'],
-  Nakawa: ['WHNKWA'],
-  'Rest of Africa': ['WHAFOL', 'WHASOL', 'WHDRSM', 'WHKGLI', 'WHLUSK'],
-  'Global West': ['WHAUST', 'WHCNDA', 'WHEUOL', 'WHGMNY', 'WHGNVA', 'WHLEDS', 'WHLUTN', 'WHNWLS', 'WHTXAS', 'WHUKDM', 'WHUSOA'],
-  Sentema: ['WHSENT'],
-  Wairaka: ['WHWRAK'],
-  Wakiso: ['WHBSGA', 'WHBULB', 'WHKKRI', 'WHKSGJ', 'WHKYGW', 'WHMSLT', 'WHMTYN', 'WHNGND', 'WHNSNA', 'WHNYSA'],
-};
+interface Fob {
+  name: string;
+  locations: Location[];
+}
 
 interface FormData {
   email: string;
@@ -125,8 +64,32 @@ const SignUp = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [fobs, setFobs] = useState<Fob[]>([]);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(true);
+  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
 
-  const availableLocations = formData.fob ? locationsByFob[formData.fob] || [] : [];
+  // Fetch locations from backend on mount
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        setIsLoadingLocations(true);
+        const response = await fetch(`${remoteRoutes.groupsCombo}/locations/public`);
+        const data = await response.json();
+        setFobs(data.fobs || []);
+      } catch (error) {
+        console.error('Failed to load locations:', error);
+        toast.error('Failed to load locations. Please refresh the page.');
+      } finally {
+        setIsLoadingLocations(false);
+      }
+    };
+
+    fetchLocations();
+  }, []);
+
+  const availableLocations = formData.fob
+    ? fobs.find(f => f.name === formData.fob)?.locations || []
+    : [];
 
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -137,7 +100,17 @@ const SignUp = () => {
 
   const handleFobChange = (fob: string) => {
     setFormData((prev) => ({ ...prev, fob, location: '' }));
+    setSelectedLocationId(null);
     setErrors((prev) => ({ ...prev, fob: undefined, location: undefined }));
+  };
+
+  const handleLocationChange = (locationName: string) => {
+    const location = availableLocations.find(loc => loc.name === locationName);
+    setFormData((prev) => ({ ...prev, location: locationName }));
+    setSelectedLocationId(location?.id || null);
+    if (errors.location) {
+      setErrors((prev) => ({ ...prev, location: undefined }));
+    }
   };
 
   const validate = (): boolean => {
@@ -177,6 +150,11 @@ const SignUp = () => {
     e.preventDefault();
     if (!validate()) return;
 
+    if (!selectedLocationId) {
+      toast.error('Please select a valid location');
+      return;
+    }
+
     setIsSubmitting(true);
 
     post(
@@ -184,8 +162,8 @@ const SignUp = () => {
       {
         email: formData.email,
         password: formData.password,
-        fob: formData.fob,
-        location: formData.location,
+        groupId: selectedLocationId,
+        groupRole: 'Leader',
         churchName: 'Worship Harvest',
       },
       () => {
@@ -201,12 +179,14 @@ const SignUp = () => {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      {/* Left decorative panel */}
+      {/* Left image panel */}
       <Box
         sx={{
           flex: 1,
           display: { xs: 'none', md: 'flex' },
-          background: 'linear-gradient(135deg, #1a2332 0%, #2d4059 100%)',
+          backgroundImage: `url(${loginBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
@@ -217,15 +197,15 @@ const SignUp = () => {
           sx={{
             position: 'absolute',
             inset: 0,
-            opacity: 0.1,
-            backgroundImage: `radial-gradient(circle at 25% 25%, #ffffff 1px, transparent 1px),
-              radial-gradient(circle at 75% 75%, #ffffff 1px, transparent 1px)`,
-            backgroundSize: '50px 50px',
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
           }}
         />
         <Box sx={{ textAlign: 'center', color: 'white', zIndex: 1, px: 4 }}>
           <Typography variant="h3" fontWeight="bold" gutterBottom>
             Project Zoe
+          </Typography>
+          <Typography variant="h6" sx={{ opacity: 0.9 }}>
+            Church Management System
           </Typography>
         </Box>
       </Box>
@@ -270,27 +250,29 @@ const SignUp = () => {
                 value={formData.fob}
                 label="FOB"
                 onChange={(e) => handleFobChange(e.target.value as string)}
+                disabled={isLoadingLocations}
               >
-                {fobOptions.map((fob) => (
-                  <MenuItem key={fob} value={fob}>
-                    {fob}
+                {fobs.map((fob) => (
+                  <MenuItem key={fob.name} value={fob.name}>
+                    {fob.name}
                   </MenuItem>
                 ))}
               </Select>
               {errors.fob && <FormHelperText>{errors.fob}</FormHelperText>}
+              {isLoadingLocations && <FormHelperText>Loading locations...</FormHelperText>}
             </FormControl>
 
             {/* Location */}
-            <FormControl fullWidth error={!!errors.location} sx={{ mb: 2.5 }} disabled={!formData.fob}>
+            <FormControl fullWidth error={!!errors.location} sx={{ mb: 2.5 }} disabled={!formData.fob || isLoadingLocations}>
               <InputLabel>Location</InputLabel>
               <Select
                 value={formData.location}
                 label="Location"
-                onChange={(e) => handleChange('location', e.target.value as string)}
+                onChange={(e) => handleLocationChange(e.target.value as string)}
               >
                 {availableLocations.map((loc) => (
-                  <MenuItem key={loc} value={loc}>
-                    {loc}
+                  <MenuItem key={loc.id} value={loc.name}>
+                    {loc.name}
                   </MenuItem>
                 ))}
               </Select>
