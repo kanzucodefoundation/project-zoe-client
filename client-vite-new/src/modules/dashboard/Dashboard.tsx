@@ -204,7 +204,7 @@ const Dashboard = () => {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl" sx={{ backgroundColor: 'red'}}>
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} flexWrap="wrap" gap={2}>
         <Box>

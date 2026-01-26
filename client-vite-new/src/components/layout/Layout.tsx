@@ -18,9 +18,9 @@ const Layout = ({children, title}: LayoutProps) => {
 
     return (
         <Box sx={{
-            display: 'flex', 
-            width: '100%', 
-            height: '100%', 
+            display: 'flex',
+            width: '100%',
+            height: '100%',
             overflowX: 'hidden',
             maxWidth: '100vw',
         }}>
@@ -48,14 +48,7 @@ const Layout = ({children, title}: LayoutProps) => {
                     }}
                 >
                     <Toolbar/>
-                    <Box sx={{
-                        maxWidth: '100%', 
-                        width: '100%',
-                        overflowX: 'hidden',
-                        minWidth: 0, // Important: allows flex items to shrink below content size
-                    }}>
-                        {children}
-                    </Box>
+                    {children}
                 </Box>
             </Box>
         </Box>

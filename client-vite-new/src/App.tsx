@@ -19,28 +19,29 @@ import ReportSubmissionForm from './modules/reports/ReportSubmissionForm';
 import UserManagement from './modules/admin/users/UserManagement';
 import ReportConfiguration from './modules/admin/reports/ReportConfiguration';
 import Groups from './modules/groups/Groups';
+import LayoutV2 from "./components/layout-v2/LayoutV2.tsx";
 const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
 const UpdatePasswordConfirmation = () => <div>Update Password - Coming Soon</div>;
 const Splash = () => (
-  <div style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+  <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     height: '100vh',
     fontSize: '18px'
   }}>
     Loading...
   </div>
 );
-const LoaderDialog = ({ open }: { open: boolean }) => 
+const LoaderDialog = ({ open }: { open: boolean }) =>
   open ? (
-    <div style={{ 
-      position: 'fixed', 
-      top: 0, 
-      left: 0, 
-      right: 0, 
-      bottom: 0, 
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       backgroundColor: 'rgba(0,0,0,0.5)',
       display: 'flex',
       justifyContent: 'center',
@@ -74,6 +75,8 @@ function App() {
   if (isLoadingUser) {
     return <Splash />;
   }
+
+  return <LayoutV2/>
 
   return (
     <Router>
