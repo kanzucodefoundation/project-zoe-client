@@ -36,6 +36,9 @@ interface Fob {
 
 interface FormData {
   churchName: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
   email: string;
   fob: string;
   location: string;
@@ -45,6 +48,9 @@ interface FormData {
 
 interface FormErrors {
   churchName?: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
   email?: string;
   fob?: string;
   location?: string;
@@ -57,6 +63,9 @@ const SignUp = () => {
 
   const [formData, setFormData] = useState<FormData>({
     churchName: '',
+    firstName: '',
+    lastName: '',
+    gender: '',
     email: '',
     fob: '',
     location: '',
@@ -123,11 +132,12 @@ const SignUp = () => {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
 
-    // Reset dependent fields when church name changes
+    // Reset location-dependent fields when church name changes
     if (field === 'churchName') {
       setFormData((prev) => ({ ...prev, fob: '', location: '' }));
       setSelectedLocationId(null);
       setFobs([]);
+      setErrors((prev) => ({ ...prev, fob: undefined, location: undefined }));
     }
   };
 
@@ -153,6 +163,18 @@ const SignUp = () => {
       newErrors.churchName = 'Church name is required';
     } else if (formData.churchName.trim().length < 3) {
       newErrors.churchName = 'Church name must be at least 3 characters';
+    }
+
+    if (!formData.firstName) {
+      newErrors.firstName = 'First name is required';
+    }
+
+    if (!formData.lastName) {
+      newErrors.lastName = 'Last name is required';
+    }
+
+    if (!formData.gender) {
+      newErrors.gender = 'Gender is required';
     }
 
     if (!formData.email) {
@@ -204,6 +226,9 @@ const SignUp = () => {
     post(
       remoteRoutes.signup,
       {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        gender: formData.gender,
         email: formData.email,
         password: formData.password,
         groupId: selectedLocationId,
@@ -286,6 +311,44 @@ const SignUp = () => {
               autoFocus
               sx={{ mb: 2.5 }}
             />
+
+            {/* First Name */}
+            <TextField
+              fullWidth
+              label="First Name"
+              placeholder="John"
+              value={formData.firstName}
+              onChange={(e) => handleChange('firstName', e.target.value)}
+              error={!!errors.firstName}
+              helperText={errors.firstName}
+              sx={{ mb: 2.5 }}
+            />
+
+            {/* Last Name */}
+            <TextField
+              fullWidth
+              label="Last Name"
+              placeholder="Doe"
+              value={formData.lastName}
+              onChange={(e) => handleChange('lastName', e.target.value)}
+              error={!!errors.lastName}
+              helperText={errors.lastName}
+              sx={{ mb: 2.5 }}
+            />
+
+            {/* Gender */}
+            <FormControl fullWidth error={!!errors.gender} sx={{ mb: 2.5 }}>
+              <InputLabel>Gender</InputLabel>
+              <Select
+                value={formData.gender}
+                label="Gender"
+                onChange={(e) => handleChange('gender', e.target.value as string)}
+              >
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+              </Select>
+              {errors.gender && <FormHelperText>{errors.gender}</FormHelperText>}
+            </FormControl>
 
             {/* Email */}
             <TextField

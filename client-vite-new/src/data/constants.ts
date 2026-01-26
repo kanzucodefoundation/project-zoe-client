@@ -93,7 +93,7 @@ export const remoteRoutes = {
   authServer: apiBaseUrl,
 
   login: `${apiBaseUrl}/api/auth/login`,
-  signup: `${apiBaseUrl}/api/auth/signup`,
+  signup: `${apiBaseUrl}/api/register`,
   dashboardSummary: `${apiBaseUrl}/api/dashboard/summary`,
   profile: `${apiBaseUrl}/api/auth/profile`,
   register: `${apiBaseUrl}/api/register`,
