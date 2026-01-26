@@ -1,20 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { Provider } from 'react-redux'
-import { ThemeProvider } from '@mui/material/styles'
+import {StrictMode} from 'react'
+import {createRoot} from 'react-dom/client'
+import {Provider} from 'react-redux'
 import CssBaseline from '@mui/material/CssBaseline'
 import store from './data/store'
-import theme from './theme'
 import App from './App.tsx'
 import './index.css'
+import AppTheme from "./theme-wh/AppTheme.tsx";
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </Provider>
-  </StrictMode>,
+    <StrictMode>
+        <Provider store={store}>
+            <AppTheme>
+                <CssBaseline/>
+                <App/>
+            </AppTheme>
+        </Provider>
+    </StrictMode>,
 )
