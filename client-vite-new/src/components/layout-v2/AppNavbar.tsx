@@ -68,9 +68,8 @@ export default function AppNavbar() {
             spacing={1}
             sx={{ alignItems: 'center' }}
           >
-            <CustomIcon />
             <Typography variant="h4" component="h1" sx={{ color: 'text.primary' }}>
-              Dashboard
+              Project Zoe   
             </Typography>
           </Stack>
           <Box sx={{ flexGrow: 1 }} />
