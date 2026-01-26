@@ -14,7 +14,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { get, post, put } from '../../utils/ajax';
+import { get, patch, post} from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 
 interface ContactFormData {
@@ -132,7 +132,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
     };
 
     const apiCall = contactId
-      ? put(`${remoteRoutes.contacts}/${contactId}`, submitData, onSave || (() => {}))
+      ? patch(`${remoteRoutes.contacts}/${contactId}`, submitData, onSave || (() => {}))
       : post(remoteRoutes.contacts, submitData, onSave || (() => {}));
 
     apiCall

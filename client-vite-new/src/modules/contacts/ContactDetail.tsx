@@ -91,7 +91,7 @@ const ContactDetail = () => {
 
   const fetchContact = () => {
     if (!contactId) return;
-    
+
     get(
       `${remoteRoutes.contacts}/${contactId}`,
       (response) => {
@@ -145,7 +145,7 @@ const ContactDetail = () => {
         <Typography variant="h4" gutterBottom>
           Contact Not Found
         </Typography>
-        <Button 
+        <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(localRoutes.contacts)}
         >
@@ -177,17 +177,17 @@ const ContactDetail = () => {
         </Button>
       </Box>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={6}>
         {/* Profile Card */}
         <Grid item xs={12} md={4}>
           <Card elevation={2}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Avatar
-                sx={{ 
-                  width: 120, 
-                  height: 120, 
-                  mx: 'auto', 
-                  mb: 2, 
+                sx={{
+                  width: 120,
+                  height: 120,
+                  mx: 'auto',
+                  mb: 2,
                   bgcolor: 'primary.main',
                   fontSize: '2rem'
                 }}
@@ -197,7 +197,7 @@ const ContactDetail = () => {
               <Typography variant="h5" gutterBottom>
                 {fullName}
               </Typography>
-              
+
               <Box display="flex" flexDirection="column" gap={1} mt={3}>
                 {contact.email && (
                   <Chip
@@ -231,124 +231,146 @@ const ContactDetail = () => {
 
         {/* Details */}
         <Grid item xs={12} md={8}>
-          <Card elevation={2}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Personal Information
-              </Typography>
-              <List>
-                <ListItem>
-                  <ListItemIcon><PersonIcon /></ListItemIcon>
-                  <ListItemText
-                    primary="Full Name"
-                    secondary={fullName}
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon><CalendarIcon /></ListItemIcon>
-                  <ListItemText
-                    primary="Date of Birth"
-                    secondary={formatDate(contact.dateOfBirth)}
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon><PersonIcon /></ListItemIcon>
-                  <ListItemText
-                    primary="Gender"
-                    secondary={contact.gender || 'Not specified'}
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon><PersonIcon /></ListItemIcon>
-                  <ListItemText
-                    primary="Marital Status"
-                    secondary={contact.civilStatus || 'Not specified'}
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon><WorkIcon /></ListItemIcon>
-                  <ListItemText
-                    primary="Place of Work"
-                    secondary={contact.placeOfWork || 'Not specified'}
-                  />
-                </ListItem>
-              </List>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Typography variant="h6" gutterBottom>
-                Contact Information
-              </Typography>
-              <List>
-                <ListItem>
-                  <ListItemIcon><EmailIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Email" 
-                    secondary={contact.email || 'Not provided'} 
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon><PhoneIcon /></ListItemIcon>
-                  <ListItemText 
-                    primary="Phone" 
-                    secondary={contact.phone || 'Not provided'} 
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon><LocationIcon /></ListItemIcon>
-                  <ListItemText
-                    primary="Address"
-                    secondary={contact.address || 'Not provided'}
-                  />
-                </ListItem>
-              </List>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Typography variant="h6" gutterBottom>
-                Church Information
-              </Typography>
-              <List>
-                <ListItem>
-                  <ListItemIcon><GroupIcon /></ListItemIcon>
-                  <ListItemText
-                    primary="Group Memberships"
-                    secondary={
-                      contact.groupMemberships && contact.groupMemberships.length > 0
-                        ? contact.groupMemberships.map(gm => gm.group?.name).filter(Boolean).join(', ')
-                        : 'Not assigned'
-                    }
-                  />
-                </ListItem>
-              </List>
-
-              {contact.ageGroup && (
-                <>
-                  <Divider sx={{ my: 2 }} />
+          <Grid container spacing={2}>
+            {/* Personal Information */}
+            <Grid item xs={12} sm={6}>
+              <Card elevation={2}>
+                <CardContent>
                   <Typography variant="h6" gutterBottom>
-                    Additional Info
+                    Personal Information
                   </Typography>
                   <List>
                     <ListItem>
                       <ListItemIcon><PersonIcon /></ListItemIcon>
                       <ListItemText
-                        primary="Age Group"
-                        secondary={contact.ageGroup}
+                        primary="Full Name"
+                        secondary={fullName}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon><CalendarIcon /></ListItemIcon>
+                      <ListItemText
+                        primary="Date of Birth"
+                        secondary={formatDate(contact.dateOfBirth)}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon><PersonIcon /></ListItemIcon>
+                      <ListItemText
+                        primary="Gender"
+                        secondary={contact.gender || 'Not specified'}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon><PersonIcon /></ListItemIcon>
+                      <ListItemText
+                        primary="Marital Status"
+                        secondary={contact.civilStatus || 'Not specified'}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon><WorkIcon /></ListItemIcon>
+                      <ListItemText
+                        primary="Place of Work"
+                        secondary={contact.placeOfWork || 'Not specified'}
                       />
                     </ListItem>
                   </List>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Contact Information */}
+            <Grid item xs={12} sm={6}>
+              <Card elevation={2}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Contact Information
+                  </Typography>
+                  <List>
+                    <ListItem>
+                      <ListItemIcon><EmailIcon /></ListItemIcon>
+                      <ListItemText
+                        primary="Email"
+                        secondary={contact.email || 'Not provided'}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon><PhoneIcon /></ListItemIcon>
+                      <ListItemText
+                        primary="Phone"
+                        secondary={contact.phone || 'Not provided'}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemIcon><LocationIcon /></ListItemIcon>
+                      <ListItemText
+                        primary="Address"
+                        secondary={contact.address || 'Not provided'}
+                      />
+                    </ListItem>
+                  </List>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Church Information */}
+            <Grid item xs={12} sm={6}>
+              <Card elevation={2}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Church Information
+                  </Typography>
+                  <List>
+                    <ListItem>
+                      <ListItemIcon><GroupIcon /></ListItemIcon>
+                      <ListItemText
+                        primary="Group Memberships"
+                        secondary={
+                          contact.groupMemberships && contact.groupMemberships.length > 0
+                            ? contact.groupMemberships
+                              .map(gm => gm.group?.name)
+                              .filter(Boolean)
+                              .join(', ')
+                            : 'Not assigned'
+                        }
+                      />
+                    </ListItem>
+                  </List>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Additional Info (conditional) */}
+            {contact.ageGroup && (
+              <Grid item xs={12} sm={6}>
+                <Card elevation={2}>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Additional Info
+                    </Typography>
+                    <List>
+                      <ListItem>
+                        <ListItemIcon><PersonIcon /></ListItemIcon>
+                        <ListItemText
+                          primary="Age Group"
+                          secondary={contact.ageGroup}
+                        />
+                      </ListItem>
+                    </List>
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
+          </Grid>
         </Grid>
       </Grid>
 
       {/* Edit Dialog */}
-      <Dialog 
-        open={editDialog} 
-        onClose={() => setEditDialog(false)} 
-        maxWidth="md" 
+      <Dialog
+        open={editDialog}
+        onClose={() => setEditDialog(false)}
+        maxWidth="md"
         fullWidth
       >
         <DialogTitle>Edit Contact</DialogTitle>
@@ -360,7 +382,7 @@ const ContactDetail = () => {
           />
         </DialogContent>
       </Dialog>
-    </Box>
+    </Box >
   );
 };
 
