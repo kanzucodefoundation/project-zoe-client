@@ -58,7 +58,6 @@ type DateRange = 'all' | '7' | '30' | 'custom';
 interface TabCache {
   data: Record<string, any>[];
   columns: Column[];
-  pagination: PaginationInfo;
   dateRange: DateRange;
 }
 
@@ -73,7 +72,6 @@ const Reports = () => {
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [submissions, setSubmissions] = useState<Record<string, any>[]>([]);
   const [columns, setColumns] = useState<Column[]>([]);
-  const [pagination, setPagination] = useState<PaginationInfo>({ total: 0, limit: 20, offset: 0 });
   const [tabCache, setTabCache] = useState<Record<number, TabCache>>({});
 
   // Modal state
@@ -123,7 +121,6 @@ const Reports = () => {
     if (cached && cached.dateRange === dateRange) {
       setSubmissions(cached.data);
       setColumns(cached.columns);
-      setPagination(cached.pagination);
       return;
     }
 
@@ -136,13 +133,11 @@ const Reports = () => {
       (response: SubmissionsResponse) => {
         const data = response?.submissions || [];
         const cols = response?.columns || [];
-        const pag = response?.pagination || { total: 0, limit: 20, offset: 0 };
         setSubmissions(data);
         setColumns(cols);
-        setPagination(pag);
         setTabCache((prev) => ({
           ...prev,
-          [activeTab]: { data, columns: cols, pagination: pag, dateRange },
+          [activeTab]: { data, columns: cols, dateRange },
         }));
         setLoadingSubmissions(false);
       },

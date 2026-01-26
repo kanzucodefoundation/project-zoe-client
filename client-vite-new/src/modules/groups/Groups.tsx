@@ -52,7 +52,6 @@ const Groups = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
-  const [currentParentId, setCurrentParentId] = useState<number | null>(null);
   const [cache, setCache] = useState<Record<string, GroupItem[]>>({});
 
   // Actions menu state
@@ -97,7 +96,6 @@ const Groups = () => {
 
   const handleGroupClick = (group: GroupItem) => {
     setBreadcrumbs((prev) => [...prev, { id: group.id, name: group.name, categoryName: group.categoryName }]);
-    setCurrentParentId(group.id);
     setSearchTerm('');
     fetchGroups(group.id);
   };
@@ -105,12 +103,10 @@ const Groups = () => {
   const handleBreadcrumbClick = (index: number) => {
     if (index === -1) {
       setBreadcrumbs([]);
-      setCurrentParentId(null);
       fetchGroups(null);
     } else {
       const target = breadcrumbs[index];
       setBreadcrumbs(breadcrumbs.slice(0, index + 1));
-      setCurrentParentId(target.id);
       fetchGroups(target.id);
     }
     setSearchTerm('');
