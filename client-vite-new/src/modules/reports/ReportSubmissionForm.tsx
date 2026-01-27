@@ -192,13 +192,14 @@ const ReportSubmissionForm = () => {
 
     setSubmitting(true);
 
+    // Backend expects: { data: { fieldName: value, ... } }
     const submissionData = {
-      reportId,
-      data: Object.entries(formData).map(([name, value]) => ({ name, value })),
+      data: formData,
     };
 
+    // Use correct endpoint: POST /api/reports/:reportId/submissions
     post(
-      remoteRoutes.reportsSubmit,
+      `${remoteRoutes.reports}/${reportId}/submissions`,
       submissionData,
       () => {
         toast.success('Report submitted successfully');
