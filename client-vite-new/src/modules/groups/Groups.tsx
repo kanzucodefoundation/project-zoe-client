@@ -1,84 +1,134 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import * as React from 'react';
 import {
   Container,
   Typography,
   Box,
   Button,
-  TextField,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  Menu,
-  MenuItem,
   CircularProgress,
-  Breadcrumbs,
-  Link,
+  IconButton,
+  Paper,
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Search as SearchIcon,
-  MoreVert as MoreVertIcon,
-  NavigateNext as NavigateNextIcon,
+  ChevronRight as ChevronRightIcon,
+  ExpandMore as ExpandMoreIcon,
+  Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import { styled, alpha } from '@mui/material/styles';
 import { get } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 
-interface GroupItem {
+interface GroupNode {
   id: number;
+  privacy: string;
   name: string;
-  categoryName?: string;
-  childCount?: number;
-  memberCount?: number;
-  parentId?: number | null;
+  details: string | null;
+  metaData: string | null;
+  parentId: number | null;
+  address: string | null;
+  children: GroupNode[];
 }
 
-interface BreadcrumbItem {
-  id: number | null;
+// Styled TreeItem with dashed border for hierarchy visualization
+const StyledTreeItem = styled(TreeItem)(({ theme }) => ({
+  '& .MuiTreeItem-content': {
+    padding: theme.spacing(0.5, 1),
+    borderRadius: theme.shape.borderRadius,
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.primary.main, 0.08),
+    },
+    '&.Mui-selected': {
+      backgroundColor: alpha(theme.palette.primary.main, 0.12),
+      '&:hover': {
+        backgroundColor: alpha(theme.palette.primary.main, 0.16),
+      },
+    },
+    '&.Mui-focused': {
+      backgroundColor: alpha(theme.palette.primary.main, 0.12),
+    },
+  },
+  '& .MuiTreeItem-groupTransition': {
+    marginLeft: 16,
+    paddingLeft: 12,
+    borderLeft: `1px dashed ${alpha(theme.palette.text.primary, 0.3)}`,
+  },
+}));
+
+interface TreeLabelProps {
   name: string;
-  categoryName?: string;
+  hasChildren: boolean;
+  onViewDetails: (e: React.MouseEvent) => void;
+  onAddChild: (e: React.MouseEvent) => void;
 }
+
+const TreeLabel = ({ name, hasChildren, onViewDetails, onAddChild }: TreeLabelProps) => (
+  <Box
+    display="flex"
+    alignItems="center"
+    justifyContent="space-between"
+    width="100%"
+    py={0.5}
+  >
+    <Box display="flex" alignItems="center" flexGrow={1} onClick={onViewDetails} sx={{ cursor: 'pointer' }}>
+      <Typography variant="body1" fontWeight={hasChildren ? 500 : 400}>
+        {name}
+      </Typography>
+    </Box>
+    <Box display="flex" gap={0.5} onClick={(e) => e.stopPropagation()}>
+      <IconButton
+        size="small"
+        onClick={onViewDetails}
+        title="View Details"
+        sx={{ opacity: 0.6, '&:hover': { opacity: 1 } }}
+      >
+        <VisibilityIcon fontSize="small" />
+      </IconButton>
+      <IconButton
+        size="small"
+        color="primary"
+        onClick={onAddChild}
+        title="Add Child Group"
+        sx={{ opacity: 0.6, '&:hover': { opacity: 1 } }}
+      >
+        <AddIcon fontSize="small" />
+      </IconButton>
+    </Box>
+  </Box>
+);
 
 const Groups = () => {
   const navigate = useNavigate();
 
-  const [groups, setGroups] = useState<GroupItem[]>([]);
+  const [groups, setGroups] = useState<GroupNode[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
-  const [cache, setCache] = useState<Record<string, GroupItem[]>>({});
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
-  // Actions menu state
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedGroup, setSelectedGroup] = useState<GroupItem | null>(null);
+  useEffect(() => {
+    fetchGroups();
+  }, []);
 
-  const getCacheKey = (parentId: number | null) => parentId === null ? 'root' : String(parentId);
-
-  const fetchGroups = useCallback((parentId: number | null) => {
-    const cacheKey = getCacheKey(parentId);
-    const cached = cache[cacheKey];
-    if (cached) {
-      setGroups(cached);
-      setLoading(false);
-      return;
-    }
-
+  const fetchGroups = () => {
     setLoading(true);
-    const parentParam = parentId !== null ? String(parentId) : 'null';
-    const url = `${remoteRoutes.authServer}/api/groups?parentId=${parentParam}&limit=100`;
-
     get(
-      url,
-      (response: any) => {
-        const data: GroupItem[] = Array.isArray(response) ? response : [];
+      remoteRoutes.groups,
+      (response: GroupNode[]) => {
+        const data = Array.isArray(response) ? response : [];
+        console.log('Groups tree data:', data);
+        console.log('Root groups:', data.length);
+        const withChildren = data.filter(g => g.children && g.children.length > 0);
+        console.log('Root groups with children:', withChildren.length);
+
         setGroups(data);
-        setCache((prev) => ({ ...prev, [cacheKey]: data }));
+        // Auto-expand root level items that have children
+        const rootIds = data
+          .filter((g) => g.children && g.children.length > 0)
+          .map((g) => String(g.id));
+        setExpandedItems(rootIds);
         setLoading(false);
       },
       (error: any) => {
@@ -88,189 +138,117 @@ const Groups = () => {
         setLoading(false);
       },
     );
-  }, [cache]);
-
-  useEffect(() => {
-    fetchGroups(null);
-  }, []);
-
-  const handleGroupClick = (group: GroupItem) => {
-    setBreadcrumbs((prev) => [...prev, { id: group.id, name: group.name, categoryName: group.categoryName }]);
-    setSearchTerm('');
-    fetchGroups(group.id);
   };
 
-  const handleBreadcrumbClick = (index: number) => {
-    if (index === -1) {
-      setBreadcrumbs([]);
-      fetchGroups(null);
-    } else {
-      const target = breadcrumbs[index];
-      setBreadcrumbs(breadcrumbs.slice(0, index + 1));
-      fetchGroups(target.id);
-    }
-    setSearchTerm('');
+  const handleViewDetails = (group: GroupNode) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`${localRoutes.groups}/${group.id}`);
   };
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, group: GroupItem) => {
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-    setSelectedGroup(group);
+  const handleAddChild = (parentGroup: GroupNode) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // TODO: Implement add child group dialog
+    toast.info(`Add group under "${parentGroup.name}" - coming soon`);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setSelectedGroup(null);
+  const handleAddRootGroup = () => {
+    // TODO: Implement add root group dialog
+    toast.info('Add root group - coming soon');
   };
 
-  const handleViewDetails = () => {
-    if (selectedGroup) {
-      navigate(`${localRoutes.groups}/${selectedGroup.id}`);
-    }
-    handleMenuClose();
+  const handleExpandedItemsChange = (
+    _event: React.SyntheticEvent,
+    itemIds: string[],
+  ) => {
+    setExpandedItems(itemIds);
   };
 
-  const filteredGroups = searchTerm
-    ? groups.filter((g) => g.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : groups;
+  const renderTreeItems = (nodes: GroupNode[]): React.ReactNode => {
+    return nodes.map((node) => (
+      <StyledTreeItem
+        key={node.id}
+        itemId={String(node.id)}
+        label={
+          <TreeLabel
+            name={node.name}
+            hasChildren={node.children && node.children.length > 0}
+            onViewDetails={handleViewDetails(node)}
+            onAddChild={handleAddChild(node)}
+          />
+        }
+      >
+        {node.children && node.children.length > 0
+          ? renderTreeItems(node.children)
+          : null}
+      </StyledTreeItem>
+    ));
+  };
 
-  const currentParentName = breadcrumbs.length > 0
-    ? breadcrumbs[breadcrumbs.length - 1].name
-    : null;
+  const countTotalGroups = (nodes: GroupNode[]): number => {
+    return nodes.reduce((count, node) => {
+      return count + 1 + (node.children ? countTotalGroups(node.children) : 0);
+    }, 0);
+  };
+
+  const totalGroups = countTotalGroups(groups);
 
   return (
     <Container maxWidth="lg">
       {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2} flexWrap="wrap" gap={2}>
+      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} flexWrap="wrap" gap={2}>
         <Box>
           <Typography variant="h4">Groups</Typography>
           <Typography variant="body2" color="text.secondary">
-            {currentParentName
-              ? `Viewing children of ${currentParentName}`
-              : 'Browse your organization\'s groups'}
+            {loading
+              ? 'Loading groups...'
+              : `${totalGroups} groups in your organization`}
           </Typography>
         </Box>
         <Box display="flex" gap={1}>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => toast.info('Add group coming soon')}
+            onClick={handleAddRootGroup}
           >
             Add Group
           </Button>
         </Box>
       </Box>
 
-      {/* Breadcrumbs */}
-      <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ mb: 2 }}>
-        <Link
-          component="button"
-          underline="hover"
-          color={breadcrumbs.length === 0 ? 'text.primary' : 'inherit'}
-          onClick={() => handleBreadcrumbClick(-1)}
-          sx={{ fontWeight: breadcrumbs.length === 0 ? 'bold' : 'normal', cursor: 'pointer' }}
-        >
-          Groups
-        </Link>
-        {breadcrumbs.map((crumb, index) => {
-          const isLast = index === breadcrumbs.length - 1;
-          return isLast ? (
-            <Typography key={crumb.id} color="text.primary" fontWeight="bold">
-              {crumb.name}
-            </Typography>
-          ) : (
-            <Link
-              key={crumb.id}
-              component="button"
-              underline="hover"
-              color="inherit"
-              onClick={() => handleBreadcrumbClick(index)}
-              sx={{ cursor: 'pointer' }}
-            >
-              {crumb.name}
-            </Link>
-          );
-        })}
-      </Breadcrumbs>
-
-      {/* Search */}
-      <Box display="flex" gap={2} mb={3}>
-        <TextField
-          fullWidth
-          placeholder="Search groups at this level..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-          }}
-          size="small"
-        />
-      </Box>
-
-      {/* Table */}
+      {/* Tree View */}
       {loading ? (
         <Box display="flex" justifyContent="center" py={6}>
           <CircularProgress />
         </Box>
-      ) : filteredGroups.length === 0 ? (
+      ) : groups.length === 0 ? (
         <Box textAlign="center" py={6}>
           <Typography color="text.secondary">
-            {searchTerm ? 'No groups match your search' : 'No groups found at this level'}
+            No groups found. Create your first group to get started.
           </Typography>
         </Box>
       ) : (
-        <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow >
-                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Name</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Type</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Groups</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Members</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredGroups.map((group) => (
-                <TableRow
-                  key={group.id}
-                  hover
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => handleGroupClick(group)}
-                >
-                  <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold', color: 'primary' }}>
-                    {group.name}
-                  </TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                    {group.categoryName || '-'}
-                  </TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                    {(group.childCount ?? 0) > 0 ? `${group.childCount} groups` : '-'}
-                  </TableCell>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                    {(group.memberCount ?? 0) > 0 ? `${group.memberCount} members` : '-'}
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton size="small" onClick={(e) => handleMenuOpen(e, group)}>
-                      <MoreVertIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Paper sx={{ p: 2 }}>
+          <SimpleTreeView
+            expandedItems={expandedItems}
+            onExpandedItemsChange={handleExpandedItemsChange}
+            slots={{
+              collapseIcon: ExpandMoreIcon,
+              expandIcon: ChevronRightIcon,
+            }}
+            sx={{
+              '& .MuiTreeItem-root': {
+                '&:not(:last-child)': {
+                  marginBottom: 0.5,
+                },
+              },
+            }}
+          >
+            {renderTreeItems(groups)}
+          </SimpleTreeView>
+        </Paper>
       )}
-
-      {/* Actions Menu */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
-        <MenuItem onClick={handleViewDetails}>Edit</MenuItem>
-      </Menu>
     </Container>
   );
 };
