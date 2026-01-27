@@ -163,13 +163,17 @@ const UserManagement = () => {
 
   const handleSubmitEdit = () => {
     if (!selectedUser) return;
-    
+
     setSubmitting(true);
-    const updateData: any = { ...formData };
-    if (!updateData.password) {
-      delete updateData.password; // Don't update password if not provided
-    }
-    
+
+    // Backend expects: id, username, roles, isActive (password is optional and excluded from edit)
+    const updateData = {
+      id: selectedUser.id,
+      username: formData.username,
+      roles: formData.roles,
+      isActive: selectedUser.isActive,
+    };
+
     put(
       `${remoteRoutes.users}/${selectedUser.id}`,
       updateData,
@@ -414,27 +418,26 @@ const UserManagement = () => {
               required
               value={formData.email}
               onChange={(e) => handleFormChange('email', e.target.value)}
-            />
-            <TextField
-              label="Password"
-              type="password"
-              placeholder="Leave blank to keep current password"
-              value={formData.password}
-              onChange={(e) => handleFormChange('password', e.target.value)}
+              disabled
+              helperText="Email cannot be changed"
             />
             <Box display="flex" gap={2}>
               <TextField
                 label="First Name"
                 value={formData.firstName}
                 onChange={(e) => handleFormChange('firstName', e.target.value)}
+                disabled
+                helperText="Read-only"
               />
               <TextField
                 label="Last Name"
                 value={formData.lastName}
                 onChange={(e) => handleFormChange('lastName', e.target.value)}
+                disabled
+                helperText="Read-only"
               />
             </Box>
-            
+
             <Typography variant="subtitle2" sx={{ mt: 2 }}>Roles:</Typography>
             <Box display="flex" flexWrap="wrap" gap={1}>
               {availableRoles.map((role) => (
@@ -452,12 +455,12 @@ const UserManagement = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditDialog(false)}>Cancel</Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handleSubmitEdit}
-            disabled={submitting || !formData.username || !formData.email}
+            disabled={submitting || !formData.username}
           >
-            {submitting ? 'Updating...' : 'Update User'}
+            {submitting ? 'Updating...' : 'Save Changes'}
           </Button>
         </DialogActions>
       </Dialog>
