@@ -22,17 +22,8 @@ import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { styled, alpha } from '@mui/material/styles';
 import { get } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
-
-interface GroupNode {
-  id: number;
-  privacy: string;
-  name: string;
-  details: string | null;
-  metaData: string | null;
-  parentId: number | null;
-  address: string | null;
-  children: GroupNode[];
-}
+import AddGroupDialog from './AddGroupDialog';
+import type { GroupNode } from './types';
 
 // Styled TreeItem with dashed border for hierarchy visualization
 const StyledTreeItem = styled(TreeItem)(({ theme }) => ({
@@ -107,6 +98,8 @@ const Groups = () => {
   const [groups, setGroups] = useState<GroupNode[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedParent, setSelectedParent] = useState<GroupNode | null>(null);
 
   useEffect(() => {
     fetchGroups();
@@ -149,13 +142,22 @@ const Groups = () => {
   const handleAddChild = (parentGroup: GroupNode) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // TODO: Implement add child group dialog
-    toast.info(`Add group under "${parentGroup.name}" - coming soon`);
+    setSelectedParent(parentGroup);
+    setDialogOpen(true);
   };
 
   const handleAddRootGroup = () => {
-    // TODO: Implement add root group dialog
-    toast.info('Add root group - coming soon');
+    setSelectedParent(null);
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setSelectedParent(null);
+  };
+
+  const handleDialogSuccess = () => {
+    fetchGroups();
   };
 
   const handleExpandedItemsChange = (
@@ -249,6 +251,14 @@ const Groups = () => {
           </SimpleTreeView>
         </Paper>
       )}
+
+      {/* Add Group Dialog */}
+      <AddGroupDialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        onSuccess={handleDialogSuccess}
+        parentGroup={selectedParent}
+      />
     </Container>
   );
 };

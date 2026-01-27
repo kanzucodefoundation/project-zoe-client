@@ -99,6 +99,13 @@ const timeRangeOptions = [
   { value: '3months', label: 'Past 3 Months' },
 ];
 
+interface LocationGroup {
+  id: number;
+  name: string;
+  categoryName?: string;
+  category?: { name: string };
+}
+
 const summaryCardsDef = [
   { key: 'avgAttendance', label: 'Avg Attendance', icon: GroupsRoundedIcon },
   { key: 'totalVisitors', label: 'Total Visitors', icon: PersonAddRoundedIcon },
@@ -122,6 +129,8 @@ const Dashboard = () => {
   const [reports, setReports] = useState<IReport[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [locations, setLocations] = useState<LocationGroup[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<number | ''>('');
 
   // Actions menu state
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -130,13 +139,30 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.core); 
 
+  // Fetch user's accessible locations (groups with children from backend)
+  useEffect(() => {
+    get(
+      remoteRoutes.groupsMyGroups,
+      (response: LocationGroup[]) => {
+        setLocations(response || []);
+      },
+      (error: $TsFixMe) => {
+        console.error('Failed to fetch user locations:', error);
+      },
+    );
+  }, []);
+
   // React Query for dashboard data
   const { data: dashboardData, isLoading: loading } = useQuery<DashboardData>({
-    queryKey: ['dashboardSummary', timeRange],
+    queryKey: ['dashboardSummary', timeRange, selectedLocation],
     queryFn: () => {
       return new Promise<DashboardData>((resolve, reject) => {
+        let url = `${remoteRoutes.dashboardSummary}?timeRange=${timeRange}`;
+        if (selectedLocation) {
+          url += `&groupId=${selectedLocation}`;
+        }
         get(
-          `${remoteRoutes.dashboardSummary}?timeRange=${timeRange}`,
+          url,
           (response: $TsFixMe) => {
             resolve(response);
           },
@@ -227,17 +253,34 @@ const Dashboard = () => {
             Here's an overview of your metrics.
           </Typography>
         </Box>
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <Select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-            disabled={loading}
-          >
-            {timeRangeOptions.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Stack direction="row" spacing={2}>
+          {locations.length > 0 && (
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <Select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value as number | '')}
+                disabled={loading}
+                displayEmpty
+              >
+                <MenuItem value="">All Locations</MenuItem>
+                {locations.map((loc) => (
+                  <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <Select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value as TimeRange)}
+              disabled={loading}
+            >
+              {timeRangeOptions.map((opt) => (
+                <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
       </Stack>
 
       {/* Report Buttons */}

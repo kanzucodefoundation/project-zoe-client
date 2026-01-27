@@ -18,6 +18,7 @@ import ReportSubmissionForm from './modules/reports/ReportSubmissionForm';
 import UserManagement from './modules/admin/users/UserManagement';
 import ReportConfiguration from './modules/admin/reports/ReportConfiguration';
 import Groups from './modules/groups/Groups';
+import GroupDetails from './modules/groups/GroupDetails';
 import LayoutV2 from "./components/layout-v2/LayoutV2.tsx";
 const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
@@ -88,6 +89,7 @@ function App() {
             <Route path={localRoutes.reports} element={<Reports />} />
             <Route path={localRoutes.reportSubmit} element={<ReportSubmissionForm />} />
             <Route path={localRoutes.groups} element={<Groups />} />
+            <Route path={localRoutes.groupsDetails} element={<GroupDetails />} />
             <Route path={localRoutes.users} element={<UserManagement />} />
             <Route path={localRoutes.reportConfiguration} element={<ReportConfiguration />} />
             <Route path="/" element={<Dashboard />} />
