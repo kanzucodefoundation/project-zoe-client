@@ -60,8 +60,8 @@ const navItems: NavItem[] = [
     children: [
       { name: 'Manage Users', icon: <PeopleRoundedIcon />, path: localRoutes.users },
       { name: 'Manage Reports', icon: <AssessmentRoundedIcon />, path: localRoutes.reportConfiguration },
-      { name: 'Group Categories', icon: <GroupRoundedIcon />, path: localRoutes.groupsCategories },
-      { name: 'Settings', icon: <SettingsRoundedIcon />, path: localRoutes.settings },
+      // { name: 'Group Categories', icon: <GroupRoundedIcon />, path: localRoutes.groupsCategories },
+      // { name: 'Settings', icon: <SettingsRoundedIcon />, path: localRoutes.settings },
     ],
   },
 ];

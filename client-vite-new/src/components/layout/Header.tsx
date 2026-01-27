@@ -80,13 +80,13 @@ export const Header = ({ title, onDrawerToggle }: HeaderProps) => {
           open={Boolean(anchorEl)}
           onClose={handleProfileMenuClose}
         >
-          <MenuItem onClick={() => navigate(localRoutes.profile)}>
+          {/*<MenuItem onClick={() => navigate(localRoutes.profile)}>
             Profile
           </MenuItem>
           <MenuItem onClick={() => navigate(localRoutes.settings)}>
             Settings
           </MenuItem>
-          <Divider />
+          <Divider />*/}
           <MenuItem onClick={handleLogout}>
             <ListItemIcon>
               <Logout fontSize="small" />

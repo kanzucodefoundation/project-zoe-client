@@ -76,9 +76,9 @@ export default function OptionsMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleProfile}>Profile</MenuItem>
+        {/*<MenuItem onClick={handleProfile}>Profile</MenuItem>
         <MenuItem onClick={handleSettings}>Settings</MenuItem>
-        <Divider />
+        <Divider />*/}
         <MenuItem
           onClick={handleLogout}
           sx={{

@@ -118,7 +118,7 @@ export default function Header() {
                 horizontal: 'right',
               }}
             >
-              <MenuItem onClick={() => {
+              {/*<MenuItem onClick={() => {
                 navigate(localRoutes.profile);
                 handleProfileMenuClose();
               }}>
@@ -130,7 +130,7 @@ export default function Header() {
               }}>
                 Settings
               </MenuItem>
-              <Divider />
+              <Divider />*/}
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon>
                   <LogoutRoundedIcon fontSize="small" />
