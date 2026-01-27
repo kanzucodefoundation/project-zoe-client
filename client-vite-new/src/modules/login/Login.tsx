@@ -19,7 +19,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    churchName: '',
+    churchName: 'Worship Harvest', // Hardcoded for initial launch - uncomment field below to re-enable
     username: '',
     password: '',
   });
@@ -109,8 +109,10 @@ const Login = () => {
           )}
 
           <Box component="form" onSubmit={handleSubmit}>
+            {/* Church Name - HIDDEN for initial launch (hardcoded to "Worship Harvest") */}
+            {/* Uncomment below to re-enable church name field for multi-tenant:
             <TextField
-                variant="outlined"
+              variant="outlined"
               fullWidth
               label="Church Name"
               name="churchName"
@@ -120,12 +122,15 @@ const Login = () => {
               onChange={handleChange}
               sx={{ mb: 2.5 }}
             />
+            */}
+
             <TextField
               fullWidth
               label="Email"
               name="username"
               type="email"
               autoComplete="email"
+              autoFocus
               value={formData.username}
               onChange={handleChange}
               sx={{ mb: 2.5 }}

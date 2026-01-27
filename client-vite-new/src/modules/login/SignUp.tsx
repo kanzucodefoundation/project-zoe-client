@@ -62,7 +62,7 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<FormData>({
-    churchName: '',
+    churchName: 'Worship Harvest', // Hardcoded for initial launch - uncomment field below to re-enable
     firstName: '',
     lastName: '',
     gender: '',
@@ -159,11 +159,13 @@ const SignUp = () => {
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
 
-    if (!formData.churchName) {
-      newErrors.churchName = 'Church name is required';
-    } else if (formData.churchName.trim().length < 3) {
-      newErrors.churchName = 'Church name must be at least 3 characters';
-    }
+    // Church name validation removed - currently hardcoded to "Worship Harvest"
+    // Uncomment below when church name field is re-enabled:
+    // if (!formData.churchName) {
+    //   newErrors.churchName = 'Church name is required';
+    // } else if (formData.churchName.trim().length < 3) {
+    //   newErrors.churchName = 'Church name must be at least 3 characters';
+    // }
 
     if (!formData.firstName) {
       newErrors.firstName = 'First name is required';
@@ -318,7 +320,8 @@ const SignUp = () => {
           </Typography>
 
           <Box component="form" onSubmit={handleSubmit}>
-            {/* Church Name */}
+            {/* Church Name - HIDDEN for initial launch (hardcoded to "Worship Harvest") */}
+            {/* Uncomment below to re-enable church name field for multi-tenant:
             <TextField
               fullWidth
               label="Church Name"
@@ -330,6 +333,7 @@ const SignUp = () => {
               autoFocus
               sx={{ mb: 2.5 }}
             />
+            */}
 
             {/* First Name */}
             <TextField
@@ -340,6 +344,7 @@ const SignUp = () => {
               onChange={(e) => handleChange('firstName', e.target.value)}
               error={!!errors.firstName}
               helperText={errors.firstName}
+              autoFocus
               sx={{ mb: 2.5 }}
             />
 
