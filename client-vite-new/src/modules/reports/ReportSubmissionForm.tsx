@@ -25,6 +25,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { get, post } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
+import type {$TsFixMe} from "../../utils/types.ts";
 
 interface DynamicGroupOption {
   type: 'dynamic_group_selector';
@@ -53,7 +54,7 @@ const ReportSubmissionForm = () => {
 
   const [reportName, setReportName] = useState('');
   const [reportFields, setReportFields] = useState<IReportField[]>([]);
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [formData, setFormData] = useState<Record<string, $TsFixMe>>({});
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -63,7 +64,7 @@ const ReportSubmissionForm = () => {
   useEffect(() => {
     get(
       `${remoteRoutes.reports}/${reportId}`,
-      (response: any) => {
+      (response: $TsFixMe) => {
         if (Array.isArray(response.fields)) {
           setReportFields(response.fields);
           setReportName(response.name || 'Submit Report');
@@ -72,7 +73,7 @@ const ReportSubmissionForm = () => {
         }
         setLoading(false);
       },
-      (error: any) => {
+      (error: $TsFixMe) => {
         console.error('Failed to fetch report fields:', error);
         toast.error('Failed to load report');
         setLoading(false);
@@ -80,28 +81,35 @@ const ReportSubmissionForm = () => {
     );
   }, [reportId]);
 
-  // Fetch dynamic group options when fields are loaded
-  useEffect(() => {
-    reportFields.forEach((field) => {
-      if (field.type === 'select' && isDynamicGroupField(field)) {
-        fetchDynamicGroups(field);
-      }
-    });
-  }, [reportFields]);
-
   const isDynamicGroupField = (field: IReportField): boolean => {
     if (!field.options || !Array.isArray(field.options)) return false;
     return field.options.some(
-      (opt) => typeof opt === 'object' && opt !== null && (opt as DynamicGroupOption).type === 'dynamic_group_selector',
+        (opt) => typeof opt === 'object' && opt !== null && (opt as DynamicGroupOption).type === 'dynamic_group_selector',
     );
   };
-
   const getDynamicConfig = (field: IReportField): DynamicGroupOption | null => {
     if (!field.options || !Array.isArray(field.options)) return null;
     const opt = field.options.find(
-      (o) => typeof o === 'object' && o !== null && (o as DynamicGroupOption).type === 'dynamic_group_selector',
+        (o) => typeof o === 'object' && o !== null && (o as DynamicGroupOption).type === 'dynamic_group_selector',
     );
     return (opt as DynamicGroupOption) || null;
+  };
+  const handleChange = (name: string, value: $TsFixMe) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setValidationErrors((prev) => {
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  };
+
+  const handleDynamicGroupChange = (fieldName: string, group: DynamicGroup) => {
+    const lowerName = fieldName.toLowerCase();
+    if (lowerName.includes('id')) {
+      handleChange(fieldName, group.id);
+    } else {
+      handleChange(fieldName, group.name);
+    }
   };
 
   const fetchDynamicGroups = (field: IReportField) => {
@@ -120,52 +128,50 @@ const ReportSubmissionForm = () => {
     }
 
     get(
-      url,
-      (response: any) => {
-        let groups: DynamicGroup[] = Array.isArray(response) ? response : [];
+        url,
+        (response: $TsFixMe) => {
+          let groups: DynamicGroup[] = Array.isArray(response) ? response : [];
 
-        // For user scope, filter by category client-side (case-insensitive)
-        if (config.scope === 'user' && config.group_category) {
-          const categoryLower = config.group_category.toLowerCase();
-          groups = groups.filter((g: any) => {
-            const groupCategory = (g.categoryName || g.category?.name || g.category || '').toLowerCase();
-            return groupCategory === categoryLower;
-          });
-        }
+          // For user scope, filter by category client-side (case-insensitive)
+          if (config.scope === 'user' && config.group_category) {
+            const categoryLower = config.group_category.toLowerCase();
+            groups = groups.filter((g: $TsFixMe) => {
+              const groupCategory = (g.categoryName || g.category?.name || g.category || '').toLowerCase();
+              return groupCategory === categoryLower;
+            });
+          }
 
-        setDynamicOptions((prev) => ({ ...prev, [field.name]: groups }));
-        setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
+          setDynamicOptions((prev) => ({ ...prev, [field.name]: groups }));
+          setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
 
-        // Auto-select if only one option
-        if (groups.length === 1) {
-          handleDynamicGroupChange(field.name, groups[0]);
-        }
-      },
-      (error: any) => {
-        console.error(`Failed to fetch groups for ${field.name}:`, error);
-        setDynamicOptions((prev) => ({ ...prev, [field.name]: [] }));
-        setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
-      },
+          // Auto-select if only one option
+          if (groups.length === 1) {
+            handleDynamicGroupChange(field.name, groups[0]);
+          }
+        },
+        (error: $TsFixMe) => {
+          console.error(`Failed to fetch groups for ${field.name}:`, error);
+          setDynamicOptions((prev) => ({ ...prev, [field.name]: [] }));
+          setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
+        },
     );
   };
 
-  const handleChange = (name: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setValidationErrors((prev) => {
-      const next = { ...prev };
-      delete next[name];
-      return next;
-    });
-  };
 
-  const handleDynamicGroupChange = (fieldName: string, group: DynamicGroup) => {
-    const lowerName = fieldName.toLowerCase();
-    if (lowerName.includes('id')) {
-      handleChange(fieldName, group.id);
-    } else {
-      handleChange(fieldName, group.name);
-    }
-  };
+  // Fetch dynamic group options when fields are loaded
+  useEffect(() => {
+    reportFields.forEach((field) => {
+      if (field.type === 'select' && isDynamicGroupField(field)) {
+        fetchDynamicGroups(field);
+      }
+    });
+  }, [reportFields]);
+
+
+
+
+
+
 
   const handleSubmit = () => {
     const errors: Record<string, string> = {};
@@ -198,7 +204,7 @@ const ReportSubmissionForm = () => {
         toast.success('Report submitted successfully');
         navigate(localRoutes.dashboard);
       },
-      (error: any) => {
+      (error: $TsFixMe) => {
         console.error('Submission failed:', error);
         const message = error?.response?.data?.message || 'Failed to submit report';
         toast.error(message);
@@ -299,7 +305,7 @@ const ReportSubmissionForm = () => {
             <DatePicker
               label={field.label}
               value={value ? parseISO(value) : null}
-              onChange={(date: Date | null) => handleChange(field.name, date ? format(date, 'yyyy-MM-dd') : '')}
+              onChange={((date: Date | null) => handleChange(field.name, date ? format(date, 'yyyy-MM-dd') : '')) as $TsFixMe}
               slotProps={{
                 textField: {
                   fullWidth: true,

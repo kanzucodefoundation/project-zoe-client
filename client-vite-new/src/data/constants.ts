@@ -118,7 +118,8 @@ export const remoteRoutes = {
   contactsIdentification: `${apiBaseUrl}/api/crm/identifications`,
   contactsRequests: `${apiBaseUrl}/api/crm/requests`,
 
-  groups: `${apiBaseUrl}/api/groups/group`,
+  groups: `${apiBaseUrl}/api/groups`,
+  group: `${apiBaseUrl}/api/groups/group`,
   groupsCombo: `${apiBaseUrl}/api/groups/combo`,
   groupsCategories: `${apiBaseUrl}/api/groups/category`,
   groupsMembership: `${apiBaseUrl}/api/groups/member`,
