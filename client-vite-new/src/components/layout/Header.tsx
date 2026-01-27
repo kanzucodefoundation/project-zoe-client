@@ -3,7 +3,6 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Divider,
   IconButton,
   Avatar,
   Menu,
@@ -14,11 +13,9 @@ import {
   Menu as MenuIcon,
   Logout,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../data/store';
 import { logout } from '../../data/coreSlice';
-import { localRoutes } from '../../data/constants';
 import { drawerWidth } from './Sidebar';
 
 interface HeaderProps {
@@ -27,7 +24,6 @@ interface HeaderProps {
 }
 
 export const Header = ({ title, onDrawerToggle }: HeaderProps) => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.core);
 
