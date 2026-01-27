@@ -13,7 +13,7 @@ import { getInitials } from '../utils/stringHelpers';
 import { handleLogout } from '../data/coreActions';
 import { localRoutes } from '../data/constants';
 
-export const BarView = (props: any) => {
+export const BarView = (props: $) => {
   const profile = useSelector((state: IState) => state.core.user);
   const user = useSelector((state: IPersonState) => state.core.user);
   const dispatch = useDispatch();

@@ -110,6 +110,7 @@ const Login = () => {
 
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
+                variant="outlined"
               fullWidth
               label="Church Name"
               name="churchName"
