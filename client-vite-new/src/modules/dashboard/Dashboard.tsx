@@ -46,6 +46,7 @@ import { remoteRoutes } from '../../data/constants';
 import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
 import type {$TsFixMe} from "../../utils/types.ts";
+import BirthdayWidget from './BirthdayWidget';
 
 interface SummaryMetrics {
   avgAttendance: number;
@@ -364,6 +365,13 @@ const Dashboard = () => {
                 </Grid>
               );
             })}
+          </Grid>
+
+          {/* Birthday Widget */}
+          <Grid container spacing={2} columns={12} sx={{ mb: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <BirthdayWidget />
+            </Grid>
           </Grid>
 
           {/* Detailed Breakdown */}

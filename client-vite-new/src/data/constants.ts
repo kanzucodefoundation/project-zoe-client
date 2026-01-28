@@ -95,6 +95,7 @@ export const remoteRoutes = {
   login: `${apiBaseUrl}/api/auth/login`,
   signup: `${apiBaseUrl}/api/register`,
   dashboardSummary: `${apiBaseUrl}/api/dashboard/summary`,
+  dashboardBirthdays: `${apiBaseUrl}/api/dashboard/birthdays-this-week`,
   profile: `${apiBaseUrl}/api/auth/profile`,
   register: `${apiBaseUrl}/api/register`,
   forgotPassword: `${apiBaseUrl}/api/auth/forgot-password`,
