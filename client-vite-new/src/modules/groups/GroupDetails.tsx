@@ -15,11 +15,13 @@ import {
   ArrowBack as ArrowBackIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
+  SmsRounded as SmsIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { get, del } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import AddGroupDialog from './AddGroupDialog';
+import MessageGroupModal from './MessageGroupModal';
 import type { GroupNode } from './types';
 
 interface GroupDetail {
@@ -42,6 +44,7 @@ const GroupDetails = () => {
   const [group, setGroup] = useState<GroupDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const fetchGroup = () => {
@@ -153,6 +156,13 @@ const GroupDetails = () => {
           </Box>
         </Box>
         <Box display="flex" gap={1}>
+          <Button
+            variant="contained"
+            startIcon={<SmsIcon />}
+            onClick={() => setMessageModalOpen(true)}
+          >
+            Message Group
+          </Button>
           <Button
             variant="outlined"
             startIcon={<EditIcon />}
@@ -273,6 +283,14 @@ const GroupDetails = () => {
         onClose={() => setEditDialogOpen(false)}
         onSuccess={handleEditSuccess}
         editGroup={groupAsNode}
+      />
+
+      {/* Message Group Modal */}
+      <MessageGroupModal
+        open={messageModalOpen}
+        onClose={() => setMessageModalOpen(false)}
+        groupId={group.id}
+        groupName={group.name}
       />
     </Container>
   );
