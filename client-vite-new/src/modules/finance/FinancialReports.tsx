@@ -27,7 +27,9 @@ import {
 } from '@mui/x-charts';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import {
   Download as DownloadIcon,
   Refresh as RefreshIcon,
@@ -42,10 +44,10 @@ const FinancialReports = () => {
   const [accounts, setAccounts] = useState<FinancialAccount[]>([]);
 
   // Filters
-  const [dateFrom, setDateFrom] = useState<Date | null>(
-    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+  const [dateFrom, setDateFrom] = useState<Dayjs | null>(
+    dayjs().startOf('month')
   );
-  const [dateTo, setDateTo] = useState<Date | null>(new Date());
+  const [dateTo, setDateTo] = useState<Dayjs | null>(dayjs());
   const [accountFilter, setAccountFilter] = useState<number | 'ALL'>('ALL');
 
   // Report data
@@ -58,8 +60,8 @@ const FinancialReports = () => {
     setLoading(true);
 
     const params = new URLSearchParams({
-      dateFrom: dateFrom.toISOString().split('T')[0],
-      dateTo: dateTo.toISOString().split('T')[0],
+      dateFrom: dateFrom.format('YYYY-MM-DD'),
+      dateTo: dateTo.format('YYYY-MM-DD'),
     });
     if (accountFilter !== 'ALL') {
       params.append('accountId', accountFilter.toString());
@@ -112,8 +114,8 @@ const FinancialReports = () => {
     if (!dateFrom || !dateTo) return;
 
     const params = new URLSearchParams({
-      dateFrom: dateFrom.toISOString().split('T')[0],
-      dateTo: dateTo.toISOString().split('T')[0],
+      dateFrom: dateFrom.format('YYYY-MM-DD'),
+      dateTo: dateTo.format('YYYY-MM-DD'),
       format: 'csv',
     });
     if (accountFilter !== 'ALL') {
@@ -143,7 +145,7 @@ const FinancialReports = () => {
     : [];
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="lg">
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Financial Reports</Typography>
@@ -167,7 +169,7 @@ const FinancialReports = () => {
             <DatePicker
               label="From"
               value={dateFrom}
-              onChange={setDateFrom}
+              onChange={(value) => setDateFrom(value as Dayjs | null)}
               slotProps={{
                 textField: { size: 'small', sx: { width: 180 } },
               }}
@@ -175,7 +177,7 @@ const FinancialReports = () => {
             <DatePicker
               label="To"
               value={dateTo}
-              onChange={setDateTo}
+              onChange={(value) => setDateTo(value as Dayjs | null)}
               slotProps={{
                 textField: { size: 'small', sx: { width: 180 } },
               }}
@@ -272,7 +274,7 @@ const FinancialReports = () => {
                       series={[
                         {
                           data: categoryData,
-                          highlightScope: { faded: 'global', highlighted: 'item' },
+                          highlightScope: { fade: 'global', highlight: 'item' },
                         },
                       ]}
                       height={300}

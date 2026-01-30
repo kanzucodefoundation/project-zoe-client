@@ -41,10 +41,10 @@ import {
 import { toast } from 'react-toastify';
 import { get, post, put } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
+import { TransactionStatus } from './types';
 import type {
   Transaction,
   FinancialAccount,
-  TransactionStatus,
   MatchSuggestion,
 } from './types';
 
@@ -87,7 +87,7 @@ const Reconciliation = () => {
   const [accounts, setAccounts] = useState<FinancialAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<TransactionStatus | 'ALL'>('PENDING');
+  const [statusFilter, setStatusFilter] = useState<TransactionStatus | 'ALL'>(TransactionStatus.PENDING);
   const [accountFilter, setAccountFilter] = useState<number | 'ALL'>('ALL');
   const [tabValue, setTabValue] = useState(0);
 

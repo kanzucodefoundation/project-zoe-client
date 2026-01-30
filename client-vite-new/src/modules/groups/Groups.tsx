@@ -161,7 +161,7 @@ const Groups = () => {
   };
 
   const handleExpandedItemsChange = (
-    _event: React.SyntheticEvent,
+    _event: React.SyntheticEvent | null,
     itemIds: string[],
   ) => {
     setExpandedItems(itemIds);

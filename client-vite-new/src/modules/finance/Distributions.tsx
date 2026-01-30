@@ -32,7 +32,8 @@ import {
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import type { Dayjs } from 'dayjs';
 import { toast } from 'react-toastify';
 import { get, post, put } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
@@ -78,8 +79,8 @@ const Distributions = () => {
   const [creating, setCreating] = useState(false);
   const [newBatch, setNewBatch] = useState({
     name: '',
-    periodStart: null as Date | null,
-    periodEnd: null as Date | null,
+    periodStart: null as Dayjs | null,
+    periodEnd: null as Dayjs | null,
   });
 
   const fetchBatches = () => {
@@ -113,8 +114,8 @@ const Distributions = () => {
       `${remoteRoutes.financialDistributions}/calculate`,
       {
         name: newBatch.name,
-        periodStart: newBatch.periodStart.toISOString().split('T')[0],
-        periodEnd: newBatch.periodEnd.toISOString().split('T')[0],
+        periodStart: newBatch.periodStart.format('YYYY-MM-DD'),
+        periodEnd: newBatch.periodEnd.format('YYYY-MM-DD'),
         includeApprovedOnly: true,
       },
       () => {
@@ -192,7 +193,7 @@ const Distributions = () => {
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="lg">
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4">Distributions</Typography>
@@ -363,7 +364,7 @@ const Distributions = () => {
               <DatePicker
                 label="Period Start"
                 value={newBatch.periodStart}
-                onChange={(date) => setNewBatch((prev) => ({ ...prev, periodStart: date }))}
+                onChange={(date) => setNewBatch((prev) => ({ ...prev, periodStart: date as Dayjs | null }))}
                 slotProps={{
                   textField: { fullWidth: true },
                 }}
@@ -372,7 +373,7 @@ const Distributions = () => {
               <DatePicker
                 label="Period End"
                 value={newBatch.periodEnd}
-                onChange={(date) => setNewBatch((prev) => ({ ...prev, periodEnd: date }))}
+                onChange={(date) => setNewBatch((prev) => ({ ...prev, periodEnd: date as Dayjs | null }))}
                 slotProps={{
                   textField: { fullWidth: true },
                 }}

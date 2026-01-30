@@ -1,7 +1,8 @@
-export enum GroupPrivacy {
-  Private = 'Private',
-  Public = 'Public',
-}
+export const GroupPrivacy = {
+  Private: 'Private',
+  Public: 'Public',
+} as const;
+export type GroupPrivacy = (typeof GroupPrivacy)[keyof typeof GroupPrivacy];
 
 export interface IGroupCategory {
   id: number;

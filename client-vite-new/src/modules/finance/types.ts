@@ -1,40 +1,46 @@
-export enum AccountType {
-  BANK = 'BANK',
-  MOBILE_MONEY = 'MOBILE_MONEY',
-  CASH = 'CASH',
-}
+export const AccountType = {
+  BANK: 'BANK',
+  MOBILE_MONEY: 'MOBILE_MONEY',
+  CASH: 'CASH',
+} as const;
+export type AccountType = (typeof AccountType)[keyof typeof AccountType];
 
-export enum TransactionStatus {
-  PENDING = 'PENDING',
-  RECONCILED = 'RECONCILED',
-  DISPUTED = 'DISPUTED',
-}
+export const TransactionStatus = {
+  PENDING: 'PENDING',
+  RECONCILED: 'RECONCILED',
+  DISPUTED: 'DISPUTED',
+} as const;
+export type TransactionStatus = (typeof TransactionStatus)[keyof typeof TransactionStatus];
 
-export enum TransactionCategory {
-  TITHE = 'TITHE',
-  OFFERING = 'OFFERING',
-  DONATION = 'DONATION',
-  ARISE_BUILD = 'ARISE_BUILD',
-}
+export const TransactionCategory = {
+  TITHE: 'TITHE',
+  OFFERING: 'OFFERING',
+  DONATION: 'DONATION',
+  ARISE_BUILD: 'ARISE_BUILD',
+} as const;
+export type TransactionCategory = (typeof TransactionCategory)[keyof typeof TransactionCategory];
 
-export enum MatchType {
-  AUTO = 'AUTO',
-  MANUAL = 'MANUAL',
-  SUGGESTED = 'SUGGESTED',
-}
+export const MatchType = {
+  AUTO: 'AUTO',
+  MANUAL: 'MANUAL',
+  SUGGESTED: 'SUGGESTED',
+} as const;
+export type MatchType = (typeof MatchType)[keyof typeof MatchType];
 
-export enum MatchStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-}
+export const MatchStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+export type MatchStatus = (typeof MatchStatus)[keyof typeof MatchStatus];
 
-export enum BatchStatus {
-  DRAFT = 'DRAFT',
-  PENDING_APPROVAL = 'PENDING_APPROVAL',
-  APPROVED = 'APPROVED',
-  EXECUTED = 'EXECUTED',
-}
+export const BatchStatus = {
+  DRAFT: 'DRAFT',
+  PENDING_APPROVAL: 'PENDING_APPROVAL',
+  APPROVED: 'APPROVED',
+  EXECUTED: 'EXECUTED',
+} as const;
+export type BatchStatus = (typeof BatchStatus)[keyof typeof BatchStatus];
 
 export interface FinancialAccount {
   id: number;

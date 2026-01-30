@@ -226,11 +226,12 @@ const FinancialAccountDialog = ({ open, onClose, onSuccess, editAccount }: Props
             <FormControl fullWidth>
               <InputLabel>Owner Group (Optional)</InputLabel>
               <Select
-                value={formData.ownerGroupId || ''}
+                value={formData.ownerGroupId ?? ''}
                 label="Owner Group (Optional)"
-                onChange={(e) =>
-                  handleChange('ownerGroupId', e.target.value === '' ? null : e.target.value)
-                }
+                onChange={(e) => {
+                  const val = e.target.value as string | number;
+                  handleChange('ownerGroupId', val === '' ? null : Number(val));
+                }}
                 disabled={saving}
               >
                 <MenuItem value="">
