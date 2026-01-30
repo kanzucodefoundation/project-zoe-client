@@ -14,6 +14,12 @@ import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
+import AccountBalanceRoundedIcon from '@mui/icons-material/AccountBalanceRounded';
+import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
+import CompareArrowsRoundedIcon from '@mui/icons-material/CompareArrowsRounded';
+import AccountTreeRoundedIcon from '@mui/icons-material/AccountTreeRounded';
+import RuleRoundedIcon from '@mui/icons-material/RuleRounded';
+import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
@@ -62,6 +68,20 @@ const navItems: NavItem[] = [
       { name: 'Manage Reports', icon: <AssessmentRoundedIcon />, path: localRoutes.reportConfiguration },
       // { name: 'Group Categories', icon: <GroupRoundedIcon />, path: localRoutes.groupsCategories },
       // { name: 'Settings', icon: <SettingsRoundedIcon />, path: localRoutes.settings },
+    ],
+  },
+  {
+    name: 'Finance',
+    icon: <AccountBalanceRoundedIcon />,
+    path: localRoutes.financialAccounts,
+    requiredRoles: [appPermissions.roleFinanceView, appPermissions.roleFinanceEdit],
+    children: [
+      { name: 'Accounts', icon: <AccountBalanceRoundedIcon />, path: localRoutes.financialAccounts },
+      { name: 'Import Transactions', icon: <UploadFileRoundedIcon />, path: localRoutes.financialImport },
+      { name: 'Reconciliation', icon: <CompareArrowsRoundedIcon />, path: localRoutes.financialReconciliation },
+      { name: 'Distributions', icon: <AccountTreeRoundedIcon />, path: localRoutes.financialDistributions },
+      { name: 'Category Rules', icon: <RuleRoundedIcon />, path: localRoutes.financialCategoryRules },
+      { name: 'Reports', icon: <BarChartRoundedIcon />, path: localRoutes.financialReports },
     ],
   },
 ];

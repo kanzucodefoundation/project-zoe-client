@@ -20,6 +20,12 @@ import ReportConfiguration from './modules/admin/reports/ReportConfiguration';
 import Groups from './modules/groups/Groups';
 import GroupDetails from './modules/groups/GroupDetails';
 import LayoutV2 from "./components/layout-v2/LayoutV2.tsx";
+import FinancialAccounts from './modules/finance/FinancialAccounts';
+import ImportTransactions from './modules/finance/ImportTransactions';
+import Reconciliation from './modules/finance/Reconciliation';
+import Distributions from './modules/finance/Distributions';
+import CategoryRules from './modules/finance/CategoryRules';
+import FinancialReports from './modules/finance/FinancialReports';
 const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
 const UpdatePasswordConfirmation = () => <div>Update Password - Coming Soon</div>;
@@ -92,6 +98,12 @@ function App() {
             <Route path={localRoutes.groupsDetails} element={<GroupDetails />} />
             <Route path={localRoutes.users} element={<UserManagement />} />
             <Route path={localRoutes.reportConfiguration} element={<ReportConfiguration />} />
+            <Route path={localRoutes.financialAccounts} element={<FinancialAccounts />} />
+            <Route path={localRoutes.financialImport} element={<ImportTransactions />} />
+            <Route path={localRoutes.financialReconciliation} element={<Reconciliation />} />
+            <Route path={localRoutes.financialDistributions} element={<Distributions />} />
+            <Route path={localRoutes.financialCategoryRules} element={<CategoryRules />} />
+            <Route path={localRoutes.financialReports} element={<FinancialReports />} />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />

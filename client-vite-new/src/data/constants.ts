@@ -26,6 +26,9 @@ export const appPermissions = {
   roleReportViewSubmissions: 'REPORT_VIEW_SUBMISSIONS',
 
   manageHelp: 'MANAGE_HELP',
+
+  roleFinanceView: 'FINANCE_VIEW',
+  roleFinanceEdit: 'FINANCE_EDIT',
 };
 
 export const permissionsList = Object.values(appPermissions);
@@ -85,6 +88,14 @@ export const localRoutes = {
   reportConfiguration: '/admin/report-configuration',
   groupsCategories: '/admin/group-categories',
   eventCategories: '/admin/event-categories',
+
+  // Financial Management
+  financialAccounts: '/admin/financial-management/accounts',
+  financialImport: '/admin/financial-management/import',
+  financialReconciliation: '/admin/financial-management/reconciliation',
+  financialDistributions: '/admin/financial-management/distributions',
+  financialCategoryRules: '/admin/financial-management/category-rules',
+  financialReports: '/admin/financial-management/reports',
 };
 
 export const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';
@@ -147,4 +158,11 @@ export const remoteRoutes = {
   chat: `${apiBaseUrl}/api/chat/email`,
   eventsRegistration: `${apiBaseUrl}/api/events/registration`,
   help: `${apiBaseUrl}/api/help`,
+
+  // Financial Management
+  financialAccounts: `${apiBaseUrl}/api/finance/accounts`,
+  financialTransactions: `${apiBaseUrl}/api/finance/transactions`,
+  financialReconciliation: `${apiBaseUrl}/api/finance/reconciliation`,
+  financialDistributions: `${apiBaseUrl}/api/finance/distributions`,
+  financialCategoryRules: `${apiBaseUrl}/api/finance/category-rules`,
 };
