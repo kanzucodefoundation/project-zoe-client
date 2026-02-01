@@ -26,7 +26,7 @@ import {
   Delete as DeleteIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
-import { get, post, put, del } from '../../../utils/ajax';
+import { get, post, patch, del } from '../../../utils/ajax';
 import { remoteRoutes } from '../../../data/constants';
 
 interface User {
@@ -90,9 +90,13 @@ const UserManagement = () => {
     fetchUsers();
   }, []);
 
-  const fetchUsers = () => {
+  const fetchUsers = (search: string = '') => {
+    const url = search 
+      ? `${remoteRoutes.users}?query=${encodeURIComponent(search)}`
+      : remoteRoutes.users;
+    
     get(
-      remoteRoutes.users,
+      url,
       (response) => {
         console.log('Users response:', response);
         setUsers(response || []);
@@ -174,7 +178,7 @@ const UserManagement = () => {
       isActive: selectedUser.isActive,
     };
 
-    put(
+    patch(
       `${remoteRoutes.users}/${selectedUser.id}`,
       updateData,
       () => {
@@ -201,12 +205,7 @@ const UserManagement = () => {
     handleFormChange('roles', newRoles);
   };
 
-  const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (user.firstName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredUsers = users;
 
   const getInitials = (user: User) => {
     if (user.firstName && user.lastName) {
@@ -250,7 +249,10 @@ const UserManagement = () => {
           fullWidth
           placeholder="Search by username, email, first name, or last name..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            fetchUsers(e.target.value);
+          }}
           variant="outlined"
           size="small"
           InputProps={{
