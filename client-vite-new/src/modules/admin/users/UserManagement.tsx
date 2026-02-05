@@ -52,6 +52,7 @@ interface CreateUserData {
   firstName?: string;
   lastName?: string;
   roles: string[];
+  isActive?: boolean;
 }
 
 const availableRoles = [
@@ -89,6 +90,7 @@ const UserManagement = () => {
     firstName: '',
     lastName: '',
     roles: [],
+    isActive: true,
   });
 
   useEffect(() => {
@@ -136,6 +138,7 @@ const UserManagement = () => {
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       roles: user.roles,
+      isActive: user.isActive,
     });
     setEditDialog(true);
   };
