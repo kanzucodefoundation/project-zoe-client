@@ -19,6 +19,8 @@ import {
   DialogActions,
   Chip,
   Avatar,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -39,6 +41,8 @@ interface User {
   isActive: boolean;
   lastLogin?: string;
   createdAt: string;
+  avatar?: string;
+  fullName?: string;
 }
 
 interface CreateUserData {
@@ -48,6 +52,7 @@ interface CreateUserData {
   firstName?: string;
   lastName?: string;
   roles: string[];
+  isActive?: boolean;
 }
 
 const availableRoles = [
@@ -77,6 +82,7 @@ const UserManagement = () => {
   const [editDialog, setEditDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isActiveStatus, setIsActiveStatus] = useState(true);
   const [formData, setFormData] = useState<CreateUserData>({
     username: '',
     email: '',
@@ -84,6 +90,7 @@ const UserManagement = () => {
     firstName: '',
     lastName: '',
     roles: [],
+    isActive: true,
   });
 
   useEffect(() => {
@@ -123,6 +130,7 @@ const UserManagement = () => {
 
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
+    setIsActiveStatus(user.isActive);
     setFormData({
       username: user.username,
       email: user.email,
@@ -130,6 +138,7 @@ const UserManagement = () => {
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       roles: user.roles,
+      isActive: user.isActive,
     });
     setEditDialog(true);
   };
@@ -170,13 +179,18 @@ const UserManagement = () => {
 
     setSubmitting(true);
 
-    // Backend expects: id, username, roles, isActive (password is optional and excluded from edit)
-    const updateData = {
+    // Backend expects: id, username, roles, isActive (password is optional)
+    const updateData: any = {
       id: selectedUser.id,
       username: formData.username,
-      roles: formData.roles,
-      isActive: selectedUser.isActive,
+      // roles: formData.roles,
+      isActive: isActiveStatus,
     };
+
+    // Include password if provided
+    if (formData.password) {
+      updateData.password = formData.password;
+    }
 
     patch(
       `${remoteRoutes.users}/${selectedUser.id}`,
@@ -279,14 +293,17 @@ const UserManagement = () => {
               <TableRow key={user.id}>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar sx={{ bgcolor: 'primary.main' }}>
+                    <Avatar 
+                      src={user.avatar || undefined}
+                      sx={{ bgcolor: 'primary.main' }}
+                    >
                       {getInitials(user)}
                     </Avatar>
                     <Box>
                       <Typography variant="subtitle2">
                         {user.firstName && user.lastName 
-                          ? `${user.firstName} ${user.lastName}`
-                          : user.username
+                          ? `${user.fullName}`
+                          : user.fullName
                         }
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
@@ -415,6 +432,13 @@ const UserManagement = () => {
               onChange={(e) => handleFormChange('username', e.target.value)}
             />
             <TextField
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => handleFormChange('password', e.target.value)}
+              helperText="Leave blank to keep current password"
+            />
+            <TextField
               label="Email"
               type="email"
               required
@@ -422,6 +446,16 @@ const UserManagement = () => {
               onChange={(e) => handleFormChange('email', e.target.value)}
               disabled
               helperText="Email cannot be changed"
+            />
+            <FormControlLabel
+              label={isActiveStatus ? 'Active' : 'Inactive'}
+              control={
+                <Switch
+                  color={isActiveStatus ? 'success' : 'default'}
+                  checked={isActiveStatus}
+                  onChange={(e) => setIsActiveStatus(e.target.checked)}
+                />
+              }
             />
             <Box display="flex" gap={2}>
               <TextField
