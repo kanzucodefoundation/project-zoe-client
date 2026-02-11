@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button, createStyles, makeStyles, Theme,
-} from '@material-ui/core';
+import { Button, createStyles, makeStyles, Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
 import AddIcon from '@material-ui/icons/Add';
@@ -19,20 +17,22 @@ import EditEventCategories from './editEventCategories';
 import { get } from '../../../utils/ajax';
 import Navigation from '../../../components/layout/Layout';
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
-    flexGrow: 1,
-  },
-  filterPaper: {
-    borderRadius: 0,
-    padding: theme.spacing(2),
-  },
-  fab: {
-    position: 'absolute',
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-}));
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+    },
+    filterPaper: {
+      borderRadius: 0,
+      padding: theme.spacing(2),
+    },
+    fab: {
+      position: 'absolute',
+      bottom: theme.spacing(2),
+      right: theme.spacing(2),
+    },
+  }),
+);
 
 const headCells: XHeadCell[] = [
   {
@@ -81,7 +81,6 @@ const EventCategories = () => {
       },
     );
   }, [createDialog]);
-
   const createTitle = 'Event Categories';
   return (
     <Navigation>

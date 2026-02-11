@@ -25,7 +25,7 @@ const initialValues = {
   name: '',
 };
 
-const NewEventCategories = ({
+const EditEventCategory = ({
   data,
   isNew,
   onCreated,
@@ -41,7 +41,10 @@ const NewEventCategories = ({
   }
 
   function handleSubmit(values: any, actions: FormikHelpers<any>) {
+    const categoryId = data.value.id;
+
     const toSave = {
+      id: categoryId,
       name: values.name,
     };
 
@@ -90,4 +93,4 @@ const NewEventCategories = ({
   );
 };
 
-export default NewEventCategories;
+export default EditEventCategory;

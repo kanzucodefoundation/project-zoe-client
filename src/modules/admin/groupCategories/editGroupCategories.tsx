@@ -7,9 +7,9 @@ import EditDialog from '../../../components/EditDialog';
 import { remoteRoutes } from '../../../data/constants';
 import Toast from '../../../utils/Toast';
 import { del } from '../../../utils/ajax';
-import NewGroupCategories from './NewGroupCategories';
+import EditGroupCategory from './EditGroupCategory';
 
-const EditReportCategories = (data: any) => {
+const EditGroupCategories = (data: any) => {
   const [createDialog, setCreateDialog] = useState(false);
 
   function handleEdit() {
@@ -26,6 +26,7 @@ const EditReportCategories = (data: any) => {
     setCreateDialog(false);
   }
   const createTitle = 'Edit Group Categories';
+  console.log(data);
   return (
     <Box>
       <Box pr={2}>
@@ -51,7 +52,7 @@ const EditReportCategories = (data: any) => {
         open={createDialog}
         onClose={closeCreateDialog}
       >
-        <NewGroupCategories
+        <EditGroupCategory
           data={data}
           isNew={false}
           onUpdated={handleEdit}
@@ -61,4 +62,4 @@ const EditReportCategories = (data: any) => {
     </Box>
   );
 };
-export default EditReportCategories;
+export default EditGroupCategories;
