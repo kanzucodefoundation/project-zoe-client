@@ -96,6 +96,11 @@ export const localRoutes = {
   financialDistributions: '/admin/financial-management/distributions',
   financialCategoryRules: '/admin/financial-management/category-rules',
   financialReports: '/admin/financial-management/reports',
+
+  // Tasks
+  tasks: '/tasks',
+  tasksMine: '/tasks/mine',
+  retentionReport: '/reports/retention',
 };
 
 export const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';
@@ -165,4 +170,7 @@ export const remoteRoutes = {
   financialReconciliation: `${apiBaseUrl}/api/finance/reconciliation`,
   financialDistributions: `${apiBaseUrl}/api/finance/distributions`,
   financialCategoryRules: `${apiBaseUrl}/api/finance/category-rules`,
+
+  // Tasks
+  tasks: `${apiBaseUrl}/api/tasks`,
 };

@@ -231,3 +231,5 @@ export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
   a.download = fileName;
   a.click();
 };
+
+export default api;

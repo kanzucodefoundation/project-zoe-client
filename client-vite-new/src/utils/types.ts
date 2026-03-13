@@ -1,1 +1,123 @@
 export type $TsFixMe = any
+
+// ─── Tasks ────────────────────────────────────────────────────────────────────
+
+export enum TaskType {
+  CALL = 'call',
+  VISIT = 'visit',
+  MATCH = 'match',
+  FOLLOW_UP = 'follow_up',
+}
+
+export enum TaskStatus {
+  TODO = 'todo',
+  IN_PROGRESS = 'in_progress',
+  DONE = 'done',
+  MATCHED_TO_FELLOWSHIP = 'matched_to_fellowship',
+  ATTENDED_FELLOWSHIP = 'attended_fellowship',
+  JOINED_SERVING_TEAM = 'joined_serving_team',
+  GOT_BAPTISED = 'got_baptised',
+}
+
+export const CLOSED_STATUSES: TaskStatus[] = [
+  TaskStatus.DONE,
+  TaskStatus.MATCHED_TO_FELLOWSHIP,
+  TaskStatus.ATTENDED_FELLOWSHIP,
+  TaskStatus.JOINED_SERVING_TEAM,
+  TaskStatus.GOT_BAPTISED,
+];
+
+export const STATUS_LABELS: Record<TaskStatus, string> = {
+  [TaskStatus.TODO]: 'To Do',
+  [TaskStatus.IN_PROGRESS]: 'In Progress',
+  [TaskStatus.DONE]: 'Done',
+  [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Matched to Fellowship',
+  [TaskStatus.ATTENDED_FELLOWSHIP]: 'Attended Fellowship',
+  [TaskStatus.JOINED_SERVING_TEAM]: 'Joined Serving Team',
+  [TaskStatus.GOT_BAPTISED]: 'Got Baptised',
+};
+
+export const TYPE_LABELS: Record<TaskType, string> = {
+  [TaskType.CALL]: 'Call',
+  [TaskType.VISIT]: 'Visit',
+  [TaskType.MATCH]: 'Match',
+  [TaskType.FOLLOW_UP]: 'Follow Up',
+};
+
+export const NEXT_STATUS_OPTIONS: TaskStatus[] = [
+  TaskStatus.IN_PROGRESS,
+  TaskStatus.DONE,
+  TaskStatus.MATCHED_TO_FELLOWSHIP,
+  TaskStatus.ATTENDED_FELLOWSHIP,
+  TaskStatus.JOINED_SERVING_TEAM,
+  TaskStatus.GOT_BAPTISED,
+];
+
+export interface TaskUser {
+  id: number;
+  username: string;
+  contact?: {
+    person?: { firstName: string; lastName: string; avatar?: string };
+  };
+}
+
+export interface Task {
+  id: number;
+  contactId: number;
+  contact?: {
+    id: number;
+    person?: { firstName: string; lastName: string; avatar?: string };
+  };
+  type: TaskType;
+  title: string | null;
+  status: TaskStatus;
+  assignedTo?: TaskUser;
+  createdBy?: TaskUser;
+  dueAt: string | null;
+  completedAt: string | null;
+  comments: TaskComment[];
+  attachments: TaskAttachment[];
+  createdAt: string;
+}
+
+export interface TaskComment {
+  id: number;
+  body: string;
+  author: TaskUser;
+  createdAt: string;
+}
+
+export interface TaskAttachment {
+  id: number;
+  url: string;
+  label: string | null;
+  uploadedBy?: TaskUser;
+  createdAt: string;
+}
+
+export interface ContactActivity {
+  id: number;
+  type: string;
+  summary: string;
+  occurredAt: string;
+  recordedBy?: { username: string };
+  referenceTable: string | null;
+  referenceId: number | null;
+  createdAt: string;
+}
+
+export interface RetentionSummary {
+  recorded: number;
+  retained: number;
+  joinedFellowship: number;
+  joinedServingTeam: number;
+  baptised: number;
+}
+
+export interface TaskFilters {
+  status?: TaskStatus[];
+  type?: TaskType[];
+  assignedToId?: number | 'unassigned';
+  page?: number;
+  limit?: number;
+}

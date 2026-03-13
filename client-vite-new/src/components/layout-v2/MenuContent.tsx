@@ -20,6 +20,9 @@ import CompareArrowsRoundedIcon from '@mui/icons-material/CompareArrowsRounded';
 import AccountTreeRoundedIcon from '@mui/icons-material/AccountTreeRounded';
 import RuleRoundedIcon from '@mui/icons-material/RuleRounded';
 import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
+import ChecklistRoundedIcon from '@mui/icons-material/ChecklistRounded';
+import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
+import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
@@ -57,6 +60,19 @@ const navItems: NavItem[] = [
     icon: <AssessmentRoundedIcon />,
     path: localRoutes.reports,
     requiredRoles: [appPermissions.roleReportView],
+    children: [
+      { name: 'Reports', icon: <AssessmentRoundedIcon />, path: localRoutes.reports },
+      { name: 'Retention Report', icon: <TrendingUpRoundedIcon />, path: localRoutes.retentionReport },
+    ],
+  },
+  {
+    name: 'Tasks',
+    icon: <ChecklistRoundedIcon />,
+    path: localRoutes.tasks,
+    children: [
+      { name: 'Task Queue', icon: <ChecklistRoundedIcon />, path: localRoutes.tasks },
+      { name: 'My Tasks', icon: <AssignmentIndRoundedIcon />, path: localRoutes.tasksMine },
+    ],
   },
   {
     name: 'Admin',

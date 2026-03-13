@@ -26,6 +26,9 @@ import Reconciliation from './modules/finance/Reconciliation';
 import Distributions from './modules/finance/Distributions';
 import CategoryRules from './modules/finance/CategoryRules';
 import FinancialReports from './modules/finance/FinancialReports';
+import TaskQueue from './modules/tasks/TaskQueue';
+import MyTasks from './modules/tasks/MyTasks';
+import RetentionReport from './modules/reports/RetentionReport';
 const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
 const UpdatePasswordConfirmation = () => <div>Update Password - Coming Soon</div>;
@@ -104,6 +107,9 @@ function App() {
             <Route path={localRoutes.financialDistributions} element={<Distributions />} />
             <Route path={localRoutes.financialCategoryRules} element={<CategoryRules />} />
             <Route path={localRoutes.financialReports} element={<FinancialReports />} />
+            <Route path={localRoutes.tasks} element={<TaskQueue />} />
+            <Route path={localRoutes.tasksMine} element={<MyTasks />} />
+            <Route path={localRoutes.retentionReport} element={<RetentionReport />} />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />
