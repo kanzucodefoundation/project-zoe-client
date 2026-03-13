@@ -174,7 +174,7 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
       {/* Comments */}
       <Box mb={2}>
         <Typography variant="subtitle2" mb={1}>Comments</Typography>
-        {localTask.comments.length === 0 ? (
+        {(localTask.comments?.length ?? 0) === 0 ? (
           <Typography variant="body2" color="text.secondary">No comments yet</Typography>
         ) : (
           <List dense disablePadding>
@@ -222,7 +222,7 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
       <Box>
         <Typography variant="subtitle2" mb={1}>Attachments</Typography>
         <Box display="flex" flexWrap="wrap" gap={1} mb={1}>
-          {localTask.attachments.map((a) =>
+          {(localTask.attachments ?? []).map((a) =>
             isImage(a.url) ? (
               <Box
                 key={a.id}
