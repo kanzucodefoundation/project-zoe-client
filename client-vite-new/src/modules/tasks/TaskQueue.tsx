@@ -4,17 +4,15 @@ import {
   Autocomplete, TextField, CircularProgress,
 } from '@mui/material';
 import { DataGrid, type GridColDef, type GridPaginationModel } from '@mui/x-data-grid';
-import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useAllTasks } from './hooks';
 import TaskStatusChip from './TaskStatusChip';
-import TaskTypeChip from './TaskTypeChip';
 import TaskDrawer from './TaskDrawer';
 import {
   TaskStatus, TaskType, STATUS_LABELS, TYPE_LABELS,
   type Task, type TaskFilters,
 } from '../../utils/types';
-import { localRoutes, remoteRoutes } from '../../data/constants';
+import { remoteRoutes } from '../../data/constants';
 import ajax from '../../utils/ajax';
 import { useEffect } from 'react';
 
@@ -69,31 +67,6 @@ export default function TaskQueue() {
   };
 
   const columns: GridColDef[] = [
-    {
-      field: 'contact',
-      headerName: 'Contact',
-      width: 180,
-      renderCell: ({ row }: { row: Task }) => {
-        const name = row.contact?.person
-          ? `${row.contact.person.firstName} ${row.contact.person.lastName}`.trim()
-          : '—';
-        return (
-          <Link
-            to={`${localRoutes.contacts}/${row.contactId}`}
-            onClick={(e) => e.stopPropagation()}
-            style={{ color: 'inherit', textDecoration: 'none' }}
-          >
-            {name}
-          </Link>
-        );
-      },
-    },
-    {
-      field: 'type',
-      headerName: 'Type',
-      width: 130,
-      renderCell: ({ row }: { row: Task }) => <TaskTypeChip type={row.type} />,
-    },
     {
       field: 'title',
       headerName: 'Task',

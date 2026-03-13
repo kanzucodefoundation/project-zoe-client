@@ -10,6 +10,7 @@ type ErrorCallback = (err: any, res?: AxiosResponse) => void;
 
 const api = axios.create({
   timeout: 30000,
+  paramsSerializer: { indexes: null },
 });
 
 // Request interceptor to add auth token

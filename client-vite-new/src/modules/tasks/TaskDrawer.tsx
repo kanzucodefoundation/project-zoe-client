@@ -7,8 +7,9 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TaskStatusChip from './TaskStatusChip';
 import TaskTypeChip from './TaskTypeChip';
 import UpdateStatusDialog from './UpdateStatusDialog';
@@ -53,8 +54,12 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
   const qc = useQueryClient();
 
   useEffect(() => {
+    if (!task) { setLocalTask(null); return; }
     setLocalTask(task);
-  }, [task]);
+    taskApi.getById(task.id)
+      .then(setLocalTask)
+      .catch(() => {});
+  }, [task?.id]);
 
   useEffect(() => {
     ajax.get(remoteRoutes.users).then((r) => {
@@ -73,7 +78,10 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
   const handleSendComment = () => {
     if (!comment.trim()) return;
     addComment.mutate(comment, {
-      onSuccess: () => setComment(''),
+      onSuccess: (newComment) => {
+        setComment('');
+        setLocalTask((prev) => prev ? { ...prev, comments: [...(prev.comments ?? []), newComment] } : prev);
+      },
     });
   };
 
@@ -95,16 +103,26 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
     <Drawer anchor="right" open={Boolean(localTask)} onClose={onClose} PaperProps={{ sx: { width: 480, p: 3 } }}>
       {/* Header */}
       <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
-        <Box>
-          <TaskTypeChip type={localTask.type} />
-          <Typography variant="body2" color="text.secondary" mt={0.5}>
-            {contactName}
-          </Typography>
-        </Box>
+        <Box />
         <IconButton onClick={onClose} size="small">
           <CloseIcon />
         </IconButton>
       </Box>
+
+      {/* Title / Created by / Created */}
+      <Stack spacing={0.5} mb={2}>
+        {localTask.title && (
+          <Typography variant="body2"><strong>Title:</strong> {localTask.title}</Typography>
+        )}
+        {localTask.createdBy && (
+          <Typography variant="body2">
+            <strong>Created by:</strong> {localTask.createdBy.username}
+          </Typography>
+        )}
+        <Typography variant="body2">
+          <strong>Created:</strong> {dayjs(localTask.createdAt).format('DD MMM YYYY')}
+        </Typography>
+      </Stack>
 
       <Divider sx={{ mb: 2 }} />
 
@@ -144,29 +162,26 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
         />
       </Box>
 
-      {/* Details */}
+      {/* Due date */}
       <Box mb={2}>
         <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
-          DETAILS
+          DUE DATE
         </Typography>
-        <Stack spacing={0.5}>
-          {localTask.title && (
-            <Typography variant="body2"><strong>Title:</strong> {localTask.title}</Typography>
-          )}
-          {localTask.dueAt && (
-            <Typography variant="body2">
-              <strong>Due:</strong> {dayjs(localTask.dueAt).format('DD MMM YYYY')}
-            </Typography>
-          )}
-          {localTask.createdBy && (
-            <Typography variant="body2">
-              <strong>Created by:</strong> {localTask.createdBy.username}
-            </Typography>
-          )}
-          <Typography variant="body2">
-            <strong>Created:</strong> {dayjs(localTask.createdAt).format('DD MMM YYYY')}
-          </Typography>
-        </Stack>
+        <DatePicker
+          value={localTask.dueAt ? dayjs(localTask.dueAt) : null}
+          onChange={async (val: Dayjs | null) => {
+            const dueAt = val ? val.toISOString() : null;
+            try {
+              const updated = await taskApi.update(localTask.id, { dueAt });
+              setLocalTask(updated);
+              onTaskUpdated(updated);
+            } catch {
+              // error handled by api
+            }
+          }}
+          disabled={isClosed}
+          slotProps={{ textField: { size: 'small', fullWidth: true } }}
+        />
       </Box>
 
       <Divider sx={{ mb: 2 }} />

@@ -6,25 +6,27 @@ interface Props {
   size?: 'small' | 'medium';
 }
 
+function chipSx(bg: string, fg: string) {
+  return { bgcolor: bg, '& .MuiChip-label': { color: fg } };
+}
+
 const statusSx: Record<TaskStatus, object> = {
-  [TaskStatus.TODO]: {},
-  [TaskStatus.IN_PROGRESS]: { bgcolor: 'warning.main', color: 'warning.contrastText' },
-  [TaskStatus.DONE]: { bgcolor: 'grey.400' },
-  [TaskStatus.MATCHED_TO_FELLOWSHIP]: { bgcolor: 'info.main', color: 'info.contrastText' },
-  [TaskStatus.ATTENDED_FELLOWSHIP]: { bgcolor: 'primary.main', color: 'primary.contrastText' },
-  [TaskStatus.JOINED_SERVING_TEAM]: { bgcolor: 'primary.dark', color: 'primary.contrastText' },
-  [TaskStatus.GOT_BAPTISED]: { bgcolor: '#2e7d32', color: '#fff' },
+  [TaskStatus.TODO]:                 chipSx('#e0e0e0', '#212121'),
+  [TaskStatus.IN_PROGRESS]:          chipSx('#ed6c02', '#fff'),
+  [TaskStatus.DONE]:                 chipSx('#9e9e9e', '#fff'),
+  [TaskStatus.MATCHED_TO_FELLOWSHIP]:chipSx('#0288d1', '#fff'),
+  [TaskStatus.ATTENDED_FELLOWSHIP]:  chipSx('#1976d2', '#fff'),
+  [TaskStatus.JOINED_SERVING_TEAM]:  chipSx('#1565c0', '#fff'),
+  [TaskStatus.GOT_BAPTISED]:         chipSx('#2e7d32', '#fff'),
 };
 
 export default function TaskStatusChip({ status, size = 'small' }: Props) {
   const sx = statusSx[status];
-  const isDefault = status === TaskStatus.TODO;
   return (
     <Chip
       label={STATUS_LABELS[status]}
       size={size}
-      color={isDefault ? 'default' : undefined}
-      sx={isDefault ? undefined : sx}
+      sx={sx}
     />
   );
 }

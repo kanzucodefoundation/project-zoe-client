@@ -21,10 +21,6 @@ export enum TaskStatus {
 
 export const CLOSED_STATUSES: TaskStatus[] = [
   TaskStatus.DONE,
-  TaskStatus.MATCHED_TO_FELLOWSHIP,
-  TaskStatus.ATTENDED_FELLOWSHIP,
-  TaskStatus.JOINED_SERVING_TEAM,
-  TaskStatus.GOT_BAPTISED,
 ];
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {

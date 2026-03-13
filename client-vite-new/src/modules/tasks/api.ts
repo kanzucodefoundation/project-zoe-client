@@ -12,6 +12,9 @@ export const taskApi = {
   }): Promise<Task> =>
     ajax.post(`${remoteRoutes.tasks}`, data).then((r) => r.data),
 
+  getById: (id: number): Promise<Task> =>
+    ajax.get(`${remoteRoutes.tasks}/${id}`).then((r) => r.data),
+
   getForContact: (contactId: number): Promise<Task[]> =>
     ajax.get(`${remoteRoutes.tasks}/contact/${contactId}`).then((r) => r.data),
 
@@ -20,6 +23,9 @@ export const taskApi = {
 
   updateStatus: (id: number, data: Record<string, any>): Promise<Task> =>
     ajax.patch(`${remoteRoutes.tasks}/${id}/status`, data).then((r) => r.data),
+
+  update: (id: number, data: { title?: string; dueAt?: string | null; assignedToId?: number | null }): Promise<Task> =>
+    ajax.patch(`${remoteRoutes.tasks}/${id}`, data).then((r) => r.data),
 
   reassign: (id: number, assignedToId: number): Promise<Task> =>
     ajax.patch(`${remoteRoutes.tasks}/${id}/assign`, { assignedToId }).then((r) => r.data),
