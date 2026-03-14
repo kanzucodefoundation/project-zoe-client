@@ -1,0 +1,471 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Alert from '@mui/material/Alert';
+import Autocomplete from '@mui/material/Autocomplete';
+import Badge from '@mui/material/Badge';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Container from '@mui/material/Container';
+import Fab from '@mui/material/Fab';
+import InputAdornment from '@mui/material/InputAdornment';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import PersonAddRoundedIcon from '@mui/icons-material/PersonAddRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import SelectAllRoundedIcon from '@mui/icons-material/SelectAllRounded';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { fetchLocations, fetchRoster, fetchTodayService, postCheckIn } from './api';
+import {
+  cacheRoster,
+  dequeue,
+  enqueue,
+  getCachedRoster,
+  getQueue,
+  getSelectedLocation,
+  setSelectedLocation,
+} from './offlineQueue';
+import GuestDialog from './GuestDialog';
+import OfflineBanner from './OfflineBanner';
+import RosterList from './RosterList';
+import StatsWidget from './StatsWidget';
+import type { LocationOption } from './types';
+
+type FilterMode = 'all' | 'checked' | 'pending';
+
+export default function CheckInScreen() {
+  const queryClient = useQueryClient();
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const [locationId, setLocationId] = useState<number | null>(getSelectedLocation());
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [filterMode, setFilterMode] = useState<FilterMode>('all');
+  const [guestOpen, setGuestOpen] = useState(false);
+
+  // Debounce search
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(searchQuery), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      const isInput = tag === 'INPUT' || tag === 'TEXTAREA';
+
+      if (e.key === '/' && !isInput) {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+      if (e.key === 'Escape') {
+        setSearchQuery('');
+        setSelectedIds(new Set());
+        searchRef.current?.blur();
+      }
+      if (e.key === 'n' && !isInput) {
+        e.preventDefault();
+        setGuestOpen(true);
+      }
+      if (e.key === 'Enter' && !isInput && selectedIds.size > 0) {
+        e.preventDefault();
+        handleCheckIn();
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIds]);
+
+  // Locations
+  const { data: locations = [], isLoading: loadingLocations } = useQuery({
+    queryKey: ['locations'],
+    queryFn: fetchLocations,
+    staleTime: 5 * 60_000,
+  });
+
+  // Today's service
+  const {
+    data: service,
+    isLoading: loadingService,
+    error: serviceError,
+    refetch: refetchService,
+  } = useQuery({
+    queryKey: ['today-service', locationId],
+    queryFn: () => fetchTodayService(locationId!),
+    enabled: locationId !== null,
+  });
+
+  // Roster
+  const {
+    data: roster = [],
+    isLoading: loadingRoster,
+    refetch: refetchRoster,
+  } = useQuery({
+    queryKey: ['roster', service?.id, debouncedQuery],
+    queryFn: async () => {
+      const data = await fetchRoster(service!.id, debouncedQuery || undefined);
+      cacheRoster(service!.id, data);
+      return data;
+    },
+    enabled: service !== undefined,
+    placeholderData: service
+      ? (getCachedRoster(service.id) ?? undefined)
+      : undefined,
+  });
+
+  // Check-in mutation (with optimistic update)
+  const checkInMutation = useMutation({
+    mutationFn: async ({
+      serviceId,
+      ids,
+    }: {
+      serviceId: number;
+      ids: number[];
+    }) => {
+      if (!navigator.onLine) {
+        // Queue for later
+        enqueue(serviceId, { contactIds: ids });
+        return;
+      }
+      await postCheckIn(serviceId, { contactIds: ids });
+    },
+    onMutate: async ({ ids }) => {
+      await queryClient.cancelQueries({ queryKey: ['roster', service?.id] });
+
+      const previousRoster = queryClient.getQueryData([
+        'roster',
+        service?.id,
+        debouncedQuery,
+      ]);
+
+      // Optimistically mark as checked in
+      queryClient.setQueryData(
+        ['roster', service?.id, debouncedQuery],
+        (old: typeof roster) =>
+          old?.map((m) =>
+            ids.includes(m.id)
+              ? { ...m, isCheckedIn: true, checkedInAt: new Date().toISOString() }
+              : m,
+          ) ?? [],
+      );
+
+      return { previousRoster };
+    },
+    onError: (_err, _vars, ctx) => {
+      // Rollback
+      queryClient.setQueryData(
+        ['roster', service?.id, debouncedQuery],
+        ctx?.previousRoster,
+      );
+      toast.error('Check-in failed. Please try again.');
+    },
+    onSuccess: (_data, { ids }) => {
+      const count = ids.length;
+      const offline = !navigator.onLine;
+      if (offline) {
+        toast.info(`${count} check-in${count > 1 ? 's' : ''} queued — will sync when online.`);
+      } else {
+        toast.success(`${count} member${count > 1 ? 's' : ''} checked in!`);
+        queryClient.invalidateQueries({ queryKey: ['attendance-stats', service?.id] });
+      }
+    },
+    onSettled: () => {
+      setSelectedIds(new Set());
+    },
+  });
+
+  const handleCheckIn = useCallback(() => {
+    if (!service || selectedIds.size === 0) return;
+    checkInMutation.mutate({ serviceId: service.id, ids: Array.from(selectedIds) });
+  }, [service, selectedIds, checkInMutation]);
+
+  // Sync offline queue when online
+  const syncOfflineQueue = useCallback(async () => {
+    if (!service) return;
+    const queue = getQueue().filter((item) => item.serviceId === service.id);
+    for (const item of queue) {
+      try {
+        await postCheckIn(item.serviceId, item.payload);
+        dequeue(item.id);
+      } catch {
+        // Will retry next sync
+      }
+    }
+    refetchRoster();
+    queryClient.invalidateQueries({ queryKey: ['attendance-stats', service.id] });
+  }, [service, refetchRoster, queryClient]);
+
+  const handleToggleSelect = useCallback((id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const handleSelectAll = () => {
+    const pending = roster
+      .filter((m) => !m.isCheckedIn)
+      .map((m) => m.id);
+    setSelectedIds(new Set(pending));
+  };
+
+  const handleLocationChange = (_: unknown, option: LocationOption | null) => {
+    if (option) {
+      setLocationId(option.id);
+      setSelectedLocation(option.id);
+      setSelectedIds(new Set());
+    }
+  };
+
+  // --- Render ---
+
+  return (
+    <Container maxWidth="md" sx={{ py: 2 }}>
+      <Stack spacing={2}>
+        {/* Offline banner */}
+        <OfflineBanner onSync={syncOfflineQueue} />
+
+        {/* Location selector */}
+        {!locationId || locations.length > 1 ? (
+          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Select location to begin
+              </Typography>
+              <Autocomplete<LocationOption>
+                options={locations}
+                getOptionLabel={(o) => o.name}
+                value={locations.find((l) => l.id === locationId) ?? null}
+                onChange={handleLocationChange}
+                loading={loadingLocations}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Location"
+                    size="medium"
+                    placeholder="Search locations…"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loadingLocations && <CircularProgress size={16} />}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+                sx={{ maxWidth: 400 }}
+              />
+            </Stack>
+          </Paper>
+        ) : null}
+
+        {/* Service loading/error */}
+        {locationId && loadingService && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 2 }}>
+            <CircularProgress size={20} />
+            <Typography variant="body2" color="text.secondary">
+              Loading today&apos;s service…
+            </Typography>
+          </Box>
+        )}
+
+        {locationId && serviceError && (
+          <Alert
+            severity="error"
+            action={
+              <Button size="small" onClick={() => refetchService()}>
+                Retry
+              </Button>
+            }
+          >
+            Could not load today&apos;s service.
+          </Alert>
+        )}
+
+        {/* Main check-in area */}
+        {service && (
+          <>
+            {/* Service header */}
+            <Box>
+              <Typography variant="h5" fontWeight={700}>
+                {service.schedule?.name ?? 'Service'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {service.serviceDate
+                  ? new Date(`${service.serviceDate}T00:00:00`).toLocaleDateString([], {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  : ''}
+                {service.schedule?.startTime
+                  ? ` · ${service.schedule.startTime}`
+                  : ''}
+              </Typography>
+            </Box>
+
+            {/* Stats */}
+            <StatsWidget serviceId={service.id} />
+
+            {/* Toolbar: search + filters + actions */}
+            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+              <TextField
+                inputRef={searchRef}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search members… (press /)"
+                size="small"
+                sx={{ flex: 1, minWidth: 200 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchRoundedIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: searchQuery ? (
+                    <InputAdornment position="end">
+                      <Box
+                        component="button"
+                        onClick={() => setSearchQuery('')}
+                        sx={{
+                          border: 'none',
+                          background: 'none',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          p: 0,
+                          color: 'text.secondary',
+                        }}
+                        aria-label="Clear search"
+                      >
+                        <ClearRoundedIcon fontSize="small" />
+                      </Box>
+                    </InputAdornment>
+                  ) : null,
+                }}
+                inputProps={{ 'aria-label': 'Search members' }}
+              />
+
+              <Tooltip title="Select all pending">
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<SelectAllRoundedIcon />}
+                  onClick={handleSelectAll}
+                  sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
+                >
+                  All
+                </Button>
+              </Tooltip>
+
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<PersonAddRoundedIcon />}
+                onClick={() => setGuestOpen(true)}
+                sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
+                aria-label="Add guest (press n)"
+              >
+                Guest
+              </Button>
+            </Stack>
+
+            {/* Filter tabs */}
+            <Tabs
+              value={filterMode}
+              onChange={(_, v) => setFilterMode(v)}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ borderBottom: 1, borderColor: 'divider' }}
+            >
+              <Tab
+                label={`All (${roster.length})`}
+                value="all"
+                sx={{ minHeight: 44 }}
+              />
+              <Tab
+                label={`Checked In (${roster.filter((m) => m.isCheckedIn).length})`}
+                value="checked"
+                sx={{ minHeight: 44 }}
+              />
+              <Tab
+                label={`Pending (${roster.filter((m) => !m.isCheckedIn).length})`}
+                value="pending"
+                sx={{ minHeight: 44 }}
+              />
+            </Tabs>
+
+            {/* Roster */}
+            <Paper
+              variant="outlined"
+              sx={{ borderRadius: 2, overflow: 'hidden', maxHeight: '60vh', overflowY: 'auto' }}
+            >
+              <RosterList
+                members={roster}
+                isLoading={loadingRoster}
+                selectedIds={selectedIds}
+                onToggleSelect={handleToggleSelect}
+                filterMode={filterMode}
+                searchQuery={searchQuery}
+              />
+            </Paper>
+          </>
+        )}
+      </Stack>
+
+      {/* Floating check-in button (shows when members are selected) */}
+      {service && selectedIds.size > 0 && (
+        <Fab
+          variant="extended"
+          color="primary"
+          onClick={handleCheckIn}
+          disabled={checkInMutation.isPending}
+          sx={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            minHeight: 56,
+            px: 3,
+            zIndex: 1200,
+            boxShadow: 6,
+          }}
+          aria-label={`Check in ${selectedIds.size} member${selectedIds.size > 1 ? 's' : ''}`}
+        >
+          {checkInMutation.isPending ? (
+            <CircularProgress size={20} sx={{ mr: 1, color: 'white' }} />
+          ) : (
+            <CheckRoundedIcon sx={{ mr: 1 }} />
+          )}
+          <Badge badgeContent={selectedIds.size} color="error" sx={{ mr: 1 }}>
+            <Typography variant="button" sx={{ lineHeight: 1 }}>
+              Check In
+            </Typography>
+          </Badge>
+        </Fab>
+      )}
+
+      {/* Guest dialog */}
+      {service && (
+        <GuestDialog
+          open={guestOpen}
+          serviceId={service.id}
+          onClose={() => setGuestOpen(false)}
+        />
+      )}
+    </Container>
+  );
+}

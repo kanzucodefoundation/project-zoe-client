@@ -104,6 +104,10 @@ export const localRoutes = {
   tasks: '/tasks',
   tasksMine: '/tasks/mine',
   retentionReport: '/reports/retention',
+
+  // Attendance
+  attendance: '/attendance',
+  attendanceSchedules: '/attendance/schedules',
 };
 
 export const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';
@@ -179,4 +183,8 @@ export const remoteRoutes = {
 
   // Tasks
   tasks: `${apiBaseUrl}/api/tasks`,
+
+  // Attendance
+  services: `${apiBaseUrl}/api/services`,
+  fellowships: `${apiBaseUrl}/api/fellowships`,
 };
