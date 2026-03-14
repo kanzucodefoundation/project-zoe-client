@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from './data/store';
-import { restoreUser, stopLoading } from './data/coreSlice';
-import { localRoutes, AUTH_USER_KEY } from './data/constants';
+import { restoreUser, logout, stopLoading } from './data/coreSlice';
+import { localRoutes, AUTH_TOKEN_KEY, AUTH_USER_KEY } from './data/constants';
+import { isTokenExpired } from './utils/ajax';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Import actual components
@@ -29,6 +30,7 @@ import FinancialReports from './modules/finance/FinancialReports';
 import TaskQueue from './modules/tasks/TaskQueue';
 import MyTasks from './modules/tasks/MyTasks';
 import RetentionReport from './modules/reports/RetentionReport';
+import ManageNotifications from './modules/admin/notifications/ManageNotifications';
 const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
 const UpdatePasswordConfirmation = () => <div>Update Password - Coming Soon</div>;
@@ -68,16 +70,18 @@ function App() {
   useEffect(() => {
     // Try to restore user from localStorage on app start
     const storedUser = localStorage.getItem(AUTH_USER_KEY);
-    if (storedUser) {
+    const token = localStorage.getItem(AUTH_TOKEN_KEY);
+
+    if (storedUser && token && !isTokenExpired(token)) {
       try {
         const user = JSON.parse(storedUser);
         dispatch(restoreUser(user));
       } catch (error) {
         console.error('Failed to parse stored user:', error);
-        dispatch(stopLoading());
+        dispatch(logout());
       }
     } else {
-      dispatch(stopLoading());
+      dispatch(logout());
     }
   }, [dispatch]);
 
@@ -110,6 +114,7 @@ function App() {
             <Route path={localRoutes.tasks} element={<TaskQueue />} />
             <Route path={localRoutes.tasksMine} element={<MyTasks />} />
             <Route path={localRoutes.retentionReport} element={<RetentionReport />} />
+            <Route path={localRoutes.notifications} element={<ManageNotifications />} />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />

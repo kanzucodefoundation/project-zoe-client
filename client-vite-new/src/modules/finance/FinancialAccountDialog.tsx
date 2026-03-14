@@ -32,7 +32,19 @@ interface Props {
 interface GroupOption {
   id: number;
   name: string;
+  children?: GroupOption[];
 }
+
+const flattenGroups = (nodes: GroupOption[] | undefined): GroupOption[] => {
+  const out: GroupOption[] = [];
+  const stack: GroupOption[] = [...(nodes || [])];
+  while (stack.length) {
+    const n = stack.pop() as GroupOption;
+    out.push({ id: n.id, name: n.name });
+    if (n.children?.length) stack.push(...n.children);
+  }
+  return out;
+};
 
 const initialFormData: FinancialAccountFormData = {
   name: '',
@@ -58,9 +70,10 @@ const FinancialAccountDialog = ({ open, onClose, onSuccess, editAccount }: Props
 
       // Fetch groups for dropdown
       get(
-        `${remoteRoutes.groupsCombo}`,
-        (data: GroupOption[]) => {
-          setGroups(data);
+        remoteRoutes.groups,
+        (data: any) => {
+          const roots: GroupOption[] = Array.isArray(data) ? data : [data];
+          setGroups(flattenGroups(roots));
           setLoading(false);
         },
         () => {
@@ -105,7 +118,7 @@ const FinancialAccountDialog = ({ open, onClose, onSuccess, editAccount }: Props
     const payload = {
       name: formData.name.trim(),
       accountNumber: formData.accountNumber.trim(),
-      type: formData.type,
+      accountType: formData.type,
       ownerGroupId: formData.ownerGroupId,
       metadata: {
         ...(formData.type === AccountType.BANK && formData.bankName
@@ -120,8 +133,8 @@ const FinancialAccountDialog = ({ open, onClose, onSuccess, editAccount }: Props
 
     if (editAccount) {
       put(
-        `${remoteRoutes.financialAccounts}/${editAccount.id}`,
-        payload,
+        remoteRoutes.financialAccounts,
+        { ...payload, id: editAccount.id },
         () => {
           toast.success('Account updated successfully');
           setSaving(false);

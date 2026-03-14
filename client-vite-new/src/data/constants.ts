@@ -97,6 +97,9 @@ export const localRoutes = {
   financialCategoryRules: '/admin/financial-management/category-rules',
   financialReports: '/admin/financial-management/reports',
 
+  // Notifications
+  notifications: '/admin/notifications',
+
   // Tasks
   tasks: '/tasks',
   tasksMine: '/tasks/mine',
@@ -170,6 +173,9 @@ export const remoteRoutes = {
   financialReconciliation: `${apiBaseUrl}/api/finance/reconciliation`,
   financialDistributions: `${apiBaseUrl}/api/finance/distributions`,
   financialCategoryRules: `${apiBaseUrl}/api/finance/category-rules`,
+
+  // Notifications
+  notificationSettings: `${apiBaseUrl}/api/notifications/settings`,
 
   // Tasks
   tasks: `${apiBaseUrl}/api/tasks`,

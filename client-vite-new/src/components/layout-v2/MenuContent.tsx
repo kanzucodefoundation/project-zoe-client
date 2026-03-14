@@ -23,6 +23,7 @@ import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import ChecklistRoundedIcon from '@mui/icons-material/ChecklistRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
+import SmsRoundedIcon from '@mui/icons-material/SmsRounded';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
@@ -82,6 +83,7 @@ const navItems: NavItem[] = [
     children: [
       { name: 'Manage Users', icon: <PeopleRoundedIcon />, path: localRoutes.users },
       { name: 'Manage Reports', icon: <AssessmentRoundedIcon />, path: localRoutes.reportConfiguration },
+      { name: 'Manage Notifications', icon: <SmsRoundedIcon />, path: localRoutes.notifications },
       // { name: 'Group Categories', icon: <GroupRoundedIcon />, path: localRoutes.groupsCategories },
       // { name: 'Settings', icon: <SettingsRoundedIcon />, path: localRoutes.settings },
     ],
