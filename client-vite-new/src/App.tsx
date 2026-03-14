@@ -33,6 +33,7 @@ import RetentionReport from './modules/reports/RetentionReport';
 import ManageNotifications from './modules/admin/notifications/ManageNotifications';
 import CheckInScreen from './modules/attendance/CheckInScreen';
 import ServiceSchedules from './modules/attendance/schedules/ServiceSchedules';
+import AttendanceHistory from './modules/attendance/history/AttendanceHistory';
 const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
 const UpdatePasswordConfirmation = () => <div>Update Password - Coming Soon</div>;
@@ -119,6 +120,7 @@ function App() {
             <Route path={localRoutes.notifications} element={<ManageNotifications />} />
             <Route path={localRoutes.attendance} element={<CheckInScreen />} />
             <Route path={localRoutes.attendanceSchedules} element={<ServiceSchedules />} />
+            <Route path={localRoutes.attendanceHistory} element={<AttendanceHistory />} />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />

@@ -108,6 +108,7 @@ export const localRoutes = {
   // Attendance
   attendance: '/attendance',
   attendanceSchedules: '/attendance/schedules',
+  attendanceHistory: '/attendance/history',
 };
 
 export const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';

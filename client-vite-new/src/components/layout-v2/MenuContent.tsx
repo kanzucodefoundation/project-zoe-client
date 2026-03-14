@@ -24,6 +24,7 @@ import ChecklistRoundedIcon from '@mui/icons-material/ChecklistRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
+import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import SmsRoundedIcon from '@mui/icons-material/SmsRounded';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -76,6 +77,7 @@ const navItems: NavItem[] = [
     children: [
       { name: 'Check-In', icon: <HowToRegRoundedIcon />, path: localRoutes.attendance },
       { name: 'Schedules', icon: <CalendarMonthRoundedIcon />, path: localRoutes.attendanceSchedules },
+      { name: 'History', icon: <HistoryRoundedIcon />, path: localRoutes.attendanceHistory },
     ],
   },
   {
