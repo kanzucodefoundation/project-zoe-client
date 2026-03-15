@@ -10,9 +10,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import BubbleChartIcon from '@material-ui/icons/BubbleChart';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import { useHistory, useLocation } from 'react-router-dom';
-import {
-  createStyles, makeStyles, Theme, withStyles,
-} from '@material-ui/core';
+import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import grey from '@material-ui/core/colors/grey';
 import Collapse from '@material-ui/core/Collapse';
@@ -78,6 +76,12 @@ const routes: IAppRoute[] = [
     name: 'Reports',
     route: localRoutes.reports,
     icon: AssessmentIcon,
+    items: [
+      {
+        name: 'Salvations',
+        route: localRoutes.reportSalvations,
+      },
+    ],
   },
   {
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
@@ -115,32 +119,34 @@ const routes: IAppRoute[] = [
   // },
 ];
 const menBackgroundColor = grey[800];
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  logoHolder: {
-    height: 140,
-  },
-  logo: {
-    [theme.breakpoints.only('xs')]: {
-      height: 50,
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    logoHolder: {
+      height: 140,
+    },
+    logo: {
+      [theme.breakpoints.only('xs')]: {
+        height: 50,
+        width: 'auto',
+      },
+      height: 58,
       width: 'auto',
+      fontSize: '25px',
+      color: 'white',
     },
-    height: 58,
-    width: 'auto',
-    fontSize: '25px',
-    color: 'white',
-  },
-  whiteText: {
-    color: 'white',
-  },
-  menuItem: {
-    '&:hover': {
-      backgroundColor: menBackgroundColor,
+    whiteText: {
+      color: 'white',
     },
-  },
-  nested: {
-    paddingLeft: theme.spacing(4),
-  },
-}));
+    menuItem: {
+      '&:hover': {
+        backgroundColor: menBackgroundColor,
+      },
+    },
+    nested: {
+      paddingLeft: theme.spacing(4),
+    },
+  }),
+);
 
 const StyledListItem = withStyles({
   root: {
@@ -174,13 +180,14 @@ const NavMenu = (props: any) => {
     return pathMatches(pathname, pathStr);
   };
 
-  const cleanRoutes = (r: IAppRoute[]) => r.filter((it) => {
-    let { items } = it;
-    if (items && hasValue(items)) {
-      items = cleanRoutes(items);
-    }
-    return it.requiredRoles ? hasAnyRole(user, it.requiredRoles) : true;
-  });
+  const cleanRoutes = (r: IAppRoute[]) =>
+    r.filter((it) => {
+      let { items } = it;
+      if (items && hasValue(items)) {
+        items = cleanRoutes(items);
+      }
+      return it.requiredRoles ? hasAnyRole(user, it.requiredRoles) : true;
+    });
 
   const finalRoutes = cleanRoutes(routes);
 
@@ -193,7 +200,7 @@ const NavMenu = (props: any) => {
         alignContent="center"
         justify="center"
       >
-      <h3 className={classes.logo}>Project Zoe</h3>
+        <h3 className={classes.logo}>Project Zoe</h3>
       </Grid>
       <Divider />
       <List style={{ paddingTop: 0 }}>
