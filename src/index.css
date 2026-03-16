@@ -11,6 +11,10 @@ body, #root, .fill {
   min-width: 100% !important;
 }
 
+.pac-container {
+  z-index: 2000 !important; /* MUI Modal default z-index is 1300 */
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
   monospace;
