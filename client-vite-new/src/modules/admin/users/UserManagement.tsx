@@ -19,6 +19,8 @@ import {
   DialogActions,
   Chip,
   Avatar,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -26,7 +28,7 @@ import {
   Delete as DeleteIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
-import { get, post, put, del } from '../../../utils/ajax';
+import { get, post, patch, del } from '../../../utils/ajax';
 import { remoteRoutes } from '../../../data/constants';
 
 interface User {
@@ -39,6 +41,8 @@ interface User {
   isActive: boolean;
   lastLogin?: string;
   createdAt: string;
+  avatar?: string;
+  fullName?: string;
 }
 
 interface CreateUserData {
@@ -48,6 +52,7 @@ interface CreateUserData {
   firstName?: string;
   lastName?: string;
   roles: string[];
+  isActive?: boolean;
 }
 
 const availableRoles = [
@@ -77,6 +82,7 @@ const UserManagement = () => {
   const [editDialog, setEditDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isActiveStatus, setIsActiveStatus] = useState(true);
   const [formData, setFormData] = useState<CreateUserData>({
     username: '',
     email: '',
@@ -84,15 +90,20 @@ const UserManagement = () => {
     firstName: '',
     lastName: '',
     roles: [],
+    isActive: true,
   });
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  const fetchUsers = () => {
+  const fetchUsers = (search: string = '') => {
+    const url = search 
+      ? `${remoteRoutes.users}?query=${encodeURIComponent(search)}`
+      : remoteRoutes.users;
+    
     get(
-      remoteRoutes.users,
+      url,
       (response) => {
         console.log('Users response:', response);
         setUsers(response || []);
@@ -119,6 +130,7 @@ const UserManagement = () => {
 
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
+    setIsActiveStatus(user.isActive);
     setFormData({
       username: user.username,
       email: user.email,
@@ -126,6 +138,7 @@ const UserManagement = () => {
       firstName: user.firstName || '',
       lastName: user.lastName || '',
       roles: user.roles,
+      isActive: user.isActive,
     });
     setEditDialog(true);
   };
@@ -166,15 +179,20 @@ const UserManagement = () => {
 
     setSubmitting(true);
 
-    // Backend expects: id, username, roles, isActive (password is optional and excluded from edit)
-    const updateData = {
+    // Backend expects: id, username, roles, isActive (password is optional)
+    const updateData: any = {
       id: selectedUser.id,
       username: formData.username,
-      roles: formData.roles,
-      isActive: selectedUser.isActive,
+      // roles: formData.roles,
+      isActive: isActiveStatus,
     };
 
-    put(
+    // Include password if provided
+    if (formData.password) {
+      updateData.password = formData.password;
+    }
+
+    patch(
       `${remoteRoutes.users}/${selectedUser.id}`,
       updateData,
       () => {
@@ -201,12 +219,7 @@ const UserManagement = () => {
     handleFormChange('roles', newRoles);
   };
 
-  const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (user.firstName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredUsers = users;
 
   const getInitials = (user: User) => {
     if (user.firstName && user.lastName) {
@@ -250,7 +263,10 @@ const UserManagement = () => {
           fullWidth
           placeholder="Search by username, email, first name, or last name..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            fetchUsers(e.target.value);
+          }}
           variant="outlined"
           size="small"
           InputProps={{
@@ -277,14 +293,17 @@ const UserManagement = () => {
               <TableRow key={user.id}>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar sx={{ bgcolor: 'primary.main' }}>
+                    <Avatar 
+                      src={user.avatar || undefined}
+                      sx={{ bgcolor: 'primary.main' }}
+                    >
                       {getInitials(user)}
                     </Avatar>
                     <Box>
                       <Typography variant="subtitle2">
                         {user.firstName && user.lastName 
-                          ? `${user.firstName} ${user.lastName}`
-                          : user.username
+                          ? `${user.fullName}`
+                          : user.fullName
                         }
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
@@ -413,6 +432,13 @@ const UserManagement = () => {
               onChange={(e) => handleFormChange('username', e.target.value)}
             />
             <TextField
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => handleFormChange('password', e.target.value)}
+              helperText="Leave blank to keep current password"
+            />
+            <TextField
               label="Email"
               type="email"
               required
@@ -420,6 +446,16 @@ const UserManagement = () => {
               onChange={(e) => handleFormChange('email', e.target.value)}
               disabled
               helperText="Email cannot be changed"
+            />
+            <FormControlLabel
+              label={isActiveStatus ? 'Active' : 'Inactive'}
+              control={
+                <Switch
+                  color={isActiveStatus ? 'success' : 'default'}
+                  checked={isActiveStatus}
+                  onChange={(e) => setIsActiveStatus(e.target.checked)}
+                />
+              }
             />
             <Box display="flex" gap={2}>
               <TextField
