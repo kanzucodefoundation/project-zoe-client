@@ -1,12 +1,6 @@
 import ajax from '../../utils/ajax';
 import { apiBaseUrl } from '../../data/constants';
-//import { BulkUploadSummary }  from './types';
-interface BulkUploadSummary {
-  total: number;
-  created: number;
-  linked: number;
-  errors: BulkRowResult[];
-}
+import type { BulkUploadSummary } from './types';
 export const serviceRecordingApi = {
   bulkUploadGuests: (file: File): Promise<BulkUploadSummary> => {
     const form = new FormData();

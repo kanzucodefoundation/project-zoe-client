@@ -2,22 +2,24 @@ export type $TsFixMe = any
 
 // ─── Tasks ────────────────────────────────────────────────────────────────────
 
-export enum TaskType {
-  CALL = 'call',
-  VISIT = 'visit',
-  MATCH = 'match',
-  FOLLOW_UP = 'follow_up',
-}
+export const TaskType = {
+  CALL: 'call',
+  VISIT: 'visit',
+  MATCH: 'match',
+  FOLLOW_UP: 'follow_up',
+} as const;
+export type TaskType = typeof TaskType[keyof typeof TaskType];
 
-export enum TaskStatus {
-  TODO = 'todo',
-  IN_PROGRESS = 'in_progress',
-  DONE = 'done',
-  MATCHED_TO_FELLOWSHIP = 'matched_to_fellowship',
-  ATTENDED_FELLOWSHIP = 'attended_fellowship',
-  JOINED_SERVING_TEAM = 'joined_serving_team',
-  GOT_BAPTISED = 'got_baptised',
-}
+export const TaskStatus = {
+  TODO: 'todo',
+  IN_PROGRESS: 'in_progress',
+  DONE: 'done',
+  MATCHED_TO_FELLOWSHIP: 'matched_to_fellowship',
+  ATTENDED_FELLOWSHIP: 'attended_fellowship',
+  JOINED_SERVING_TEAM: 'joined_serving_team',
+  GOT_BAPTISED: 'got_baptised',
+} as const;
+export type TaskStatus = typeof TaskStatus[keyof typeof TaskStatus];
 
 export const CLOSED_STATUSES: TaskStatus[] = [
   TaskStatus.DONE,

@@ -1,10 +1,10 @@
-import { Card, CardContent, Box, Typography, Avatar, Stack } from '@mui/material';
+import { Card, CardContent, Typography, Avatar, Stack } from '@mui/material';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import TaskStatusChip from './TaskStatusChip';
 import TaskTypeChip from './TaskTypeChip';
 import { localRoutes } from '../../data/constants';
-import type { Task } from '../../utils/types';
+import type { Task, TaskUser } from '../../utils/types';
 import { TYPE_LABELS } from '../../utils/types';
 
 interface Props {
@@ -13,14 +13,16 @@ interface Props {
   showContact?: boolean;
 }
 
-function getInitials(user: { person?: { firstName: string; lastName: string } } | undefined) {
-  if (!user?.person) return '?';
-  return `${user.person.firstName[0] ?? ''}${user.person.lastName[0] ?? ''}`.toUpperCase();
+function getInitials(user: TaskUser | undefined) {
+  const person = user?.contact?.person;
+  if (!person) return '?';
+  return `${person.firstName[0] ?? ''}${person.lastName[0] ?? ''}`.toUpperCase();
 }
 
-function getFullName(user: { person?: { firstName: string; lastName: string } } | undefined) {
-  if (!user?.person) return 'Unknown';
-  return `${user.person.firstName} ${user.person.lastName}`.trim();
+function getFullName(user: TaskUser | undefined) {
+  const person = user?.contact?.person;
+  if (!person) return 'Unknown';
+  return `${person.firstName} ${person.lastName}`.trim();
 }
 
 export default function TaskCard({ task, onOpen, showContact = false }: Props) {

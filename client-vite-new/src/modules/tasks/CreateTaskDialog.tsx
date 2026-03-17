@@ -8,7 +8,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import PeopleIcon from '@mui/icons-material/People';
 import RepeatIcon from '@mui/icons-material/Repeat';
-import dayjs, { Dayjs } from 'dayjs';
+import type { Dayjs } from 'dayjs';
 import { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';

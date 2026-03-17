@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from './data/store';
-import { restoreUser, logout, stopLoading } from './data/coreSlice';
+import { restoreUser, logout } from './data/coreSlice';
 import { localRoutes, AUTH_TOKEN_KEY, AUTH_USER_KEY } from './data/constants';
 import { isTokenExpired } from './utils/ajax';
 import 'react-toastify/dist/ReactToastify.css';

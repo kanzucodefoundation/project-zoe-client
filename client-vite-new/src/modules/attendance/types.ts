@@ -22,6 +22,7 @@ export interface RosterMember {
   checkedInAt?: string;
   isFirstTimer?: boolean;
   isChild?: boolean;
+  phone?: string;
 }
 
 export interface ServiceStats {

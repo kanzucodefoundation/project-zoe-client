@@ -2,16 +2,15 @@ import { useState, useEffect } from 'react';
 import {
   Drawer, Box, Typography, IconButton, Stack, Divider,
   Button, Autocomplete, TextField, List, ListItem,
-  ListItemText, Avatar, Chip,
+  ListItemText, Chip,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TaskStatusChip from './TaskStatusChip';
-import TaskTypeChip from './TaskTypeChip';
 import UpdateStatusDialog from './UpdateStatusDialog';
 import { useReassignTask, useAddComment } from './hooks';
 import { CLOSED_STATUSES, type Task } from '../../utils/types';
@@ -71,9 +70,6 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
   if (!localTask) return null;
 
   const isClosed = CLOSED_STATUSES.includes(localTask.status);
-  const contactName = localTask.contact?.person
-    ? `${localTask.contact.person.firstName} ${localTask.contact.person.lastName}`.trim()
-    : 'Contact';
 
   const handleSendComment = () => {
     if (!comment.trim()) return;
@@ -169,8 +165,8 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
         </Typography>
         <DatePicker
           value={localTask.dueAt ? dayjs(localTask.dueAt) : null}
-          onChange={async (val: Dayjs | null) => {
-            const dueAt = val ? val.toISOString() : null;
+          onChange={async (val) => {
+            const dueAt = val ? dayjs(val).toISOString() : null;
             try {
               const updated = await taskApi.update(localTask.id, { dueAt });
               setLocalTask(updated);

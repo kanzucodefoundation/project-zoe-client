@@ -6,7 +6,7 @@ import {
   FormLabel, FormControl, Autocomplete,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useUpdateTaskStatus } from './hooks';
@@ -151,8 +151,8 @@ export default function UpdateStatusDialog({ open, task, onClose, onSuccess }: P
                 <DatePicker
                   label="Date"
                   value={dayjs(formik.values.activityDate)}
-                  onChange={(val: Dayjs | null) =>
-                    formik.setFieldValue('activityDate', val ? val.format('YYYY-MM-DD') : '')
+                  onChange={(val) =>
+                    formik.setFieldValue('activityDate', val ? dayjs(val).format('YYYY-MM-DD') : '')
                   }
                   slotProps={{ textField: { fullWidth: true, required: true } }}
                 />
@@ -164,8 +164,8 @@ export default function UpdateStatusDialog({ open, task, onClose, onSuccess }: P
                 <DatePicker
                   label="Date of Baptism"
                   value={dayjs(formik.values.baptismDate)}
-                  onChange={(val: Dayjs | null) =>
-                    formik.setFieldValue('baptismDate', val ? val.format('YYYY-MM-DD') : '')
+                  onChange={(val) =>
+                    formik.setFieldValue('baptismDate', val ? dayjs(val).format('YYYY-MM-DD') : '')
                   }
                   slotProps={{ textField: { fullWidth: true, required: true } }}
                 />
