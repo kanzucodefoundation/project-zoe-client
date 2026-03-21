@@ -23,6 +23,7 @@ import {
   CircularProgress,
   Switch,
   FormControlLabel,
+  TablePagination,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -75,10 +76,16 @@ interface EditUserData {
   isActive: boolean;
 }
 
+const USER_FETCH_LIMIT = 100;
+
 const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
+  const [reloadKey, setReloadKey] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [createDialog, setCreateDialog] = useState(false);
   const [editDialog, setEditDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -101,8 +108,64 @@ const UserManagement = () => {
   });
 
   useEffect(() => {
+    let active = true;
+
+    const fetchUsers = async () => {
+      setLoading(true);
+
+      const collected: User[] = [];
+      let skip = 0;
+
+      try {
+        while (true) {
+          const batch = await new Promise<User[]>((resolve, reject) => {
+            search(
+              remoteRoutes.users,
+              {
+                query: appliedSearch || undefined,
+                limit: USER_FETCH_LIMIT,
+                skip,
+              },
+              (response) => resolve(Array.isArray(response) ? response : []),
+              reject,
+            );
+          });
+
+          collected.push(...batch);
+
+          if (batch.length < USER_FETCH_LIMIT) {
+            break;
+          }
+
+          skip += USER_FETCH_LIMIT;
+        }
+
+        if (!active) return;
+
+        setUsers(collected);
+      } catch (error) {
+        if (!active) return;
+        console.error('Users error:', error);
+        setUsers([]);
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
     fetchUsers();
-  }, []);
+
+    return () => {
+      active = false;
+    };
+  }, [appliedSearch, reloadKey]);
+
+  useEffect(() => {
+    if (page > 0 && page * rowsPerPage >= users.length) {
+      setPage(Math.max(0, Math.ceil(users.length / rowsPerPage) - 1));
+    }
+  }, [users.length, page, rowsPerPage]);
 
   useEffect(() => {
     fetchAvailableRoles();
@@ -119,25 +182,6 @@ const UserManagement = () => {
 
     return () => window.clearTimeout(timeoutId);
   }, [contactQuery, createDialog]);
-
-  const fetchUsers = (search: string = '') => {
-    const url = search 
-      ? `${remoteRoutes.users}?query=${encodeURIComponent(search)}`
-      : remoteRoutes.users;
-    
-    get(
-      url,
-      (response) => {
-        console.log('Users response:', response);
-        setUsers(response || []);
-        setLoading(false);
-      },
-      (error) => {
-        console.error('Users error:', error);
-        setLoading(false);
-      }
-    );
-  };
 
   const fetchAvailableRoles = () => {
     get(
@@ -242,7 +286,7 @@ const UserManagement = () => {
       },
       () => {
         setCreateDialog(false);
-        fetchUsers();
+        setReloadKey((prev) => prev + 1);
         setSubmitting(false);
       },
       () => {
@@ -275,7 +319,7 @@ const UserManagement = () => {
       del(
         `${remoteRoutes.users}/${user.id}`,
         () => {
-          fetchUsers();
+          setReloadKey((prev) => prev + 1);
         },
         (error) => {
           console.error('Delete user error:', error);
@@ -304,7 +348,7 @@ const UserManagement = () => {
       updateData,
       () => {
         setEditDialog(false);
-        fetchUsers();
+        setReloadKey((prev) => prev + 1);
         setSubmitting(false);
       },
       (error) => {
@@ -314,7 +358,10 @@ const UserManagement = () => {
     );
   };
 
-  const filteredUsers = users;
+  const paginatedUsers = users.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage,
+  );
 
   const getInitials = (user: User) => {
     if (user.firstName && user.lastName) {
@@ -358,9 +405,13 @@ const UserManagement = () => {
           fullWidth
           placeholder="Search by username, email, first name, or last name..."
           value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            fetchUsers(e.target.value);
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              setAppliedSearch(searchTerm.trim());
+              setPage(0);
+            }
           }}
           variant="outlined"
           size="small"
@@ -368,6 +419,15 @@ const UserManagement = () => {
             startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
           }}
         />
+        <Button
+          variant="outlined"
+          onClick={() => {
+            setAppliedSearch(searchTerm.trim());
+            setPage(0);
+          }}
+        >
+          Search
+        </Button>
       </Box>
 
       {/* Users Table */}
@@ -376,7 +436,7 @@ const UserManagement = () => {
           <TableHead>
             <TableRow>
               <TableCell>User</TableCell>
-              <TableCell>Email</TableCell>
+              {/* <TableCell>Email</TableCell> */}
               <TableCell>Roles</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Last Login</TableCell>
@@ -384,7 +444,7 @@ const UserManagement = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredUsers.map((user) => (
+            {paginatedUsers.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={2}>
@@ -407,7 +467,7 @@ const UserManagement = () => {
                     </Box>
                   </Box>
                 </TableCell>
-                <TableCell>{user.email}</TableCell>
+                {/* <TableCell>{user.email}</TableCell> */}
                 <TableCell>
                   <Box display="flex" gap={0.5} flexWrap="wrap">
                     {user.roles.slice(0, 3).map((role) => (
@@ -441,8 +501,22 @@ const UserManagement = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Box display="flex" justifyContent="flex-end" mt={1}>
+        <TablePagination
+          component="div"
+          count={users.length}
+          page={page}
+          onPageChange={(_, newPage) => setPage(newPage)}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={(e) => {
+            setRowsPerPage(parseInt(e.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 25, 50, 100]}
+        />
+      </Box>
 
-      {filteredUsers.length === 0 && (
+      {users.length === 0 && (
         <Box textAlign="center" py={4}>
           <Typography color="text.secondary">
             No users found matching your search.
