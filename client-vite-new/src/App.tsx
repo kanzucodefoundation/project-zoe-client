@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Import actual components
 import Login from './modules/login/Login';
+import ForgotPassword from './modules/login/ForgotPassword';
 import SignUp from './modules/login/SignUp';
 import Dashboard from './modules/dashboard/Dashboard';
 import Contacts from './modules/contacts/Contacts';
@@ -34,7 +35,6 @@ import ManageNotifications from './modules/admin/notifications/ManageNotificatio
 import CheckInScreen from './modules/attendance/CheckInScreen';
 import ServiceSchedules from './modules/attendance/schedules/ServiceSchedules';
 import AttendanceHistory from './modules/attendance/history/AttendanceHistory';
-const ForgotPassword = () => <div>Forgot Password - Coming Soon</div>;
 const ResetPassword = () => <div>Reset Password - Coming Soon</div>;
 const UpdatePasswordConfirmation = () => <div>Update Password - Coming Soon</div>;
 const Splash = () => (

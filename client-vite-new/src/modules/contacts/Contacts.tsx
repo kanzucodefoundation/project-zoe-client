@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -51,81 +51,107 @@ interface Contact {
 }
 
 interface ContactFilter {
-  search?: string;
   limit?: number;
-  offset?: number;
+  skip?: number;
 }
+
+const CONTACT_FETCH_LIMIT = 100;
 
 const Contacts = () => {
   const navigate = useNavigate();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Visible input text that should NOT trigger reload while typing
   const [searchInput, setSearchInput] = useState('');
-
-  // The applied search term used in requests; set only when user submits search
   const [appliedSearch, setAppliedSearch] = useState<string>('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   const [createDialog, setCreateDialog] = useState(false);
   const [uploadDialog, setUploadDialog] = useState(false);
-
-  // Pagination-aware filter: limit + offset; search applied via appliedSearch
   const [filter, setFilter] = useState<ContactFilter>({
-    limit: 50,
-    offset: 0,
-    search: '',
+    limit: CONTACT_FETCH_LIMIT,
+    skip: 0,
   });
-
-  // Optional total count if API returns it
   const [total, setTotal] = useState<number>(0);
-
-  // Actions menu state
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
-
-  // Derive pagination UI state from filter
-  const rowsPerPage = filter.limit || 25;
-  const page = Math.floor((filter.offset || 0) / rowsPerPage);
-
-  // Build query params memoized to avoid unnecessary reloads
-  const queryParams = useMemo(
-    () => ({
-      ...filter,
-      email: appliedSearch || undefined, 
-    }),
-    [filter, appliedSearch]
+  const paginatedContacts = contacts.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage,
   );
 
   useEffect(() => {
-    setLoading(true);
-    search(
-      remoteRoutes.contacts,
-      queryParams,
-      (response) => {
-        // Support both array and { data, total } shapes
-        const data: Contact[] = Array.isArray(response) ? response : response?.data ?? [];
-        const totalCount =
-          (Array.isArray(response) ? response.length : response?.total) ?? data.length;
+    let active = true;
 
-        setContacts(data || []);
-        setTotal(totalCount);
-        setLoading(false);
-      },
-      (error) => {
+    const loadAllContacts = async () => {
+      setLoading(true);
+
+      const collected: Contact[] = [];
+      let skip = 0;
+
+      try {
+        while (true) {
+          const batch = await new Promise<Contact[]>((resolve, reject) => {
+            search(
+              remoteRoutes.contacts,
+              {
+                ...filter,
+                skip,
+                query: appliedSearch || undefined,
+              },
+              (response) => {
+                const data: Contact[] = Array.isArray(response)
+                  ? response
+                  : response?.data ?? [];
+                resolve(data);
+              },
+              reject,
+            );
+          });
+
+          collected.push(...batch);
+
+          if (batch.length < CONTACT_FETCH_LIMIT) {
+            break;
+          }
+
+          skip += CONTACT_FETCH_LIMIT;
+        }
+
+        if (!active) return;
+
+        setContacts(collected);
+        setTotal(collected.length);
+      } catch (error) {
+        if (!active) return;
         console.error('Contacts error:', error);
-        setLoading(false);
+        setContacts([]);
+        setTotal(0);
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
       }
-    );
-  }, [queryParams]);
+    };
 
-  // Trigger search only when the user clicks the button or presses Enter.
-  const handleSearch = useCallback(() => {
+    loadAllContacts();
+
+    return () => {
+      active = false;
+    };
+  }, [appliedSearch, filter]);
+
+  useEffect(() => {
+    if (page > 0 && page * rowsPerPage >= contacts.length) {
+      setPage(Math.max(0, Math.ceil(contacts.length / rowsPerPage) - 1));
+    }
+  }, [contacts.length, page, rowsPerPage]);
+
+  const handleSearch = () => {
     setAppliedSearch(searchInput.trim());
-    // Reset to first page on new search
-    setFilter((prev) => ({ ...prev, offset: 0 }));
-  }, [searchInput]);
+    setPage(0);
+  };
 
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -248,7 +274,7 @@ const Contacts = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {contacts.map((contact, idx) => (
+                {paginatedContacts.map((contact, idx) => (
                   <TableRow
                     key={contact.id}
                     hover
@@ -320,17 +346,14 @@ const Contacts = () => {
             <Box display="flex" justifyContent="flex-end" mt={1}>
               <TablePagination
                 component="div"
-                count={total || contacts.length}
+                count={total}
                 page={page}
-                onPageChange={(_, newPage) => {
-                  const newOffset = newPage * rowsPerPage;
-                  setFilter((prev) => ({ ...prev, offset: newOffset }));
-                }}
+                onPageChange={(_, newPage) => setPage(newPage)}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={(e) => {
                   const newLimit = parseInt(e.target.value, 10);
-                  // Reset to first page when page size changes
-                  setFilter((prev) => ({ ...prev, limit: newLimit }));
+                  setRowsPerPage(newLimit);
+                  setPage(0);
                 }}
                 rowsPerPageOptions={[10, 25, 50, 100]}
               />
