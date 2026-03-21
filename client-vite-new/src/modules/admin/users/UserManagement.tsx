@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   TextField,
+  Autocomplete,
   Table,
   TableBody,
   TableCell,
@@ -19,6 +20,7 @@ import {
   DialogActions,
   Chip,
   Avatar,
+  CircularProgress,
   Switch,
   FormControlLabel,
 } from '@mui/material';
@@ -28,7 +30,7 @@ import {
   Delete as DeleteIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
-import { get, post, patch, del } from '../../../utils/ajax';
+import { get, post, patch, del, search } from '../../../utils/ajax';
 import { remoteRoutes } from '../../../data/constants';
 
 interface User {
@@ -43,36 +45,35 @@ interface User {
   createdAt: string;
   avatar?: string;
   fullName?: string;
+  contactId: number;
+}
+
+interface ContactOption {
+  id: number;
+  name: string;
+  avatar?: string | null;
+}
+
+interface RoleDto {
+  id: number;
+  role: string;
+  description: string;
+  permissions: string[];
+  isActive: boolean;
 }
 
 interface CreateUserData {
-  username: string;
-  email: string;
+  contact: ContactOption | null;
   password: string;
-  firstName?: string;
-  lastName?: string;
   roles: string[];
-  isActive?: boolean;
+  isActive: boolean;
 }
 
-const availableRoles = [
-  'DASHBOARD',
-  'CRM_VIEW',
-  'CRM_EDIT',
-  'USER_VIEW',
-  'USER_EDIT',
-  'ROLE_EDIT',
-  'TAG_VIEW',
-  'TAG_EDIT',
-  'GROUP_VIEW',
-  'GROUP_EDIT',
-  'MC_VIEW',
-  'EVENT_VIEW',
-  'EVENT_EDIT',
-  'REPORT_VIEW',
-  'REPORT_VIEW_SUBMISSIONS',
-  'MANAGE_HELP',
-];
+interface EditUserData {
+  password: string;
+  roles: string[];
+  isActive: boolean;
+}
 
 const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -83,12 +84,18 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [isActiveStatus, setIsActiveStatus] = useState(true);
-  const [formData, setFormData] = useState<CreateUserData>({
-    username: '',
-    email: '',
+  const [availableRoles, setAvailableRoles] = useState<string[]>([]);
+  const [contactOptions, setContactOptions] = useState<ContactOption[]>([]);
+  const [loadingContacts, setLoadingContacts] = useState(false);
+  const [contactQuery, setContactQuery] = useState('');
+  const [createFormData, setCreateFormData] = useState<CreateUserData>({
+    contact: null,
     password: '',
-    firstName: '',
-    lastName: '',
+    roles: [],
+    isActive: true,
+  });
+  const [editFormData, setEditFormData] = useState<EditUserData>({
+    password: '',
     roles: [],
     isActive: true,
   });
@@ -96,6 +103,22 @@ const UserManagement = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    fetchAvailableRoles();
+  }, []);
+
+  useEffect(() => {
+    if (!createDialog) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      fetchCreateContacts(contactQuery);
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [contactQuery, createDialog]);
 
   const fetchUsers = (search: string = '') => {
     const url = search 
@@ -116,31 +139,135 @@ const UserManagement = () => {
     );
   };
 
+  const fetchAvailableRoles = () => {
+    get(
+      remoteRoutes.roles,
+      (response: RoleDto[] = []) => {
+        const activeRoles = response
+          .filter((role) => role.isActive)
+          .map((role) => role.role);
+        setAvailableRoles(activeRoles);
+      },
+      () => {
+        setAvailableRoles([]);
+      }
+    );
+  };
+
+  const fetchCreateContacts = (query: string = '') => {
+    setLoadingContacts(true);
+    search(
+      remoteRoutes.contactsPeopleCombo,
+      {
+        skipUsers: true,
+        query,
+        limit: 300,
+      },
+      (response: ContactOption[] = []) => {
+        setContactOptions(Array.isArray(response) ? response : []);
+        setLoadingContacts(false);
+      },
+      () => {
+        setContactOptions([]);
+        setLoadingContacts(false);
+      }
+    );
+  };
+
   const handleCreateUser = () => {
-    setFormData({
-      username: '',
-      email: '',
+    setCreateFormData({
+      contact: null,
       password: '',
-      firstName: '',
-      lastName: '',
       roles: [],
+      isActive: true,
     });
+    setContactQuery('');
+    fetchCreateContacts('');
+    if (!availableRoles.length) {
+      fetchAvailableRoles();
+    }
     setCreateDialog(true);
+  };
+
+  const handleCloseCreateDialog = () => {
+    setCreateDialog(false);
+    setSubmitting(false);
+  };
+
+  const handleCreateFormChange = <K extends keyof CreateUserData>(
+    field: K,
+    value: CreateUserData[K],
+  ) => {
+    setCreateFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleEditFormChange = <K extends keyof EditUserData>(
+    field: K,
+    value: EditUserData[K],
+  ) => {
+    setEditFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const toggleCreateRole = (role: string) => {
+    const currentRoles = createFormData.roles;
+    const newRoles = currentRoles.includes(role)
+      ? currentRoles.filter((existingRole) => existingRole !== role)
+      : [...currentRoles, role];
+    handleCreateFormChange('roles', newRoles);
+  };
+
+  const toggleEditRole = (role: string) => {
+    const currentRoles = editFormData.roles;
+    const newRoles = currentRoles.includes(role)
+      ? currentRoles.filter((existingRole) => existingRole !== role)
+      : [...currentRoles, role];
+    handleEditFormChange('roles', newRoles);
+  };
+
+  const getContactOptionLabel = (option: ContactOption) => option?.name ?? '';
+
+  const handleSubmitCreate = () => {
+    if (!createFormData.contact) {
+      return;
+    }
+
+    setSubmitting(true);
+    post(
+      remoteRoutes.users,
+      {
+        contactId: createFormData.contact.id,
+        password: createFormData.password,
+        roles: createFormData.roles,
+        isActive: createFormData.isActive,
+      },
+      () => {
+        setCreateDialog(false);
+        fetchUsers();
+        setSubmitting(false);
+      },
+      () => {
+        setSubmitting(false);
+      }
+    );
   };
 
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
     setIsActiveStatus(user.isActive);
-    setFormData({
-      username: user.username,
-      email: user.email,
-      password: '', // Don't pre-fill password
-      firstName: user.firstName || '',
-      lastName: user.lastName || '',
+    setEditFormData({
+      password: '',
       roles: user.roles,
       isActive: user.isActive,
     });
+    if (!availableRoles.length) {
+      fetchAvailableRoles();
+    }
     setEditDialog(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setEditDialog(false);
+    setSubmitting(false);
   };
 
   const handleDeleteUser = (user: User) => {
@@ -157,39 +284,19 @@ const UserManagement = () => {
     }
   };
 
-  const handleSubmitCreate = () => {
-    setSubmitting(true);
-    post(
-      remoteRoutes.users,
-      formData,
-      () => {
-        setCreateDialog(false);
-        fetchUsers();
-        setSubmitting(false);
-      },
-      (error) => {
-        console.error('Create user error:', error);
-        setSubmitting(false);
-      }
-    );
-  };
-
   const handleSubmitEdit = () => {
     if (!selectedUser) return;
 
     setSubmitting(true);
 
-    // Backend expects: id, username, roles, isActive (password is optional)
     const updateData: any = {
       id: selectedUser.id,
-      username: formData.username,
-      // roles: formData.roles,
+      roles: editFormData.roles,
       isActive: isActiveStatus,
     };
 
-    // Include password if provided
-    if (formData.password) {
-      updateData.password = formData.password;
+    if (editFormData.password) {
+      updateData.password = editFormData.password;
     }
 
     patch(
@@ -205,18 +312,6 @@ const UserManagement = () => {
         setSubmitting(false);
       }
     );
-  };
-
-  const handleFormChange = (field: keyof CreateUserData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleRoleToggle = (role: string) => {
-    const currentRoles = formData.roles;
-    const newRoles = currentRoles.includes(role)
-      ? currentRoles.filter(r => r !== role)
-      : [...currentRoles, role];
-    handleFormChange('roles', newRoles);
   };
 
   const filteredUsers = users;
@@ -293,7 +388,7 @@ const UserManagement = () => {
               <TableRow key={user.id}>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar 
+                    <Avatar
                       src={user.avatar || undefined}
                       sx={{ bgcolor: 'primary.main' }}
                     >
@@ -301,7 +396,7 @@ const UserManagement = () => {
                     </Avatar>
                     <Box>
                       <Typography variant="subtitle2">
-                        {user.firstName && user.lastName 
+                        {user.firstName && user.lastName
                           ? `${user.fullName}`
                           : user.fullName
                         }
@@ -356,64 +451,89 @@ const UserManagement = () => {
       )}
 
       {/* Create User Dialog */}
-      <Dialog open={createDialog} onClose={() => setCreateDialog(false)} maxWidth="sm" fullWidth>
+      <Dialog open={createDialog} onClose={handleCloseCreateDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Create New User</DialogTitle>
         <DialogContent>
           <Box pt={1} display="flex" flexDirection="column" gap={2}>
-            <TextField
-              label="Username"
-              required
-              value={formData.username}
-              onChange={(e) => handleFormChange('username', e.target.value)}
-            />
-            <TextField
-              label="Email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={(e) => handleFormChange('email', e.target.value)}
+            <Autocomplete
+              options={contactOptions}
+              value={createFormData.contact}
+              loading={loadingContacts}
+              onChange={(_, value) => handleCreateFormChange('contact', value)}
+              onInputChange={(_, value, reason) => {
+                if (reason === 'input') {
+                  setContactQuery(value);
+                }
+              }}
+              getOptionLabel={getContactOptionLabel}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              noOptionsText={contactQuery ? 'No matching people found' : 'No people available'}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Person"
+                  required
+                  helperText="Only contacts without existing user accounts are listed"
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {loadingContacts ? <CircularProgress color="inherit" size={20} /> : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
             />
             <TextField
               label="Password"
-              type="password"
+              type="text"
               required
-              value={formData.password}
-              onChange={(e) => handleFormChange('password', e.target.value)}
+              value={createFormData.password}
+              onChange={(e) => handleCreateFormChange('password', e.target.value)}
+              helperText="Must be at least 8 characters"
             />
-            <Box display="flex" gap={2}>
-              <TextField
-                label="First Name"
-                value={formData.firstName}
-                onChange={(e) => handleFormChange('firstName', e.target.value)}
-              />
-              <TextField
-                label="Last Name"
-                value={formData.lastName}
-                onChange={(e) => handleFormChange('lastName', e.target.value)}
-              />
-            </Box>
-            
+            <FormControlLabel
+              label={createFormData.isActive ? 'Active' : 'Inactive'}
+              control={
+                <Switch
+                  color={createFormData.isActive ? 'success' : 'default'}
+                  checked={createFormData.isActive}
+                  onChange={(e) => handleCreateFormChange('isActive', e.target.checked)}
+                />
+              }
+            />
             <Typography variant="subtitle2" sx={{ mt: 2 }}>Roles:</Typography>
             <Box display="flex" flexWrap="wrap" gap={1}>
               {availableRoles.map((role) => (
                 <Chip
                   key={role}
                   label={role}
-                  onClick={() => handleRoleToggle(role)}
-                  color={formData.roles.includes(role) ? 'primary' : 'default'}
-                  variant={formData.roles.includes(role) ? 'filled' : 'outlined'}
+                  onClick={() => toggleCreateRole(role)}
+                  color={createFormData.roles.includes(role) ? 'primary' : 'default'}
+                  variant={createFormData.roles.includes(role) ? 'filled' : 'outlined'}
                   size="small"
                 />
               ))}
             </Box>
+
+            <Typography variant="subtitle2" sx={{ mt: 1 }}>
+              Password will be sent exactly as shown
+            </Typography>
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateDialog(false)}>Cancel</Button>
-          <Button 
-            variant="contained" 
+          <Button onClick={handleCloseCreateDialog}>Cancel</Button>
+          <Button
+            variant="contained"
             onClick={handleSubmitCreate}
-            disabled={submitting || !formData.username || !formData.email || !formData.password}
+            disabled={
+              submitting
+              || !createFormData.contact
+              || createFormData.password.length < 8
+              || createFormData.roles.length === 0
+            }
           >
             {submitting ? 'Creating...' : 'Create User'}
           </Button>
@@ -421,31 +541,16 @@ const UserManagement = () => {
       </Dialog>
 
       {/* Edit User Dialog */}
-      <Dialog open={editDialog} onClose={() => setEditDialog(false)} maxWidth="sm" fullWidth>
+      <Dialog open={editDialog} onClose={handleCloseEditDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Edit User: {selectedUser?.username}</DialogTitle>
         <DialogContent>
           <Box pt={1} display="flex" flexDirection="column" gap={2}>
             <TextField
-              label="Username"
-              required
-              value={formData.username}
-              onChange={(e) => handleFormChange('username', e.target.value)}
-            />
-            <TextField
               label="Password"
               type="password"
-              value={formData.password}
-              onChange={(e) => handleFormChange('password', e.target.value)}
+              value={editFormData.password}
+              onChange={(e) => handleEditFormChange('password', e.target.value)}
               helperText="Leave blank to keep current password"
-            />
-            <TextField
-              label="Email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={(e) => handleFormChange('email', e.target.value)}
-              disabled
-              helperText="Email cannot be changed"
             />
             <FormControlLabel
               label={isActiveStatus ? 'Active' : 'Inactive'}
@@ -457,22 +562,6 @@ const UserManagement = () => {
                 />
               }
             />
-            <Box display="flex" gap={2}>
-              <TextField
-                label="First Name"
-                value={formData.firstName}
-                onChange={(e) => handleFormChange('firstName', e.target.value)}
-                disabled
-                helperText="Read-only"
-              />
-              <TextField
-                label="Last Name"
-                value={formData.lastName}
-                onChange={(e) => handleFormChange('lastName', e.target.value)}
-                disabled
-                helperText="Read-only"
-              />
-            </Box>
 
             <Typography variant="subtitle2" sx={{ mt: 2 }}>Roles:</Typography>
             <Box display="flex" flexWrap="wrap" gap={1}>
@@ -480,9 +569,9 @@ const UserManagement = () => {
                 <Chip
                   key={role}
                   label={role}
-                  onClick={() => handleRoleToggle(role)}
-                  color={formData.roles.includes(role) ? 'primary' : 'default'}
-                  variant={formData.roles.includes(role) ? 'filled' : 'outlined'}
+                  onClick={() => toggleEditRole(role)}
+                  color={editFormData.roles.includes(role) ? 'primary' : 'default'}
+                  variant={editFormData.roles.includes(role) ? 'filled' : 'outlined'}
                   size="small"
                 />
               ))}
@@ -490,11 +579,11 @@ const UserManagement = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditDialog(false)}>Cancel</Button>
+          <Button onClick={handleCloseEditDialog}>Cancel</Button>
           <Button
             variant="contained"
             onClick={handleSubmitEdit}
-            disabled={submitting || !formData.username}
+            disabled={submitting}
           >
             {submitting ? 'Updating...' : 'Save Changes'}
           </Button>
