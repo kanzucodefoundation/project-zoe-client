@@ -48,6 +48,7 @@ interface Contact {
     id: string;
     name: string;
   };
+  avatar?: string;
 }
 
 interface ContactFilter {
@@ -169,7 +170,10 @@ const Contacts = () => {
     return `${day}/${month}/${year}`;
   };
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, contact: Contact) => {
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    contact: Contact,
+  ) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
     setSelectedContact(contact);
@@ -208,16 +212,29 @@ const Contacts = () => {
 
   return (
     <Container maxWidth="lg">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h4" gutterBottom>
           People ({total || contacts.length})
         </Typography>
 
         <Box display="flex" gap={1}>
-          <Button variant="outlined" startIcon={<UploadIcon />} onClick={() => setUploadDialog(true)}>
+          <Button
+            variant="outlined"
+            startIcon={<UploadIcon />}
+            onClick={() => setUploadDialog(true)}
+          >
             Upload
           </Button>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateDialog(true)}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateDialog(true)}
+          >
             Add New
           </Button>
         </Box>
@@ -232,7 +249,9 @@ const Contacts = () => {
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={handleSearchKeyDown}
           InputProps={{
-            startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+            startAdornment: (
+              <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+            ),
           }}
         />
         <Button variant="outlined" onClick={handleSearch}>
@@ -249,7 +268,11 @@ const Contacts = () => {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Add your first contact to get started
           </Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateDialog(true)}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateDialog(true)}
+          >
             Add Contact
           </Button>
         </Box>
@@ -259,12 +282,22 @@ const Contacts = () => {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ width: 64, fontWeight: 'bold' }}>#</TableCell>
+                  <TableCell sx={{ width: 64, fontWeight: 'bold' }}>
+                    #
+                  </TableCell>
                   <TableCell sx={{ width: 56 }}></TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Name</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Email</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Phone</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Group</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                    Name
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                    Email
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                    Phone
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+                    Group
+                  </TableCell>
                   <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
                     Date of Birth
                   </TableCell>
@@ -279,13 +312,16 @@ const Contacts = () => {
                     key={contact.id}
                     hover
                     sx={{ cursor: 'pointer' }}
-                    onClick={() => navigate(`${localRoutes.contacts}/${contact.id}`)}
+                    onClick={() =>
+                      navigate(`${localRoutes.contacts}/${contact.id}`)
+                    }
                   >
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {page * rowsPerPage + idx + 1}
                     </TableCell>
                     <TableCell>
                       <Avatar
+                        src={contact.avatar || undefined}
                         sx={{
                           width: 40,
                           height: 40,
@@ -296,7 +332,9 @@ const Contacts = () => {
                         {getInitials(contact.name)}
                       </Avatar>
                     </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>
+                    <TableCell
+                      sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}
+                    >
                       {contact.name}
                     </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -332,7 +370,10 @@ const Contacts = () => {
                       {formatDate(contact.dateOfBirth)}
                     </TableCell>
                     <TableCell align="right">
-                      <IconButton size="small" onClick={(e) => handleMenuOpen(e, contact)}>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleMenuOpen(e, contact)}
+                      >
                         <MoreVertIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
@@ -343,32 +384,41 @@ const Contacts = () => {
           </TableContainer>
 
           {/* Bottom-right paginator */}
-            <Box display="flex" justifyContent="flex-end" mt={1}>
-              <TablePagination
-                component="div"
-                count={total}
-                page={page}
-                onPageChange={(_, newPage) => setPage(newPage)}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={(e) => {
-                  const newLimit = parseInt(e.target.value, 10);
-                  setRowsPerPage(newLimit);
-                  setPage(0);
-                }}
-                rowsPerPageOptions={[10, 25, 50, 100]}
-              />
-            </Box>
+          <Box display="flex" justifyContent="flex-end" mt={1}>
+            <TablePagination
+              component="div"
+              count={total}
+              page={page}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => {
+                const newLimit = parseInt(e.target.value, 10);
+                setRowsPerPage(newLimit);
+                setPage(0);
+              }}
+              rowsPerPageOptions={[10, 25, 50, 100]}
+            />
+          </Box>
         </>
       )}
 
       {/* Actions Menu */}
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
         <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
         <MenuItem onClick={handleViewDetails}>Edit</MenuItem>
       </Menu>
 
       {/* New Contact Dialog */}
-      <Dialog open={createDialog} onClose={() => setCreateDialog(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={createDialog}
+        onClose={() => setCreateDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>Add New Contact</DialogTitle>
         <DialogContent>
           <ContactForm
@@ -383,7 +433,12 @@ const Contacts = () => {
       </Dialog>
 
       {/* Upload Dialog */}
-      <Dialog open={uploadDialog} onClose={() => setUploadDialog(false)} maxWidth="md" fullWidth>
+      <Dialog
+        open={uploadDialog}
+        onClose={() => setUploadDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>Upload Contacts</DialogTitle>
         <DialogContent>
           <BulkUpload
