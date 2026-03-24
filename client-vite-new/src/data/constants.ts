@@ -111,7 +111,9 @@ export const localRoutes = {
   attendanceHistory: '/attendance/history',
 };
 
-export const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';
+export const apiBaseUrl =
+  import.meta.env.VITE_API_URL ||
+  'https://projectzoe.kanzucodefoundation.org/server';
 
 export const remoteRoutes = {
   authServer: apiBaseUrl,
@@ -146,7 +148,7 @@ export const remoteRoutes = {
   groups: `${apiBaseUrl}/api/groups`,
   group: `${apiBaseUrl}/api/groups/group`,
   groupsCombo: `${apiBaseUrl}/api/groups/combo`,
-  groupsCategories: `${apiBaseUrl}/api/groups/category`,
+  groupsCategories: `${apiBaseUrl}/api/groups/categories`,
   groupsMembership: `${apiBaseUrl}/api/groups/member`,
   groupsRequest: `${apiBaseUrl}/api/groups/request`,
   groupReports: `${apiBaseUrl}/api/groups/groupreports`,

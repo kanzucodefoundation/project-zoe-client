@@ -14,7 +14,7 @@ module.exports = {
       'airbnb-base',
       'airbnb-typescript',
     ],
-    ignorePatterns: ['.eslintrc.js'],
+    ignorePatterns: ['.eslintrc.js', 'client-vite-new/**'],
     rules: {
       'react/jsx-filename-extension': 'off',
       'no-unused-vars': 'off',
