@@ -18,7 +18,8 @@ import { toast } from 'react-toastify';
 import { get, post, put } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { GroupPrivacy } from './types';
-import type { GroupNode, IGroupCategory } from './types';
+import type { GroupNode, IAddress, IGroupCategory } from './types';
+import PlaceAutocomplete from './PlaceAutocomplete';
 
 interface Props {
   open: boolean;
@@ -33,12 +34,22 @@ interface ComboOption {
   name: string;
 }
 
-const AddGroupDialog = ({ open, onClose, onSuccess, parentGroup, editGroup }: Props) => {
+const toComboOptions = (data: ComboOption[] | IGroupCategory[]) =>
+  (Array.isArray(data) ? data : []).map(({ id, name }) => ({ id, name }));
+
+const AddGroupDialog = ({
+  open,
+  onClose,
+  onSuccess,
+  parentGroup,
+  editGroup,
+}: Props) => {
   const [name, setName] = useState('');
   const [privacy, setPrivacy] = useState<GroupPrivacy>(GroupPrivacy.Private);
   const [details, setDetails] = useState('');
   const [category, setCategory] = useState<ComboOption | null>(null);
   const [parent, setParent] = useState<ComboOption | null>(null);
+  const [address, setAddress] = useState<IAddress | null>(null);
   const [categories, setCategories] = useState<IGroupCategory[]>([]);
   const [groups, setGroups] = useState<ComboOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -46,36 +57,45 @@ const AddGroupDialog = ({ open, onClose, onSuccess, parentGroup, editGroup }: Pr
 
   const isEditing = !!editGroup;
 
+  const getParentCategory = (categoryId: number | undefined | null) => {
+    if (!categoryId) {
+      return null;
+    }
+
+    const orderedCategories = [...categories].sort(
+      (left, right) => left.id - right.id,
+    );
+    const currentIndex = orderedCategories.findIndex(
+      (item) => item.id === categoryId,
+    );
+    if (currentIndex === -1 || currentIndex === orderedCategories.length - 1) {
+      return null;
+    }
+
+    return orderedCategories[currentIndex + 1];
+  };
+
   useEffect(() => {
     if (open) {
-      // Fetch categories and groups for selection
+      // Fetch categories for selection
       setLoadingData(true);
-      Promise.all([
-        new Promise<IGroupCategory[]>((resolve) => {
-          get(
-            remoteRoutes.groupsCategories,
-            (data: IGroupCategory[]) => resolve(data),
-            () => resolve([])
-          );
-        }),
-        new Promise<ComboOption[]>((resolve) => {
-          get(
-            remoteRoutes.groupsCombo,
-            (data: ComboOption[]) => resolve(data),
-            () => resolve([])
-          );
-        }),
-      ]).then(([categoriesData, groupsData]) => {
+      new Promise<IGroupCategory[]>((resolve) => {
+        get(
+          remoteRoutes.groupsCategories,
+          (data: IGroupCategory[]) => resolve(data),
+          () => resolve([]),
+        );
+      }).then((categoriesData) => {
         setCategories(categoriesData);
-        setGroups(groupsData);
         setLoadingData(false);
       });
 
       // Pre-fill form if editing
       if (editGroup) {
         setName(editGroup.name);
-        setPrivacy(editGroup.privacy as GroupPrivacy || GroupPrivacy.Private);
+        setPrivacy((editGroup.privacy as GroupPrivacy) || GroupPrivacy.Private);
         setDetails(editGroup.details || '');
+        setAddress(editGroup.address || null);
         // Category and parent will be set after data is loaded
       } else {
         // Reset form for new group
@@ -83,35 +103,69 @@ const AddGroupDialog = ({ open, onClose, onSuccess, parentGroup, editGroup }: Pr
         setPrivacy(GroupPrivacy.Private);
         setDetails('');
         setCategory(null);
+        setParent(null);
+        setAddress(null);
+        setGroups([]);
       }
     }
   }, [open, editGroup]);
 
-  // Set parent and category after data loads
+  // Set category after data loads
   useEffect(() => {
     if (!loadingData && open) {
       if (editGroup) {
-        // Set category from editGroup
         if (editGroup.categoryId) {
-          const cat = categories.find(c => c.id === editGroup.categoryId);
+          const cat = categories.find((c) => c.id === editGroup.categoryId);
           setCategory(cat || null);
         }
-        // Set parent from editGroup
-        if (editGroup.parentId) {
-          const par = groups.find(g => g.id === editGroup.parentId);
-          setParent(par || null);
-        } else {
-          setParent(null);
-        }
-      } else if (parentGroup) {
-        // Pre-select parent for "Add Child" action
-        const par = groups.find(g => g.id === parentGroup.id);
-        setParent(par || null);
-      } else {
-        setParent(null);
       }
     }
-  }, [loadingData, open, editGroup, parentGroup, categories, groups]);
+  }, [loadingData, open, editGroup, categories]);
+
+  useEffect(() => {
+    if (!open || !category) {
+      setGroups([]);
+      setParent(null);
+      return;
+    }
+
+    const parentCategory = getParentCategory(category.id);
+    if (!parentCategory) {
+      setGroups([]);
+      setParent(null);
+      return;
+    }
+
+    get(
+      `${remoteRoutes.groupsCategories}/${encodeURIComponent(
+        parentCategory.name,
+      )}`,
+      (data: ComboOption[]) => {
+        const nextGroups = toComboOptions(data).filter(
+          (item) => item.id !== editGroup?.id,
+        );
+        setGroups(nextGroups);
+      },
+      () => {
+        setGroups([]);
+      },
+    );
+  }, [open, category, categories, editGroup?.id]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const targetParentId = editGroup?.parentId ?? parentGroup?.id ?? null;
+    if (!targetParentId) {
+      setParent(null);
+      return;
+    }
+
+    const selectedParent = groups.find((item) => item.id === targetParentId);
+    setParent(selectedParent || null);
+  }, [open, groups, editGroup, parentGroup]);
 
   const handleSubmit = async () => {
     if (!name.trim()) {
@@ -120,6 +174,10 @@ const AddGroupDialog = ({ open, onClose, onSuccess, parentGroup, editGroup }: Pr
     }
     if (!category) {
       toast.error('Category is required');
+      return;
+    }
+    if (!details.trim()) {
+      toast.error('Details are required');
       return;
     }
 
@@ -132,25 +190,37 @@ const AddGroupDialog = ({ open, onClose, onSuccess, parentGroup, editGroup }: Pr
       categoryId: category.id,
       categoryName: category.name,
       parentId: parent?.id || null,
+      address: address
+        ? {
+            placeId: address.placeId,
+            description: address.description || address.name,
+          }
+        : null,
     };
 
     const request = isEditing ? put : post;
-    const url = isEditing ? `${remoteRoutes.groups}/${editGroup!.id}` : remoteRoutes.groups;
+    const url = remoteRoutes.groups;
 
     request(
       url,
       payload,
       () => {
-        toast.success(isEditing ? 'Group updated successfully' : 'Group created successfully');
+        toast.success(
+          isEditing
+            ? 'Group updated successfully'
+            : 'Group created successfully',
+        );
         setLoading(false);
         onSuccess();
         handleClose();
       },
-      (error: any) => {
+      (error: unknown) => {
         console.error('Failed to save group:', error);
-        toast.error(isEditing ? 'Failed to update group' : 'Failed to create group');
+        toast.error(
+          isEditing ? 'Failed to update group' : 'Failed to create group',
+        );
         setLoading(false);
-      }
+      },
     );
   };
 
@@ -160,6 +230,7 @@ const AddGroupDialog = ({ open, onClose, onSuccess, parentGroup, editGroup }: Pr
     setDetails('');
     setCategory(null);
     setParent(null);
+    setAddress(null);
     onClose();
   };
 
@@ -222,6 +293,12 @@ const AddGroupDialog = ({ open, onClose, onSuccess, parentGroup, editGroup }: Pr
               isOptionEqualToValue={(option, value) => option.id === value.id}
             />
 
+            <PlaceAutocomplete
+              label="Address"
+              value={address}
+              onChange={setAddress}
+            />
+
             <TextField
               label="Details"
               value={details}
@@ -242,7 +319,13 @@ const AddGroupDialog = ({ open, onClose, onSuccess, parentGroup, editGroup }: Pr
           variant="contained"
           disabled={loading || loadingData}
         >
-          {loading ? <CircularProgress size={24} /> : isEditing ? 'Update' : 'Create'}
+          {loading ? (
+            <CircularProgress size={24} />
+          ) : isEditing ? (
+            'Update'
+          ) : (
+            'Create'
+          )}
         </Button>
       </DialogActions>
     </Dialog>
