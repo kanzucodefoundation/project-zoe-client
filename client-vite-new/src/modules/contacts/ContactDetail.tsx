@@ -50,13 +50,18 @@ interface ContactData {
   ageGroup?: string;
   address?: string;
   groupMemberships?: Array<{ group?: { id: number; name: string } }>;
+  avatar?: string;
 }
 
 function mapApiResponse(response: any): ContactData {
   const person = response.person || {};
-  const primaryEmail = response.emails?.find((e: any) => e.isPrimary) || response.emails?.[0];
-  const primaryPhone = response.phones?.find((p: any) => p.isPrimary) || response.phones?.[0];
-  const primaryAddress = response.addresses?.find((a: any) => a.isPrimary) || response.addresses?.[0];
+  const primaryEmail =
+    response.emails?.find((e: any) => e.isPrimary) || response.emails?.[0];
+  const primaryPhone =
+    response.phones?.find((p: any) => p.isPrimary) || response.phones?.[0];
+  const primaryAddress =
+    response.addresses?.find((a: any) => a.isPrimary) ||
+    response.addresses?.[0];
 
   const addressParts = [
     primaryAddress?.freeForm,
@@ -106,7 +111,7 @@ const ContactDetail = () => {
       (error) => {
         console.error('Contact detail error:', error);
         setLoading(false);
-      }
+      },
     );
   };
 
@@ -188,13 +193,14 @@ const ContactDetail = () => {
           <Card elevation={2}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Avatar
+                src={contact.avatar || undefined}
                 sx={{
                   width: 120,
                   height: 120,
                   mx: 'auto',
                   mb: 2,
                   bgcolor: 'primary.main',
-                  fontSize: '2rem'
+                  fontSize: '2rem',
                 }}
               >
                 {getInitials(contact)}
@@ -220,15 +226,18 @@ const ContactDetail = () => {
                     size="medium"
                   />
                 )}
-                {contact.groupMemberships?.map((gm) => gm.group && (
-                  <Chip
-                    key={gm.group.id}
-                    icon={<GroupIcon />}
-                    label={gm.group.name}
-                    color="primary"
-                    size="medium"
-                  />
-                ))}
+                {contact.groupMemberships?.map(
+                  (gm) =>
+                    gm.group && (
+                      <Chip
+                        key={gm.group.id}
+                        icon={<GroupIcon />}
+                        label={gm.group.name}
+                        color="primary"
+                        size="medium"
+                      />
+                    ),
+                )}
               </Box>
             </CardContent>
           </Card>
@@ -253,35 +262,42 @@ const ContactDetail = () => {
                 </Typography>
                 <List>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
-                    <ListItemText
-                      primary="Full Name"
-                      secondary={fullName}
-                    />
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <PersonIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Full Name" secondary={fullName} />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><CalendarIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <CalendarIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Date of Birth"
                       secondary={formatDate(contact.dateOfBirth)}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <PersonIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Gender"
                       secondary={contact.gender || 'Not specified'}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <PersonIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Marital Status"
                       secondary={contact.civilStatus || 'Not specified'}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><WorkIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <WorkIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Place of Work"
                       secondary={contact.placeOfWork || 'Not specified'}
@@ -296,21 +312,27 @@ const ContactDetail = () => {
                 </Typography>
                 <List>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><EmailIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <EmailIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Email"
                       secondary={contact.email || 'Not provided'}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PhoneIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <PhoneIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Phone"
                       secondary={contact.phone || 'Not provided'}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><LocationIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <LocationIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Address"
                       secondary={contact.address || 'Not provided'}
@@ -325,12 +347,18 @@ const ContactDetail = () => {
                 </Typography>
                 <List>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><GroupIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <GroupIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Group Memberships"
                       secondary={
-                        contact.groupMemberships && contact.groupMemberships.length > 0
-                          ? contact.groupMemberships.map(gm => gm.group?.name).filter(Boolean).join(', ')
+                        contact.groupMemberships &&
+                        contact.groupMemberships.length > 0
+                          ? contact.groupMemberships
+                              .map((gm) => gm.group?.name)
+                              .filter(Boolean)
+                              .join(', ')
                           : 'Not assigned'
                       }
                     />
@@ -346,7 +374,11 @@ const ContactDetail = () => {
                         </Typography>
                         <List>
                           <ListItem sx={{ gap: 2 }}>
-                            <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
+                            <ListItemIcon
+                              sx={{ minWidth: 'auto', fontSize: 28 }}
+                            >
+                              <PersonIcon />
+                            </ListItemIcon>
                             <ListItemText
                               primary="Age Group"
                               secondary={contact.ageGroup}
@@ -362,14 +394,10 @@ const ContactDetail = () => {
           )}
 
           {/* Tasks Tab */}
-          {activeTab === 1 && (
-            <ContactTasksTab contactId={contact.id} />
-          )}
+          {activeTab === 1 && <ContactTasksTab contactId={contact.id} />}
 
           {/* Activity Tab */}
-          {activeTab === 2 && (
-            <ContactActivityFeed contactId={contact.id} />
-          )}
+          {activeTab === 2 && <ContactActivityFeed contactId={contact.id} />}
         </Grid>
       </Grid>
 
