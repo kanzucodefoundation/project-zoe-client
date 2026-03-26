@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Container,
   Typography,
@@ -24,6 +25,8 @@ import {
   Switch,
   FormControlLabel,
   TablePagination,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -31,8 +34,14 @@ import {
   Delete as DeleteIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
-import { get, post, patch, del, search } from '../../../utils/ajax';
-import { remoteRoutes } from '../../../data/constants';
+import { toast } from 'react-toastify';
+import { get, post, patch, put, del, search } from '../../../utils/ajax';
+import {
+  remoteRoutes,
+  appPermissions,
+  permissionsList,
+} from '../../../data/constants';
+import type { RootState } from '../../../data/store';
 
 interface User {
   id: string;
@@ -63,6 +72,10 @@ interface RoleDto {
   isActive: boolean;
 }
 
+interface AuthUserWithPermissions {
+  permissions?: string[];
+}
+
 interface CreateUserData {
   contact: ContactOption | null;
   password: string;
@@ -76,42 +89,93 @@ interface EditUserData {
   isActive: boolean;
 }
 
+interface RoleFormData {
+  id?: number;
+  role: string;
+  description: string;
+  permissions: string[];
+  isActive: boolean;
+}
+
 const USER_FETCH_LIMIT = 100;
 
+const INITIAL_CREATE_FORM: CreateUserData = {
+  contact: null,
+  password: '',
+  roles: [],
+  isActive: true,
+};
+
+const INITIAL_EDIT_FORM: EditUserData = {
+  password: '',
+  roles: [],
+  isActive: true,
+};
+
+const INITIAL_ROLE_FORM: RoleFormData = {
+  role: '',
+  description: '',
+  permissions: [],
+  isActive: true,
+};
+
+const getUserCapabilities = (user: RootState['core']['user']) => {
+  const permissions = Array.isArray(
+    (user as AuthUserWithPermissions | null)?.permissions,
+  )
+    ? (user as AuthUserWithPermissions).permissions ?? []
+    : [];
+  const roles = Array.isArray(user?.roles) ? user.roles : [];
+
+  return new Set([...permissions, ...roles]);
+};
+
 const UserManagement = () => {
+  const user = useSelector((state: RootState) => state.core.user);
+  const canManageRoles = getUserCapabilities(user).has(appPermissions.roleEdit);
+
+  const [activeTab, setActiveTab] = useState<'users' | 'roles'>('users');
+
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [usersLoading, setUsersLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
-  const [reloadKey, setReloadKey] = useState(0);
+  const [reloadUsersKey, setReloadUsersKey] = useState(0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [createDialog, setCreateDialog] = useState(false);
   const [editDialog, setEditDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [isActiveStatus, setIsActiveStatus] = useState(true);
   const [availableRoles, setAvailableRoles] = useState<string[]>([]);
   const [contactOptions, setContactOptions] = useState<ContactOption[]>([]);
   const [loadingContacts, setLoadingContacts] = useState(false);
   const [contactQuery, setContactQuery] = useState('');
-  const [createFormData, setCreateFormData] = useState<CreateUserData>({
-    contact: null,
-    password: '',
-    roles: [],
-    isActive: true,
-  });
-  const [editFormData, setEditFormData] = useState<EditUserData>({
-    password: '',
-    roles: [],
-    isActive: true,
-  });
+  const [createFormData, setCreateFormData] =
+    useState<CreateUserData>(INITIAL_CREATE_FORM);
+  const [editFormData, setEditFormData] =
+    useState<EditUserData>(INITIAL_EDIT_FORM);
+
+  const [roles, setRoles] = useState<RoleDto[]>([]);
+  const [rolesLoading, setRolesLoading] = useState(true);
+  const [roleDialog, setRoleDialog] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<RoleDto | null>(null);
+  const [roleFormData, setRoleFormData] =
+    useState<RoleFormData>(INITIAL_ROLE_FORM);
+  const [roleSubmitting, setRoleSubmitting] = useState(false);
+  const [deletingRoleId, setDeletingRoleId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (activeTab === 'roles' && !canManageRoles) {
+      setActiveTab('users');
+    }
+  }, [activeTab, canManageRoles]);
 
   useEffect(() => {
     let active = true;
 
     const fetchUsers = async () => {
-      setLoading(true);
+      setUsersLoading(true);
 
       const collected: User[] = [];
       let skip = 0;
@@ -140,16 +204,21 @@ const UserManagement = () => {
           skip += USER_FETCH_LIMIT;
         }
 
-        if (!active) return;
+        if (!active) {
+          return;
+        }
 
         setUsers(collected);
       } catch (error) {
-        if (!active) return;
+        if (!active) {
+          return;
+        }
+
         console.error('Users error:', error);
         setUsers([]);
       } finally {
         if (active) {
-          setLoading(false);
+          setUsersLoading(false);
         }
       }
     };
@@ -159,7 +228,7 @@ const UserManagement = () => {
     return () => {
       active = false;
     };
-  }, [appliedSearch, reloadKey]);
+  }, [appliedSearch, reloadUsersKey]);
 
   useEffect(() => {
     if (page > 0 && page * rowsPerPage >= users.length) {
@@ -168,7 +237,7 @@ const UserManagement = () => {
   }, [users.length, page, rowsPerPage]);
 
   useEffect(() => {
-    fetchAvailableRoles();
+    fetchRoles();
   }, []);
 
   useEffect(() => {
@@ -183,22 +252,37 @@ const UserManagement = () => {
     return () => window.clearTimeout(timeoutId);
   }, [contactQuery, createDialog]);
 
-  const fetchAvailableRoles = () => {
+  const fetchRoles = () => {
+    setRolesLoading(true);
+
     get(
       remoteRoutes.roles,
       (response: RoleDto[] = []) => {
-        const activeRoles = response
-          .filter((role) => role.isActive)
-          .map((role) => role.role);
-        setAvailableRoles(activeRoles);
+        const normalized = (Array.isArray(response) ? response : [])
+          .map((role) => ({
+            ...role,
+            description: role.description ?? '',
+            permissions: Array.isArray(role.permissions)
+              ? role.permissions
+              : [],
+          }))
+          .sort((left, right) => left.role.localeCompare(right.role));
+
+        setRoles(normalized);
+        setAvailableRoles(
+          normalized.filter((role) => role.isActive).map((role) => role.role),
+        );
+        setRolesLoading(false);
       },
       () => {
+        setRoles([]);
         setAvailableRoles([]);
-      }
+        setRolesLoading(false);
+      },
     );
   };
 
-  const fetchCreateContacts = (query: string = '') => {
+  const fetchCreateContacts = (query = '') => {
     setLoadingContacts(true);
     search(
       remoteRoutes.contactsPeopleCombo,
@@ -214,22 +298,19 @@ const UserManagement = () => {
       () => {
         setContactOptions([]);
         setLoadingContacts(false);
-      }
+      },
     );
   };
 
   const handleCreateUser = () => {
-    setCreateFormData({
-      contact: null,
-      password: '',
-      roles: [],
-      isActive: true,
-    });
+    setCreateFormData(INITIAL_CREATE_FORM);
     setContactQuery('');
     fetchCreateContacts('');
+
     if (!availableRoles.length) {
-      fetchAvailableRoles();
+      fetchRoles();
     }
+
     setCreateDialog(true);
   };
 
@@ -252,11 +333,19 @@ const UserManagement = () => {
     setEditFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleRoleFormChange = <K extends keyof RoleFormData>(
+    field: K,
+    value: RoleFormData[K],
+  ) => {
+    setRoleFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
   const toggleCreateRole = (role: string) => {
     const currentRoles = createFormData.roles;
     const newRoles = currentRoles.includes(role)
       ? currentRoles.filter((existingRole) => existingRole !== role)
       : [...currentRoles, role];
+
     handleCreateFormChange('roles', newRoles);
   };
 
@@ -265,6 +354,7 @@ const UserManagement = () => {
     const newRoles = currentRoles.includes(role)
       ? currentRoles.filter((existingRole) => existingRole !== role)
       : [...currentRoles, role];
+
     handleEditFormChange('roles', newRoles);
   };
 
@@ -285,27 +375,29 @@ const UserManagement = () => {
         isActive: createFormData.isActive,
       },
       () => {
+        toast.success('User created successfully');
         setCreateDialog(false);
-        setReloadKey((prev) => prev + 1);
+        setReloadUsersKey((prev) => prev + 1);
         setSubmitting(false);
       },
       () => {
         setSubmitting(false);
-      }
+      },
     );
   };
 
-  const handleEditUser = (user: User) => {
-    setSelectedUser(user);
-    setIsActiveStatus(user.isActive);
+  const handleEditUser = (currentUser: User) => {
+    setSelectedUser(currentUser);
     setEditFormData({
       password: '',
-      roles: user.roles,
-      isActive: user.isActive,
+      roles: currentUser.roles,
+      isActive: currentUser.isActive,
     });
+
     if (!availableRoles.length) {
-      fetchAvailableRoles();
+      fetchRoles();
     }
+
     setEditDialog(true);
   };
 
@@ -314,29 +406,43 @@ const UserManagement = () => {
     setSubmitting(false);
   };
 
-  const handleDeleteUser = (user: User) => {
-    if (window.confirm(`Are you sure you want to delete user "${user.username}"?`)) {
-      del(
-        `${remoteRoutes.users}/${user.id}`,
-        () => {
-          setReloadKey((prev) => prev + 1);
-        },
-        (error) => {
-          console.error('Delete user error:', error);
-        }
-      );
+  const handleDeleteUser = (currentUser: User) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete user "${currentUser.username}"?`,
+      )
+    ) {
+      return;
     }
+
+    del(
+      `${remoteRoutes.users}/${currentUser.id}`,
+      () => {
+        toast.success('User deleted successfully');
+        setReloadUsersKey((prev) => prev + 1);
+      },
+      (error) => {
+        console.error('Delete user error:', error);
+      },
+    );
   };
 
   const handleSubmitEdit = () => {
-    if (!selectedUser) return;
+    if (!selectedUser) {
+      return;
+    }
 
     setSubmitting(true);
 
-    const updateData: any = {
+    const updateData: {
+      id: string;
+      roles: string[];
+      isActive: boolean;
+      password?: string;
+    } = {
       id: selectedUser.id,
       roles: editFormData.roles,
-      isActive: isActiveStatus,
+      isActive: editFormData.isActive,
     };
 
     if (editFormData.password) {
@@ -347,14 +453,117 @@ const UserManagement = () => {
       `${remoteRoutes.users}/${selectedUser.id}`,
       updateData,
       () => {
+        toast.success('User updated successfully');
         setEditDialog(false);
-        setReloadKey((prev) => prev + 1);
+        setReloadUsersKey((prev) => prev + 1);
         setSubmitting(false);
       },
       (error) => {
         console.error('Update user error:', error);
         setSubmitting(false);
-      }
+      },
+    );
+  };
+
+  const handleCreateRoleDialog = () => {
+    setSelectedRole(null);
+    setRoleFormData(INITIAL_ROLE_FORM);
+    setRoleDialog(true);
+  };
+
+  const handleEditRoleDialog = (role: RoleDto) => {
+    setSelectedRole(role);
+    setRoleFormData({
+      id: role.id,
+      role: role.role,
+      description: role.description ?? '',
+      permissions: [...role.permissions],
+      isActive: role.isActive,
+    });
+    setRoleDialog(true);
+  };
+
+  const handleCloseRoleDialog = () => {
+    setRoleDialog(false);
+    setSelectedRole(null);
+    setRoleFormData(INITIAL_ROLE_FORM);
+    setRoleSubmitting(false);
+  };
+
+  const handleSubmitRole = () => {
+    const trimmedRole = roleFormData.role.trim();
+    const trimmedDescription = roleFormData.description.trim();
+
+    if (
+      !trimmedRole ||
+      !trimmedDescription ||
+      roleFormData.permissions.length === 0
+    ) {
+      return;
+    }
+
+    const payload = {
+      ...roleFormData,
+      id: selectedRole?.id ?? roleFormData.id,
+      role: trimmedRole,
+      description: trimmedDescription,
+      permissions: [...roleFormData.permissions],
+    };
+
+    setRoleSubmitting(true);
+
+    const onSuccess = () => {
+      toast.success(
+        selectedRole
+          ? 'Role updated successfully'
+          : 'Role created successfully',
+      );
+      setRoleDialog(false);
+      setSelectedRole(null);
+      setRoleFormData(INITIAL_ROLE_FORM);
+      setRoleSubmitting(false);
+      fetchRoles();
+    };
+
+    const onError = () => {
+      setRoleSubmitting(false);
+    };
+
+    if (selectedRole) {
+      put(remoteRoutes.roles, payload, onSuccess, onError);
+      return;
+    }
+
+    post(remoteRoutes.roles, payload, onSuccess, onError);
+  };
+
+  const handleDeleteRole = (role: RoleDto) => {
+    if (
+      !window.confirm(`Are you sure you want to delete role "${role.role}"?`)
+    ) {
+      return;
+    }
+
+    setDeletingRoleId(role.id);
+
+    del(
+      `${remoteRoutes.roles}/${role.id}`,
+      () => {
+        toast.success('Role deleted successfully');
+        setDeletingRoleId(null);
+
+        if (selectedRole?.id === role.id) {
+          setRoleDialog(false);
+          setSelectedRole(null);
+          setRoleFormData(INITIAL_ROLE_FORM);
+          setRoleSubmitting(false);
+        }
+
+        fetchRoles();
+      },
+      () => {
+        setDeletingRoleId(null);
+      },
     );
   };
 
@@ -363,169 +572,314 @@ const UserManagement = () => {
     page * rowsPerPage + rowsPerPage,
   );
 
-  const getInitials = (user: User) => {
-    if (user.firstName && user.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+  const getInitials = (currentUser: User) => {
+    if (currentUser.firstName && currentUser.lastName) {
+      return `${currentUser.firstName[0]}${currentUser.lastName[0]}`.toUpperCase();
     }
-    return user.username.slice(0, 2).toUpperCase();
+
+    return currentUser.username.slice(0, 2).toUpperCase();
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString();
 
-  if (loading) {
+  const isRoleFormValid =
+    roleFormData.role.trim().length > 0 &&
+    roleFormData.description.trim().length > 0 &&
+    roleFormData.permissions.length > 0;
+
+  const renderUsersTab = () => {
+    if (usersLoading) {
+      return (
+        <Container disableGutters>
+          <Typography variant="h4" gutterBottom>
+            Loading Users...
+          </Typography>
+        </Container>
+      );
+    }
+
     return (
-      <Container>
-        <Typography variant="h4" gutterBottom>
-          Loading Users...
-        </Typography>
-      </Container>
-    );
-  }
+      <>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={3}
+          gap={2}
+          flexWrap="wrap"
+        >
+          <Typography variant="h5">Users ({users.length})</Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleCreateUser}
+          >
+            Add User
+          </Button>
+        </Box>
 
-  return (
-    <Container maxWidth="lg">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" gutterBottom>
-          User Management ({users.length})
-        </Typography>
+        <Box display="flex" gap={2} mb={3}>
+          <TextField
+            fullWidth
+            placeholder="Search by username, email, first name, or last name..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                setAppliedSearch(searchTerm.trim());
+                setPage(0);
+              }
+            }}
+            variant="outlined"
+            size="small"
+            InputProps={{
+              startAdornment: (
+                <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+              ),
+            }}
+          />
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setAppliedSearch(searchTerm.trim());
+              setPage(0);
+            }}
+          >
+            Search
+          </Button>
+        </Box>
+
+        <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>User</TableCell>
+                <TableCell>Roles</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Last Login</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedUsers.map((currentUser) => (
+                <TableRow key={currentUser.id}>
+                  <TableCell>
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <Avatar
+                        src={currentUser.avatar || undefined}
+                        sx={{ bgcolor: 'primary.main' }}
+                      >
+                        {getInitials(currentUser)}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="subtitle2">
+                          {currentUser.fullName || currentUser.username}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          @{currentUser.username}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box display="flex" gap={0.5} flexWrap="wrap">
+                      {currentUser.roles.slice(0, 3).map((role) => (
+                        <Chip
+                          key={role}
+                          label={role}
+                          size="small"
+                          variant="outlined"
+                        />
+                      ))}
+                      {currentUser.roles.length > 3 && (
+                        <Chip
+                          label={`+${currentUser.roles.length - 3}`}
+                          size="small"
+                        />
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={currentUser.isActive ? 'Active' : 'Inactive'}
+                      color={currentUser.isActive ? 'success' : 'default'}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {currentUser.lastLogin
+                      ? formatDate(currentUser.lastLogin)
+                      : 'Never'}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      onClick={() => handleEditUser(currentUser)}
+                      size="small"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDeleteUser(currentUser)}
+                      size="small"
+                      color="error"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Box display="flex" justifyContent="flex-end" mt={1}>
+          <TablePagination
+            component="div"
+            count={users.length}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(event) => {
+              setRowsPerPage(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 25, 50, 100]}
+          />
+        </Box>
+
+        {users.length === 0 && (
+          <Box textAlign="center" py={4}>
+            <Typography color="text.secondary">
+              No users found matching your search.
+            </Typography>
+          </Box>
+        )}
+      </>
+    );
+  };
+
+  const renderRolesTab = () => (
+    <>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+        gap={2}
+        flexWrap="wrap"
+      >
+        <Typography variant="h5">Manage Roles ({roles.length})</Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={handleCreateUser}
+          onClick={handleCreateRoleDialog}
         >
-          Add User
+          Add Role
         </Button>
       </Box>
 
-      {/* Search */}
-      <Box display="flex" gap={2} mb={3}>
-        <TextField
-          fullWidth
-          placeholder="Search by username, email, first name, or last name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              setAppliedSearch(searchTerm.trim());
-              setPage(0);
-            }
-          }}
-          variant="outlined"
-          size="small"
-          InputProps={{
-            startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-          }}
-        />
-        <Button
-          variant="outlined"
-          onClick={() => {
-            setAppliedSearch(searchTerm.trim());
-            setPage(0);
-          }}
-        >
-          Search
-        </Button>
-      </Box>
-
-      {/* Users Table */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>User</TableCell>
-              {/* <TableCell>Email</TableCell> */}
-              <TableCell>Roles</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Last Login</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <Avatar
-                      src={user.avatar || undefined}
-                      sx={{ bgcolor: 'primary.main' }}
-                    >
-                      {getInitials(user)}
-                    </Avatar>
-                    <Box>
-                      <Typography variant="subtitle2">
-                        {user.firstName && user.lastName
-                          ? `${user.fullName}`
-                          : user.fullName
-                        }
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        @{user.username}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </TableCell>
-                {/* <TableCell>{user.email}</TableCell> */}
-                <TableCell>
-                  <Box display="flex" gap={0.5} flexWrap="wrap">
-                    {user.roles.slice(0, 3).map((role) => (
-                      <Chip key={role} label={role} size="small" variant="outlined" />
-                    ))}
-                    {user.roles.length > 3 && (
-                      <Chip label={`+${user.roles.length - 3}`} size="small" />
-                    )}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={user.isActive ? 'Active' : 'Inactive'}
-                    color={user.isActive ? 'success' : 'default'}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  {user.lastLogin ? formatDate(user.lastLogin) : 'Never'}
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEditUser(user)} size="small">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteUser(user)} size="small" color="error">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
+      {rolesLoading ? (
+        <Box py={6} textAlign="center">
+          <CircularProgress size={28} />
+          <Typography color="text.secondary" mt={2}>
+            Loading roles...
+          </Typography>
+        </Box>
+      ) : (
+        <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Status</TableCell>
+                <TableCell>Role</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Permissions</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Box display="flex" justifyContent="flex-end" mt={1}>
-        <TablePagination
-          component="div"
-          count={users.length}
-          page={page}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-          rowsPerPageOptions={[10, 25, 50, 100]}
-        />
-      </Box>
+            </TableHead>
+            <TableBody>
+              {roles.map((role) => (
+                <TableRow key={role.id}>
+                  <TableCell>
+                    <Chip
+                      label={role.isActive ? 'Active' : 'Inactive'}
+                      color={role.isActive ? 'success' : 'default'}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>{role.role}</TableCell>
+                  <TableCell>{role.description}</TableCell>
+                  <TableCell>
+                    <Box display="flex" gap={0.5} flexWrap="wrap">
+                      {role.permissions.map((permission) => (
+                        <Chip
+                          key={`${role.id}-${permission}`}
+                          label={permission}
+                          size="small"
+                          variant="outlined"
+                        />
+                      ))}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      onClick={() => handleEditRoleDialog(role)}
+                      size="small"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDeleteRole(role)}
+                      size="small"
+                      color="error"
+                      disabled={deletingRoleId === role.id}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
-      {users.length === 0 && (
+      {!rolesLoading && roles.length === 0 && (
         <Box textAlign="center" py={4}>
           <Typography color="text.secondary">
-            No users found matching your search.
+            No roles have been created yet.
           </Typography>
         </Box>
       )}
+    </>
+  );
 
-      {/* Create User Dialog */}
-      <Dialog open={createDialog} onClose={handleCloseCreateDialog} maxWidth="sm" fullWidth>
+  return (
+    <Container maxWidth="lg">
+      <Box mb={3}>
+        <Typography variant="h4" gutterBottom>
+          User Management
+        </Typography>
+        <Tabs
+          value={activeTab}
+          onChange={(_, value: 'users' | 'roles') => setActiveTab(value)}
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
+          <Tab label="Users" value="users" />
+          {canManageRoles && <Tab label="Manage Roles" value="roles" />}
+        </Tabs>
+      </Box>
+
+      {activeTab === 'users' ? renderUsersTab() : renderRolesTab()}
+
+      <Dialog
+        open={createDialog}
+        onClose={handleCloseCreateDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Create New User</DialogTitle>
         <DialogContent>
           <Box pt={1} display="flex" flexDirection="column" gap={2}>
@@ -541,7 +895,11 @@ const UserManagement = () => {
               }}
               getOptionLabel={getContactOptionLabel}
               isOptionEqualToValue={(option, value) => option.id === value.id}
-              noOptionsText={contactQuery ? 'No matching people found' : 'No people available'}
+              noOptionsText={
+                contactQuery
+                  ? 'No matching people found'
+                  : 'No people available'
+              }
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -552,7 +910,9 @@ const UserManagement = () => {
                     ...params.InputProps,
                     endAdornment: (
                       <>
-                        {loadingContacts ? <CircularProgress color="inherit" size={20} /> : null}
+                        {loadingContacts ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
                         {params.InputProps.endAdornment}
                       </>
                     ),
@@ -565,7 +925,9 @@ const UserManagement = () => {
               type="text"
               required
               value={createFormData.password}
-              onChange={(e) => handleCreateFormChange('password', e.target.value)}
+              onChange={(event) =>
+                handleCreateFormChange('password', event.target.value)
+              }
               helperText="Must be at least 8 characters"
             />
             <FormControlLabel
@@ -574,19 +936,27 @@ const UserManagement = () => {
                 <Switch
                   color={createFormData.isActive ? 'success' : 'default'}
                   checked={createFormData.isActive}
-                  onChange={(e) => handleCreateFormChange('isActive', e.target.checked)}
+                  onChange={(event) =>
+                    handleCreateFormChange('isActive', event.target.checked)
+                  }
                 />
               }
             />
-            <Typography variant="subtitle2" sx={{ mt: 2 }}>Roles:</Typography>
+            <Typography variant="subtitle2" sx={{ mt: 2 }}>
+              Roles:
+            </Typography>
             <Box display="flex" flexWrap="wrap" gap={1}>
               {availableRoles.map((role) => (
                 <Chip
                   key={role}
                   label={role}
                   onClick={() => toggleCreateRole(role)}
-                  color={createFormData.roles.includes(role) ? 'primary' : 'default'}
-                  variant={createFormData.roles.includes(role) ? 'filled' : 'outlined'}
+                  color={
+                    createFormData.roles.includes(role) ? 'primary' : 'default'
+                  }
+                  variant={
+                    createFormData.roles.includes(role) ? 'filled' : 'outlined'
+                  }
                   size="small"
                 />
               ))}
@@ -603,10 +973,10 @@ const UserManagement = () => {
             variant="contained"
             onClick={handleSubmitCreate}
             disabled={
-              submitting
-              || !createFormData.contact
-              || createFormData.password.length < 8
-              || createFormData.roles.length === 0
+              submitting ||
+              !createFormData.contact ||
+              createFormData.password.length < 8 ||
+              createFormData.roles.length === 0
             }
           >
             {submitting ? 'Creating...' : 'Create User'}
@@ -614,8 +984,12 @@ const UserManagement = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Edit User Dialog */}
-      <Dialog open={editDialog} onClose={handleCloseEditDialog} maxWidth="sm" fullWidth>
+      <Dialog
+        open={editDialog}
+        onClose={handleCloseEditDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Edit User: {selectedUser?.username}</DialogTitle>
         <DialogContent>
           <Box pt={1} display="flex" flexDirection="column" gap={2}>
@@ -623,29 +997,39 @@ const UserManagement = () => {
               label="Password"
               type="password"
               value={editFormData.password}
-              onChange={(e) => handleEditFormChange('password', e.target.value)}
+              onChange={(event) =>
+                handleEditFormChange('password', event.target.value)
+              }
               helperText="Leave blank to keep current password"
             />
             <FormControlLabel
-              label={isActiveStatus ? 'Active' : 'Inactive'}
+              label={editFormData.isActive ? 'Active' : 'Inactive'}
               control={
                 <Switch
-                  color={isActiveStatus ? 'success' : 'default'}
-                  checked={isActiveStatus}
-                  onChange={(e) => setIsActiveStatus(e.target.checked)}
+                  color={editFormData.isActive ? 'success' : 'default'}
+                  checked={editFormData.isActive}
+                  onChange={(event) =>
+                    handleEditFormChange('isActive', event.target.checked)
+                  }
                 />
               }
             />
 
-            <Typography variant="subtitle2" sx={{ mt: 2 }}>Roles:</Typography>
+            <Typography variant="subtitle2" sx={{ mt: 2 }}>
+              Roles:
+            </Typography>
             <Box display="flex" flexWrap="wrap" gap={1}>
               {availableRoles.map((role) => (
                 <Chip
                   key={role}
                   label={role}
                   onClick={() => toggleEditRole(role)}
-                  color={editFormData.roles.includes(role) ? 'primary' : 'default'}
-                  variant={editFormData.roles.includes(role) ? 'filled' : 'outlined'}
+                  color={
+                    editFormData.roles.includes(role) ? 'primary' : 'default'
+                  }
+                  variant={
+                    editFormData.roles.includes(role) ? 'filled' : 'outlined'
+                  }
                   size="small"
                 />
               ))}
@@ -661,6 +1045,96 @@ const UserManagement = () => {
           >
             {submitting ? 'Updating...' : 'Save Changes'}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={roleDialog}
+        onClose={handleCloseRoleDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedRole ? `Edit Role: ${selectedRole.role}` : 'Create Role'}
+        </DialogTitle>
+        <DialogContent>
+          <Box pt={1} display="flex" flexDirection="column" gap={2}>
+            <TextField
+              label="Role"
+              value={roleFormData.role}
+              onChange={(event) =>
+                handleRoleFormChange('role', event.target.value)
+              }
+              required
+            />
+            <TextField
+              label="Description"
+              value={roleFormData.description}
+              onChange={(event) =>
+                handleRoleFormChange('description', event.target.value)
+              }
+              required
+              multiline
+              minRows={2}
+            />
+            <Autocomplete
+              multiple
+              options={permissionsList}
+              value={roleFormData.permissions}
+              onChange={(_, value) =>
+                handleRoleFormChange('permissions', value)
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Permissions"
+                  required
+                  helperText="Choose one or more permissions for this role"
+                />
+              )}
+            />
+            <FormControlLabel
+              label={roleFormData.isActive ? 'Active' : 'Inactive'}
+              control={
+                <Switch
+                  color={roleFormData.isActive ? 'success' : 'default'}
+                  checked={roleFormData.isActive}
+                  onChange={(event) =>
+                    handleRoleFormChange('isActive', event.target.checked)
+                  }
+                />
+              }
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'space-between' }}>
+          <Box>
+            {selectedRole && (
+              <Button
+                color="error"
+                onClick={() => handleDeleteRole(selectedRole)}
+                disabled={roleSubmitting || deletingRoleId === selectedRole.id}
+              >
+                {deletingRoleId === selectedRole.id ? 'Deleting...' : 'Delete'}
+              </Button>
+            )}
+          </Box>
+          <Box display="flex" gap={1}>
+            <Button onClick={handleCloseRoleDialog}>Cancel</Button>
+            <Button
+              variant="contained"
+              onClick={handleSubmitRole}
+              disabled={roleSubmitting || !isRoleFormValid}
+            >
+              {roleSubmitting
+                ? selectedRole
+                  ? 'Updating...'
+                  : 'Creating...'
+                : selectedRole
+                ? 'Save Changes'
+                : 'Create Role'}
+            </Button>
+          </Box>
         </DialogActions>
       </Dialog>
     </Container>
