@@ -121,6 +121,9 @@ const UserManagement = () => {
   const [deletingRoleId, setDeletingRoleId] = useState<number | null>(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<RoleDto | null>(null);
+  const [confirmDeleteUserOpen, setConfirmDeleteUserOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (activeTab === 'roles' && !canManageRoles) {
@@ -364,24 +367,36 @@ const UserManagement = () => {
   };
 
   const handleDeleteUser = (currentUser: User) => {
-    if (
-      !window.confirm(
-        `Are you sure you want to delete user "${currentUser.username}"?`,
-      )
-    ) {
+    setUserToDelete(currentUser);
+    setConfirmDeleteUserOpen(true);
+  };
+
+  const confirmDeleteUser = () => {
+    if (!userToDelete) {
       return;
     }
 
+    setDeletingUserId(userToDelete.id);
+
     del(
-      `${remoteRoutes.users}/${currentUser.id}`,
+      `${remoteRoutes.users}/${userToDelete.id}`,
       () => {
         toast.success('User deleted successfully');
+        setDeletingUserId(null);
+        setConfirmDeleteUserOpen(false);
+        setUserToDelete(null);
         setReloadUsersKey((prev) => prev + 1);
       },
       (error) => {
         console.error('Delete user error:', error);
+        setDeletingUserId(null);
       },
     );
+  };
+
+  const handleCloseConfirmDeleteUser = () => {
+    setConfirmDeleteUserOpen(false);
+    setUserToDelete(null);
   };
 
   const handleSubmitEdit = () => {
@@ -1126,6 +1141,31 @@ const UserManagement = () => {
             disabled={deletingRoleId !== null}
           >
             {deletingRoleId !== null ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={confirmDeleteUserOpen}
+        onClose={handleCloseConfirmDeleteUser}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Delete User</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete user "{userToDelete?.username}"?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmDeleteUser}>Cancel</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={confirmDeleteUser}
+            disabled={deletingUserId !== null}
+          >
+            {deletingUserId !== null ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogActions>
       </Dialog>

@@ -37,6 +37,19 @@ interface ComboOption {
 const toComboOptions = (data: ComboOption[] | IGroupCategory[]) =>
   (Array.isArray(data) ? data : []).map(({ id, name }) => ({ id, name }));
 
+const toComboOption = (
+  value?: Pick<GroupNode, 'id' | 'name'> | GroupNode['parent'] | null,
+): ComboOption | null => {
+  if (!value?.id || !value?.name) {
+    return null;
+  }
+
+  return {
+    id: Number(value.id),
+    name: value.name,
+  };
+};
+
 const AddGroupDialog = ({
   open,
   onClose,
@@ -141,9 +154,18 @@ const AddGroupDialog = ({
         parentCategory.name,
       )}`,
       (data: ComboOption[]) => {
+        const existingParent = toComboOption(editGroup?.parent);
         const nextGroups = toComboOptions(data).filter(
           (item) => item.id !== editGroup?.id,
         );
+        const hasExistingParent = existingParent
+          ? nextGroups.some((item) => `${item.id}` === `${existingParent.id}`)
+          : false;
+
+        if (existingParent && !hasExistingParent) {
+          nextGroups.unshift(existingParent);
+        }
+
         setGroups(nextGroups);
       },
       () => {
@@ -163,7 +185,10 @@ const AddGroupDialog = ({
       return;
     }
 
-    const selectedParent = groups.find((item) => item.id === targetParentId);
+    const selectedParent =
+      groups.find((item) => `${item.id}` === `${targetParentId}`) ||
+      toComboOption(editGroup?.parent) ||
+      toComboOption(parentGroup);
     setParent(selectedParent || null);
   }, [open, groups, editGroup, parentGroup]);
 
