@@ -42,60 +42,15 @@ import {
   permissionsList,
 } from '../../../data/constants';
 import type { RootState } from '../../../data/store';
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  roles: string[];
-  isActive: boolean;
-  lastLogin?: string;
-  createdAt: string;
-  avatar?: string;
-  fullName?: string;
-  contactId: number;
-}
-
-interface ContactOption {
-  id: number;
-  name: string;
-  avatar?: string | null;
-}
-
-interface RoleDto {
-  id: number;
-  role: string;
-  description: string;
-  permissions: string[];
-  isActive: boolean;
-}
-
-interface AuthUserWithPermissions {
-  permissions?: string[];
-}
-
-interface CreateUserData {
-  contact: ContactOption | null;
-  password: string;
-  roles: string[];
-  isActive: boolean;
-}
-
-interface EditUserData {
-  password: string;
-  roles: string[];
-  isActive: boolean;
-}
-
-interface RoleFormData {
-  id?: number;
-  role: string;
-  description: string;
-  permissions: string[];
-  isActive: boolean;
-}
+import type {
+  User,
+  ContactOption,
+  RoleDto,
+  AuthUserWithPermissions,
+  CreateUserData,
+  EditUserData,
+  RoleFormData,
+} from './types';
 
 const USER_FETCH_LIMIT = 100;
 
@@ -164,6 +119,8 @@ const UserManagement = () => {
     useState<RoleFormData>(INITIAL_ROLE_FORM);
   const [roleSubmitting, setRoleSubmitting] = useState(false);
   const [deletingRoleId, setDeletingRoleId] = useState<number | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<RoleDto | null>(null);
 
   useEffect(() => {
     if (activeTab === 'roles' && !canManageRoles) {
@@ -538,21 +495,26 @@ const UserManagement = () => {
   };
 
   const handleDeleteRole = (role: RoleDto) => {
-    if (
-      !window.confirm(`Are you sure you want to delete role "${role.role}"?`)
-    ) {
+    setRoleToDelete(role);
+    setConfirmDeleteOpen(true);
+  };
+
+  const confirmDeleteRole = () => {
+    if (!roleToDelete) {
       return;
     }
 
-    setDeletingRoleId(role.id);
+    setDeletingRoleId(roleToDelete.id);
 
     del(
-      `${remoteRoutes.roles}/${role.id}`,
+      `${remoteRoutes.roles}/${roleToDelete.id}`,
       () => {
         toast.success('Role deleted successfully');
         setDeletingRoleId(null);
+        setConfirmDeleteOpen(false);
+        setRoleToDelete(null);
 
-        if (selectedRole?.id === role.id) {
+        if (selectedRole?.id === roleToDelete.id) {
           setRoleDialog(false);
           setSelectedRole(null);
           setRoleFormData(INITIAL_ROLE_FORM);
@@ -565,6 +527,11 @@ const UserManagement = () => {
         setDeletingRoleId(null);
       },
     );
+  };
+
+  const handleCloseConfirmDelete = () => {
+    setConfirmDeleteOpen(false);
+    setRoleToDelete(null);
   };
 
   const paginatedUsers = users.slice(
@@ -1135,6 +1102,31 @@ const UserManagement = () => {
                 : 'Create Role'}
             </Button>
           </Box>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={confirmDeleteOpen}
+        onClose={handleCloseConfirmDelete}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Delete Role</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete role "{roleToDelete?.role}"?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmDelete}>Cancel</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={confirmDeleteRole}
+            disabled={deletingRoleId !== null}
+          >
+            {deletingRoleId !== null ? 'Deleting...' : 'Delete'}
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>
