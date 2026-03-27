@@ -35,7 +35,15 @@ import {
   Search as SearchIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, post, patch, put, del, search } from '../../../utils/ajax';
+import {
+  get,
+  post,
+  patch,
+  put,
+  del,
+  search,
+  handleError,
+} from '../../../utils/ajax';
 import {
   remoteRoutes,
   appPermissions,
@@ -497,7 +505,8 @@ const UserManagement = () => {
       fetchRoles();
     };
 
-    const onError = () => {
+    const onError = (error: unknown) => {
+      handleError(error as Parameters<typeof handleError>[0]);
       setRoleSubmitting(false);
     };
 
