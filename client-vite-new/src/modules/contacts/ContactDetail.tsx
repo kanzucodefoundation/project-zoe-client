@@ -19,6 +19,7 @@ import {
   ListItemText,
   Tabs,
   Tab,
+  Alert,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -91,6 +92,7 @@ const ContactDetail = () => {
   const [contact, setContact] = useState<ContactData | null>(null);
   const [loading, setLoading] = useState(true);
   const [editDialog, setEditDialog] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
@@ -116,10 +118,12 @@ const ContactDetail = () => {
   };
 
   const handleEdit = () => {
+    setEditError(null);
     setEditDialog(true);
   };
 
   const handleEditSave = () => {
+    setEditError(null);
     setEditDialog(false);
     fetchContact();
   };
@@ -404,16 +408,28 @@ const ContactDetail = () => {
       {/* Edit Dialog */}
       <Dialog
         open={editDialog}
-        onClose={() => setEditDialog(false)}
+        onClose={() => {
+          setEditError(null);
+          setEditDialog(false);
+        }}
         maxWidth="md"
         fullWidth
       >
         <DialogTitle>Edit Contact</DialogTitle>
         <DialogContent>
+          {editError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {editError}
+            </Alert>
+          )}
           <ContactForm
             contactId={contactId}
             onSave={handleEditSave}
-            onCancel={() => setEditDialog(false)}
+            onCancel={() => {
+              setEditError(null);
+              setEditDialog(false);
+            }}
+            onError={(message) => setEditError(message || null)}
           />
         </DialogContent>
       </Dialog>

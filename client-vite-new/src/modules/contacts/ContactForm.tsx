@@ -15,7 +15,13 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { get, patch, post } from '../../utils/ajax';
+import {
+  extractErrorMessageFromData,
+  get,
+  handleError,
+  patch,
+  post,
+} from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 
 interface ContactFormData {
@@ -38,6 +44,7 @@ interface ContactFormProps {
   contactId?: string;
   onSave?: () => void;
   onCancel?: () => void;
+  onError?: (message: string) => void;
 }
 
 // Group types local to this component
@@ -48,7 +55,12 @@ type GroupNode = {
 };
 type GroupOption = { id: number; name: string };
 
-const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
+const ContactForm = ({
+  contactId,
+  onSave,
+  onCancel,
+  onError,
+}: ContactFormProps) => {
   const [formData, setFormData] = useState<ContactFormData>({
     firstName: '',
     lastName: '',
@@ -97,7 +109,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
       },
       () => {
         setGroupsOptions([]);
-      }
+      },
     );
   }, []);
 
@@ -110,18 +122,23 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
         (response) => {
           const person = response.person || {};
           const primaryEmail =
-            response.emails?.find((e: any) => e.isPrimary) || response.emails?.[0];
+            response.emails?.find((e: any) => e.isPrimary) ||
+            response.emails?.[0];
           const primaryPhone =
-            response.phones?.find((p: any) => p.isPrimary) || response.phones?.[0];
+            response.phones?.find((p: any) => p.isPrimary) ||
+            response.phones?.[0];
           const primaryAddress =
-            response.addresses?.find((a: any) => a.isPrimary) || response.addresses?.[0];
+            response.addresses?.find((a: any) => a.isPrimary) ||
+            response.addresses?.[0];
 
           setFormData({
             firstName: person.firstName || '',
             lastName: person.lastName || '',
             email: primaryEmail?.value || '',
             phone: primaryPhone?.value || '',
-            dateOfBirth: person.dateOfBirth ? new Date(person.dateOfBirth) : null,
+            dateOfBirth: person.dateOfBirth
+              ? new Date(person.dateOfBirth)
+              : null,
             gender: person.gender || '',
             civilStatus: person.civilStatus || '',
             placeOfWork: person.placeOfWork || '',
@@ -134,14 +151,14 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
 
           // Try to preselect groups if present on the response
           const groupsFromContact: number[] =
-            (response.groups?.map((g: any) => g.id)) ??
-            (response.groupMemberships?.map((m: any) => m.groupId)) ??
+            response.groups?.map((g: any) => g.id) ??
+            response.groupMemberships?.map((m: any) => m.groupId) ??
             [];
           setSelectedGroupIds(groupsFromContact);
 
           setLoading(false);
         },
-        () => setLoading(false)
+        () => setLoading(false),
       );
     }
   }, [contactId]);
@@ -150,7 +167,11 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleNestedChange = (parent: keyof ContactFormData, field: string, value: any) => {
+  const handleNestedChange = (
+    parent: keyof ContactFormData,
+    field: string,
+    value: any,
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [parent]: {
@@ -163,6 +184,7 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    onError?.('');
 
     const submitData = {
       category: 'Person',
@@ -172,7 +194,8 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
         gender: formData.gender || undefined,
         civilStatus: formData.civilStatus || undefined,
         placeOfWork: formData.placeOfWork || undefined,
-        dateOfBirth: formData.dateOfBirth?.toISOString()?.split('T')[0] || undefined,
+        dateOfBirth:
+          formData.dateOfBirth?.toISOString()?.split('T')[0] || undefined,
       },
       emails: formData.email
         ? [{ category: 'Personal', value: formData.email, isPrimary: true }]
@@ -181,22 +204,43 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
         ? [{ category: 'Mobile', value: formData.phone, isPrimary: true }]
         : [],
       addresses:
-        formData.address?.country || formData.address?.district || formData.address?.freeForm
+        formData.address?.country ||
+        formData.address?.district ||
+        formData.address?.freeForm
           ? [{ category: 'Home', isPrimary: true, ...formData.address }]
           : [],
       // Now groups is an array of numbers like [12, 13]
-      groups: selectedGroupIds.map(id => ({ id })),
+      groups: selectedGroupIds.map((id) => ({ id })),
+    };
+
+    const handleSubmitError = (error: any, response?: any) => {
+      const responseData = error?.response?.data || response?.data;
+      const backendMessage = extractErrorMessageFromData(responseData);
+      const errorMessage = backendMessage
+        ? backendMessage
+        : error?.message && !String(error.message).includes('status code')
+        ? error.message
+        : 'Failed to update contact. Please try again.';
+
+      onError?.(errorMessage);
+      handleError(error, response);
     };
 
     const apiCall = contactId
-      ? patch(`${remoteRoutes.contacts}/${contactId}`, submitData, onSave || (() => { }))
-      : post(remoteRoutes.contacts, submitData, onSave || (() => { }));
+      ? patch(
+          `${remoteRoutes.contacts}/${contactId}`,
+          submitData,
+          onSave || (() => {}),
+          handleSubmitError,
+        )
+      : post(
+          remoteRoutes.contacts,
+          submitData,
+          onSave || (() => {}),
+          handleSubmitError,
+        );
 
-    apiCall
-      ?.catch(() => {
-        // Error handling is done in ajax utils
-      })
-      .finally(() => setSubmitting(false));
+    apiCall.finally(() => setSubmitting(false));
   };
 
   if (loading) {
@@ -248,14 +292,16 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <DatePicker
-            label="Date of Birth" 
-            value={formData.dateOfBirth} 
-            onChange={(date) => handleChange('dateOfBirth', date)} 
-            openTo="year" 
-            views={['year', 'month', 'day']} 
-            minDate = { new Date(new Date().getFullYear() - 100, 0, 1) }
-            maxDate={new Date(new Date().getFullYear() - 5, new Date().getMonth(), 1)} 
-            slotProps={{ textField: { fullWidth: true } }} 
+              label="Date of Birth"
+              value={formData.dateOfBirth}
+              onChange={(date) => handleChange('dateOfBirth', date)}
+              openTo="year"
+              views={['year', 'month', 'day']}
+              minDate={new Date(new Date().getFullYear() - 100, 0, 1)}
+              maxDate={
+                new Date(new Date().getFullYear() - 5, new Date().getMonth(), 1)
+              }
+              slotProps={{ textField: { fullWidth: true } }}
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
@@ -313,14 +359,20 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
                 multiple
                 options={groupsOptions}
                 // value needs the full option objects; derive from selectedGroupIds
-                value={groupsOptions.filter((g) => selectedGroupIds.includes(g.id))}
+                value={groupsOptions.filter((g) =>
+                  selectedGroupIds.includes(g.id),
+                )}
                 onChange={(_, newValue) => {
                   setSelectedGroupIds(newValue.map((g) => g.id));
                 }}
                 getOptionLabel={(option) => option.name}
                 filterSelectedOptions
                 renderInput={(params) => (
-                  <TextField {...params} label="Groups" placeholder="Type to search groups" />
+                  <TextField
+                    {...params}
+                    label="Groups"
+                    placeholder="Type to search groups"
+                  />
                 )}
                 // To show ID in option list
                 renderOption={(props, option) => (
@@ -346,7 +398,9 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               label="Address"
               fullWidth
               value={formData.address?.freeForm}
-              onChange={(e) => handleNestedChange('address', 'freeForm', e.target.value)}
+              onChange={(e) =>
+                handleNestedChange('address', 'freeForm', e.target.value)
+              }
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
@@ -354,7 +408,9 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               label="District"
               fullWidth
               value={formData.address?.district}
-              onChange={(e) => handleNestedChange('address', 'district', e.target.value)}
+              onChange={(e) =>
+                handleNestedChange('address', 'district', e.target.value)
+              }
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
@@ -362,7 +418,9 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
               label="Country"
               fullWidth
               value={formData.address?.country}
-              onChange={(e) => handleNestedChange('address', 'country', e.target.value)}
+              onChange={(e) =>
+                handleNestedChange('address', 'country', e.target.value)
+              }
             />
           </Grid>
         </Grid>
@@ -375,7 +433,11 @@ const ContactForm = ({ contactId, onSave, onCancel }: ContactFormProps) => {
             variant="contained"
             disabled={submitting || !formData.firstName || !formData.lastName}
           >
-            {submitting ? 'Saving...' : contactId ? 'Update Contact' : 'Create Contact'}
+            {submitting
+              ? 'Saving...'
+              : contactId
+              ? 'Update Contact'
+              : 'Create Contact'}
           </Button>
         </Box>
       </Box>

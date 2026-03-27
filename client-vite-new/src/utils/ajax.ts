@@ -67,10 +67,14 @@ const getErrorData = (err: AxiosError) => {
   return {};
 };
 
-const extractErrorMessageFromData = (data: any = {}) => {
-  const { message, errors, response } = data;
+export const extractErrorMessageFromData = (data: any = {}) => {
+  const normalizedData = Array.isArray(data) ? data[0] : data;
+  const { message, errors, response } = normalizedData || {};
   const directMessage = extractBadRequestErrorMessage(message, errors);
-  if (directMessage !== 'Invalid request format') {
+  if (
+    directMessage !== 'Invalid request format' &&
+    directMessage !== 'Bad Request Exception'
+  ) {
     return directMessage;
   }
 
@@ -86,6 +90,13 @@ const extractErrorMessageFromData = (data: any = {}) => {
     if (nestedMessage !== 'Invalid request format') {
       return nestedMessage;
     }
+    if (typeof response.error === 'string') {
+      return response.error;
+    }
+  }
+
+  if (directMessage !== 'Invalid request format') {
+    return directMessage;
   }
 
   return undefined;

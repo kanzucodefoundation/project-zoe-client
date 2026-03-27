@@ -252,15 +252,23 @@ const UserManagement = () => {
 
   const fetchCreateContacts = (query = '') => {
     setLoadingContacts(true);
+    const normalizedQuery = query.trim();
+
     search(
       remoteRoutes.contactsPeopleCombo,
       {
         skipUsers: true,
-        query,
+        query: normalizedQuery || undefined,
         limit: 300,
       },
-      (response: ContactOption[] = []) => {
-        setContactOptions(Array.isArray(response) ? response : []);
+      (response: ContactOption[] | { data?: ContactOption[] } = []) => {
+        const contactList = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+          ? response.data
+          : [];
+
+        setContactOptions(contactList);
         setLoadingContacts(false);
       },
       () => {
