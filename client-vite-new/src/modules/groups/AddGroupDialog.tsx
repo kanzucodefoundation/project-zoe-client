@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -70,23 +70,49 @@ const AddGroupDialog = ({
 
   const isEditing = !!editGroup;
 
-  const getParentCategory = (categoryId: number | undefined | null) => {
-    if (!categoryId) {
-      return null;
-    }
+  const getParentCategory = useCallback(
+    (categoryId: number | undefined | null) => {
+      if (!categoryId) {
+        return null;
+      }
 
-    const orderedCategories = [...categories].sort(
-      (left, right) => left.id - right.id,
-    );
-    const currentIndex = orderedCategories.findIndex(
-      (item) => item.id === categoryId,
-    );
-    if (currentIndex === -1 || currentIndex === orderedCategories.length - 1) {
-      return null;
-    }
+      const orderedCategories = [...categories].sort(
+        (left, right) => left.id - right.id,
+      );
+      const currentIndex = orderedCategories.findIndex(
+        (item) => item.id === categoryId,
+      );
+      if (
+        currentIndex === -1 ||
+        currentIndex === orderedCategories.length - 1
+      ) {
+        return null;
+      }
 
-    return orderedCategories[currentIndex + 1];
-  };
+      return orderedCategories[currentIndex + 1];
+    },
+    [categories],
+  );
+
+  const getParentDropdownCategories = useCallback(
+    (categoryId: number) => {
+      // const currentCategory = categories.find((item) => item.id === categoryId);
+      const higherCategory = getParentCategory(categoryId);
+      const scopedCategories = [higherCategory].filter(
+        (item): item is IGroupCategory => Boolean(item),
+      );
+
+      const uniqueById = new Map<number, IGroupCategory>();
+      scopedCategories.forEach((item) => {
+        if (!uniqueById.has(item.id)) {
+          uniqueById.set(item.id, item);
+        }
+      });
+
+      return Array.from(uniqueById.values());
+    },
+    [categories, getParentCategory],
+  );
 
   useEffect(() => {
     if (open) {
@@ -142,22 +168,44 @@ const AddGroupDialog = ({
       return;
     }
 
-    const parentCategory = getParentCategory(category.id);
-    if (!parentCategory) {
+    const parentCategories = getParentDropdownCategories(category.id);
+    if (!parentCategories.length) {
       setGroups([]);
       setParent(null);
       return;
     }
 
-    get(
-      `${remoteRoutes.groupsCategories}/${encodeURIComponent(
-        parentCategory.name,
-      )}`,
-      (data: ComboOption[]) => {
-        const existingParent = toComboOption(editGroup?.parent);
-        const nextGroups = toComboOptions(data).filter(
-          (item) => item.id !== editGroup?.id,
+    let mounted = true;
+
+    const fetchCategoryGroups = (categoryName: string) =>
+      new Promise<ComboOption[]>((resolve) => {
+        get(
+          `${remoteRoutes.groupsCategories}/${encodeURIComponent(
+            categoryName,
+          )}`,
+          (data: ComboOption[]) => resolve(toComboOptions(data)),
+          () => resolve([]),
         );
+      });
+
+    Promise.all(parentCategories.map((item) => fetchCategoryGroups(item.name)))
+      .then((allGroups) => {
+        if (!mounted) {
+          return;
+        }
+
+        const uniqueGroups = new Map<number, ComboOption>();
+        allGroups.flat().forEach((item) => {
+          if (item.id === editGroup?.id) {
+            return;
+          }
+          if (!uniqueGroups.has(item.id)) {
+            uniqueGroups.set(item.id, item);
+          }
+        });
+
+        const existingParent = toComboOption(editGroup?.parent);
+        const nextGroups = Array.from(uniqueGroups.values());
         const hasExistingParent = existingParent
           ? nextGroups.some((item) => `${item.id}` === `${existingParent.id}`)
           : false;
@@ -167,12 +215,23 @@ const AddGroupDialog = ({
         }
 
         setGroups(nextGroups);
-      },
-      () => {
-        setGroups([]);
-      },
-    );
-  }, [open, category, categories, editGroup?.id]);
+      })
+      .catch(() => {
+        if (mounted) {
+          setGroups([]);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [
+    open,
+    category,
+    editGroup?.id,
+    editGroup?.parent,
+    getParentDropdownCategories,
+  ]);
 
   useEffect(() => {
     if (!open) {
