@@ -30,52 +30,9 @@ interface FormErrors {
 
 const MIN_PASSWORD_LENGTH = 8;
 
-const legacyHashPrefix = `${localRoutes.resetPassword.replace(':token', '')}`;
-
-const getLegacyHashToken = () => {
-  if (typeof window === 'undefined') {
-    return '';
-  }
-
-  const normalizedHash = window.location.hash.startsWith('#')
-    ? window.location.hash.slice(1)
-    : window.location.hash;
-
-  if (!normalizedHash.startsWith(legacyHashPrefix)) {
-    return '';
-  }
-
-  return normalizedHash.slice(legacyHashPrefix.length);
-};
-
-const normalizeLegacyResetPasswordUrl = () => {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  const legacyToken = getLegacyHashToken();
-  if (!legacyToken) {
-    return;
-  }
-
-  const currentPath = window.location.pathname;
-  if (currentPath.startsWith(legacyHashPrefix)) {
-    return;
-  }
-
-  window.history.replaceState(
-    window.history.state,
-    '',
-    `${legacyHashPrefix}${legacyToken}${window.location.search}`,
-  );
-};
-
-normalizeLegacyResetPasswordUrl();
-
 const ResetPassword = () => {
   const navigate = useNavigate();
-  const { token: routeToken } = useParams<{ token: string }>();
-  const token = routeToken || getLegacyHashToken();
+  const { token } = useParams<{ token: string }>();
   const [formData, setFormData] = useState<FormState>({
     churchName: 'Worship Harvest',
     password: '',
