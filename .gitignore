@@ -27,6 +27,6 @@ yarn-error.log*
 #Eslint cache file
 .eslintcache
 
-
+.codex
 
 scripts/*
