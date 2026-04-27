@@ -1,8 +1,18 @@
 import { useState, useEffect } from 'react';
 import {
-  Drawer, Box, Typography, IconButton, Stack, Divider,
-  Button, Autocomplete, TextField, List, ListItem,
-  ListItemText, Chip,
+  Drawer,
+  Box,
+  Typography,
+  IconButton,
+  Stack,
+  Divider,
+  Button,
+  Autocomplete,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  Chip,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
@@ -32,6 +42,7 @@ interface Props {
 interface UserOption {
   id: number;
   username: string;
+  fullName: string;
 }
 
 const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
@@ -39,7 +50,12 @@ function isImage(url: string) {
   return IMAGE_EXTS.some((ext) => url.toLowerCase().endsWith(ext));
 }
 
-export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: Props) {
+export default function TaskDrawer({
+  task,
+  onClose,
+  onTaskUpdated,
+  contactId,
+}: Props) {
   const [updateStatusOpen, setUpdateStatusOpen] = useState(false);
   const [users, setUsers] = useState<UserOption[]>([]);
   const [comment, setComment] = useState('');
@@ -53,18 +69,25 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
   const qc = useQueryClient();
 
   useEffect(() => {
-    if (!task) { setLocalTask(null); return; }
+    if (!task) {
+      setLocalTask(null);
+      return;
+    }
     setLocalTask(task);
-    taskApi.getById(task.id)
+    taskApi
+      .getById(task.id)
       .then(setLocalTask)
       .catch(() => {});
   }, [task?.id]);
 
   useEffect(() => {
-    ajax.get(remoteRoutes.users).then((r) => {
-      const list = Array.isArray(r.data) ? r.data : (r.data?.data ?? []);
-      setUsers(list);
-    }).catch(() => setUsers([]));
+    ajax
+      .get(remoteRoutes.users)
+      .then((r) => {
+        const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
+        setUsers(list);
+      })
+      .catch(() => setUsers([]));
   }, []);
 
   if (!localTask) return null;
@@ -76,7 +99,11 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
     addComment.mutate(comment, {
       onSuccess: (newComment) => {
         setComment('');
-        setLocalTask((prev) => prev ? { ...prev, comments: [...(prev.comments ?? []), newComment] } : prev);
+        setLocalTask((prev) =>
+          prev
+            ? { ...prev, comments: [...(prev.comments ?? []), newComment] }
+            : prev,
+        );
       },
     });
   };
@@ -84,8 +111,13 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
   const handleSaveAttachment = async () => {
     if (!attachUrl.trim()) return;
     try {
-      await taskApi.addAttachment(localTask.id, attachUrl, attachLabel || undefined);
-      if (contactId) qc.invalidateQueries({ queryKey: taskKeys.forContact(contactId) });
+      await taskApi.addAttachment(
+        localTask.id,
+        attachUrl,
+        attachLabel || undefined,
+      );
+      if (contactId)
+        qc.invalidateQueries({ queryKey: taskKeys.forContact(contactId) });
       qc.invalidateQueries({ queryKey: ['tasks', 'all'] });
       setShowAttachForm(false);
       setAttachUrl('');
@@ -96,9 +128,19 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
   };
 
   return (
-    <Drawer anchor="right" open={Boolean(localTask)} onClose={onClose} PaperProps={{ sx: { width: 480, p: 3 } }}>
+    <Drawer
+      anchor="right"
+      open={Boolean(localTask)}
+      onClose={onClose}
+      PaperProps={{ sx: { width: 480, p: 3 } }}
+    >
       {/* Header */}
-      <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
+      <Box
+        display="flex"
+        alignItems="flex-start"
+        justifyContent="space-between"
+        mb={2}
+      >
         <Box />
         <IconButton onClick={onClose} size="small">
           <CloseIcon />
@@ -108,7 +150,9 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
       {/* Title / Created by / Created */}
       <Stack spacing={0.5} mb={2}>
         {localTask.title && (
-          <Typography variant="body2"><strong>Title:</strong> {localTask.title}</Typography>
+          <Typography variant="body2">
+            <strong>Title:</strong> {localTask.title}
+          </Typography>
         )}
         {localTask.createdBy && (
           <Typography variant="body2">
@@ -116,7 +160,8 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
           </Typography>
         )}
         <Typography variant="body2">
-          <strong>Created:</strong> {dayjs(localTask.createdAt).format('DD MMM YYYY')}
+          <strong>Created:</strong>{' '}
+          {dayjs(localTask.createdAt).format('DD MMM YYYY')}
         </Typography>
       </Stack>
 
@@ -124,15 +169,26 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
 
       {/* Status */}
       <Box mb={2}>
-        <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          display="block"
+          mb={0.5}
+        >
           STATUS
         </Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
           <TaskStatusChip status={localTask.status} />
           {isClosed ? (
-            <Typography variant="body2" color="text.secondary">Closed</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Closed
+            </Typography>
           ) : (
-            <Button size="small" variant="outlined" onClick={() => setUpdateStatusOpen(true)}>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => setUpdateStatusOpen(true)}
+            >
               Update Status
             </Button>
           )}
@@ -141,12 +197,17 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
 
       {/* Assignment */}
       <Box mb={2}>
-        <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          display="block"
+          mb={0.5}
+        >
           ASSIGNED TO
         </Typography>
         <Autocomplete
           options={users}
-          getOptionLabel={(u) => u.username}
+          getOptionLabel={(u) => u.fullName}
           value={users.find((u) => u.id === localTask.assignedTo?.id) ?? null}
           disabled={isClosed}
           onChange={(_, val) => {
@@ -154,13 +215,20 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
               reassign.mutate({ id: localTask.id, assignedToId: val.id });
             }
           }}
-          renderInput={(params) => <TextField {...params} size="small" placeholder="Unassigned" />}
+          renderInput={(params) => (
+            <TextField {...params} size="small" placeholder="Unassigned" />
+          )}
         />
       </Box>
 
       {/* Due date */}
       <Box mb={2}>
-        <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          display="block"
+          mb={0.5}
+        >
           DUE DATE
         </Typography>
         <DatePicker
@@ -184,9 +252,13 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
 
       {/* Comments */}
       <Box mb={2}>
-        <Typography variant="subtitle2" mb={1}>Comments</Typography>
+        <Typography variant="subtitle2" mb={1}>
+          Comments
+        </Typography>
         {(localTask.comments?.length ?? 0) === 0 ? (
-          <Typography variant="body2" color="text.secondary">No comments yet</Typography>
+          <Typography variant="body2" color="text.secondary">
+            No comments yet
+          </Typography>
         ) : (
           <List dense disablePadding>
             {localTask.comments.map((c) => (
@@ -194,7 +266,9 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
                 <ListItemText
                   primary={
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography variant="body2" fontWeight={600}>{c.author.username}</Typography>
+                      <Typography variant="body2" fontWeight={600}>
+                        {c.author.username}
+                      </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {dayjs(c.createdAt).fromNow()}
                       </Typography>
@@ -221,7 +295,10 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
               }
             }}
           />
-          <IconButton onClick={handleSendComment} disabled={addComment.isPending || !comment.trim()}>
+          <IconButton
+            onClick={handleSendComment}
+            disabled={addComment.isPending || !comment.trim()}
+          >
             <SendIcon />
           </IconButton>
         </Stack>
@@ -231,7 +308,9 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
 
       {/* Attachments */}
       <Box>
-        <Typography variant="subtitle2" mb={1}>Attachments</Typography>
+        <Typography variant="subtitle2" mb={1}>
+          Attachments
+        </Typography>
         <Box display="flex" flexWrap="wrap" gap={1} mb={1}>
           {(localTask.attachments ?? []).map((a) =>
             isImage(a.url) ? (
@@ -240,7 +319,12 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
                 component="img"
                 src={a.url}
                 alt={a.label ?? 'attachment'}
-                sx={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 1 }}
+                sx={{
+                  width: 80,
+                  height: 80,
+                  objectFit: 'cover',
+                  borderRadius: 1,
+                }}
               />
             ) : (
               <Chip
@@ -252,7 +336,7 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
                 target="_blank"
                 clickable
               />
-            )
+            ),
           )}
         </Box>
         {showAttachForm ? (
@@ -272,12 +356,22 @@ export default function TaskDrawer({ task, onClose, onTaskUpdated, contactId }: 
               onChange={(e) => setAttachLabel(e.target.value)}
             />
             <Stack direction="row" spacing={1}>
-              <Button variant="contained" size="small" onClick={handleSaveAttachment}>Save</Button>
-              <Button size="small" onClick={() => setShowAttachForm(false)}>Cancel</Button>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={handleSaveAttachment}
+              >
+                Save
+              </Button>
+              <Button size="small" onClick={() => setShowAttachForm(false)}>
+                Cancel
+              </Button>
             </Stack>
           </Stack>
         ) : (
-          <Button size="small" onClick={() => setShowAttachForm(true)}>Add Attachment</Button>
+          <Button size="small" onClick={() => setShowAttachForm(true)}>
+            Add Attachment
+          </Button>
         )}
       </Box>
 

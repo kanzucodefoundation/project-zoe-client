@@ -1,16 +1,31 @@
 import { useState } from 'react';
 import {
-  Container, Typography, Box, Stack, Chip, Button,
-  Autocomplete, TextField, CircularProgress,
+  Container,
+  Typography,
+  Box,
+  Stack,
+  Chip,
+  Button,
+  Autocomplete,
+  TextField,
+  CircularProgress,
 } from '@mui/material';
-import { DataGrid, type GridColDef, type GridPaginationModel } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  type GridColDef,
+  type GridPaginationModel,
+} from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import { useAllTasks } from './hooks';
 import TaskStatusChip from './TaskStatusChip';
 import TaskDrawer from './TaskDrawer';
 import {
-  TaskStatus, TaskType, STATUS_LABELS, TYPE_LABELS,
-  type Task, type TaskFilters,
+  TaskStatus,
+  TaskType,
+  STATUS_LABELS,
+  TYPE_LABELS,
+  type Task,
+  type TaskFilters,
 } from '../../utils/types';
 import { remoteRoutes } from '../../data/constants';
 import ajax from '../../utils/ajax';
@@ -19,23 +34,34 @@ import { useEffect } from 'react';
 interface UserOption {
   id: number | 'unassigned';
   username: string;
+  fullName: string;
 }
 
-const UNASSIGNED: UserOption = { id: 'unassigned', username: 'Unassigned' };
+const UNASSIGNED: UserOption = {
+  id: 'unassigned',
+  username: 'Unassigned',
+  fullName: 'Unassigned',
+};
 
 export default function TaskQueue() {
   const [statusFilter, setStatusFilter] = useState<TaskStatus[]>([]);
   const [typeFilter, setTypeFilter] = useState<TaskType[]>([]);
   const [assignedTo, setAssignedTo] = useState<UserOption | null>(null);
-  const [pagination, setPagination] = useState<GridPaginationModel>({ page: 0, pageSize: 20 });
+  const [pagination, setPagination] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 20,
+  });
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [users, setUsers] = useState<UserOption[]>([UNASSIGNED]);
 
   useEffect(() => {
-    ajax.get(remoteRoutes.users).then((r) => {
-      const list = Array.isArray(r.data) ? r.data : (r.data?.data ?? []);
-      setUsers([UNASSIGNED, ...list]);
-    }).catch(() => {});
+    ajax
+      .get(remoteRoutes.users)
+      .then((r) => {
+        const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
+        setUsers([UNASSIGNED, ...list]);
+      })
+      .catch(() => {});
   }, []);
 
   const filters: TaskFilters = {
@@ -50,18 +76,19 @@ export default function TaskQueue() {
   const tasks = data?.data ?? [];
   const total = data?.total ?? 0;
 
-  const hasFilters = statusFilter.length > 0 || typeFilter.length > 0 || assignedTo !== null;
+  const hasFilters =
+    statusFilter.length > 0 || typeFilter.length > 0 || assignedTo !== null;
 
   const toggleStatus = (s: TaskStatus) => {
     setStatusFilter((prev) =>
-      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
+      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s],
     );
     setPagination((p) => ({ ...p, page: 0 }));
   };
 
   const toggleType = (t: TaskType) => {
     setTypeFilter((prev) =>
-      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
+      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t],
     );
     setPagination((p) => ({ ...p, page: 0 }));
   };
@@ -71,19 +98,23 @@ export default function TaskQueue() {
       field: 'title',
       headerName: 'Task',
       flex: 1,
-      valueGetter: (_: unknown, row: Task) => row.title ?? TYPE_LABELS[row.type],
+      valueGetter: (_: unknown, row: Task) =>
+        row.title ?? TYPE_LABELS[row.type],
     },
     {
       field: 'status',
       headerName: 'Status',
       width: 180,
-      renderCell: ({ row }: { row: Task }) => <TaskStatusChip status={row.status} />,
+      renderCell: ({ row }: { row: Task }) => (
+        <TaskStatusChip status={row.status} />
+      ),
     },
     {
       field: 'assignedTo',
       headerName: 'Assigned To',
       width: 150,
-      valueGetter: (_: unknown, row: Task) => row.assignedTo?.username ?? 'Unassigned',
+      valueGetter: (_: unknown, row: Task) =>
+        row.assignedTo?.username ?? 'Unassigned',
     },
     {
       field: 'dueAt',
@@ -96,7 +127,8 @@ export default function TaskQueue() {
       field: 'createdAt',
       headerName: 'Created',
       width: 130,
-      valueGetter: (_: unknown, row: Task) => dayjs(row.createdAt).format('DD MMM YYYY'),
+      valueGetter: (_: unknown, row: Task) =>
+        dayjs(row.createdAt).format('DD MMM YYYY'),
     },
   ];
 
@@ -107,7 +139,13 @@ export default function TaskQueue() {
       </Box>
 
       {/* Filters */}
-      <Stack direction="row" flexWrap="wrap" spacing={1} mb={2} alignItems="center">
+      <Stack
+        direction="row"
+        flexWrap="wrap"
+        spacing={1}
+        mb={2}
+        alignItems="center"
+      >
         {Object.values(TaskStatus).map((s) => (
           <Chip
             key={s}
@@ -133,14 +171,16 @@ export default function TaskQueue() {
         ))}
         <Autocomplete
           options={users}
-          getOptionLabel={(u) => u.username}
+          getOptionLabel={(u) => u.fullName}
           value={assignedTo}
           onChange={(_, val) => {
             setAssignedTo(val);
             setPagination((p) => ({ ...p, page: 0 }));
           }}
-          sx={{ width: 180 }}
-          renderInput={(params) => <TextField {...params} label="Assigned to" size="small" />}
+          sx={{ py: 2, width: 200 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Assigned to" size="small" />
+          )}
         />
         {hasFilters && (
           <Button

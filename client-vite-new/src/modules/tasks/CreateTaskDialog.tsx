@@ -1,7 +1,15 @@
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, TextField, ToggleButtonGroup, ToggleButton,
-  Stack, CircularProgress, Autocomplete,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  ToggleButtonGroup,
+  ToggleButton,
+  Stack,
+  CircularProgress,
+  Autocomplete,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -27,6 +35,7 @@ interface Props {
 interface UserOption {
   id: number;
   username: string;
+  fullName: string;
 }
 
 const TYPE_ICONS: Record<TaskType, React.ReactNode> = {
@@ -36,16 +45,24 @@ const TYPE_ICONS: Record<TaskType, React.ReactNode> = {
   [TaskType.FOLLOW_UP]: <RepeatIcon fontSize="small" />,
 };
 
-export default function CreateTaskDialog({ open, contactId, onClose, onSuccess }: Props) {
+export default function CreateTaskDialog({
+  open,
+  contactId,
+  onClose,
+  onSuccess,
+}: Props) {
   const [users, setUsers] = useState<UserOption[]>([]);
   const createTask = useCreateTask(contactId);
 
   useEffect(() => {
     if (open) {
-      ajax.get(remoteRoutes.users).then((r) => {
-        const list = Array.isArray(r.data) ? r.data : (r.data?.data ?? []);
-        setUsers(list);
-      }).catch(() => setUsers([]));
+      ajax
+        .get(remoteRoutes.users)
+        .then((r) => {
+          const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
+          setUsers(list);
+        })
+        .catch(() => setUsers([]));
     }
   }, [open]);
 
@@ -65,7 +82,9 @@ export default function CreateTaskDialog({ open, contactId, onClose, onSuccess }
           contactId,
           type: values.type,
           ...(values.title && { title: values.title }),
-          ...(values.assignedToId !== null && { assignedToId: values.assignedToId }),
+          ...(values.assignedToId !== null && {
+            assignedToId: values.assignedToId,
+          }),
           ...(values.dueAt && { dueAt: values.dueAt.format('YYYY-MM-DD') }),
         },
         {
@@ -74,7 +93,7 @@ export default function CreateTaskDialog({ open, contactId, onClose, onSuccess }
             resetForm();
             onClose();
           },
-        }
+        },
       );
     },
   });
@@ -108,9 +127,13 @@ export default function CreateTaskDialog({ open, contactId, onClose, onSuccess }
 
             <Autocomplete
               options={users}
-              getOptionLabel={(u) => u.username}
-              onChange={(_, val) => formik.setFieldValue('assignedToId', val?.id ?? null)}
-              renderInput={(params) => <TextField {...params} label="Assign to (optional)" />}
+              getOptionLabel={(u) => u.fullName}
+              onChange={(_, val) =>
+                formik.setFieldValue('assignedToId', val?.id ?? null)
+              }
+              renderInput={(params) => (
+                <TextField {...params} label="Assign to (optional)" />
+              )}
             />
 
             <DatePicker
@@ -127,7 +150,9 @@ export default function CreateTaskDialog({ open, contactId, onClose, onSuccess }
             type="submit"
             variant="contained"
             disabled={createTask.isPending}
-            startIcon={createTask.isPending ? <CircularProgress size={16} /> : undefined}
+            startIcon={
+              createTask.isPending ? <CircularProgress size={16} /> : undefined
+            }
           >
             Create Task
           </Button>
