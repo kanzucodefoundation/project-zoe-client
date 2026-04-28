@@ -52,7 +52,7 @@ const Login = () => {
       (_error) => {
         setError('Login failed. Please check your credentials.');
         setLoading(false);
-      }
+      },
     );
   };
 
@@ -77,7 +77,15 @@ const Login = () => {
             backgroundColor: 'rgba(0, 0, 0, 0.3)',
           }}
         />
-        <Box sx={{ textAlign: 'center', color: 'white', zIndex: 1, px: 4, margin: 'auto' }}>
+        <Box
+          sx={{
+            textAlign: 'center',
+            color: 'white',
+            zIndex: 1,
+            px: 4,
+            margin: 'auto',
+          }}
+        >
           <Typography variant="h3" fontWeight="bold" gutterBottom>
             Project Zoe
           </Typography>
@@ -95,7 +103,7 @@ const Login = () => {
           alignItems: 'center',
           justifyContent: 'center',
           p: { xs: 3, sm: 6 },
-          backgroundColor: '#fff',
+          backgroundColor: 'background.paper',
         }}
       >
         <Box sx={{ width: '100%', maxWidth: 400 }}>
@@ -154,7 +162,9 @@ const Login = () => {
                     <IconButton
                       edge="end"
                       onClick={() => setShowPassword((value) => !value)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={
+                        showPassword ? 'Hide password' : 'Show password'
+                      }
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -187,7 +197,11 @@ const Login = () => {
                 mb: 2,
               }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign in'}
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Sign in'
+              )}
             </Button>
 
             <Typography variant="body2" align="center" color="text.secondary">

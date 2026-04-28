@@ -68,7 +68,15 @@ const ForgotPassword = () => {
             backgroundColor: 'rgba(0, 0, 0, 0.3)',
           }}
         />
-        <Box sx={{ textAlign: 'center', color: 'white', zIndex: 1, px: 4, margin: 'auto' }}>
+        <Box
+          sx={{
+            textAlign: 'center',
+            color: 'white',
+            zIndex: 1,
+            px: 4,
+            margin: 'auto',
+          }}
+        >
           <Typography variant="h3" fontWeight="bold" gutterBottom>
             Project Zoe
           </Typography>
@@ -85,7 +93,7 @@ const ForgotPassword = () => {
           alignItems: 'center',
           justifyContent: 'center',
           p: { xs: 3, sm: 6 },
-          backgroundColor: '#fff',
+          backgroundColor: 'background.paper',
         }}
       >
         <Box sx={{ width: '100%', maxWidth: 400 }}>
@@ -93,7 +101,8 @@ const ForgotPassword = () => {
             Forgot Password
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-            Enter your email address and we&apos;ll send reset instructions if an account exists.
+            Enter your email address and we&apos;ll send reset instructions if
+            an account exists.
           </Typography>
 
           {error && (
@@ -136,7 +145,11 @@ const ForgotPassword = () => {
                 mb: 2,
               }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Send Reset Email'}
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Send Reset Email'
+              )}
             </Button>
 
             <Typography variant="body2" align="center" color="text.secondary">

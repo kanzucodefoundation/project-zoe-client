@@ -52,7 +52,7 @@ const UpdatePasswordConfirmation = () => {
           alignItems: 'center',
           justifyContent: 'center',
           p: { xs: 3, sm: 6 },
-          backgroundColor: '#fff',
+          backgroundColor: 'background.paper',
         }}
       >
         <Box sx={{ width: '100%', maxWidth: 420, textAlign: 'center' }}>
