@@ -1067,6 +1067,7 @@ const UserManagement = () => {
             />
             <Autocomplete
               multiple
+              filterSelectedOptions
               options={permissionsList}
               value={roleFormData.permissions}
               onChange={(_, value) =>
