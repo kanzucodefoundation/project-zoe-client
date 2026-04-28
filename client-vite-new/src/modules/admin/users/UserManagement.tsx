@@ -50,11 +50,11 @@ import {
   permissionsList,
 } from '../../../data/constants';
 import type { RootState } from '../../../data/store';
+import { getUserCapabilities } from '../../../utils/permissions';
 import type {
   User,
   ContactOption,
   RoleDto,
-  AuthUserWithPermissions,
   CreateUserData,
   EditUserData,
   RoleFormData,
@@ -80,17 +80,6 @@ const INITIAL_ROLE_FORM: RoleFormData = {
   description: '',
   permissions: [],
   isActive: true,
-};
-
-const getUserCapabilities = (user: RootState['core']['user']) => {
-  const permissions = Array.isArray(
-    (user as AuthUserWithPermissions | null)?.permissions,
-  )
-    ? (user as AuthUserWithPermissions).permissions ?? []
-    : [];
-  const roles = Array.isArray(user?.roles) ? user.roles : [];
-
-  return new Set([...permissions, ...roles]);
 };
 
 const UserManagement = () => {

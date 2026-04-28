@@ -31,7 +31,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
 import { localRoutes, appPermissions } from '../../data/constants';
-import type {$TsFixMe} from '../../utils/types';
+import { hasAnyCapability } from '../../utils/permissions';
 
 interface NavItem {
   name: string;
@@ -65,8 +65,16 @@ const navItems: NavItem[] = [
     path: localRoutes.reports,
     requiredRoles: [appPermissions.roleReportView],
     children: [
-      { name: 'Reports', icon: <AssessmentRoundedIcon />, path: localRoutes.reports },
-      { name: 'Retention Report', icon: <TrendingUpRoundedIcon />, path: localRoutes.retentionReport },
+      {
+        name: 'Reports',
+        icon: <AssessmentRoundedIcon />,
+        path: localRoutes.reports,
+      },
+      {
+        name: 'Retention Report',
+        icon: <TrendingUpRoundedIcon />,
+        path: localRoutes.retentionReport,
+      },
     ],
   },
   {
@@ -75,9 +83,21 @@ const navItems: NavItem[] = [
     path: localRoutes.attendance,
     requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
     children: [
-      { name: 'Check-In', icon: <HowToRegRoundedIcon />, path: localRoutes.attendance },
-      { name: 'Schedules', icon: <CalendarMonthRoundedIcon />, path: localRoutes.attendanceSchedules },
-      { name: 'History', icon: <HistoryRoundedIcon />, path: localRoutes.attendanceHistory },
+      {
+        name: 'Check-In',
+        icon: <HowToRegRoundedIcon />,
+        path: localRoutes.attendance,
+      },
+      {
+        name: 'Schedules',
+        icon: <CalendarMonthRoundedIcon />,
+        path: localRoutes.attendanceSchedules,
+      },
+      {
+        name: 'History',
+        icon: <HistoryRoundedIcon />,
+        path: localRoutes.attendanceHistory,
+      },
     ],
   },
   {
@@ -85,8 +105,16 @@ const navItems: NavItem[] = [
     icon: <ChecklistRoundedIcon />,
     path: localRoutes.tasks,
     children: [
-      { name: 'Task Queue', icon: <ChecklistRoundedIcon />, path: localRoutes.tasks },
-      { name: 'My Tasks', icon: <AssignmentIndRoundedIcon />, path: localRoutes.tasksMine },
+      {
+        name: 'Task Queue',
+        icon: <ChecklistRoundedIcon />,
+        path: localRoutes.tasks,
+      },
+      {
+        name: 'My Tasks',
+        icon: <AssignmentIndRoundedIcon />,
+        path: localRoutes.tasksMine,
+      },
     ],
   },
   {
@@ -95,9 +123,21 @@ const navItems: NavItem[] = [
     path: localRoutes.settings,
     requiredRoles: [appPermissions.roleUserView, appPermissions.roleUserEdit],
     children: [
-      { name: 'Manage Users', icon: <PeopleRoundedIcon />, path: localRoutes.users },
-      { name: 'Manage Reports', icon: <AssessmentRoundedIcon />, path: localRoutes.reportConfiguration },
-      { name: 'Manage Notifications', icon: <SmsRoundedIcon />, path: localRoutes.notifications },
+      {
+        name: 'Manage Users',
+        icon: <PeopleRoundedIcon />,
+        path: localRoutes.users,
+      },
+      {
+        name: 'Manage Reports',
+        icon: <AssessmentRoundedIcon />,
+        path: localRoutes.reportConfiguration,
+      },
+      {
+        name: 'Manage Notifications',
+        icon: <SmsRoundedIcon />,
+        path: localRoutes.notifications,
+      },
       // { name: 'Group Categories', icon: <GroupRoundedIcon />, path: localRoutes.groupsCategories },
       // { name: 'Settings', icon: <SettingsRoundedIcon />, path: localRoutes.settings },
     ],
@@ -106,27 +146,44 @@ const navItems: NavItem[] = [
     name: 'Finance',
     icon: <AccountBalanceRoundedIcon />,
     path: localRoutes.financialAccounts,
-    requiredRoles: [appPermissions.roleFinanceView, appPermissions.roleFinanceEdit],
+    requiredRoles: [
+      appPermissions.roleFinanceView,
+      appPermissions.roleFinanceEdit,
+    ],
     children: [
-      { name: 'Accounts', icon: <AccountBalanceRoundedIcon />, path: localRoutes.financialAccounts },
-      { name: 'Import Transactions', icon: <UploadFileRoundedIcon />, path: localRoutes.financialImport },
-      { name: 'Reconciliation', icon: <CompareArrowsRoundedIcon />, path: localRoutes.financialReconciliation },
-      { name: 'Distributions', icon: <AccountTreeRoundedIcon />, path: localRoutes.financialDistributions },
-      { name: 'Category Rules', icon: <RuleRoundedIcon />, path: localRoutes.financialCategoryRules },
-      { name: 'Reports', icon: <BarChartRoundedIcon />, path: localRoutes.financialReports },
+      {
+        name: 'Accounts',
+        icon: <AccountBalanceRoundedIcon />,
+        path: localRoutes.financialAccounts,
+      },
+      {
+        name: 'Import Transactions',
+        icon: <UploadFileRoundedIcon />,
+        path: localRoutes.financialImport,
+      },
+      {
+        name: 'Reconciliation',
+        icon: <CompareArrowsRoundedIcon />,
+        path: localRoutes.financialReconciliation,
+      },
+      {
+        name: 'Distributions',
+        icon: <AccountTreeRoundedIcon />,
+        path: localRoutes.financialDistributions,
+      },
+      {
+        name: 'Category Rules',
+        icon: <RuleRoundedIcon />,
+        path: localRoutes.financialCategoryRules,
+      },
+      {
+        name: 'Reports',
+        icon: <BarChartRoundedIcon />,
+        path: localRoutes.financialReports,
+      },
     ],
   },
 ];
-
-// Helper function to check if user has required roles
-const hasRequiredRoles = (user: $TsFixMe, requiredRoles?: string[]) => {
-  if (!requiredRoles || requiredRoles.length === 0) return true;
-  if (!user) return false;
-  return true;
-  // TODO: Implement proper role checking when backend provides roles
-  // if (!user?.roles) return false;
-  // return requiredRoles.some(role => user.roles.includes(role));
-};
 
 export default function MenuContent() {
   const navigate = useNavigate();
@@ -135,20 +192,22 @@ export default function MenuContent() {
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
 
   const handleMenuToggle = (menuName: string) => {
-    setOpenMenus(prev => ({ ...prev, [menuName]: !prev[menuName] }));
+    setOpenMenus((prev) => ({ ...prev, [menuName]: !prev[menuName] }));
   };
 
   const handleNavigate = (path: string) => {
     navigate(path);
   };
 
-  // Filter navigation items based on user roles
-  const filteredNavItems = navItems.filter(item =>
-    hasRequiredRoles(user, item.requiredRoles)
+  // Filter navigation items based on user capabilities
+  const filteredNavItems = navItems.filter((item) =>
+    hasAnyCapability(user, item.requiredRoles),
   );
 
   const isSelected = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+    return (
+      location.pathname === path || location.pathname.startsWith(path + '/')
+    );
   };
 
   const renderNavItem = (item: NavItem, level = 0) => {
@@ -201,7 +260,7 @@ export default function MenuContent() {
           </ListItem>
           <Collapse in={isOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              {item.children.map(child => renderNavItem(child, level + 1))}
+              {item.children.map((child) => renderNavItem(child, level + 1))}
             </List>
           </Collapse>
         </div>
@@ -209,7 +268,11 @@ export default function MenuContent() {
     }
 
     return (
-      <ListItem key={item.name} disablePadding sx={{ display: 'block', pl: level * 2 }}>
+      <ListItem
+        key={item.name}
+        disablePadding
+        sx={{ display: 'block', pl: level * 2 }}
+      >
         <ListItemButton
           selected={selected}
           onClick={() => handleNavigate(item.path)}
@@ -250,9 +313,7 @@ export default function MenuContent() {
 
   return (
     <Stack sx={{ flexGrow: 1, p: 1.5 }}>
-      <List>
-        {filteredNavItems.map(item => renderNavItem(item))}
-      </List>
+      <List>{filteredNavItems.map((item) => renderNavItem(item))}</List>
     </Stack>
   );
 }

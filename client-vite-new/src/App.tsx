@@ -1,11 +1,23 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import type { ReactElement } from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from './data/store';
 import { restoreUser, logout } from './data/coreSlice';
-import { localRoutes, AUTH_TOKEN_KEY, AUTH_USER_KEY } from './data/constants';
+import {
+  localRoutes,
+  AUTH_TOKEN_KEY,
+  AUTH_USER_KEY,
+  appPermissions,
+} from './data/constants';
 import { isTokenExpired } from './utils/ajax';
+import { hasAnyCapability } from './utils/permissions';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Import actual components
@@ -99,6 +111,16 @@ function App() {
     return <Splash />;
   }
 
+  const renderProtectedElement = (
+    element: ReactElement,
+    requiredCapabilities?: string[],
+  ) =>
+    hasAnyCapability(user, requiredCapabilities) ? (
+      element
+    ) : (
+      <Navigate to={localRoutes.dashboard} replace />
+    );
+
   return (
     <Router>
       <ToastContainer />
@@ -107,68 +129,137 @@ function App() {
         <LayoutV2>
           <Routes>
             <Route path={localRoutes.dashboard} element={<Dashboard />} />
-            <Route path={localRoutes.contacts} element={<Contacts />} />
+            <Route
+              path={localRoutes.contacts}
+              element={renderProtectedElement(<Contacts />, [
+                appPermissions.roleCrmView,
+                appPermissions.roleCrmEdit,
+              ])}
+            />
             <Route
               path={`${localRoutes.contacts}/:contactId`}
-              element={<ContactDetail />}
+              element={renderProtectedElement(<ContactDetail />, [
+                appPermissions.roleCrmView,
+                appPermissions.roleCrmEdit,
+              ])}
             />
-            <Route path={localRoutes.reports} element={<Reports />} />
+            <Route
+              path={localRoutes.reports}
+              element={renderProtectedElement(<Reports />, [
+                appPermissions.roleReportView,
+              ])}
+            />
             <Route
               path={localRoutes.reportSubmit}
-              element={<ReportSubmissionForm />}
+              element={renderProtectedElement(<ReportSubmissionForm />, [
+                appPermissions.roleReportView,
+              ])}
             />
-            <Route path={localRoutes.groups} element={<Groups />} />
+            <Route
+              path={localRoutes.groups}
+              element={renderProtectedElement(<Groups />, [
+                appPermissions.roleGroupView,
+                appPermissions.roleGroupEdit,
+              ])}
+            />
             <Route
               path={localRoutes.groupsDetails}
-              element={<GroupDetails />}
+              element={renderProtectedElement(<GroupDetails />, [
+                appPermissions.roleGroupView,
+                appPermissions.roleGroupEdit,
+              ])}
             />
-            <Route path={localRoutes.users} element={<UserManagement />} />
+            <Route
+              path={localRoutes.users}
+              element={renderProtectedElement(<UserManagement />, [
+                appPermissions.roleUserView,
+                appPermissions.roleUserEdit,
+              ])}
+            />
             <Route
               path={localRoutes.reportConfiguration}
-              element={<ReportConfiguration />}
+              element={renderProtectedElement(<ReportConfiguration />, [
+                appPermissions.roleUserView,
+                appPermissions.roleUserEdit,
+              ])}
             />
             <Route
               path={localRoutes.financialAccounts}
-              element={<FinancialAccounts />}
+              element={renderProtectedElement(<FinancialAccounts />, [
+                appPermissions.roleFinanceView,
+                appPermissions.roleFinanceEdit,
+              ])}
             />
             <Route
               path={localRoutes.financialImport}
-              element={<ImportTransactions />}
+              element={renderProtectedElement(<ImportTransactions />, [
+                appPermissions.roleFinanceView,
+                appPermissions.roleFinanceEdit,
+              ])}
             />
             <Route
               path={localRoutes.financialReconciliation}
-              element={<Reconciliation />}
+              element={renderProtectedElement(<Reconciliation />, [
+                appPermissions.roleFinanceView,
+                appPermissions.roleFinanceEdit,
+              ])}
             />
             <Route
               path={localRoutes.financialDistributions}
-              element={<Distributions />}
+              element={renderProtectedElement(<Distributions />, [
+                appPermissions.roleFinanceView,
+                appPermissions.roleFinanceEdit,
+              ])}
             />
             <Route
               path={localRoutes.financialCategoryRules}
-              element={<CategoryRules />}
+              element={renderProtectedElement(<CategoryRules />, [
+                appPermissions.roleFinanceView,
+                appPermissions.roleFinanceEdit,
+              ])}
             />
             <Route
               path={localRoutes.financialReports}
-              element={<FinancialReports />}
+              element={renderProtectedElement(<FinancialReports />, [
+                appPermissions.roleFinanceView,
+                appPermissions.roleFinanceEdit,
+              ])}
             />
             <Route path={localRoutes.tasks} element={<TaskQueue />} />
             <Route path={localRoutes.tasksMine} element={<MyTasks />} />
             <Route
               path={localRoutes.retentionReport}
-              element={<RetentionReport />}
+              element={renderProtectedElement(<RetentionReport />, [
+                appPermissions.roleReportView,
+              ])}
             />
             <Route
               path={localRoutes.notifications}
-              element={<ManageNotifications />}
+              element={renderProtectedElement(<ManageNotifications />, [
+                appPermissions.roleUserView,
+                appPermissions.roleUserEdit,
+              ])}
             />
-            <Route path={localRoutes.attendance} element={<CheckInScreen />} />
+            <Route
+              path={localRoutes.attendance}
+              element={renderProtectedElement(<CheckInScreen />, [
+                appPermissions.roleEventView,
+                appPermissions.roleEventEdit,
+              ])}
+            />
             <Route
               path={localRoutes.attendanceSchedules}
-              element={<ServiceSchedules />}
+              element={renderProtectedElement(<ServiceSchedules />, [
+                appPermissions.roleEventView,
+                appPermissions.roleEventEdit,
+              ])}
             />
             <Route
               path={localRoutes.attendanceHistory}
-              element={<AttendanceHistory />}
+              element={renderProtectedElement(<AttendanceHistory />, [
+                appPermissions.roleEventView,
+                appPermissions.roleEventEdit,
+              ])}
             />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}
