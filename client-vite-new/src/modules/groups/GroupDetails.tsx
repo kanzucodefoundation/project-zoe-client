@@ -20,8 +20,13 @@ import {
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { get, del, put } from '../../utils/ajax';
-import { remoteRoutes, localRoutes } from '../../data/constants';
+import {
+  remoteRoutes,
+  localRoutes,
+  appPermissions,
+} from '../../data/constants';
 import type { RootState } from '../../data/store';
+import { hasAnyCapability } from '../../utils/permissions';
 import AddGroupDialog from './AddGroupDialog';
 import MessageGroupModal from './MessageGroupModal';
 import type { GroupNode } from './types';
@@ -236,6 +241,9 @@ const GroupDetails = () => {
 
     return Boolean(group.canEditGroup || hasManagedGroup);
   })();
+  const canViewGroupEditActions = hasAnyCapability(user, [
+    appPermissions.roleGroupEdit,
+  ]);
 
   const fetchGroup = useCallback(async () => {
     if (!groupId) return;
@@ -425,22 +433,26 @@ const GroupDetails = () => {
           >
             Message Group
           </Button>
-          <Button
-            variant="outlined"
-            startIcon={<EditIcon />}
-            onClick={() => setEditDialogOpen(true)}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={handleDelete}
-            disabled={deleting}
-          >
-            {deleting ? 'Deleting...' : 'Delete'}
-          </Button>
+          {canViewGroupEditActions ? (
+            <>
+              <Button
+                variant="outlined"
+                startIcon={<EditIcon />}
+                onClick={() => setEditDialogOpen(true)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                {deleting ? 'Deleting...' : 'Delete'}
+              </Button>
+            </>
+          ) : null}
         </Box>
       </Box>
 
