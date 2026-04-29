@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Typography,
@@ -33,7 +34,13 @@ import {
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 import { get } from '../../utils/ajax';
-import { remoteRoutes, localRoutes } from '../../data/constants';
+import {
+  remoteRoutes,
+  localRoutes,
+  appPermissions,
+} from '../../data/constants';
+import type { RootState } from '../../data/store';
+import { hasAnyCapability } from '../../utils/permissions';
 import ContactForm from './ContactForm';
 import ContactTasksTab from '../tasks/ContactTasksTab';
 import ContactActivityFeed from './ContactActivityFeed';
@@ -89,11 +96,15 @@ function mapApiResponse(response: any): ContactData {
 const ContactDetail = () => {
   const { contactId } = useParams<{ contactId: string }>();
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.core);
   const [contact, setContact] = useState<ContactData | null>(null);
   const [loading, setLoading] = useState(true);
   const [editDialog, setEditDialog] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+  const canViewContactEditActions = hasAnyCapability(user, [
+    appPermissions.roleCrmEdit,
+  ]);
 
   useEffect(() => {
     if (contactId) {
@@ -118,6 +129,9 @@ const ContactDetail = () => {
   };
 
   const handleEdit = () => {
+    if (!canViewContactEditActions) {
+      return;
+    }
     setEditError(null);
     setEditDialog(true);
   };
@@ -182,13 +196,15 @@ const ContactDetail = () => {
         <Typography variant="h4" flex={1}>
           Contact Details
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<EditIcon />}
-          onClick={handleEdit}
-        >
-          Edit
-        </Button>
+        {canViewContactEditActions ? (
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={handleEdit}
+          >
+            Edit
+          </Button>
+        ) : null}
       </Box>
 
       <Grid container spacing={6}>
