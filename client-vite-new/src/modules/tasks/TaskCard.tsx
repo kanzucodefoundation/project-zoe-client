@@ -1,4 +1,11 @@
-import { Card, CardContent, Typography, Avatar, Stack } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Avatar,
+  Stack,
+  Divider,
+} from '@mui/material';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import TaskStatusChip from './TaskStatusChip';
@@ -6,6 +13,7 @@ import TaskTypeChip from './TaskTypeChip';
 import { localRoutes } from '../../data/constants';
 import type { Task, TaskUser } from '../../utils/types';
 import { TYPE_LABELS } from '../../utils/types';
+import { Diversity1, SafetyDividerOutlined } from '@mui/icons-material';
 
 interface Props {
   task: Task;
@@ -16,7 +24,9 @@ interface Props {
 function getInitials(user: TaskUser | undefined) {
   const person = user?.contact?.person;
   if (!person) return '?';
-  return `${person.firstName[0] ?? ''}${person.lastName[0] ?? ''}`.toUpperCase();
+  return `${person.firstName[0] ?? ''}${
+    person.lastName[0] ?? ''
+  }`.toUpperCase();
 }
 
 function getFullName(user: TaskUser | undefined) {
@@ -37,11 +47,15 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
       elevation={2}
     >
       <CardContent>
-        <Stack direction="row" spacing={1} alignItems="center" mb={0.5}>
+        <Stack direction="row" spacing={1} alignItems="center" mb={2}>
           <TaskTypeChip type={task.type} />
           <TaskStatusChip status={task.status} />
           {task.dueAt && (
-            <Typography variant="caption" color="text.secondary" sx={{ ml: 'auto' }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ ml: 'auto' }}
+            >
               Due {dayjs(task.dueAt).format('DD MMM YYYY')}
             </Typography>
           )}
@@ -53,11 +67,17 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
             component={Link}
             to={`${localRoutes.contacts}/${task.contact.id}`}
             onClick={(e) => e.stopPropagation()}
-            sx={{ color: 'primary.main', textDecoration: 'none', display: 'block', mb: 0.5 }}
+            sx={{
+              color: 'primary.main',
+              textDecoration: 'none',
+              display: 'block',
+              mb: 0.5,
+            }}
           >
             {contactName}
           </Typography>
         )}
+        <Divider sx={{ my: 1 }} />
 
         <Typography variant="body1" fontWeight={500} mb={0.5}>
           {task.title || TYPE_LABELS[task.type]}
@@ -66,7 +86,14 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
         <Stack direction="row" alignItems="center" spacing={1}>
           {task.assignedTo ? (
             <>
-              <Avatar sx={{ width: 20, height: 20, fontSize: '0.65rem', bgcolor: 'primary.light' }}>
+              <Avatar
+                sx={{
+                  width: 30,
+                  height: 30,
+                  fontSize: '0.65rem',
+                  bgcolor: 'primary.light',
+                }}
+              >
                 {getInitials(task.assignedTo)}
               </Avatar>
               <Typography variant="caption" color="text.secondary">
@@ -74,7 +101,9 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
               </Typography>
             </>
           ) : (
-            <Typography variant="caption" color="text.secondary">Unassigned</Typography>
+            <Typography variant="caption" color="text.secondary">
+              Unassigned
+            </Typography>
           )}
         </Stack>
       </CardContent>
