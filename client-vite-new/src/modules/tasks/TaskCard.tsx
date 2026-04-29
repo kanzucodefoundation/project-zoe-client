@@ -13,7 +13,6 @@ import TaskTypeChip from './TaskTypeChip';
 import { localRoutes } from '../../data/constants';
 import type { Task, TaskUser } from '../../utils/types';
 import { TYPE_LABELS } from '../../utils/types';
-import { Diversity1, SafetyDividerOutlined } from '@mui/icons-material';
 
 interface Props {
   task: Task;
