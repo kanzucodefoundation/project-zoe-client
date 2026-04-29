@@ -61,7 +61,8 @@ interface ServiceUploadResult {
 type UploadResult = ContactsUploadResult | ServiceUploadResult;
 
 const TEMPLATES: Record<UploadMode, string> = {
-  contacts: 'firstName,lastName,email,phone,dateOfBirth,gender',
+  contacts:
+    'firstName,lastName,email,phone,dateOfBirth,gender,district,country',
   guests:
     'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You,Church Location,Service Date',
   believers:
@@ -347,7 +348,7 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             <br />• <strong>phone</strong> - Phone number
             <br />• <strong>dateOfBirth</strong> - Date of birth (YYYY-MM-DD
             format)
-            <br />• <strong>gender</strong> - Gender (Male/Female/Other)
+            <br />• <strong>gender</strong> - Gender (Male/Female)
             <br />• <strong>country</strong> - Country (required)
             <br />
           </Typography>

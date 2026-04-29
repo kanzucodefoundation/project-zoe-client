@@ -13,6 +13,8 @@ import {
   ListItem,
   ListItemText,
   Chip,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
@@ -56,6 +58,8 @@ export default function TaskDrawer({
   onTaskUpdated,
   contactId,
 }: Props) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [updateStatusOpen, setUpdateStatusOpen] = useState(false);
   const [users, setUsers] = useState<UserOption[]>([]);
   const [comment, setComment] = useState('');
@@ -132,7 +136,16 @@ export default function TaskDrawer({
       anchor="right"
       open={Boolean(localTask)}
       onClose={onClose}
-      PaperProps={{ sx: { width: 480, p: 3 } }}
+      PaperProps={{
+        sx: {
+          width: { xs: '100%', sm: 480 },
+          maxWidth: '100vw',
+          p: { xs: 2, sm: 3 },
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+        },
+      }}
     >
       {/* Header */}
       <Box
@@ -147,232 +160,270 @@ export default function TaskDrawer({
         </IconButton>
       </Box>
 
-      {/* Title / Created by / Created */}
-      <Stack spacing={0.5} mb={2}>
-        {localTask.title && (
-          <Typography variant="body2">
-            <strong>Title:</strong> {localTask.title}
-          </Typography>
-        )}
-        {localTask.createdBy && (
-          <Typography variant="body2">
-            <strong>Created by:</strong> {localTask.createdBy.username}
-          </Typography>
-        )}
-        <Typography variant="body2">
-          <strong>Created:</strong>{' '}
-          {dayjs(localTask.createdAt).format('DD MMM YYYY')}
-        </Typography>
-      </Stack>
-
-      <Divider sx={{ mb: 2 }} />
-
-      {/* Status */}
-      <Box mb={2}>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          display="block"
-          mb={0.5}
-        >
-          STATUS
-        </Typography>
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <TaskStatusChip status={localTask.status} />
-          {isClosed ? (
-            <Typography variant="body2" color="text.secondary">
-              Closed
+      <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', pr: { sm: 0.5 } }}>
+        {/* Title / Created by / Created */}
+        <Stack spacing={0.5} mb={2}>
+          {localTask.title && (
+            <Typography variant="body2">
+              <strong>Title:</strong> {localTask.title}
             </Typography>
+          )}
+          {localTask.createdBy && (
+            <Typography variant="body2">
+              <strong>Created by:</strong> {localTask.createdBy.username}
+            </Typography>
+          )}
+          <Typography variant="body2">
+            <strong>Created:</strong>{' '}
+            {dayjs(localTask.createdAt).format('DD MMM YYYY')}
+          </Typography>
+        </Stack>
+
+        <Divider sx={{ mb: 2 }} />
+
+        {/* Status */}
+        <Box mb={2}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            display="block"
+            mb={0.5}
+          >
+            STATUS
+          </Typography>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            alignItems={{ xs: 'stretch', sm: 'center' }}
+            spacing={1}
+          >
+            <TaskStatusChip status={localTask.status} />
+            {isClosed ? (
+              <Typography variant="body2" color="text.secondary">
+                Closed
+              </Typography>
+            ) : (
+              <Button
+                size="small"
+                variant="outlined"
+                fullWidth={isPhone}
+                onClick={() => setUpdateStatusOpen(true)}
+              >
+                Update Status
+              </Button>
+            )}
+          </Stack>
+        </Box>
+
+        {/* Assignment */}
+        <Box mb={2}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            display="block"
+            mb={0.5}
+          >
+            ASSIGNED TO
+          </Typography>
+          <Autocomplete
+            options={users}
+            getOptionLabel={(u) => u.fullName}
+            value={users.find((u) => u.id === localTask.assignedTo?.id) ?? null}
+            disabled={isClosed}
+            onChange={(_, val) => {
+              if (val) {
+                reassign.mutate({ id: localTask.id, assignedToId: val.id });
+              }
+            }}
+            renderInput={(params) => (
+              <TextField {...params} size="small" placeholder="Unassigned" />
+            )}
+          />
+        </Box>
+
+        {/* Due date */}
+        <Box mb={2}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            display="block"
+            mb={0.5}
+          >
+            DUE DATE
+          </Typography>
+          <DatePicker
+            value={localTask.dueAt ? dayjs(localTask.dueAt) : null}
+            onChange={async (val) => {
+              const dueAt = val ? dayjs(val).toISOString() : null;
+              try {
+                const updated = await taskApi.update(localTask.id, { dueAt });
+                setLocalTask(updated);
+                onTaskUpdated(updated);
+              } catch {
+                // error handled by api
+              }
+            }}
+            disabled={isClosed}
+            slotProps={{ textField: { size: 'small', fullWidth: true } }}
+          />
+        </Box>
+
+        <Divider sx={{ mb: 2 }} />
+
+        {/* Comments */}
+        <Box mb={2}>
+          <Typography variant="subtitle2" mb={1}>
+            Comments
+          </Typography>
+          {(localTask.comments?.length ?? 0) === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              No comments yet
+            </Typography>
+          ) : (
+            <List dense disablePadding>
+              {localTask.comments.map((c) => (
+                <ListItem key={c.id} alignItems="flex-start" disableGutters>
+                  <ListItemText
+                    primary={
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        alignItems="center"
+                        flexWrap="wrap"
+                      >
+                        <Typography variant="body2" fontWeight={600}>
+                          {c.author.username}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {dayjs(c.createdAt).fromNow()}
+                        </Typography>
+                      </Stack>
+                    }
+                    secondary={c.body}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1}
+            mt={1}
+            alignItems={{ xs: 'stretch', sm: 'flex-start' }}
+          >
+            <TextField
+              size="small"
+              multiline
+              fullWidth
+              placeholder="Add a comment…"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendComment();
+                }
+              }}
+            />
+            <Button
+              variant="contained"
+              endIcon={<SendIcon />}
+              onClick={handleSendComment}
+              disabled={addComment.isPending || !comment.trim()}
+              fullWidth={isPhone}
+              sx={{ alignSelf: { xs: 'stretch', sm: 'flex-start' } }}
+            >
+              Send
+            </Button>
+          </Stack>
+        </Box>
+
+        <Divider sx={{ mb: 2 }} />
+
+        {/* Attachments */}
+        <Box>
+          <Typography variant="subtitle2" mb={1}>
+            Attachments
+          </Typography>
+          <Box display="flex" flexWrap="wrap" gap={1} mb={1}>
+            {(localTask.attachments ?? []).map((a) =>
+              isImage(a.url) ? (
+                <Box
+                  key={a.id}
+                  component="img"
+                  src={a.url}
+                  alt={a.label ?? 'attachment'}
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    objectFit: 'cover',
+                    borderRadius: 1,
+                  }}
+                />
+              ) : (
+                <Chip
+                  key={a.id}
+                  icon={<AttachFileIcon />}
+                  label={a.label ?? a.url.split('/').pop() ?? 'file'}
+                  component="a"
+                  href={a.url}
+                  target="_blank"
+                  clickable
+                  sx={{
+                    maxWidth: '100%',
+                    '& .MuiChip-label': {
+                      display: 'block',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    },
+                  }}
+                />
+              ),
+            )}
+          </Box>
+          {showAttachForm ? (
+            <Stack spacing={1}>
+              <TextField
+                size="small"
+                label="URL"
+                fullWidth
+                value={attachUrl}
+                onChange={(e) => setAttachUrl(e.target.value)}
+              />
+              <TextField
+                size="small"
+                label="Label (optional)"
+                fullWidth
+                value={attachLabel}
+                onChange={(e) => setAttachLabel(e.target.value)}
+              />
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  fullWidth={isPhone}
+                  onClick={handleSaveAttachment}
+                >
+                  Save
+                </Button>
+                <Button
+                  size="small"
+                  fullWidth={isPhone}
+                  onClick={() => setShowAttachForm(false)}
+                >
+                  Cancel
+                </Button>
+              </Stack>
+            </Stack>
           ) : (
             <Button
               size="small"
-              variant="outlined"
-              onClick={() => setUpdateStatusOpen(true)}
+              fullWidth={isPhone}
+              onClick={() => setShowAttachForm(true)}
             >
-              Update Status
+              Add Attachment
             </Button>
           )}
-        </Stack>
-      </Box>
-
-      {/* Assignment */}
-      <Box mb={2}>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          display="block"
-          mb={0.5}
-        >
-          ASSIGNED TO
-        </Typography>
-        <Autocomplete
-          options={users}
-          getOptionLabel={(u) => u.fullName}
-          value={users.find((u) => u.id === localTask.assignedTo?.id) ?? null}
-          disabled={isClosed}
-          onChange={(_, val) => {
-            if (val) {
-              reassign.mutate({ id: localTask.id, assignedToId: val.id });
-            }
-          }}
-          renderInput={(params) => (
-            <TextField {...params} size="small" placeholder="Unassigned" />
-          )}
-        />
-      </Box>
-
-      {/* Due date */}
-      <Box mb={2}>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          display="block"
-          mb={0.5}
-        >
-          DUE DATE
-        </Typography>
-        <DatePicker
-          value={localTask.dueAt ? dayjs(localTask.dueAt) : null}
-          onChange={async (val) => {
-            const dueAt = val ? dayjs(val).toISOString() : null;
-            try {
-              const updated = await taskApi.update(localTask.id, { dueAt });
-              setLocalTask(updated);
-              onTaskUpdated(updated);
-            } catch {
-              // error handled by api
-            }
-          }}
-          disabled={isClosed}
-          slotProps={{ textField: { size: 'small', fullWidth: true } }}
-        />
-      </Box>
-
-      <Divider sx={{ mb: 2 }} />
-
-      {/* Comments */}
-      <Box mb={2}>
-        <Typography variant="subtitle2" mb={1}>
-          Comments
-        </Typography>
-        {(localTask.comments?.length ?? 0) === 0 ? (
-          <Typography variant="body2" color="text.secondary">
-            No comments yet
-          </Typography>
-        ) : (
-          <List dense disablePadding>
-            {localTask.comments.map((c) => (
-              <ListItem key={c.id} alignItems="flex-start" disableGutters>
-                <ListItemText
-                  primary={
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography variant="body2" fontWeight={600}>
-                        {c.author.username}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {dayjs(c.createdAt).fromNow()}
-                      </Typography>
-                    </Stack>
-                  }
-                  secondary={c.body}
-                />
-              </ListItem>
-            ))}
-          </List>
-        )}
-        <Stack direction="row" spacing={1} mt={1}>
-          <TextField
-            size="small"
-            multiline
-            fullWidth
-            placeholder="Add a comment…"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendComment();
-              }
-            }}
-          />
-          <IconButton
-            onClick={handleSendComment}
-            disabled={addComment.isPending || !comment.trim()}
-          >
-            <SendIcon />
-          </IconButton>
-        </Stack>
-      </Box>
-
-      <Divider sx={{ mb: 2 }} />
-
-      {/* Attachments */}
-      <Box>
-        <Typography variant="subtitle2" mb={1}>
-          Attachments
-        </Typography>
-        <Box display="flex" flexWrap="wrap" gap={1} mb={1}>
-          {(localTask.attachments ?? []).map((a) =>
-            isImage(a.url) ? (
-              <Box
-                key={a.id}
-                component="img"
-                src={a.url}
-                alt={a.label ?? 'attachment'}
-                sx={{
-                  width: 80,
-                  height: 80,
-                  objectFit: 'cover',
-                  borderRadius: 1,
-                }}
-              />
-            ) : (
-              <Chip
-                key={a.id}
-                icon={<AttachFileIcon />}
-                label={a.label ?? a.url.split('/').pop() ?? 'file'}
-                component="a"
-                href={a.url}
-                target="_blank"
-                clickable
-              />
-            ),
-          )}
         </Box>
-        {showAttachForm ? (
-          <Stack spacing={1}>
-            <TextField
-              size="small"
-              label="URL"
-              fullWidth
-              value={attachUrl}
-              onChange={(e) => setAttachUrl(e.target.value)}
-            />
-            <TextField
-              size="small"
-              label="Label (optional)"
-              fullWidth
-              value={attachLabel}
-              onChange={(e) => setAttachLabel(e.target.value)}
-            />
-            <Stack direction="row" spacing={1}>
-              <Button
-                variant="contained"
-                size="small"
-                onClick={handleSaveAttachment}
-              >
-                Save
-              </Button>
-              <Button size="small" onClick={() => setShowAttachForm(false)}>
-                Cancel
-              </Button>
-            </Stack>
-          </Stack>
-        ) : (
-          <Button size="small" onClick={() => setShowAttachForm(true)}>
-            Add Attachment
-          </Button>
-        )}
       </Box>
 
       <UpdateStatusDialog
