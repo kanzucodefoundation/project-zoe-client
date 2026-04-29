@@ -15,6 +15,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { toast } from 'react-toastify';
 import {
   extractErrorMessageFromData,
   get,
@@ -186,6 +187,14 @@ const ContactForm = ({
     setSubmitting(true);
     onError?.('');
 
+    const isEditing = Boolean(contactId);
+    const successMessage = isEditing
+      ? 'Contact updated successfully'
+      : 'Contact created successfully';
+    const fallbackErrorMessage = isEditing
+      ? 'Failed to update contact. Please try again.'
+      : 'Failed to create contact. Please try again.';
+
     const submitData = {
       category: 'Person',
       person: {
@@ -220,23 +229,28 @@ const ContactForm = ({
         ? backendMessage
         : error?.message && !String(error.message).includes('status code')
         ? error.message
-        : 'Failed to update contact. Please try again.';
+        : fallbackErrorMessage;
 
       onError?.(errorMessage);
       handleError(error, response);
+    };
+
+    const handleSubmitSuccess = () => {
+      toast.success(successMessage);
+      onSave?.();
     };
 
     const apiCall = contactId
       ? patch(
           `${remoteRoutes.contacts}/${contactId}`,
           submitData,
-          onSave || (() => {}),
+          handleSubmitSuccess,
           handleSubmitError,
         )
       : post(
           remoteRoutes.contacts,
           submitData,
-          onSave || (() => {}),
+          handleSubmitSuccess,
           handleSubmitError,
         );
 
