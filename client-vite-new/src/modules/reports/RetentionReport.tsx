@@ -1,18 +1,86 @@
 import { useState } from 'react';
 import {
-  Container, Typography, Box, ToggleButtonGroup, ToggleButton,
-  Grid, Card, CardContent, Skeleton,
+  Container,
+  Typography,
+  Box,
+  ToggleButtonGroup,
+  ToggleButton,
+  Grid,
+  Card,
+  CardContent,
+  Skeleton,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from '@mui/material';
+import { Download as DownloadIcon } from '@mui/icons-material';
+import {
+  format,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+  subDays,
+} from 'date-fns';
+import * as XLSX from 'xlsx';
+import { toast } from 'react-toastify';
 import { useRetentionReport } from '../tasks/hooks';
+import type {
+  RetentionSummary,
+  RetentionMonthData,
+  RetentionReport,
+  RetentionWeekData,
+  RetentionWeekReport,
+} from '../../utils/types';
 
-type Window = 'month' | '90days' | 'ytd';
+type Window = 'week' | 'month' | '90days' | 'ytd';
 
-interface StatCard {
-  label: string;
-  key: keyof import('../../utils/types').RetentionSummary;
+const WINDOW_LABELS: Record<Window, string> = {
+  week: 'This Week',
+  month: 'This Month',
+  '90days': 'Last 90 Days',
+  ytd: 'Year to Date',
+};
+
+function getPeriodRange(window: Window) {
+  const today = new Date();
+
+  if (window === 'week') {
+    return {
+      label: WINDOW_LABELS[window],
+      from: format(startOfWeek(today, { weekStartsOn: 1 }), 'yyyy-MM-dd'),
+      to: format(today, 'yyyy-MM-dd'),
+    };
+  }
+
+  if (window === 'month') {
+    return {
+      label: WINDOW_LABELS[window],
+      from: format(startOfMonth(today), 'yyyy-MM-dd'),
+      to: format(today, 'yyyy-MM-dd'),
+    };
+  }
+
+  if (window === '90days') {
+    return {
+      label: WINDOW_LABELS[window],
+      from: format(subDays(today, 89), 'yyyy-MM-dd'),
+      to: format(today, 'yyyy-MM-dd'),
+    };
+  }
+
+  return {
+    label: WINDOW_LABELS[window],
+    from: format(startOfYear(today), 'yyyy-MM-dd'),
+    to: format(today, 'yyyy-MM-dd'),
+  };
 }
 
-const CARDS: StatCard[] = [
+const SUMMARY_CARDS: Array<{ label: string; key: keyof RetentionSummary }> = [
   { label: 'Recorded', key: 'recorded' },
   { label: 'Retained', key: 'retained' },
   { label: 'Joined Fellowship', key: 'joinedFellowship' },
@@ -20,50 +88,314 @@ const CARDS: StatCard[] = [
   { label: 'Baptised', key: 'baptised' },
 ];
 
+const MONTH_CARDS: Array<{ label: string; key: keyof RetentionMonthData }> = [
+  { label: 'New Contacts', key: 'totalNewContacts' },
+  { label: 'Successful Calls', key: 'successfulCallsMade' },
+  { label: 'Want to Join MC', key: 'wantToJoinMC' },
+  { label: 'Serving Team', key: 'servingTeam' },
+  { label: 'Tea / Hangout', key: 'teaHangout' },
+  { label: 'Baptism', key: 'baptism' },
+];
+
+const WEEK_CARDS: Array<{ label: string; key: keyof RetentionWeekData }> = [
+  { label: 'New Contacts', key: 'totalNewContacts' },
+  { label: 'Successful Calls', key: 'successfulCallsMade' },
+  { label: 'Want to Join MC', key: 'wantToJoinMC' },
+  { label: 'Serving Team', key: 'servingTeams' },
+  { label: 'Tea / Hangout', key: 'teaHangout' },
+  { label: 'Baptism', key: 'baptism' },
+];
+
+function isMonthReport(
+  data: RetentionSummary | RetentionReport | RetentionWeekReport,
+): data is RetentionReport {
+  return 'months' in data;
+}
+
+function isWeekReport(
+  data: RetentionSummary | RetentionReport | RetentionWeekReport,
+): data is RetentionWeekReport {
+  return 'weeks' in data;
+}
+
+function sumRows<T>(rows: T[], key: keyof T): number {
+  return rows.reduce((acc, r) => acc + (r[key] as number), 0);
+}
+
 export default function RetentionReport() {
   const [selectedWindow, setSelectedWindow] = useState<Window>('month');
   const { data, isLoading } = useRetentionReport(selectedWindow);
+  const selectedPeriod = getPeriodRange(selectedWindow);
+
+  const handleDownload = () => {
+    if (!data) {
+      toast.warning('No retention data to export');
+      return;
+    }
+
+    const dateStr = format(new Date(), 'yyyy-MM-dd');
+    const workbook = XLSX.utils.book_new();
+
+    if (isMonthReport(data)) {
+      const exportData = data.months.map((m) => ({
+        Month: m.monthName,
+        'New Contacts': m.totalNewContacts,
+        'Successful Calls': m.successfulCallsMade,
+        'Want to Join MC': m.wantToJoinMC,
+        'Serving Team': m.servingTeam,
+        'Tea / Hangout': m.teaHangout,
+        Baptism: m.baptism,
+      }));
+      XLSX.utils.book_append_sheet(
+        workbook,
+        XLSX.utils.json_to_sheet(exportData),
+        'Retention Report',
+      );
+    } else if (isWeekReport(data)) {
+      const exportData = data.weeks.map((w) => ({
+        Week: w.label,
+        'Week Start': w.weekStart,
+        'New Contacts': w.totalNewContacts,
+        'Successful Calls': w.successfulCallsMade,
+        'Want to Join MC': w.wantToJoinMC,
+        'Serving Team': w.servingTeams,
+        'Tea / Hangout': w.teaHangout,
+        Baptism: w.baptism,
+      }));
+      XLSX.utils.book_append_sheet(
+        workbook,
+        XLSX.utils.json_to_sheet(exportData),
+        'Retention Report',
+      );
+    } else {
+      const exportData = [
+        {
+          Period: selectedPeriod.label,
+          'Period Start': selectedPeriod.from,
+          'Period End': selectedPeriod.to,
+          Recorded: data.recorded,
+          Retained: data.retained,
+          'Joined Fellowship': data.joinedFellowship,
+          'Joined Serving Team': data.joinedServingTeam,
+          Baptised: data.baptised,
+        },
+      ];
+      XLSX.utils.book_append_sheet(
+        workbook,
+        XLSX.utils.json_to_sheet(exportData),
+        'Retention Report',
+      );
+    }
+
+    XLSX.writeFile(
+      workbook,
+      `retention_report_${selectedWindow}_${dateStr}.xlsx`,
+    );
+    toast.success('Retention report downloaded successfully');
+  };
+
+  const yearLabel =
+    data && (isMonthReport(data) || isWeekReport(data))
+      ? ` — ${data.year}`
+      : '';
 
   return (
     <Container maxWidth="lg">
-      <Box mb={3}>
-        <Typography variant="h4">Retention Report</Typography>
+      <Box
+        mb={3}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="flex-start"
+        gap={2}
+        flexWrap="wrap"
+      >
+        <Typography variant="h4">Retention Report{yearLabel}</Typography>
+        <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap">
+          <ToggleButtonGroup
+            exclusive
+            value={selectedWindow}
+            onChange={(_, val) => val && setSelectedWindow(val)}
+          >
+            <ToggleButton value="week">This Week</ToggleButton>
+            <ToggleButton value="month">This Month</ToggleButton>
+            <ToggleButton value="90days">Last 90 Days</ToggleButton>
+            <ToggleButton value="ytd">Year to Date</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
       </Box>
 
-      <Box mb={3}>
-        <ToggleButtonGroup
-          exclusive
-          value={selectedWindow}
-          onChange={(_, val) => val && setSelectedWindow(val)}
+      <Box
+        mb={3}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        gap={2}
+        flexWrap="wrap"
+      >
+        <Typography variant="body2" color="text.secondary">
+          {data && (isMonthReport(data) || isWeekReport(data))
+            ? WINDOW_LABELS[selectedWindow]
+            : `Period: ${selectedPeriod.from} to ${selectedPeriod.to}`}
+        </Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<DownloadIcon fontSize="small" />}
+          onClick={handleDownload}
+          disabled={isLoading || !data}
+          sx={{ textTransform: 'none' }}
         >
-          <ToggleButton value="month">This Month</ToggleButton>
-          <ToggleButton value="90days">Last 90 Days</ToggleButton>
-          <ToggleButton value="ytd">Year to Date</ToggleButton>
-        </ToggleButtonGroup>
+          Download Excel
+        </Button>
       </Box>
 
-      <Grid container spacing={3}>
-        {CARDS.map(({ label, key }) => (
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }} key={key}>
-            <Card sx={{ textAlign: 'center', p: 1 }}>
-              <CardContent>
-                {isLoading ? (
-                  <Box display="flex" justifyContent="center" mb={1}>
-                    <Skeleton variant="rectangular" width={60} height={60} />
-                  </Box>
-                ) : (
-                  <Typography variant="h3" fontWeight="bold">
-                    {data?.[key] ?? 0}
+      {/* Flat summary view: 90days / ytd */}
+      {(!data || (!isMonthReport(data) && !isWeekReport(data))) && (
+        <Grid container spacing={3}>
+          {SUMMARY_CARDS.map(({ label, key }) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }} key={key}>
+              <Card sx={{ textAlign: 'center', p: 1 }}>
+                <CardContent>
+                  {isLoading ? (
+                    <Box display="flex" justifyContent="center" mb={1}>
+                      <Skeleton variant="rectangular" width={60} height={60} />
+                    </Box>
+                  ) : (
+                    <Typography variant="h3" fontWeight="bold">
+                      {(data as RetentionSummary)?.[key] ?? 0}
+                    </Typography>
+                  )}
+                  <Typography variant="body2" color="text.secondary">
+                    {label}
                   </Typography>
-                )}
-                <Typography variant="body2" color="text.secondary">
-                  {label}
-                </Typography>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+
+      {/* Monthly view: totals cards + breakdown table */}
+      {data && isMonthReport(data) && (
+        <>
+          <Grid container spacing={3} mb={4}>
+            {MONTH_CARDS.map(({ label, key }) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={key}>
+                <Card sx={{ textAlign: 'center', p: 1 }}>
+                  <CardContent>
+                    {isLoading ? (
+                      <Box display="flex" justifyContent="center" mb={1}>
+                        <Skeleton
+                          variant="rectangular"
+                          width={60}
+                          height={60}
+                        />
+                      </Box>
+                    ) : (
+                      <Typography variant="h3" fontWeight="bold">
+                        {sumRows(data.months, key)}
+                      </Typography>
+                    )}
+                    <Typography variant="body2" color="text.secondary">
+                      {label}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
+
+          <TableContainer component={Paper} variant="outlined">
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <strong>Month</strong>
+                  </TableCell>
+                  {MONTH_CARDS.map(({ label }) => (
+                    <TableCell key={label} align="center">
+                      <strong>{label}</strong>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.months.map((m) => (
+                  <TableRow key={m.month} hover>
+                    <TableCell>{m.monthName}</TableCell>
+                    {MONTH_CARDS.map(({ key }) => (
+                      <TableCell key={key} align="center">
+                        {m[key] as number}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )}
+
+      {/* Weekly view: totals cards + breakdown table */}
+      {data && isWeekReport(data) && (
+        <>
+          <Grid container spacing={3} mb={4}>
+            {WEEK_CARDS.map(({ label, key }) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={key}>
+                <Card sx={{ textAlign: 'center', p: 1 }}>
+                  <CardContent>
+                    {isLoading ? (
+                      <Box display="flex" justifyContent="center" mb={1}>
+                        <Skeleton
+                          variant="rectangular"
+                          width={60}
+                          height={60}
+                        />
+                      </Box>
+                    ) : (
+                      <Typography variant="h3" fontWeight="bold">
+                        {sumRows(data.weeks, key)}
+                      </Typography>
+                    )}
+                    <Typography variant="body2" color="text.secondary">
+                      {label}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+
+          <TableContainer component={Paper} variant="outlined">
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <strong>Week</strong>
+                  </TableCell>
+                  {WEEK_CARDS.map(({ label }) => (
+                    <TableCell key={label} align="center">
+                      <strong>{label}</strong>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data.weeks.map((w) => (
+                  <TableRow key={w.weekStart} hover>
+                    <TableCell>{w.label}</TableCell>
+                    {WEEK_CARDS.map(({ key }) => (
+                      <TableCell key={key} align="center">
+                        {w[key] as number}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )}
     </Container>
   );
 }

@@ -1,7 +1,9 @@
 import axios, { AxiosError } from 'axios';
 import type { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
-import { AUTH_TOKEN_KEY } from '../data/constants';
+import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from '../data/constants';
+import { logout } from '../data/coreSlice';
+import store from '../data/store';
 
 export const getToken = (): string | null =>
   localStorage.getItem(AUTH_TOKEN_KEY);
@@ -23,11 +25,22 @@ const api = axios.create({
   paramsSerializer: { indexes: null },
 });
 
+const clearSession = () => {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+  store.dispatch(logout());
+};
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const token = getToken();
     if (token) {
+      if (isTokenExpired(token)) {
+        toast.error('Your session has expired. Please log in again.');
+        clearSession();
+        return Promise.reject(new Error('Token expired'));
+      }
       config.headers.Authorization = `Bearer ${token}`;
     }
     config.headers.Accept = 'application/json';
@@ -107,10 +120,8 @@ export const handleError = (err: AxiosError, _res?: AxiosResponse) => {
   const errorData = getErrorData(err);
 
   if (err.response?.status === 401 || err.response?.status === 403) {
-    toast.error('Authentication Error');
-    // Clear token and reload
-    localStorage.removeItem(AUTH_TOKEN_KEY);
-    window.location.reload();
+    toast.error('Your session has expired. Please log in again.');
+    clearSession();
   } else if (err.response?.status === 400) {
     const msg = extractErrorMessageFromData(errorData);
     toast.error(msg || defaultMessage);
