@@ -40,7 +40,7 @@ import {
   appPermissions,
 } from '../../data/constants';
 import type { RootState } from '../../data/store';
-import { hasAnyCapability } from '../../utils/permissions';
+import { canViewTasks, hasAnyCapability } from '../../utils/permissions';
 import ContactForm from './ContactForm';
 import ContactTasksTab from '../tasks/ContactTasksTab';
 import ContactActivityFeed from './ContactActivityFeed';
@@ -105,6 +105,7 @@ const ContactDetail = () => {
   const canViewContactEditActions = hasAnyCapability(user, [
     appPermissions.roleCrmEdit,
   ]);
+  const canViewTaskTab = canViewTasks(user);
 
   useEffect(() => {
     if (contactId) {
@@ -219,7 +220,7 @@ const ContactDetail = () => {
                   height: 120,
                   mx: 'auto',
                   mb: 2,
-                  bgcolor: 'primary.main',
+                  bgcolor: 'primary.paper',
                   fontSize: '2rem',
                 }}
               >
@@ -268,7 +269,7 @@ const ContactDetail = () => {
           <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
             <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
               <Tab label="Profile" />
-              <Tab label="Tasks" />
+              {canViewTaskTab ? <Tab label="Tasks" /> : null}
               <Tab label="Activity" />
             </Tabs>
           </Box>
@@ -414,10 +415,14 @@ const ContactDetail = () => {
           )}
 
           {/* Tasks Tab */}
-          {activeTab === 1 && <ContactTasksTab contactId={contact.id} />}
+          {canViewTaskTab && activeTab === 1 && (
+            <ContactTasksTab contactId={contact.id} />
+          )}
 
           {/* Activity Tab */}
-          {activeTab === 2 && <ContactActivityFeed contactId={contact.id} />}
+          {activeTab === (canViewTaskTab ? 2 : 1) && (
+            <ContactActivityFeed contactId={contact.id} />
+          )}
         </Grid>
       </Grid>
 

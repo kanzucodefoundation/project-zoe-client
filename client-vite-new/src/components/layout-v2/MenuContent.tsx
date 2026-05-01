@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -31,7 +31,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
 import { localRoutes, appPermissions } from '../../data/constants';
-import { hasAnyCapability } from '../../utils/permissions';
+import {
+  attendanceViewCapabilities,
+  hasAnyCapability,
+  taskViewCapabilities,
+} from '../../utils/permissions';
 
 interface NavItem {
   name: string;
@@ -81,7 +85,7 @@ const navItems: NavItem[] = [
     name: 'Attendance',
     icon: <HowToRegRoundedIcon />,
     path: localRoutes.attendance,
-    requiredRoles: [appPermissions.roleEventView, appPermissions.roleEventEdit],
+    requiredRoles: attendanceViewCapabilities,
     children: [
       {
         name: 'Check-In',
@@ -104,6 +108,7 @@ const navItems: NavItem[] = [
     name: 'Tasks',
     icon: <ChecklistRoundedIcon />,
     path: localRoutes.tasks,
+    requiredRoles: taskViewCapabilities,
     children: [
       {
         name: 'Task Queue',
@@ -189,10 +194,10 @@ export default function MenuContent() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state: RootState) => state.core);
-  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
 
   const handleMenuToggle = (menuName: string) => {
-    setOpenMenus((prev) => ({ ...prev, [menuName]: !prev[menuName] }));
+    setExpandedMenu((current) => (current === menuName ? null : menuName));
   };
 
   const handleNavigate = (path: string) => {
@@ -231,6 +236,16 @@ export default function MenuContent() {
 
   const activePath = getActivePath(filteredNavItems);
 
+  const hasActiveChild = (item: NavItem): boolean =>
+    item.children?.some((child) => activePath === child.path) ?? false;
+
+  const activeParentName =
+    filteredNavItems.find((item) => hasActiveChild(item))?.name ?? null;
+
+  useEffect(() => {
+    setExpandedMenu(activeParentName);
+  }, [activeParentName]);
+
   const isSelected = (item: NavItem): boolean => {
     if (item.children) {
       return (
@@ -248,8 +263,7 @@ export default function MenuContent() {
 
     if (item.children) {
       const isOpen =
-        openMenus[item.name] ||
-        item.children.some((child) => isSelected(child));
+        expandedMenu === item.name || activeParentName === item.name;
 
       return (
         <div key={item.name}>
@@ -271,7 +285,7 @@ export default function MenuContent() {
             >
               <ListItemIcon
                 sx={{
-                  color: selected ? 'primary.main' : 'inherit',
+                  color: selected ? 'primary.paper' : 'inherit',
                   minWidth: 40,
                   '& svg': {
                     fontSize: isNested ? 20 : 24,

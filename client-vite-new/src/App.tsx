@@ -17,7 +17,11 @@ import {
   appPermissions,
 } from './data/constants';
 import { isTokenExpired } from './utils/ajax';
-import { hasAnyCapability } from './utils/permissions';
+import {
+  attendanceViewCapabilities,
+  hasAnyCapability,
+  taskViewCapabilities,
+} from './utils/permissions';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Import actual components
@@ -225,8 +229,20 @@ function App() {
                 appPermissions.roleFinanceEdit,
               ])}
             />
-            <Route path={localRoutes.tasks} element={<TaskQueue />} />
-            <Route path={localRoutes.tasksMine} element={<MyTasks />} />
+            <Route
+              path={localRoutes.tasks}
+              element={renderProtectedElement(
+                <TaskQueue />,
+                taskViewCapabilities,
+              )}
+            />
+            <Route
+              path={localRoutes.tasksMine}
+              element={renderProtectedElement(
+                <MyTasks />,
+                taskViewCapabilities,
+              )}
+            />
             <Route
               path={localRoutes.retentionReport}
               element={renderProtectedElement(<RetentionReport />, [
@@ -242,24 +258,24 @@ function App() {
             />
             <Route
               path={localRoutes.attendance}
-              element={renderProtectedElement(<CheckInScreen />, [
-                appPermissions.roleEventView,
-                appPermissions.roleEventEdit,
-              ])}
+              element={renderProtectedElement(
+                <CheckInScreen />,
+                attendanceViewCapabilities,
+              )}
             />
             <Route
               path={localRoutes.attendanceSchedules}
-              element={renderProtectedElement(<ServiceSchedules />, [
-                appPermissions.roleEventView,
-                appPermissions.roleEventEdit,
-              ])}
+              element={renderProtectedElement(
+                <ServiceSchedules />,
+                attendanceViewCapabilities,
+              )}
             />
             <Route
               path={localRoutes.attendanceHistory}
-              element={renderProtectedElement(<AttendanceHistory />, [
-                appPermissions.roleEventView,
-                appPermissions.roleEventEdit,
-              ])}
+              element={renderProtectedElement(
+                <AttendanceHistory />,
+                attendanceViewCapabilities,
+              )}
             />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}

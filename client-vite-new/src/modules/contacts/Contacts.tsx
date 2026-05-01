@@ -325,7 +325,7 @@ const Contacts = () => {
                         sx={{
                           width: 40,
                           height: 40,
-                          bgcolor: 'primary.main',
+                          bgcolor: 'primary.paper',
                           fontSize: '14px',
                         }}
                       >

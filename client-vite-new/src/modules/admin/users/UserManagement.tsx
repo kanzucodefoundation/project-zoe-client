@@ -657,7 +657,7 @@ const UserManagement = () => {
                     <Box display="flex" alignItems="center" gap={2}>
                       <Avatar
                         src={currentUser.avatar || undefined}
-                        sx={{ bgcolor: 'primary.main' }}
+                        sx={{ bgcolor: 'primary.paper' }}
                       >
                         {getInitials(currentUser)}
                       </Avatar>

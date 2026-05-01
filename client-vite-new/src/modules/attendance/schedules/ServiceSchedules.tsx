@@ -15,11 +15,14 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { useQuery } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
 import { fetchLocations } from '../api';
 import { fetchSchedules } from './api';
 import ScheduleCard from './ScheduleCard';
 import ScheduleFormDialog from './ScheduleFormDialog';
 import type { ServiceSchedule, ServiceType } from './types';
+import type { RootState } from '../../../data/store';
+import { canEditAttendance } from '../../../utils/permissions';
 
 function SchedulesSkeleton() {
   return (
@@ -34,10 +37,12 @@ function SchedulesSkeleton() {
 }
 
 export default function ServiceSchedules() {
+  const user = useSelector((state: RootState) => state.core.user);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<ServiceSchedule | null>(null);
   const [filterLocationId, setFilterLocationId] = useState<number | null>(null);
   const [filterType, setFilterType] = useState<ServiceType | 'all'>('all');
+  const canEditAttendanceData = canEditAttendance(user);
 
   const { data: locations = [] } = useQuery({
     queryKey: ['locations'],
@@ -62,11 +67,13 @@ export default function ServiceSchedules() {
       : schedules.filter((s) => s.serviceType === filterType);
 
   const handleEdit = (schedule: ServiceSchedule) => {
+    if (!canEditAttendanceData) return;
     setEditing(schedule);
     setDialogOpen(true);
   };
 
   const handleAdd = () => {
+    if (!canEditAttendanceData) return;
     setEditing(null);
     setDialogOpen(true);
   };
@@ -96,15 +103,23 @@ export default function ServiceSchedules() {
               auto-created from active schedules.
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            startIcon={<AddRoundedIcon />}
-            onClick={handleAdd}
-            sx={{ minHeight: 44 }}
-          >
-            Add Schedule
-          </Button>
+          {canEditAttendanceData ? (
+            <Button
+              variant="contained"
+              startIcon={<AddRoundedIcon />}
+              onClick={handleAdd}
+              sx={{ minHeight: 44 }}
+            >
+              Add Schedule
+            </Button>
+          ) : null}
         </Stack>
+
+        {!canEditAttendanceData ? (
+          <Alert severity="info">
+            Schedules are visible, but editing is disabled for your account.
+          </Alert>
+        ) : null}
 
         {/* Filters */}
         <Stack direction="row" spacing={2} flexWrap="wrap">
@@ -162,15 +177,17 @@ export default function ServiceSchedules() {
                 ? 'Try clearing the filters.'
                 : 'Create your first service schedule to get started.'}
             </Typography>
-            {!filterLocationId && filterType === 'all' && (
-              <Button
-                variant="outlined"
-                startIcon={<AddRoundedIcon />}
-                onClick={handleAdd}
-              >
-                Add Schedule
-              </Button>
-            )}
+            {canEditAttendanceData &&
+              !filterLocationId &&
+              filterType === 'all' && (
+                <Button
+                  variant="outlined"
+                  startIcon={<AddRoundedIcon />}
+                  onClick={handleAdd}
+                >
+                  Add Schedule
+                </Button>
+              )}
           </Stack>
         )}
 
@@ -178,18 +195,24 @@ export default function ServiceSchedules() {
           <Grid container spacing={2}>
             {visible.map((schedule) => (
               <Grid key={schedule.id} size={{ xs: 12, sm: 6, lg: 4 }}>
-                <ScheduleCard schedule={schedule} onEdit={handleEdit} />
+                <ScheduleCard
+                  schedule={schedule}
+                  onEdit={handleEdit}
+                  canEdit={canEditAttendanceData}
+                />
               </Grid>
             ))}
           </Grid>
         )}
       </Stack>
 
-      <ScheduleFormDialog
-        open={dialogOpen}
-        onClose={handleClose}
-        editing={editing}
-      />
+      {canEditAttendanceData ? (
+        <ScheduleFormDialog
+          open={dialogOpen}
+          onClose={handleClose}
+          editing={editing}
+        />
+      ) : null}
     </Container>
   );
 }

@@ -67,7 +67,7 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
             to={`${localRoutes.contacts}/${task.contact.id}`}
             onClick={(e) => e.stopPropagation()}
             sx={{
-              color: 'primary.main',
+              color: 'primary.paper',
               textDecoration: 'none',
               display: 'block',
               mb: 0.5,
@@ -83,6 +83,7 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
         </Typography>
 
         <Stack direction="row" alignItems="center" spacing={1}>
+          Task assigned To <span />{' '}
           {task.assignedTo ? (
             <>
               <Avatar
@@ -90,7 +91,7 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
                   width: 30,
                   height: 30,
                   fontSize: '0.65rem',
-                  bgcolor: 'primary.light',
+                  bgcolor: 'primary.paper',
                 }}
               >
                 {getInitials(task.assignedTo)}

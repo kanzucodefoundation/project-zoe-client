@@ -1,20 +1,36 @@
 import { useState } from 'react';
 import { Box, Button, Typography, CircularProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { useSelector } from 'react-redux';
 import { useContactTasks } from './hooks';
 import TaskCard from './TaskCard';
 import TaskDrawer from './TaskDrawer';
 import CreateTaskDialog from './CreateTaskDialog';
 import type { Task } from '../../utils/types';
+import type { RootState } from '../../data/store';
+import { canEditTasks, canViewTasks } from '../../utils/permissions';
 
 interface Props {
   contactId: number;
 }
 
 export default function ContactTasksTab({ contactId }: Props) {
+  const user = useSelector((state: RootState) => state.core.user);
   const { data: tasks = [], isLoading } = useContactTasks(contactId);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+  const canViewTaskData = canViewTasks(user);
+  const canEditTaskData = canEditTasks(user);
+
+  if (!canViewTaskData) {
+    return (
+      <Box textAlign="center" py={4}>
+        <Typography color="text.secondary">
+          You do not have permission to view tasks.
+        </Typography>
+      </Box>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -26,11 +42,17 @@ export default function ContactTasksTab({ contactId }: Props) {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="flex-end" mb={2}>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreateOpen(true)}>
-          New Task
-        </Button>
-      </Box>
+      {canEditTaskData ? (
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateOpen(true)}
+          >
+            New Task
+          </Button>
+        </Box>
+      ) : null}
 
       {tasks.length === 0 ? (
         <Box textAlign="center" py={4}>
@@ -38,7 +60,12 @@ export default function ContactTasksTab({ contactId }: Props) {
         </Box>
       ) : (
         tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onOpen={setSelectedTask} showContact={false} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            onOpen={setSelectedTask}
+            showContact={false}
+          />
         ))
       )}
 
@@ -49,12 +76,14 @@ export default function ContactTasksTab({ contactId }: Props) {
         contactId={contactId}
       />
 
-      <CreateTaskDialog
-        open={createOpen}
-        contactId={contactId}
-        onClose={() => setCreateOpen(false)}
-        onSuccess={() => setCreateOpen(false)}
-      />
+      {canEditTaskData ? (
+        <CreateTaskDialog
+          open={createOpen}
+          contactId={contactId}
+          onClose={() => setCreateOpen(false)}
+          onSuccess={() => setCreateOpen(false)}
+        />
+      ) : null}
     </Box>
   );
 }

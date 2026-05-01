@@ -29,6 +29,12 @@ export const appPermissions = {
 
   roleFinanceView: 'FINANCE_VIEW',
   roleFinanceEdit: 'FINANCE_EDIT',
+
+  roleTaskView: 'TASK_VIEW',
+  roleTaskEdit: 'TASK_EDIT',
+
+  roleAttendanceView: 'ATTENDANCE_VIEW',
+  roleAttendanceEdit: 'ATTENDANCE_EDIT',
 };
 
 export const permissionsList = Object.values(appPermissions);

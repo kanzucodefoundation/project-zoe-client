@@ -1,3 +1,5 @@
+import { appPermissions } from '../data/constants';
+
 type UserWithCapabilities =
   | {
       permissions?: string[] | null;
@@ -27,3 +29,29 @@ export const hasAnyCapability = (
     userCapabilities.has(capability),
   );
 };
+
+export const taskViewCapabilities = [
+  appPermissions.roleTaskView,
+  appPermissions.roleTaskEdit,
+];
+
+export const taskEditCapabilities = [appPermissions.roleTaskEdit];
+
+export const attendanceViewCapabilities = [
+  appPermissions.roleAttendanceView,
+  appPermissions.roleAttendanceEdit,
+];
+
+export const attendanceEditCapabilities = [appPermissions.roleAttendanceEdit];
+
+export const canViewTasks = (user: UserWithCapabilities) =>
+  hasAnyCapability(user, taskViewCapabilities);
+
+export const canEditTasks = (user: UserWithCapabilities) =>
+  hasAnyCapability(user, taskEditCapabilities);
+
+export const canViewAttendance = (user: UserWithCapabilities) =>
+  hasAnyCapability(user, attendanceViewCapabilities);
+
+export const canEditAttendance = (user: UserWithCapabilities) =>
+  hasAnyCapability(user, attendanceEditCapabilities);

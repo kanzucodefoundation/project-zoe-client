@@ -19,18 +19,24 @@ import type { ServiceSchedule } from './types';
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const SERVICE_TYPE_COLOR: Record<string, 'primary' | 'secondary' | 'warning'> = {
-  Sunday: 'primary',
-  Midweek: 'secondary',
-  Special: 'warning',
-};
+const SERVICE_TYPE_COLOR: Record<string, 'primary' | 'secondary' | 'warning'> =
+  {
+    Sunday: 'primary',
+    Midweek: 'secondary',
+    Special: 'warning',
+  };
 
 interface Props {
+  canEdit?: boolean;
   schedule: ServiceSchedule;
   onEdit: (s: ServiceSchedule) => void;
 }
 
-export default function ScheduleCard({ schedule, onEdit }: Props) {
+export default function ScheduleCard({
+  schedule,
+  onEdit,
+  canEdit = true,
+}: Props) {
   const queryClient = useQueryClient();
 
   const toggleMutation = useMutation({
@@ -69,7 +75,11 @@ export default function ScheduleCard({ schedule, onEdit }: Props) {
       }}
     >
       <CardContent sx={{ pb: 1 }}>
-        <Stack direction="row" alignItems="flex-start" justifyContent="space-between">
+        <Stack
+          direction="row"
+          alignItems="flex-start"
+          justifyContent="space-between"
+        >
           <Box>
             <Typography variant="h6" fontWeight={600} gutterBottom={false}>
               {schedule.name}
@@ -89,7 +99,10 @@ export default function ScheduleCard({ schedule, onEdit }: Props) {
 
         <Stack spacing={0.75} sx={{ mt: 1.5 }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <AccessTimeRoundedIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+            <AccessTimeRoundedIcon
+              fontSize="small"
+              sx={{ color: 'text.secondary' }}
+            />
             <Typography variant="body2">
               {formatTime(schedule.startTime)} &middot;{' '}
               <Box component="span" sx={{ textTransform: 'capitalize' }}>
@@ -99,13 +112,19 @@ export default function ScheduleCard({ schedule, onEdit }: Props) {
           </Stack>
 
           <Stack direction="row" spacing={1} alignItems="center">
-            <EventRepeatRoundedIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+            <EventRepeatRoundedIcon
+              fontSize="small"
+              sx={{ color: 'text.secondary' }}
+            />
             <Typography variant="body2">{activeDays}</Typography>
           </Stack>
 
           {schedule.metaData?.expectedAttendance && (
             <Stack direction="row" spacing={1} alignItems="center">
-              <PeopleRoundedIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+              <PeopleRoundedIcon
+                fontSize="small"
+                sx={{ color: 'text.secondary' }}
+              />
               <Typography variant="body2">
                 Expected: {schedule.metaData.expectedAttendance}
               </Typography>
@@ -125,36 +144,58 @@ export default function ScheduleCard({ schedule, onEdit }: Props) {
           schedule.metaData?.livestreamEnabled) && (
           <Box sx={{ mt: 1, display: 'flex', gap: 0.5 }}>
             {schedule.metaData.hasChildrensProgram && (
-              <Chip label="Children's program" size="small" color="info" variant="outlined" />
+              <Chip
+                label="Children's program"
+                size="small"
+                color="info"
+                variant="outlined"
+              />
             )}
             {schedule.metaData.livestreamEnabled && (
-              <Chip label="Livestream" size="small" color="success" variant="outlined" />
+              <Chip
+                label="Livestream"
+                size="small"
+                color="success"
+                variant="outlined"
+              />
             )}
           </Box>
         )}
       </CardContent>
 
       <CardActions sx={{ justifyContent: 'space-between', px: 2, pt: 0 }}>
-        <Tooltip title={schedule.isActive ? 'Deactivate' : 'Activate'}>
-          <Stack direction="row" alignItems="center" spacing={0.5}>
-            <Switch
-              checked={schedule.isActive}
-              onChange={(e) => toggleMutation.mutate(e.target.checked)}
-              disabled={toggleMutation.isPending}
-              color="success"
-              size="small"
-            />
-            <Typography variant="caption" color="text.secondary">
-              {schedule.isActive ? 'Active' : 'Inactive'}
-            </Typography>
-          </Stack>
-        </Tooltip>
+        {canEdit ? (
+          <Tooltip title={schedule.isActive ? 'Deactivate' : 'Activate'}>
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <Switch
+                checked={schedule.isActive}
+                onChange={(e) => toggleMutation.mutate(e.target.checked)}
+                disabled={toggleMutation.isPending}
+                color="success"
+                size="small"
+              />
+              <Typography variant="caption" color="text.secondary">
+                {schedule.isActive ? 'Active' : 'Inactive'}
+              </Typography>
+            </Stack>
+          </Tooltip>
+        ) : (
+          <Typography variant="caption" color="text.secondary">
+            {schedule.isActive ? 'Active' : 'Inactive'}
+          </Typography>
+        )}
 
-        <Tooltip title="Edit">
-          <IconButton size="small" onClick={() => onEdit(schedule)} aria-label="Edit schedule">
-            <EditRoundedIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+        {canEdit ? (
+          <Tooltip title="Edit">
+            <IconButton
+              size="small"
+              onClick={() => onEdit(schedule)}
+              aria-label="Edit schedule"
+            >
+              <EditRoundedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        ) : null}
       </CardActions>
     </Card>
   );

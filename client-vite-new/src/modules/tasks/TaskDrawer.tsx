@@ -16,6 +16,7 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import { useSelector } from 'react-redux';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -31,6 +32,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { taskKeys } from './hooks';
 import ajax from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
+import type { RootState } from '../../data/store';
+import { canEditTasks } from '../../utils/permissions';
 
 dayjs.extend(relativeTime);
 
@@ -58,6 +61,7 @@ export default function TaskDrawer({
   onTaskUpdated,
   contactId,
 }: Props) {
+  const user = useSelector((state: RootState) => state.core.user);
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [updateStatusOpen, setUpdateStatusOpen] = useState(false);
@@ -97,6 +101,7 @@ export default function TaskDrawer({
   if (!localTask) return null;
 
   const isClosed = CLOSED_STATUSES.includes(localTask.status);
+  const canEditTaskData = canEditTasks(user);
 
   const handleSendComment = () => {
     if (!comment.trim()) return;
@@ -201,7 +206,7 @@ export default function TaskDrawer({
               <Typography variant="body2" color="text.secondary">
                 Closed
               </Typography>
-            ) : (
+            ) : canEditTaskData ? (
               <Button
                 size="small"
                 variant="outlined"
@@ -210,6 +215,10 @@ export default function TaskDrawer({
               >
                 Update Status
               </Button>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                Read only
+              </Typography>
             )}
           </Stack>
         </Box>
@@ -228,9 +237,9 @@ export default function TaskDrawer({
             options={users}
             getOptionLabel={(u) => u.fullName}
             value={users.find((u) => u.id === localTask.assignedTo?.id) ?? null}
-            disabled={isClosed}
+            disabled={isClosed || !canEditTaskData}
             onChange={(_, val) => {
-              if (val) {
+              if (val && canEditTaskData) {
                 reassign.mutate({ id: localTask.id, assignedToId: val.id });
               }
             }}
@@ -253,6 +262,7 @@ export default function TaskDrawer({
           <DatePicker
             value={localTask.dueAt ? dayjs(localTask.dueAt) : null}
             onChange={async (val) => {
+              if (!canEditTaskData) return;
               const dueAt = val ? dayjs(val).toISOString() : null;
               try {
                 const updated = await taskApi.update(localTask.id, { dueAt });
@@ -262,7 +272,7 @@ export default function TaskDrawer({
                 // error handled by api
               }
             }}
-            disabled={isClosed}
+            disabled={isClosed || !canEditTaskData}
             slotProps={{ textField: { size: 'small', fullWidth: true } }}
           />
         </Box>
@@ -304,37 +314,39 @@ export default function TaskDrawer({
               ))}
             </List>
           )}
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={1}
-            mt={1}
-            alignItems={{ xs: 'stretch', sm: 'flex-start' }}
-          >
-            <TextField
-              size="small"
-              multiline
-              fullWidth
-              placeholder="Add a comment…"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendComment();
-                }
-              }}
-            />
-            <Button
-              variant="contained"
-              endIcon={<SendIcon />}
-              onClick={handleSendComment}
-              disabled={addComment.isPending || !comment.trim()}
-              fullWidth={isPhone}
-              sx={{ alignSelf: { xs: 'stretch', sm: 'flex-start' } }}
+          {canEditTaskData ? (
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={1}
+              mt={1}
+              alignItems={{ xs: 'stretch', sm: 'flex-start' }}
             >
-              Send
-            </Button>
-          </Stack>
+              <TextField
+                size="small"
+                multiline
+                fullWidth
+                placeholder="Add a comment…"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendComment();
+                  }
+                }}
+              />
+              <Button
+                variant="contained"
+                endIcon={<SendIcon />}
+                onClick={handleSendComment}
+                disabled={addComment.isPending || !comment.trim()}
+                fullWidth={isPhone}
+                sx={{ alignSelf: { xs: 'stretch', sm: 'flex-start' } }}
+              >
+                Send
+              </Button>
+            </Stack>
+          ) : null}
         </Box>
 
         <Divider sx={{ mb: 2 }} />
@@ -380,49 +392,51 @@ export default function TaskDrawer({
               ),
             )}
           </Box>
-          {showAttachForm ? (
-            <Stack spacing={1}>
-              <TextField
-                size="small"
-                label="URL"
-                fullWidth
-                value={attachUrl}
-                onChange={(e) => setAttachUrl(e.target.value)}
-              />
-              <TextField
-                size="small"
-                label="Label (optional)"
-                fullWidth
-                value={attachLabel}
-                onChange={(e) => setAttachLabel(e.target.value)}
-              />
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
-                <Button
-                  variant="contained"
+          {canEditTaskData ? (
+            showAttachForm ? (
+              <Stack spacing={1}>
+                <TextField
                   size="small"
-                  fullWidth={isPhone}
-                  onClick={handleSaveAttachment}
-                >
-                  Save
-                </Button>
-                <Button
+                  label="URL"
+                  fullWidth
+                  value={attachUrl}
+                  onChange={(e) => setAttachUrl(e.target.value)}
+                />
+                <TextField
                   size="small"
-                  fullWidth={isPhone}
-                  onClick={() => setShowAttachForm(false)}
-                >
-                  Cancel
-                </Button>
+                  label="Label (optional)"
+                  fullWidth
+                  value={attachLabel}
+                  onChange={(e) => setAttachLabel(e.target.value)}
+                />
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    fullWidth={isPhone}
+                    onClick={handleSaveAttachment}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    size="small"
+                    fullWidth={isPhone}
+                    onClick={() => setShowAttachForm(false)}
+                  >
+                    Cancel
+                  </Button>
+                </Stack>
               </Stack>
-            </Stack>
-          ) : (
-            <Button
-              size="small"
-              fullWidth={isPhone}
-              onClick={() => setShowAttachForm(true)}
-            >
-              Add Attachment
-            </Button>
-          )}
+            ) : (
+              <Button
+                size="small"
+                fullWidth={isPhone}
+                onClick={() => setShowAttachForm(true)}
+              >
+                Add Attachment
+              </Button>
+            )
+          ) : null}
         </Box>
       </Box>
 
