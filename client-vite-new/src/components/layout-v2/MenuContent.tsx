@@ -204,18 +204,52 @@ export default function MenuContent() {
     hasAnyCapability(user, item.requiredRoles),
   );
 
-  const isSelected = (path: string) => {
-    return (
-      location.pathname === path || location.pathname.startsWith(path + '/')
-    );
+  const matchesPath = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
+
+  const getActivePath = (items: NavItem[]): string | null => {
+    let activePath: string | null = null;
+
+    const visit = (entries: NavItem[]) => {
+      entries.forEach((entry) => {
+        if (
+          matchesPath(entry.path) &&
+          (!activePath || entry.path.length > activePath.length)
+        ) {
+          activePath = entry.path;
+        }
+
+        if (entry.children) {
+          visit(entry.children);
+        }
+      });
+    };
+
+    visit(items);
+    return activePath;
+  };
+
+  const activePath = getActivePath(filteredNavItems);
+
+  const isSelected = (item: NavItem): boolean => {
+    if (item.children) {
+      return (
+        item.children.some((child) => isSelected(child)) ||
+        activePath === item.path
+      );
+    }
+
+    return activePath === item.path;
   };
 
   const renderNavItem = (item: NavItem, level = 0) => {
-    const selected = isSelected(item.path);
+    const selected = isSelected(item);
     const isNested = level > 0;
 
     if (item.children) {
-      const isOpen = openMenus[item.name] || selected;
+      const isOpen =
+        openMenus[item.name] ||
+        item.children.some((child) => isSelected(child));
 
       return (
         <div key={item.name}>

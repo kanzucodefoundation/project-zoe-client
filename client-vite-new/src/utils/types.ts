@@ -1,4 +1,4 @@
-export type $TsFixMe = any
+export type $TsFixMe = any;
 
 // ─── Tasks ────────────────────────────────────────────────────────────────────
 
@@ -21,15 +21,13 @@ export const TaskStatus = {
 } as const;
 export type TaskStatus = typeof TaskStatus[keyof typeof TaskStatus];
 
-export const CLOSED_STATUSES: TaskStatus[] = [
-  TaskStatus.DONE,
-];
+export const CLOSED_STATUSES: TaskStatus[] = [TaskStatus.DONE];
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {
   [TaskStatus.TODO]: 'To Do',
   [TaskStatus.IN_PROGRESS]: 'In Progress',
   [TaskStatus.DONE]: 'Done',
-  [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Matched to Fellowship',
+  [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Tea Hangout - Matched to Fellowship',
   [TaskStatus.ATTENDED_FELLOWSHIP]: 'Attended Fellowship',
   [TaskStatus.JOINED_SERVING_TEAM]: 'Joined Serving Team',
   [TaskStatus.GOT_BAPTISED]: 'Got Baptised',
@@ -110,6 +108,38 @@ export interface RetentionSummary {
   joinedFellowship: number;
   joinedServingTeam: number;
   baptised: number;
+}
+
+export interface RetentionMonthData {
+  month: number;
+  monthName: string;
+  totalNewContacts: number;
+  successfulCallsMade: number;
+  wantToJoinMC: number;
+  servingTeam: number;
+  teaHangout: number;
+  baptism: number;
+}
+
+export interface RetentionReport {
+  year: number;
+  months: RetentionMonthData[];
+}
+
+export interface RetentionWeekData {
+  weekStart: string;
+  label: string;
+  totalNewContacts: number;
+  successfulCallsMade: number;
+  wantToJoinMC: number;
+  servingTeams: number;
+  teaHangout: number;
+  baptism: number;
+}
+
+export interface RetentionWeekReport {
+  year: number;
+  weeks: RetentionWeekData[];
 }
 
 export interface TaskFilters {

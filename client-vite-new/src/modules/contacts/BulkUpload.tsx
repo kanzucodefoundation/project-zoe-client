@@ -190,7 +190,9 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
       ? 'Upload Contacts'
       : mode === 'guests'
       ? 'Upload Guests'
-      : 'Upload Believers';
+      : mode === 'believers'
+      ? 'Upload Believers'
+      : 'Upload Red Zone ';
 
   return (
     <Box>
@@ -209,6 +211,7 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
         <ToggleButton value="contacts">Contacts</ToggleButton>
         <ToggleButton value="guests">First-time Guests</ToggleButton>
         <ToggleButton value="believers">New Believers</ToggleButton>
+        <ToggleButton value="redzone">Red Zone</ToggleButton>
       </ToggleButtonGroup>
 
       <Typography variant="body2" color="text.secondary" paragraph>

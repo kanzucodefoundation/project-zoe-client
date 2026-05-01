@@ -24,7 +24,9 @@ export function useAllTasks(filters: TaskFilters) {
   });
 }
 
-export function useRetentionReport(window: 'month' | '90days' | 'ytd') {
+export function useRetentionReport(
+  window: 'week' | 'month' | '90days' | 'ytd',
+) {
   return useQuery({
     queryKey: taskKeys.retentionReport(window),
     queryFn: () => taskApi.getRetentionReport(window),
@@ -43,7 +45,8 @@ export function useCreateTask(contactId?: number) {
   return useMutation({
     mutationFn: taskApi.create,
     onSuccess: () => {
-      if (contactId) qc.invalidateQueries({ queryKey: taskKeys.forContact(contactId) });
+      if (contactId)
+        qc.invalidateQueries({ queryKey: taskKeys.forContact(contactId) });
       qc.invalidateQueries({ queryKey: ['tasks', 'all'] });
       toast.success('Task created');
     },
@@ -57,9 +60,11 @@ export function useUpdateTaskStatus(contactId?: number) {
     mutationFn: ({ id, data }: { id: number; data: Record<string, any> }) =>
       taskApi.updateStatus(id, data),
     onSuccess: () => {
-      if (contactId) qc.invalidateQueries({ queryKey: taskKeys.forContact(contactId) });
+      if (contactId)
+        qc.invalidateQueries({ queryKey: taskKeys.forContact(contactId) });
       qc.invalidateQueries({ queryKey: ['tasks', 'all'] });
-      if (contactId) qc.invalidateQueries({ queryKey: taskKeys.activity(contactId) });
+      if (contactId)
+        qc.invalidateQueries({ queryKey: taskKeys.activity(contactId) });
       toast.success('Task updated');
     },
     onError: () => toast.error('Failed to update task'),
@@ -84,7 +89,8 @@ export function useAddComment(taskId: number, contactId?: number) {
   return useMutation({
     mutationFn: (body: string) => taskApi.addComment(taskId, body),
     onSuccess: () => {
-      if (contactId) qc.invalidateQueries({ queryKey: taskKeys.forContact(contactId) });
+      if (contactId)
+        qc.invalidateQueries({ queryKey: taskKeys.forContact(contactId) });
       qc.invalidateQueries({ queryKey: ['tasks', 'all'] });
     },
     onError: () => toast.error('Failed to add comment'),
