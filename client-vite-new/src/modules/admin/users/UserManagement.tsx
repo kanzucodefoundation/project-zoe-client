@@ -569,7 +569,7 @@ const UserManagement = () => {
   };
 
   const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString();
+    new Date(dateString).toLocaleString();
 
   const isRoleFormValid =
     roleFormData.role.trim().length > 0 &&
