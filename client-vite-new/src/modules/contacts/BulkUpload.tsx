@@ -38,7 +38,7 @@ interface BulkUploadSummary {
   errors: BulkRowResult[];
 }
 
-type UploadMode = 'contacts' | 'guests' | 'believers';
+type UploadMode = 'contacts' | 'guests' | 'believers' | 'redzone';
 
 interface BulkUploadProps {
   onComplete?: () => void;
@@ -56,6 +56,7 @@ interface ContactsUploadResult {
 interface ServiceUploadResult {
   type: 'service';
   summary: BulkUploadSummary;
+  error?: string;
 }
 
 type UploadResult = ContactsUploadResult | ServiceUploadResult;
@@ -67,6 +68,21 @@ const TEMPLATES: Record<UploadMode, string> = {
     'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You,Church Location,Service Date',
   believers:
     'First Name,Last Name,Phone,Email,Address,Led to Christ By,Led to Christ On,Notes',
+  redzone: 'First Name,Last Name,Phone,Email,Gender,Notes,Church Location',
+};
+
+const UPLOAD_LABELS: Record<UploadMode, string> = {
+  contacts: 'Upload Contacts',
+  guests: 'Upload Guests',
+  believers: 'Upload Believers',
+  redzone: 'Upload Red Zone',
+};
+
+const EMPTY_SERVICE_SUMMARY: BulkUploadSummary = {
+  total: 0,
+  created: 0,
+  linked: 0,
+  errors: [],
 };
 
 function downloadTemplate(mode: UploadMode) {
@@ -158,41 +174,40 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
           setUploading(false);
         },
       );
-    } else if (mode === 'guests') {
+    } else {
+      const serviceUploader =
+        mode === 'guests'
+          ? serviceRecordingApi.bulkUploadGuests
+          : mode === 'believers'
+          ? serviceRecordingApi.bulkUploadBelievers
+          : serviceRecordingApi.bulkUploadRedZone;
+
       try {
-        const summary = await serviceRecordingApi.bulkUploadGuests(file);
+        const summary = await serviceUploader(file);
         setResult({ type: 'service', summary });
-      } catch {
+      } catch (error: any) {
+        const responseData = error?.response?.data;
+        const backendMessage = extractBadRequestErrorMessage(
+          responseData?.message,
+          responseData?.errors,
+        );
+        const errorMessage =
+          backendMessage !== 'Invalid request format'
+            ? backendMessage
+            : error?.message && !String(error.message).includes('status code')
+            ? error.message
+            : 'Upload failed. Please try again.';
+
         setResult({
           type: 'service',
-          summary: { total: 0, created: 0, linked: 0, errors: [] },
-        });
-      } finally {
-        setUploading(false);
-      }
-    } else if (mode === 'believers') {
-      try {
-        const summary = await serviceRecordingApi.bulkUploadBelievers(file);
-        setResult({ type: 'service', summary });
-      } catch {
-        setResult({
-          type: 'service',
-          summary: { total: 0, created: 0, linked: 0, errors: [] },
+          summary: EMPTY_SERVICE_SUMMARY,
+          error: errorMessage,
         });
       } finally {
         setUploading(false);
       }
     }
   };
-
-  const uploadLabel =
-    mode === 'contacts'
-      ? 'Upload Contacts'
-      : mode === 'guests'
-      ? 'Upload Guests'
-      : mode === 'believers'
-      ? 'Upload Believers'
-      : 'Upload Red Zone ';
 
   return (
     <Box>
@@ -307,13 +322,17 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
         </Box>
       )}
 
-      {/* Upload Results — Guests / Believers */}
+      {/* Upload Results — Guests / Believers / Red Zone */}
       {result?.type === 'service' && (
         <Box mb={2}>
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {result.summary.created} new contact
-            {result.summary.created !== 1 ? 's' : ''} created,{' '}
-            {result.summary.linked} linked to existing contacts.
+          <Alert severity={result.error ? 'error' : 'success'} sx={{ mb: 2 }}>
+            {result.error
+              ? result.error
+              : `${result.summary.created} new contact${
+                  result.summary.created !== 1 ? 's' : ''
+                } created, ${
+                  result.summary.linked
+                } linked to existing contacts.`}
           </Alert>
 
           {result.summary.errors.length > 0 && (
@@ -412,6 +431,24 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
         </Box>
       )}
 
+      {mode === 'redzone' && (
+        <Box mb={3}>
+          <Typography variant="subtitle2" gutterBottom>
+            Use these CSV columns:
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            • <strong>First Name</strong>
+            <br />• <strong>Last Name</strong>
+            <br />• <strong>Phone</strong>
+            <br />• <strong>Email</strong>
+            <br />• <strong>Gender</strong>
+            <br />• <strong>Notes</strong>
+            <br />• <strong>Church Location</strong>
+            <br />
+          </Typography>
+        </Box>
+      )}
+
       {/* Action Buttons */}
       <Box display="flex" gap={2} justifyContent="flex-end">
         <Button onClick={onCancel}>Cancel</Button>
@@ -420,7 +457,7 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
           onClick={handleUpload}
           disabled={!file || uploading}
         >
-          {uploading ? 'Uploading...' : uploadLabel}
+          {uploading ? 'Uploading...' : UPLOAD_LABELS[mode]}
         </Button>
         {result?.type === 'contacts' && result.success && (
           <Button
