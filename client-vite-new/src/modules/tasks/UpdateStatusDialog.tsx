@@ -154,10 +154,23 @@ export default function UpdateStatusDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
-      fullWidth
+      maxWidth={false}
       fullScreen={isPhone}
       scroll="paper"
+      slotProps={{
+        paper: {
+          sx: {
+            width: { sm: '50vw' },
+            maxWidth: 'calc(100vw - 32px)',
+            maxHeight: '50vh',
+          },
+        },
+        backdrop: {
+          sx: {
+            backdropFilter: 'blur(4px)',
+          },
+        },
+      }}
     >
       <form onSubmit={formik.handleSubmit}>
         <DialogTitle>Update Task Status</DialogTitle>
@@ -177,7 +190,7 @@ export default function UpdateStatusDialog({
                     control={<Radio />}
                     label={STATUS_LABELS[s]}
                     sx={{
-                      alignItems: 'flex-start',
+                      alignItems: 'center',
                       border: { xs: '1px solid', sm: 'none' },
                       borderColor: { xs: 'divider', sm: 'transparent' },
                       borderRadius: 1.5,

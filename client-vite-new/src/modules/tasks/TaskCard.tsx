@@ -13,7 +13,7 @@ import TaskStatusChip from './TaskStatusChip';
 import TaskTypeChip from './TaskTypeChip';
 import { localRoutes } from '../../data/constants';
 import type { Task, TaskUser } from '../../utils/types';
-import { TYPE_LABELS } from '../../utils/types';
+import { TYPE_LABELS, TaskStatus } from '../../utils/types';
 
 interface Props {
   task: Task;
@@ -50,6 +50,23 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
         transition: 'box-shadow 160ms ease, transform 160ms ease',
         '&:hover': { boxShadow: 4 },
         '&:active': { transform: 'scale(0.995)' },
+        ...(task.status === TaskStatus.DONE && {
+          bgcolor: '#e8f5e9',
+          borderLeft: '4px solid #2e7d32',
+        }),
+        ...(task.status !== TaskStatus.DONE &&
+          task.dueAt &&
+          dayjs(task.dueAt).isBefore(dayjs()) && {
+            bgcolor: '#ffebee',
+            borderLeft: '4px solid #c62828',
+          }),
+        ...(task.status !== TaskStatus.DONE &&
+          task.dueAt &&
+          dayjs(task.dueAt).isAfter(dayjs()) &&
+          dayjs(task.dueAt).isBefore(dayjs().add(1, 'day')) && {
+            bgcolor: '#fff8e1',
+            borderLeft: '4px solid #f57f17',
+          }),
       }}
       elevation={2}
     >
