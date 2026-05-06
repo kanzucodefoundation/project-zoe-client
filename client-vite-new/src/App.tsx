@@ -127,7 +127,16 @@ function App() {
 
   return (
     <Router>
-      <ToastContainer />
+      <ToastContainer
+        position="top-center"
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss={false}
+        style={{
+          width: 'min(calc(100vw - 16px), 420px)',
+          top: 'max(8px, env(safe-area-inset-top))',
+        }}
+      />
       <LoaderDialog open={globalLoader} />
       {user ? (
         <LayoutV2>

@@ -7,6 +7,7 @@ export interface MenuButtonProps extends IconButtonProps {
 
 export default function MenuButton({
   showBadge = false,
+  sx,
   ...props
 }: MenuButtonProps) {
   return (
@@ -16,7 +17,17 @@ export default function MenuButton({
       invisible={!showBadge}
       sx={{ [`& .${badgeClasses.badge}`]: { right: 2, top: 2 } }}
     >
-      <IconButton size="small" {...props} />
+      <IconButton
+        size="small"
+        sx={[
+          {
+            width: { xs: 40, md: 34 },
+            height: { xs: 40, md: 34 },
+          },
+          ...(Array.isArray(sx) ? sx : [sx]),
+        ]}
+        {...props}
+      />
     </Badge>
   );
 }

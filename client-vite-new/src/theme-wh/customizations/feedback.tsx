@@ -1,7 +1,6 @@
 import { type Theme, alpha, type Components } from '@mui/material/styles';
 import { gray, orange } from '../themePrimitives';
 
-
 export const feedbackCustomizations: Components<Theme> = {
   MuiAlert: {
     styleOverrides: {
@@ -27,6 +26,34 @@ export const feedbackCustomizations: Components<Theme> = {
           borderRadius: '10px',
           border: '1px solid',
           borderColor: (theme.vars || theme).palette.divider,
+          maxWidth: 'calc(100vw - 16px)',
+          maxHeight: 'calc(100dvh - 16px)',
+          margin: 8,
+          [theme.breakpoints.down('sm')]: {
+            width: 'calc(100vw - 16px)',
+            borderRadius: 14,
+          },
+        },
+        '& .MuiDialogTitle-root': {
+          [theme.breakpoints.down('sm')]: {
+            padding: '16px 16px 8px',
+          },
+        },
+        '& .MuiDialogContent-root': {
+          [theme.breakpoints.down('sm')]: {
+            padding: '12px 16px',
+          },
+        },
+        '& .MuiDialogActions-root': {
+          gap: 8,
+          [theme.breakpoints.down('sm')]: {
+            padding: '12px 16px calc(16px + env(safe-area-inset-bottom))',
+            flexDirection: 'column-reverse',
+            alignItems: 'stretch',
+            '& > :not(style) ~ :not(style)': {
+              marginLeft: 0,
+            },
+          },
         },
       }),
     },

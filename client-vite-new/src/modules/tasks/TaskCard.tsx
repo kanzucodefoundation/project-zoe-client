@@ -5,6 +5,7 @@ import {
   Avatar,
   Stack,
   Divider,
+  Box,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -22,7 +23,7 @@ interface Props {
 
 function getInitials(user: TaskUser | undefined) {
   const person = user?.contact?.person;
-  if (!person) return '?';
+  if (!person) return user?.username?.[0]?.toUpperCase() ?? '?';
   return `${person.firstName[0] ?? ''}${
     person.lastName[0] ?? ''
   }`.toUpperCase();
@@ -30,7 +31,7 @@ function getInitials(user: TaskUser | undefined) {
 
 function getFullName(user: TaskUser | undefined) {
   const person = user?.contact?.person;
-  if (!person) return 'Unknown';
+  if (!person) return user?.username ?? 'Unknown';
   return `${person.firstName} ${person.lastName}`.trim();
 }
 
@@ -42,18 +43,45 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
   return (
     <Card
       onClick={() => onOpen(task)}
-      sx={{ cursor: 'pointer', mb: 1, '&:hover': { boxShadow: 4 } }}
+      sx={{
+        cursor: 'pointer',
+        mb: { xs: 1.5, sm: 1 },
+        borderRadius: 2,
+        transition: 'box-shadow 160ms ease, transform 160ms ease',
+        '&:hover': { boxShadow: 4 },
+        '&:active': { transform: 'scale(0.995)' },
+      }}
       elevation={2}
     >
-      <CardContent>
-        <Stack direction="row" spacing={1} alignItems="center" mb={2}>
-          <TaskTypeChip type={task.type} />
-          <TaskStatusChip status={task.status} />
+      <CardContent
+        sx={{
+          p: { xs: 1.5, sm: 2 },
+          '&:last-child': { pb: { xs: 1.5, sm: 2 } },
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={1}
+          useFlexGap
+          flexWrap="wrap"
+          alignItems="center"
+          mb={1.5}
+        >
+          <Box>
+            <TaskTypeChip type={task.type} />
+          </Box>
+          <Box>
+            <TaskStatusChip status={task.status} />
+          </Box>
           {task.dueAt && (
             <Typography
               variant="caption"
               color="text.secondary"
-              sx={{ ml: 'auto' }}
+              sx={{
+                ml: { sm: 'auto' },
+                width: { xs: '100%', sm: 'auto' },
+                fontWeight: 600,
+              }}
             >
               Due {dayjs(task.dueAt).format('DD MMM YYYY')}
             </Typography>
@@ -67,10 +95,11 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
             to={`${localRoutes.contacts}/${task.contact.id}`}
             onClick={(e) => e.stopPropagation()}
             sx={{
-              color: 'primary.paper',
+              color: 'primary.main',
               textDecoration: 'none',
               display: 'block',
               mb: 0.5,
+              fontWeight: 700,
             }}
           >
             {contactName}
@@ -82,8 +111,15 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
           {task.title || TYPE_LABELS[task.type]}
         </Typography>
 
-        <Stack direction="row" alignItems="center" spacing={1}>
-          Task assigned To <span />{' '}
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          sx={{ minWidth: 0 }}
+        >
+          <Typography variant="caption" color="text.secondary">
+            Assigned to
+          </Typography>
           {task.assignedTo ? (
             <>
               <Avatar
@@ -96,7 +132,16 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
               >
                 {getInitials(task.assignedTo)}
               </Avatar>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{
+                  minWidth: 0,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 {getFullName(task.assignedTo)}
               </Typography>
             </>

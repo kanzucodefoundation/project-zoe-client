@@ -21,6 +21,8 @@ import {
   Tabs,
   Tab,
   Alert,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -94,6 +96,8 @@ function mapApiResponse(response: any): ContactData {
 }
 
 const ContactDetail = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { contactId } = useParams<{ contactId: string }>();
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.core);
@@ -187,10 +191,17 @@ const ContactDetail = () => {
   return (
     <Box>
       {/* Header */}
-      <Box display="flex" alignItems="center" gap={2} mb={3}>
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        gap={1.5}
+        mb={{ xs: 2, sm: 3 }}
+      >
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(localRoutes.contacts)}
+          fullWidth={isMobile}
         >
           Back
         </Button>
@@ -202,13 +213,14 @@ const ContactDetail = () => {
             variant="contained"
             startIcon={<EditIcon />}
             onClick={handleEdit}
+            fullWidth={isMobile}
           >
             Edit
           </Button>
         ) : null}
       </Box>
 
-      <Grid container spacing={6}>
+      <Grid container spacing={{ xs: 2, md: 6 }}>
         {/* Profile Card */}
         <Grid size={{ xs: 12, md: 4 }}>
           <Card elevation={2}>
@@ -267,7 +279,12 @@ const ContactDetail = () => {
         {/* Tabs + Content */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-            <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, v) => setActiveTab(v)}
+              variant="scrollable"
+              allowScrollButtonsMobile
+            >
               <Tab label="Profile" />
               {canViewTaskTab ? <Tab label="Tasks" /> : null}
               <Tab label="Activity" />
@@ -435,9 +452,11 @@ const ContactDetail = () => {
         }}
         maxWidth="md"
         fullWidth
+        fullScreen={isMobile}
+        scroll="paper"
       >
         <DialogTitle>Edit Contact</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers={isMobile}>
           {editError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {editError}

@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Box, Button, Typography, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Button,
+  Typography,
+  CircularProgress,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useSelector } from 'react-redux';
 import { useContactTasks } from './hooks';
@@ -15,6 +22,8 @@ interface Props {
 }
 
 export default function ContactTasksTab({ contactId }: Props) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const user = useSelector((state: RootState) => state.core.user);
   const { data: tasks = [], isLoading } = useContactTasks(contactId);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -48,6 +57,7 @@ export default function ContactTasksTab({ contactId }: Props) {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setCreateOpen(true)}
+            fullWidth={isPhone}
           >
             New Task
           </Button>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Container,
   Typography,
@@ -9,6 +9,10 @@ import {
   Autocomplete,
   TextField,
   CircularProgress,
+  Paper,
+  Pagination,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   DataGrid,
@@ -19,6 +23,7 @@ import dayjs from 'dayjs';
 import { useAllTasks } from './hooks';
 import TaskStatusChip from './TaskStatusChip';
 import TaskDrawer from './TaskDrawer';
+import TaskCard from './TaskCard';
 import {
   TaskStatus,
   TaskType,
@@ -29,7 +34,6 @@ import {
 } from '../../utils/types';
 import { remoteRoutes } from '../../data/constants';
 import ajax from '../../utils/ajax';
-import { useEffect } from 'react';
 
 interface UserOption {
   id: number | 'unassigned';
@@ -44,6 +48,8 @@ const UNASSIGNED: UserOption = {
 };
 
 export default function TaskQueue() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [statusFilter, setStatusFilter] = useState<TaskStatus[]>([]);
   const [typeFilter, setTypeFilter] = useState<TaskType[]>([]);
   const [assignedTo, setAssignedTo] = useState<UserOption | null>(null);
@@ -133,73 +139,146 @@ export default function TaskQueue() {
   ];
 
   return (
-    <Container maxWidth="lg">
-      <Box mb={3}>
+    <Container
+      maxWidth="lg"
+      disableGutters={isMobile}
+      sx={{ px: { xs: 0, md: 2 } }}
+    >
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        spacing={0.5}
+        mb={{ xs: 1.5, sm: 3 }}
+      >
         <Typography variant="h4">Task Queue</Typography>
-      </Box>
+        <Typography variant="body2" color="text.secondary">
+          {total} {total === 1 ? 'task' : 'tasks'}
+        </Typography>
+      </Stack>
 
       {/* Filters */}
-      <Stack
-        direction="row"
-        flexWrap="wrap"
-        spacing={1}
-        mb={2}
-        alignItems="center"
+      <Paper
+        variant="outlined"
+        sx={{
+          p: { xs: 1.25, sm: 1.5 },
+          mb: { xs: 1.5, sm: 2 },
+          borderRadius: 2,
+        }}
       >
-        {Object.values(TaskStatus).map((s) => (
-          <Chip
-            key={s}
-            label={STATUS_LABELS[s]}
-            size="small"
-            color={statusFilter.includes(s) ? 'primary' : 'default'}
-            variant={statusFilter.includes(s) ? 'filled' : 'outlined'}
-            onClick={() => toggleStatus(s)}
-            sx={{ cursor: 'pointer' }}
-          />
-        ))}
-        <Box sx={{ width: 16 }} />
-        {Object.values(TaskType).map((t) => (
-          <Chip
-            key={t}
-            label={TYPE_LABELS[t]}
-            size="small"
-            color={typeFilter.includes(t) ? 'primary' : 'default'}
-            variant={typeFilter.includes(t) ? 'filled' : 'outlined'}
-            onClick={() => toggleType(t)}
-            sx={{ cursor: 'pointer' }}
-          />
-        ))}
-        <Autocomplete
-          options={users}
-          getOptionLabel={(u) => u.fullName}
-          value={assignedTo}
-          onChange={(_, val) => {
-            setAssignedTo(val);
-            setPagination((p) => ({ ...p, page: 0 }));
-          }}
-          sx={{ py: 2, width: 200 }}
-          renderInput={(params) => (
-            <TextField {...params} label="Assigned to" size="small" />
-          )}
-        />
-        {hasFilters && (
-          <Button
-            size="small"
-            onClick={() => {
-              setStatusFilter([]);
-              setTypeFilter([]);
-              setAssignedTo(null);
+        <Stack spacing={1.25}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 1,
             }}
           >
-            Clear all
-          </Button>
-        )}
-      </Stack>
+            {Object.values(TaskStatus).map((s) => (
+              <Chip
+                key={s}
+                label={STATUS_LABELS[s]}
+                size="small"
+                color={statusFilter.includes(s) ? 'primary' : 'default'}
+                variant={statusFilter.includes(s) ? 'filled' : 'outlined'}
+                onClick={() => toggleStatus(s)}
+                sx={{ cursor: 'pointer', maxHeight: 'none', py: 0.25 }}
+              />
+            ))}
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 1,
+            }}
+          >
+            {Object.values(TaskType).map((t) => (
+              <Chip
+                key={t}
+                label={TYPE_LABELS[t]}
+                size="small"
+                color={typeFilter.includes(t) ? 'primary' : 'default'}
+                variant={typeFilter.includes(t) ? 'filled' : 'outlined'}
+                onClick={() => toggleType(t)}
+                sx={{ cursor: 'pointer', maxHeight: 'none', py: 0.25 }}
+              />
+            ))}
+          </Box>
+
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1}
+            alignItems={{ xs: 'stretch', sm: 'center' }}
+          >
+            <Autocomplete
+              options={users}
+              getOptionLabel={(u) => u.fullName}
+              value={assignedTo}
+              onChange={(_, val) => {
+                setAssignedTo(val);
+                setPagination((p) => ({ ...p, page: 0 }));
+              }}
+              sx={{ width: { xs: '100%', sm: 240 } }}
+              renderInput={(params) => (
+                <TextField {...params} label="Assigned to" size="small" />
+              )}
+            />
+            {hasFilters && (
+              <Button
+                size="small"
+                fullWidth={isMobile}
+                onClick={() => {
+                  setStatusFilter([]);
+                  setTypeFilter([]);
+                  setAssignedTo(null);
+                }}
+              >
+                Clear all
+              </Button>
+            )}
+          </Stack>
+        </Stack>
+      </Paper>
 
       {isLoading ? (
         <Box display="flex" justifyContent="center" py={4}>
           <CircularProgress />
         </Box>
+      ) : isMobile ? (
+        <Stack spacing={1.5}>
+          {tasks.length === 0 ? (
+            <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
+              <Typography color="text.secondary">
+                No tasks match the current filters.
+              </Typography>
+            </Paper>
+          ) : (
+            tasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                onOpen={setSelectedTask}
+                showContact
+              />
+            ))
+          )}
+          {total > pagination.pageSize && (
+            <Box display="flex" justifyContent="center" py={1}>
+              <Pagination
+                count={Math.ceil(total / pagination.pageSize)}
+                page={pagination.page + 1}
+                onChange={(_, page) =>
+                  setPagination((current) => ({ ...current, page: page - 1 }))
+                }
+                color="primary"
+                size="small"
+                siblingCount={0}
+              />
+            </Box>
+          )}
+        </Stack>
       ) : (
         <DataGrid
           rows={tasks}
@@ -212,6 +291,7 @@ export default function TaskQueue() {
           onRowClick={({ row }) => setSelectedTask(row as Task)}
           sx={{ cursor: 'pointer' }}
           autoHeight
+          disableRowSelectionOnClick
         />
       )}
 

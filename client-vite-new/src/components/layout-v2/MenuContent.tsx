@@ -190,7 +190,11 @@ const navItems: NavItem[] = [
   },
 ];
 
-export default function MenuContent() {
+interface MenuContentProps {
+  onNavigate?: () => void;
+}
+
+export default function MenuContent({ onNavigate }: MenuContentProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state: RootState) => state.core);
@@ -202,6 +206,7 @@ export default function MenuContent() {
 
   const handleNavigate = (path: string) => {
     navigate(path);
+    onNavigate?.();
   };
 
   // Filter navigation items based on user capabilities
@@ -274,7 +279,7 @@ export default function MenuContent() {
               sx={{
                 py: 1.25,
                 px: 2,
-                minHeight: 48,
+                minHeight: { xs: 52, md: 48 },
                 '&.Mui-selected': {
                   backgroundColor: 'action.selected',
                   '&:hover': {
@@ -327,7 +332,7 @@ export default function MenuContent() {
           sx={{
             py: 1.25,
             px: 2,
-            minHeight: 48,
+            minHeight: { xs: 52, md: 48 },
             '&.Mui-selected': {
               backgroundColor: 'action.selected',
               '&:hover': {
@@ -360,7 +365,7 @@ export default function MenuContent() {
   };
 
   return (
-    <Stack sx={{ flexGrow: 1, p: 1.5 }}>
+    <Stack sx={{ flexGrow: 1, p: { xs: 1, md: 1.5 } }}>
       <List>{filteredNavItems.map((item) => renderNavItem(item))}</List>
     </Stack>
   );

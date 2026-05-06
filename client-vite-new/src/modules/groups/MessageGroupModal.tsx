@@ -10,6 +10,8 @@ import {
   Box,
   CircularProgress,
   Alert,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { SmsRounded as SmsIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
@@ -32,6 +34,8 @@ interface SmsInfo {
 const MAX_CHARS = 160;
 
 const MessageGroupModal = ({ open, onClose, groupId, groupName }: Props) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [message, setMessage] = useState('');
   const [smsInfo, setSmsInfo] = useState<SmsInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -84,12 +88,19 @@ const MessageGroupModal = ({ open, onClose, groupId, groupName }: Props) => {
   const canSend = message.trim().length > 0 && !isOverLimit && !sending;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={isPhone}
+      scroll="paper"
+    >
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <SmsIcon color="primary" />
         Send SMS to {groupName}
       </DialogTitle>
-      <DialogContent>
+      <DialogContent dividers={isPhone}>
         {loading ? (
           <Box display="flex" justifyContent="center" py={4}>
             <CircularProgress />
@@ -100,14 +111,14 @@ const MessageGroupModal = ({ open, onClose, groupId, groupName }: Props) => {
             {smsInfo && (
               <Box mb={2}>
                 <Typography variant="body2" color="text.secondary">
-                  Sending to {smsInfo.membersWithPhone} of {smsInfo.totalMembers}{' '}
-                  members
+                  Sending to {smsInfo.membersWithPhone} of{' '}
+                  {smsInfo.totalMembers} members
                 </Typography>
                 {smsInfo.membersWithoutPhone > 0 && (
                   <Alert severity="warning" sx={{ mt: 1 }}>
                     {smsInfo.membersWithoutPhone} member
-                    {smsInfo.membersWithoutPhone > 1 ? 's have' : ' has'} no phone
-                    number and will be skipped
+                    {smsInfo.membersWithoutPhone > 1 ? 's have' : ' has'} no
+                    phone number and will be skipped
                   </Alert>
                 )}
               </Box>
@@ -148,13 +159,14 @@ const MessageGroupModal = ({ open, onClose, groupId, groupName }: Props) => {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={sending}>
+        <Button onClick={onClose} disabled={sending} fullWidth={isPhone}>
           Cancel
         </Button>
         <Button
           onClick={handleSend}
           variant="contained"
           disabled={!canSend || loading}
+          fullWidth={isPhone}
           startIcon={sending ? <CircularProgress size={20} /> : <SmsIcon />}
         >
           {sending ? 'Sending...' : 'Send'}

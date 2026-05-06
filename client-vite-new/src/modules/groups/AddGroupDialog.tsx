@@ -13,6 +13,8 @@ import {
   Box,
   CircularProgress,
   Autocomplete,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import { get, post, put } from '../../utils/ajax';
@@ -57,6 +59,8 @@ const AddGroupDialog = ({
   parentGroup,
   editGroup,
 }: Props) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [name, setName] = useState('');
   const [privacy, setPrivacy] = useState<GroupPrivacy>(GroupPrivacy.Private);
   const [details, setDetails] = useState('');
@@ -325,9 +329,16 @@ const AddGroupDialog = ({
     : 'Add New Group';
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={isPhone}
+      scroll="paper"
+    >
       <DialogTitle>{dialogTitle}</DialogTitle>
-      <DialogContent>
+      <DialogContent dividers={isPhone}>
         {loadingData ? (
           <Box display="flex" justifyContent="center" py={4}>
             <CircularProgress />
@@ -395,13 +406,14 @@ const AddGroupDialog = ({
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={loading}>
+        <Button onClick={handleClose} disabled={loading} fullWidth={isPhone}>
           Cancel
         </Button>
         <Button
           onClick={handleSubmit}
           variant="contained"
           disabled={loading || loadingData}
+          fullWidth={isPhone}
         >
           {loading ? (
             <CircularProgress size={24} />

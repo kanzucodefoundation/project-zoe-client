@@ -11,6 +11,8 @@ import {
   Typography,
   Divider,
   Autocomplete,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -62,6 +64,8 @@ const ContactForm = ({
   onCancel,
   onError,
 }: ContactFormProps) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [formData, setFormData] = useState<ContactFormData>({
     firstName: '',
     lastName: '',
@@ -440,12 +444,21 @@ const ContactForm = ({
         </Grid>
 
         {/* Actions */}
-        <Box display="flex" gap={2} justifyContent="flex-end">
-          <Button onClick={onCancel}>Cancel</Button>
+        <Box
+          display="flex"
+          flexDirection={{ xs: 'column-reverse', sm: 'row' }}
+          gap={1}
+          justifyContent="flex-end"
+          sx={{ pb: { xs: 'env(safe-area-inset-bottom)', sm: 0 } }}
+        >
+          <Button onClick={onCancel} fullWidth={isPhone}>
+            Cancel
+          </Button>
           <Button
             type="submit"
             variant="contained"
             disabled={submitting || !formData.firstName || !formData.lastName}
+            fullWidth={isPhone}
           >
             {submitting
               ? 'Saving...'

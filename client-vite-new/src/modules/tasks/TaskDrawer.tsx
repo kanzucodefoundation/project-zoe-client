@@ -141,11 +141,13 @@ export default function TaskDrawer({
       anchor="right"
       open={Boolean(localTask)}
       onClose={onClose}
+      ModalProps={{ keepMounted: true }}
       PaperProps={{
         sx: {
-          width: { xs: '100%', sm: 480 },
+          width: { xs: '100vw', sm: 480 },
           maxWidth: '100vw',
-          p: { xs: 2, sm: 3 },
+          height: '100dvh',
+          p: 0,
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
@@ -155,17 +157,49 @@ export default function TaskDrawer({
       {/* Header */}
       <Box
         display="flex"
-        alignItems="flex-start"
+        alignItems="center"
         justifyContent="space-between"
-        mb={2}
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1,
+          gap: 1,
+          px: { xs: 2, sm: 3 },
+          py: { xs: 1.5, sm: 2 },
+          bgcolor: 'background.paper',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
       >
-        <Box />
-        <IconButton onClick={onClose} size="small">
+        <Box sx={{ minWidth: 0 }}>
+          <Typography variant="h6" noWrap>
+            {localTask.title || 'Task Details'}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            {dayjs(localTask.createdAt).format('DD MMM YYYY')}
+          </Typography>
+        </Box>
+        <IconButton
+          onClick={onClose}
+          size="small"
+          aria-label="Close task details"
+          sx={{ width: 40, height: 40 }}
+        >
           <CloseIcon />
         </IconButton>
       </Box>
 
-      <Box sx={{ flex: 1, minHeight: 0, overflowY: 'auto', pr: { sm: 0.5 } }}>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          overscrollBehavior: 'contain',
+          px: { xs: 2, sm: 3 },
+          py: 2,
+          pb: 'calc(24px + env(safe-area-inset-bottom))',
+        }}
+      >
         {/* Title / Created by / Created */}
         <Stack spacing={0.5} mb={2}>
           {localTask.title && (

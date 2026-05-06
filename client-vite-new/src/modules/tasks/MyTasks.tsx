@@ -6,6 +6,9 @@ import {
   Stack,
   Chip,
   CircularProgress,
+  Paper,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
@@ -17,6 +20,8 @@ import { TaskStatus, STATUS_LABELS, type Task } from '../../utils/types';
 const ALL_STATUSES = Object.values(TaskStatus) as TaskStatus[];
 
 export default function MyTasks() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const user = useSelector((state: RootState) => state.core.user);
   const [selectedStatuses, setSelectedStatuses] = useState<TaskStatus[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -48,24 +53,46 @@ export default function MyTasks() {
     : ALL_STATUSES.filter((s) => (grouped[s] ?? []).length > 0);
 
   return (
-    <Container maxWidth="md">
-      <Box mb={3}>
+    <Container
+      maxWidth="md"
+      disableGutters={isMobile}
+      sx={{ px: { xs: 0, sm: 2 } }}
+    >
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        spacing={0.5}
+        mb={{ xs: 1.5, sm: 3 }}
+      >
         <Typography variant="h4">My Tasks</Typography>
-      </Box>
-
-      <Stack direction="row" flexWrap="wrap" spacing={1} mb={3}>
-        {ALL_STATUSES.map((s) => (
-          <Chip
-            key={s}
-            label={STATUS_LABELS[s]}
-            size="small"
-            color={selectedStatuses.includes(s) ? 'primary' : 'default'}
-            variant={selectedStatuses.includes(s) ? 'filled' : 'outlined'}
-            onClick={() => toggleStatus(s)}
-            sx={{ cursor: 'pointer' }}
-          />
-        ))}
+        <Typography variant="body2" color="text.secondary">
+          {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
+        </Typography>
       </Stack>
+
+      <Paper
+        variant="outlined"
+        sx={{
+          p: { xs: 1.25, sm: 1.5 },
+          mb: { xs: 1.5, sm: 3 },
+          borderRadius: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {ALL_STATUSES.map((s) => (
+            <Chip
+              key={s}
+              label={STATUS_LABELS[s]}
+              size="small"
+              color={selectedStatuses.includes(s) ? 'primary' : 'default'}
+              variant={selectedStatuses.includes(s) ? 'filled' : 'outlined'}
+              onClick={() => toggleStatus(s)}
+              sx={{ cursor: 'pointer', maxHeight: 'none', py: 0.25 }}
+            />
+          ))}
+        </Box>
+      </Paper>
 
       {isLoading ? (
         <Box display="flex" justifyContent="center" py={4}>

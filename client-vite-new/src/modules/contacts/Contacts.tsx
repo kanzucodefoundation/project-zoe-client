@@ -21,6 +21,12 @@ import {
   MenuItem,
   CircularProgress,
   TablePagination,
+  Card,
+  CardContent,
+  Stack,
+  Divider,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -60,6 +66,8 @@ const CONTACT_FETCH_LIMIT = 100;
 
 const Contacts = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
@@ -211,22 +219,29 @@ const Contacts = () => {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container
+      maxWidth="lg"
+      disableGutters={isMobile}
+      sx={{ px: { xs: 0, sm: 2 } }}
+    >
       <Box
         display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent={{ xs: 'flex-start', sm: 'space-between' }}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        gap={1.5}
+        mb={{ xs: 2, sm: 3 }}
       >
         <Typography variant="h4" gutterBottom>
           People ({total || contacts.length})
         </Typography>
 
-        <Box display="flex" gap={1}>
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={1}>
           <Button
             variant="outlined"
             startIcon={<UploadIcon />}
             onClick={() => setUploadDialog(true)}
+            fullWidth={isMobile}
           >
             Upload
           </Button>
@@ -234,6 +249,7 @@ const Contacts = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setCreateDialog(true)}
+            fullWidth={isMobile}
           >
             Add New
           </Button>
@@ -241,7 +257,12 @@ const Contacts = () => {
       </Box>
 
       {/* Search */}
-      <Box display="flex" gap={2} mb={3}>
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        gap={{ xs: 1, sm: 2 }}
+        mb={{ xs: 2, sm: 3 }}
+      >
         <TextField
           fullWidth
           placeholder="Search people..."
@@ -254,7 +275,7 @@ const Contacts = () => {
             ),
           }}
         />
-        <Button variant="outlined" onClick={handleSearch}>
+        <Button variant="outlined" onClick={handleSearch} fullWidth={isMobile}>
           Search
         </Button>
       </Box>
@@ -278,113 +299,211 @@ const Contacts = () => {
         </Box>
       ) : (
         <>
-          <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ width: 64, fontWeight: 'bold' }}>
-                    #
-                  </TableCell>
-                  <TableCell sx={{ width: 56 }}></TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                    Name
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                    Email
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                    Phone
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                    Group
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
-                    Date of Birth
-                  </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 'bold' }}>
-                    Actions
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedContacts.map((contact, idx) => (
-                  <TableRow
-                    key={contact.id}
-                    hover
-                    sx={{ cursor: 'pointer' }}
-                    onClick={() =>
-                      navigate(`${localRoutes.contacts}/${contact.id}`)
-                    }
-                  >
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      {page * rowsPerPage + idx + 1}
-                    </TableCell>
-                    <TableCell>
+          {isMobile ? (
+            <Stack spacing={1.5}>
+              {paginatedContacts.map((contact, idx) => (
+                <Card
+                  key={contact.id}
+                  elevation={2}
+                  onClick={() =>
+                    navigate(`${localRoutes.contacts}/${contact.id}`)
+                  }
+                  sx={{
+                    cursor: 'pointer',
+                    borderRadius: 2,
+                    '&:active': { transform: 'scale(0.995)' },
+                  }}
+                >
+                  <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                    <Stack direction="row" spacing={1.25} alignItems="center">
                       <Avatar
                         src={contact.avatar || undefined}
                         sx={{
-                          width: 40,
-                          height: 40,
+                          width: 44,
+                          height: 44,
                           bgcolor: 'primary.paper',
                           fontSize: '14px',
                         }}
                       >
                         {getInitials(contact.name)}
                       </Avatar>
-                    </TableCell>
-                    <TableCell
-                      sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}
-                    >
-                      {contact.name}
-                    </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      {contact.email ? (
-                        <a
-                          href={`mailto:${contact.email}`}
-                          onClick={(e) => e.stopPropagation()}
-                          style={{ color: '#1976d2', textDecoration: 'none' }}
-                        >
-                          {contact.email}
-                        </a>
-                      ) : (
-                        '-'
-                      )}
-                    </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      {contact.phone ? (
-                        <a
-                          href={`tel:${contact.phone}`}
-                          onClick={(e) => e.stopPropagation()}
-                          style={{ color: '#1976d2', textDecoration: 'none' }}
-                        >
-                          {contact.phone}
-                        </a>
-                      ) : (
-                        '-'
-                      )}
-                    </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      {contact.cellGroup?.name || '-'}
-                    </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                      {formatDate(contact.dateOfBirth)}
-                    </TableCell>
-                    <TableCell align="right">
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
+                        <Typography variant="subtitle2" noWrap>
+                          {contact.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          #{page * rowsPerPage + idx + 1}
+                        </Typography>
+                      </Box>
                       <IconButton
                         size="small"
                         onClick={(e) => handleMenuOpen(e, contact)}
+                        aria-label={`Actions for ${contact.name}`}
+                        sx={{ width: 40, height: 40 }}
                       >
                         <MoreVertIcon fontSize="small" />
                       </IconButton>
+                    </Stack>
+
+                    <Divider sx={{ my: 1.25 }} />
+
+                    <Stack spacing={0.75}>
+                      {contact.phone ? (
+                        <Typography
+                          variant="body2"
+                          component="a"
+                          href={`tel:${contact.phone}`}
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{ color: 'primary.main', textDecoration: 'none' }}
+                        >
+                          {contact.phone}
+                        </Typography>
+                      ) : null}
+                      {contact.email ? (
+                        <Typography
+                          variant="body2"
+                          component="a"
+                          href={`mailto:${contact.email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{ color: 'primary.main', textDecoration: 'none' }}
+                        >
+                          {contact.email}
+                        </Typography>
+                      ) : null}
+                      <Typography variant="caption" color="text.secondary">
+                        Group: {contact.cellGroup?.name || 'Not assigned'}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Birthday: {formatDate(contact.dateOfBirth)}
+                      </Typography>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stack>
+          ) : (
+            <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ width: 64, fontWeight: 'bold' }}>
+                      #
+                    </TableCell>
+                    <TableCell sx={{ width: 56 }}></TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Name
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Email
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Phone
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Group
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Date of Birth
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                      Actions
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {paginatedContacts.map((contact, idx) => (
+                    <TableRow
+                      key={contact.id}
+                      hover
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        navigate(`${localRoutes.contacts}/${contact.id}`)
+                      }
+                    >
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {page * rowsPerPage + idx + 1}
+                      </TableCell>
+                      <TableCell>
+                        <Avatar
+                          src={contact.avatar || undefined}
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            bgcolor: 'primary.paper',
+                            fontSize: '14px',
+                          }}
+                        >
+                          {getInitials(contact.name)}
+                        </Avatar>
+                      </TableCell>
+                      <TableCell
+                        sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}
+                      >
+                        {contact.name}
+                      </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {contact.email ? (
+                          <a
+                            href={`mailto:${contact.email}`}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ color: '#1976d2', textDecoration: 'none' }}
+                          >
+                            {contact.email}
+                          </a>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {contact.phone ? (
+                          <a
+                            href={`tel:${contact.phone}`}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ color: '#1976d2', textDecoration: 'none' }}
+                          >
+                            {contact.phone}
+                          </a>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {contact.cellGroup?.name || '-'}
+                      </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {formatDate(contact.dateOfBirth)}
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleMenuOpen(e, contact)}
+                        >
+                          <MoreVertIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
 
           {/* Bottom-right paginator */}
-          <Box display="flex" justifyContent="flex-end" mt={1}>
+          <Box
+            display="flex"
+            justifyContent={{ xs: 'center', sm: 'flex-end' }}
+            mt={1}
+          >
             <TablePagination
               component="div"
               count={total}
@@ -418,9 +537,11 @@ const Contacts = () => {
         onClose={() => setCreateDialog(false)}
         maxWidth="md"
         fullWidth
+        fullScreen={isMobile}
+        scroll="paper"
       >
         <DialogTitle>Add New Contact</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers={isMobile}>
           <ContactForm
             onSave={() => {
               setCreateDialog(false);
@@ -438,9 +559,11 @@ const Contacts = () => {
         onClose={() => setUploadDialog(false)}
         maxWidth="md"
         fullWidth
+        fullScreen={isMobile}
+        scroll="paper"
       >
         <DialogTitle>Upload Contacts</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers={isMobile}>
           <BulkUpload
             onComplete={() => {
               setUploadDialog(false);

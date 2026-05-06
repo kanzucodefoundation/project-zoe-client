@@ -10,6 +10,8 @@ import {
   Stack,
   CircularProgress,
   Autocomplete,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -51,6 +53,8 @@ export default function CreateTaskDialog({
   onClose,
   onSuccess,
 }: Props) {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [users, setUsers] = useState<UserOption[]>([]);
   const createTask = useCreateTask(contactId);
 
@@ -99,15 +103,31 @@ export default function CreateTaskDialog({
   });
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={isPhone}
+      scroll="paper"
+    >
       <form onSubmit={formik.handleSubmit}>
         <DialogTitle>New Task</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers={isPhone}>
           <Stack spacing={3} sx={{ mt: 1 }}>
             <ToggleButtonGroup
               exclusive
               value={formik.values.type}
               onChange={(_, val) => val && formik.setFieldValue('type', val)}
+              orientation={isPhone ? 'vertical' : 'horizontal'}
+              sx={{
+                alignItems: 'stretch',
+                '& .MuiToggleButton-root': {
+                  justifyContent: 'center',
+                  minHeight: 44,
+                  flex: 1,
+                },
+              }}
             >
               {Object.values(TaskType).map((t) => (
                 <ToggleButton key={t} value={t}>
@@ -145,11 +165,14 @@ export default function CreateTaskDialog({
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose} fullWidth={isPhone}>
+            Cancel
+          </Button>
           <Button
             type="submit"
             variant="contained"
             disabled={createTask.isPending}
+            fullWidth={isPhone}
             startIcon={
               createTask.isPending ? <CircularProgress size={16} /> : undefined
             }
