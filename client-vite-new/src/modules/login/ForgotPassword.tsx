@@ -49,7 +49,45 @@ const ForgotPassword = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        minHeight: '100vh',
+        backgroundColor: 'background.paper',
+      }}
+    >
+      {/* Mobile image masthead */}
+      <Box
+        sx={{
+          display: { xs: 'flex', md: 'none' },
+          minHeight: { xs: 184, sm: 220 },
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+          textAlign: 'center',
+          color: 'common.white',
+          px: 3,
+          pb: { xs: 3, sm: 4 },
+          backgroundImage: `linear-gradient(180deg, rgba(14, 23, 36, 0.28), rgba(14, 23, 36, 0.72)), url(${loginBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <Box>
+          <Typography
+            component="h1"
+            variant="h4"
+            fontWeight="bold"
+            sx={{ lineHeight: 1.1 }}
+          >
+            Project Zoe
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 1, opacity: 0.9 }}>
+            Password Recovery
+          </Typography>
+        </Box>
+      </Box>
+
       <Box
         sx={{
           flex: 1,
@@ -93,6 +131,7 @@ const ForgotPassword = () => {
           alignItems: 'center',
           justifyContent: 'center',
           p: { xs: 3, sm: 6 },
+          pt: { xs: 4, sm: 6 },
           backgroundColor: 'background.paper',
         }}
       >
