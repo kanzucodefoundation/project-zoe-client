@@ -27,6 +27,12 @@ import {
   TablePagination,
   Tabs,
   Tab,
+  Card,
+  CardContent,
+  Stack,
+  Divider,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -85,6 +91,8 @@ const INITIAL_ROLE_FORM: RoleFormData = {
 const UserManagement = () => {
   const user = useSelector((state: RootState) => state.core.user);
   const canManageRoles = getUserCapabilities(user).has(appPermissions.roleEdit);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [activeTab, setActiveTab] = useState<'users' | 'roles'>('users');
 
@@ -579,11 +587,12 @@ const UserManagement = () => {
   const renderUsersTab = () => {
     if (usersLoading) {
       return (
-        <Container disableGutters>
-          <Typography variant="h4" gutterBottom>
-            Loading Users...
+        <Box py={6} textAlign="center">
+          <CircularProgress size={28} />
+          <Typography color="text.secondary" mt={2}>
+            Loading users...
           </Typography>
-        </Container>
+        </Box>
       );
     }
 
@@ -591,23 +600,29 @@ const UserManagement = () => {
       <>
         <Box
           display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={3}
-          gap={2}
-          flexWrap="wrap"
+          flexDirection={{ xs: 'column', sm: 'row' }}
+          justifyContent={{ xs: 'flex-start', sm: 'space-between' }}
+          alignItems={{ xs: 'stretch', sm: 'center' }}
+          mb={{ xs: 2, sm: 3 }}
+          gap={1.5}
         >
           <Typography variant="h5">Users ({users.length})</Typography>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={handleCreateUser}
+            fullWidth={isMobile}
           >
             Add User
           </Button>
         </Box>
 
-        <Box display="flex" gap={2} mb={3}>
+        <Box
+          display="flex"
+          flexDirection={{ xs: 'column', sm: 'row' }}
+          gap={{ xs: 1, sm: 2 }}
+          mb={{ xs: 2, sm: 3 }}
+        >
           <TextField
             fullWidth
             placeholder="Search by username, email, first name, or last name..."
@@ -634,44 +649,47 @@ const UserManagement = () => {
               setAppliedSearch(searchTerm.trim());
               setPage(0);
             }}
+            fullWidth={isMobile}
           >
             Search
           </Button>
         </Box>
 
-        <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>User</TableCell>
-                <TableCell>Roles</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Last Login</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginatedUsers.map((currentUser) => (
-                <TableRow key={currentUser.id}>
-                  <TableCell>
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Avatar
-                        src={currentUser.avatar || undefined}
-                        sx={{ bgcolor: 'primary.paper' }}
-                      >
-                        {getInitials(currentUser)}
-                      </Avatar>
-                      <Box>
-                        <Typography variant="subtitle2">
-                          {currentUser.fullName || currentUser.username}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          @{currentUser.username}
-                        </Typography>
-                      </Box>
+        {isMobile ? (
+          <Stack spacing={1.5}>
+            {paginatedUsers.map((currentUser) => (
+              <Card key={currentUser.id} elevation={2} sx={{ borderRadius: 2 }}>
+                <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                  <Stack direction="row" spacing={1.25} alignItems="center">
+                    <Avatar
+                      src={currentUser.avatar || undefined}
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        bgcolor: 'primary.paper',
+                        fontSize: '14px',
+                      }}
+                    >
+                      {getInitials(currentUser)}
+                    </Avatar>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Typography variant="subtitle2" noWrap>
+                        {currentUser.fullName || currentUser.username}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        @{currentUser.username}
+                      </Typography>
                     </Box>
-                  </TableCell>
-                  <TableCell>
+                    <Chip
+                      label={currentUser.isActive ? 'Active' : 'Inactive'}
+                      color={currentUser.isActive ? 'success' : 'default'}
+                      size="small"
+                    />
+                  </Stack>
+
+                  <Divider sx={{ my: 1.25 }} />
+
+                  <Stack spacing={0.75}>
                     <Box display="flex" gap={0.5} flexWrap="wrap">
                       {currentUser.roles.slice(0, 3).map((role) => (
                         <Chip
@@ -688,41 +706,128 @@ const UserManagement = () => {
                         />
                       )}
                     </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={currentUser.isActive ? 'Active' : 'Inactive'}
-                      color={currentUser.isActive ? 'success' : 'default'}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {currentUser.lastLogin
-                      ? formatDate(currentUser.lastLogin)
-                      : 'Never'}
-                  </TableCell>
-                  <TableCell>
+                    <Typography variant="caption" color="text.secondary">
+                      Last login:{' '}
+                      {currentUser.lastLogin
+                        ? formatDate(currentUser.lastLogin)
+                        : 'Never'}
+                    </Typography>
+                  </Stack>
+
+                  <Box
+                    display="flex"
+                    justifyContent="flex-end"
+                    gap={0.5}
+                    mt={1}
+                  >
                     <IconButton
                       onClick={() => handleEditUser(currentUser)}
                       size="small"
                     >
-                      <EditIcon />
+                      <EditIcon fontSize="small" />
                     </IconButton>
                     <IconButton
                       onClick={() => handleDeleteUser(currentUser)}
                       size="small"
                       color="error"
                     >
-                      <DeleteIcon />
+                      <DeleteIcon fontSize="small" />
                     </IconButton>
-                  </TableCell>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Stack>
+        ) : (
+          <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>User</TableCell>
+                  <TableCell>Roles</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Last Login</TableCell>
+                  <TableCell>Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {paginatedUsers.map((currentUser) => (
+                  <TableRow key={currentUser.id}>
+                    <TableCell>
+                      <Box display="flex" alignItems="center" gap={2}>
+                        <Avatar
+                          src={currentUser.avatar || undefined}
+                          sx={{ bgcolor: 'primary.paper' }}
+                        >
+                          {getInitials(currentUser)}
+                        </Avatar>
+                        <Box>
+                          <Typography variant="subtitle2">
+                            {currentUser.fullName || currentUser.username}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            @{currentUser.username}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box display="flex" gap={0.5} flexWrap="wrap">
+                        {currentUser.roles.slice(0, 3).map((role) => (
+                          <Chip
+                            key={role}
+                            label={role}
+                            size="small"
+                            variant="outlined"
+                          />
+                        ))}
+                        {currentUser.roles.length > 3 && (
+                          <Chip
+                            label={`+${currentUser.roles.length - 3}`}
+                            size="small"
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={currentUser.isActive ? 'Active' : 'Inactive'}
+                        color={currentUser.isActive ? 'success' : 'default'}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {currentUser.lastLogin
+                        ? formatDate(currentUser.lastLogin)
+                        : 'Never'}
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        onClick={() => handleEditUser(currentUser)}
+                        size="small"
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleDeleteUser(currentUser)}
+                        size="small"
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
-        <Box display="flex" justifyContent="flex-end" mt={1}>
+        <Box
+          display="flex"
+          justifyContent={{ xs: 'center', sm: 'flex-end' }}
+          mt={1}
+        >
           <TablePagination
             component="div"
             count={users.length}
@@ -752,17 +857,18 @@ const UserManagement = () => {
     <>
       <Box
         display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
-        gap={2}
-        flexWrap="wrap"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent={{ xs: 'flex-start', sm: 'space-between' }}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        mb={{ xs: 2, sm: 3 }}
+        gap={1.5}
       >
         <Typography variant="h5">Manage Roles ({roles.length})</Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleCreateRoleDialog}
+          fullWidth={isMobile}
         >
           Add Role
         </Button>
@@ -775,6 +881,65 @@ const UserManagement = () => {
             Loading roles...
           </Typography>
         </Box>
+      ) : isMobile ? (
+        <Stack spacing={1.5}>
+          {roles.map((role) => (
+            <Card key={role.id} elevation={2} sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                    {role.role}
+                  </Typography>
+                  <Chip
+                    label={role.isActive ? 'Active' : 'Inactive'}
+                    color={role.isActive ? 'success' : 'default'}
+                    size="small"
+                  />
+                </Stack>
+
+                <Divider sx={{ my: 1.25 }} />
+
+                <Stack spacing={0.75}>
+                  <Typography variant="body2" color="text.secondary">
+                    {role.description}
+                  </Typography>
+                  <Box display="flex" gap={0.5} flexWrap="wrap">
+                    {role.permissions.map((permission) => (
+                      <Chip
+                        key={`${role.id}-${permission}`}
+                        label={permission}
+                        size="small"
+                        variant="outlined"
+                      />
+                    ))}
+                  </Box>
+                </Stack>
+
+                <Box display="flex" justifyContent="flex-end" gap={0.5} mt={1}>
+                  <IconButton
+                    onClick={() => handleEditRoleDialog(role)}
+                    size="small"
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDeleteRole(role)}
+                    size="small"
+                    color="error"
+                    disabled={deletingRoleId === role.id}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Stack>
       ) : (
         <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
           <Table>
@@ -845,28 +1010,33 @@ const UserManagement = () => {
   );
 
   return (
-    <Container maxWidth="lg">
-      <Box mb={3}>
-        <Typography variant="h4" gutterBottom>
+    <Container
+      maxWidth="lg"
+      disableGutters={isMobile}
+      sx={{ px: { xs: 0, sm: 2 } }}
+    >
+      <Box mb={{ xs: 2, sm: 3 }}>
+        <Typography variant="h4" gutterBottom sx={{ px: { xs: 1, sm: 0 } }}>
           User Management
         </Typography>
         <Tabs
           value={activeTab}
           onChange={(_, value: 'users' | 'roles') => setActiveTab(value)}
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
+          sx={{ borderBottom: 1, borderColor: 'divider', px: { xs: 1, sm: 0 } }}
         >
           <Tab label="Users" value="users" />
           {canManageRoles && <Tab label="Manage Roles" value="roles" />}
         </Tabs>
       </Box>
 
-      {activeTab === 'users' ? renderUsersTab() : renderRolesTab()}
+      <Box sx={{ px: { xs: 1, sm: 0 } }}>
+        {activeTab === 'users' ? renderUsersTab() : renderRolesTab()}
+      </Box>
 
       <Dialog
         open={createDialog}
         onClose={handleCloseCreateDialog}
-        maxWidth="sm"
-        fullWidth
+        maxWidth="xs"
       >
         <DialogTitle>Create New User</DialogTitle>
         <DialogContent>
@@ -972,12 +1142,7 @@ const UserManagement = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog
-        open={editDialog}
-        onClose={handleCloseEditDialog}
-        maxWidth="sm"
-        fullWidth
-      >
+      <Dialog open={editDialog} onClose={handleCloseEditDialog} maxWidth="xs">
         <DialogTitle>Edit User: {selectedUser?.username}</DialogTitle>
         <DialogContent>
           <Box pt={1} display="flex" flexDirection="column" gap={2}>
@@ -1036,12 +1201,7 @@ const UserManagement = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog
-        open={roleDialog}
-        onClose={handleCloseRoleDialog}
-        maxWidth="sm"
-        fullWidth
-      >
+      <Dialog open={roleDialog} onClose={handleCloseRoleDialog} maxWidth="sm">
         <DialogTitle>
           {selectedRole ? `Edit Role: ${selectedRole.role}` : 'Create Role'}
         </DialogTitle>
@@ -1130,8 +1290,7 @@ const UserManagement = () => {
       <Dialog
         open={confirmDeleteOpen}
         onClose={handleCloseConfirmDelete}
-        maxWidth="sm"
-        fullWidth
+        maxWidth="xs"
       >
         <DialogTitle>Delete Role</DialogTitle>
         <DialogContent>
@@ -1155,8 +1314,7 @@ const UserManagement = () => {
       <Dialog
         open={confirmDeleteUserOpen}
         onClose={handleCloseConfirmDeleteUser}
-        maxWidth="sm"
-        fullWidth
+        maxWidth="xs"
       >
         <DialogTitle>Delete User</DialogTitle>
         <DialogContent>

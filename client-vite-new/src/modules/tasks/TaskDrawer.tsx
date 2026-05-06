@@ -230,11 +230,7 @@ export default function TaskDrawer({
           >
             STATUS
           </Typography>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            alignItems={{ xs: 'stretch', sm: 'center' }}
-            spacing={1}
-          >
+          <Stack direction="row" alignItems="center" spacing={1}>
             <TaskStatusChip status={localTask.status} />
             {isClosed ? (
               <Typography variant="body2" color="text.secondary">
@@ -244,7 +240,6 @@ export default function TaskDrawer({
               <Button
                 size="small"
                 variant="outlined"
-                fullWidth={isPhone}
                 onClick={() => setUpdateStatusOpen(true)}
               >
                 Update Status
