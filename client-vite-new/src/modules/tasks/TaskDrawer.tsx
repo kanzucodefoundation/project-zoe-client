@@ -17,6 +17,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -31,7 +32,7 @@ import { taskApi } from './api';
 import { useQueryClient } from '@tanstack/react-query';
 import { taskKeys } from './hooks';
 import ajax from '../../utils/ajax';
-import { remoteRoutes } from '../../data/constants';
+import { localRoutes, remoteRoutes } from '../../data/constants';
 import type { RootState } from '../../data/store';
 import { canEditTasks } from '../../utils/permissions';
 
@@ -102,6 +103,11 @@ export default function TaskDrawer({
 
   const isClosed = CLOSED_STATUSES.includes(localTask.status);
   const canEditTaskData = canEditTasks(user);
+  const linkedContactId =
+    localTask.contact?.id ?? localTask.contactId ?? contactId;
+  const contactDetailsPath = linkedContactId
+    ? `${localRoutes.contacts}/${linkedContactId}`
+    : undefined;
 
   const handleSendComment = () => {
     if (!comment.trim()) return;
@@ -203,7 +209,14 @@ export default function TaskDrawer({
         {/* Title / Created by / Created */}
         <Stack spacing={0.5} mb={2}>
           {localTask.title && (
-            <Typography variant="body2">
+            <Typography
+              variant="body2"
+              noWrap
+              {...(contactDetailsPath
+                ? { component: Link, to: contactDetailsPath }
+                : {})}
+              onClick={onClose}
+            >
               <strong>Title:</strong> {localTask.title}
             </Typography>
           )}
