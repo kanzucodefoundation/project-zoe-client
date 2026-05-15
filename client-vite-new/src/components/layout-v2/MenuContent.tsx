@@ -22,6 +22,7 @@ import RuleRoundedIcon from '@mui/icons-material/RuleRounded';
 import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import ChecklistRoundedIcon from '@mui/icons-material/ChecklistRounded';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
+import AssignmentTurnedInRoundedIcon from '@mui/icons-material/AssignmentTurnedInRounded';
 import HowToRegRoundedIcon from '@mui/icons-material/HowToRegRounded';
 import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
@@ -119,6 +120,11 @@ const navItems: NavItem[] = [
         name: 'My Tasks',
         icon: <AssignmentIndRoundedIcon />,
         path: localRoutes.tasksMine,
+      },
+      {
+        name: 'Assign Tasks',
+        icon: <AssignmentTurnedInRoundedIcon />,
+        path: localRoutes.tasksAssign,
       },
     ],
   },

@@ -74,6 +74,7 @@ export interface Task {
   comments: TaskComment[];
   attachments: TaskAttachment[];
   createdAt: string;
+  latestComment?: TaskComment;
 }
 
 export interface TaskComment {

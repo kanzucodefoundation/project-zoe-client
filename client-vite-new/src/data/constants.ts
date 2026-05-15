@@ -109,6 +109,7 @@ export const localRoutes = {
   // Tasks
   tasks: '/tasks',
   tasksMine: '/tasks/mine',
+  tasksAssign: '/tasks/assign',
   retentionReport: '/reports/retention',
 
   // Attendance

@@ -48,6 +48,7 @@ import CategoryRules from './modules/finance/CategoryRules';
 import FinancialReports from './modules/finance/FinancialReports';
 import TaskQueue from './modules/tasks/TaskQueue';
 import MyTasks from './modules/tasks/MyTasks';
+import AssignTasks from './modules/tasks/AssignTasks';
 import RetentionReport from './modules/reports/RetentionReport';
 import ManageNotifications from './modules/admin/notifications/ManageNotifications';
 import CheckInScreen from './modules/attendance/CheckInScreen';
@@ -249,6 +250,13 @@ function App() {
               path={localRoutes.tasksMine}
               element={renderProtectedElement(
                 <MyTasks />,
+                taskViewCapabilities,
+              )}
+            />
+            <Route
+              path={localRoutes.tasksAssign}
+              element={renderProtectedElement(
+                <AssignTasks />,
                 taskViewCapabilities,
               )}
             />
