@@ -54,8 +54,10 @@ function getDateBounds(range: DateRange): {
   switch (range) {
     case 'today':
       return { from: now.startOf('day'), to: now.endOf('day') };
-    case 'this_week':
-      return { from: now.startOf('week'), to: now.endOf('week') };
+    case 'this_week': {
+      const startOfWeek = now.day(0).startOf('day');
+      return { from: startOfWeek, to: startOfWeek.add(6, 'day').endOf('day') };
+    }
     case 'this_month':
       return { from: now.startOf('month'), to: now.endOf('month') };
     case 'last_3_months':
@@ -103,8 +105,8 @@ export default function AssignTasks() {
     const { from, to } = getDateBounds(dateRange);
     if (!from || !to) return allTasks;
     return allTasks.filter((t) => {
-      if (!t.dueAt) return false;
-      return dayjs(t.dueAt).isBetween(from, to, 'day', '[]');
+      if (!t.createdAt) return false;
+      return dayjs(t.createdAt).isBetween(from, to, 'day', '[]');
     });
   }, [allTasks, dateRange]);
 

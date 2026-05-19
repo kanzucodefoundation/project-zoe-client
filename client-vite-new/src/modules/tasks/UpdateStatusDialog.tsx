@@ -151,6 +151,7 @@ export default function UpdateStatusDialog({
     selectedStatus === TaskStatus.JOINED_SERVING_TEAM;
 
   return (
+    // TODO: Benchmark on this dialog
     <Dialog
       open={open}
       onClose={onClose}

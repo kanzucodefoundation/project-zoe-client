@@ -90,9 +90,15 @@ export default function AssignTaskDialog({
     <Dialog
       open={open}
       onClose={onClose}
-      fullWidth
-      maxWidth="sm"
-      PaperProps={{ sx: { borderRadius: 2 } }}
+      maxWidth={false}
+      slotProps={{
+        paper: { sx: { borderRadius: 2 }, elevation: 4 },
+        backdrop: {
+          sx: {
+            backdropFilter: 'blur(4px)',
+          },
+        },
+      }}
     >
       <DialogTitle sx={{ pb: 1 }}>
         <Stack direction="row" alignItems="center" spacing={1}>
