@@ -32,7 +32,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import { useAllTasks } from './hooks';
 import TaskStatusChip from './TaskStatusChip';
 import AssignTaskDialog from './AssignTaskDialog';
-import { TYPE_LABELS, type Task } from '../../utils/types';
+import { CLOSED_STATUSES, TYPE_LABELS, type Task } from '../../utils/types';
 
 dayjs.extend(isBetween);
 
@@ -237,6 +237,7 @@ function DesktopTable({
         <TableBody>
           {tasks.map((task) => {
             const overdue = isOverdue(task.dueAt);
+            const closed = CLOSED_STATUSES.includes(task.status);
             const comment = getLatestComment(task);
             const assignee = getAssigneeName(task);
             const taskLabel = task.title ?? TYPE_LABELS[task.type];
@@ -327,14 +328,22 @@ function DesktopTable({
                 </TableCell>
 
                 <TableCell align="right">
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() => onAssign(task)}
-                    sx={{ fontWeight: 600, minWidth: 'unset' }}
+                  <Tooltip
+                    title={closed ? 'Task is closed' : ''}
+                    placement="left"
                   >
-                    Assign
-                  </Button>
+                    <span>
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => onAssign(task)}
+                        disabled={closed}
+                        sx={{ fontWeight: 600, minWidth: 'unset' }}
+                      >
+                        Assign
+                      </Button>
+                    </span>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             );
@@ -358,6 +367,7 @@ function MobileTaskList({
     <Stack spacing={1.5}>
       {tasks.map((task) => {
         const overdue = isOverdue(task.dueAt);
+        const closed = CLOSED_STATUSES.includes(task.status);
         const comment = getLatestComment(task);
         const assignee = getAssigneeName(task);
         const contactName = task.contact?.person
@@ -446,14 +456,22 @@ function MobileTaskList({
               )}
 
               <Box mt={1.5} display="flex" justifyContent="flex-end">
-                <Button
-                  size="small"
-                  variant="outlined"
-                  color="primary"
-                  onClick={() => onAssign(task)}
+                <Tooltip
+                  title={closed ? 'Task is closed' : ''}
+                  placement="left"
                 >
-                  Assign
-                </Button>
+                  <span>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => onAssign(task)}
+                      disabled={closed}
+                    >
+                      Assign
+                    </Button>
+                  </span>
+                </Tooltip>
               </Box>
             </CardContent>
           </Card>
