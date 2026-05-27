@@ -14,6 +14,7 @@ export const TaskStatus = {
   TODO: 'todo',
   IN_PROGRESS: 'in_progress',
   DONE: 'done',
+  UNREACHABLE: 'unreachable',
   MATCHED_TO_FELLOWSHIP: 'matched_to_fellowship',
   ATTENDED_FELLOWSHIP: 'attended_fellowship',
   JOINED_SERVING_TEAM: 'joined_serving_team',
@@ -21,12 +22,16 @@ export const TaskStatus = {
 } as const;
 export type TaskStatus = typeof TaskStatus[keyof typeof TaskStatus];
 
-export const CLOSED_STATUSES: TaskStatus[] = [TaskStatus.DONE];
+export const CLOSED_STATUSES: TaskStatus[] = [
+  TaskStatus.DONE,
+  TaskStatus.UNREACHABLE,
+];
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {
   [TaskStatus.TODO]: 'To Do',
   [TaskStatus.IN_PROGRESS]: 'In Progress',
   [TaskStatus.DONE]: 'Done',
+  [TaskStatus.UNREACHABLE]: 'Unreachable',
   [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Tea Hangout - Matched to Fellowship',
   [TaskStatus.ATTENDED_FELLOWSHIP]: 'Attended Fellowship',
   [TaskStatus.JOINED_SERVING_TEAM]: 'Joined Serving Team',
@@ -43,6 +48,7 @@ export const TYPE_LABELS: Record<TaskType, string> = {
 export const NEXT_STATUS_OPTIONS: TaskStatus[] = [
   TaskStatus.IN_PROGRESS,
   TaskStatus.DONE,
+  TaskStatus.UNREACHABLE,
   TaskStatus.MATCHED_TO_FELLOWSHIP,
   TaskStatus.ATTENDED_FELLOWSHIP,
   TaskStatus.JOINED_SERVING_TEAM,

@@ -14,6 +14,7 @@ const statusSx: Record<TaskStatus, object> = {
   [TaskStatus.TODO]: chipSx('#222122', '#fff'),
   [TaskStatus.IN_PROGRESS]: chipSx('#ed6c02', '#fff'),
   [TaskStatus.DONE]: chipSx('#9e9e9e', '#fff'),
+  [TaskStatus.UNREACHABLE]: chipSx('#b71c1c', '#fff'),
   [TaskStatus.MATCHED_TO_FELLOWSHIP]: chipSx('#0288d1', '#fff'),
   [TaskStatus.ATTENDED_FELLOWSHIP]: chipSx('#1976d2', '#fff'),
   [TaskStatus.JOINED_SERVING_TEAM]: chipSx('#1565c0', '#fff'),

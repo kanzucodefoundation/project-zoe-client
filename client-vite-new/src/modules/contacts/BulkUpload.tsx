@@ -366,7 +366,8 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
           <Typography variant="body2" color="text.secondary">
             • <strong>firstName</strong> - First name (required)
             <br />• <strong>lastName</strong> - Last name (required)
-            <br />• <strong>email</strong> - Email address
+            <br />• <strong>email</strong> - Email address (required — used for
+            login)
             <br />• <strong>phone</strong> - Phone number
             <br />• <strong>dateOfBirth</strong> - Date of birth (YYYY-MM-DD
             format)
