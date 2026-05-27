@@ -118,14 +118,19 @@ function isWeekReport(
   return 'weeks' in data;
 }
 
-function sumRows<T>(rows: T[], key: keyof T): number {
-  return rows.reduce((acc, r) => acc + (r[key] as number), 0);
+function getCurrentWeekSunday(): string {
+  const d = new Date();
+  d.setDate(d.getDate() - d.getDay()); // subtract day-of-week (0 = Sunday)
+  return format(d, 'yyyy-MM-dd');
 }
 
 export default function RetentionReport() {
   const [selectedWindow, setSelectedWindow] = useState<Window>('month');
   const { data, isLoading } = useRetentionReport(selectedWindow);
   const selectedPeriod = getPeriodRange(selectedWindow);
+
+  const currentWeekSunday = getCurrentWeekSunday();
+  const currentMonthNum = new Date().getMonth() + 1;
 
   const handleDownload = () => {
     if (!data) {
@@ -293,7 +298,11 @@ export default function RetentionReport() {
                       </Box>
                     ) : (
                       <Typography variant="h3" fontWeight="bold">
-                        {sumRows(data.months, key)}
+                        {
+                          (data.months.find(
+                            (m) => m.month === currentMonthNum,
+                          )?.[key] ?? 0) as number
+                        }
                       </Typography>
                     )}
                     <Typography variant="body2" color="text.secondary">
@@ -354,7 +363,11 @@ export default function RetentionReport() {
                       </Box>
                     ) : (
                       <Typography variant="h3" fontWeight="bold">
-                        {sumRows(data.weeks, key)}
+                        {
+                          (data.weeks.find(
+                            (w) => w.weekStart === currentWeekSunday,
+                          )?.[key] ?? 0) as number
+                        }
                       </Typography>
                     )}
                     <Typography variant="body2" color="text.secondary">
