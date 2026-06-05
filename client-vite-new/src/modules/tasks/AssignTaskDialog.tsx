@@ -92,7 +92,13 @@ export default function AssignTaskDialog({
       onClose={onClose}
       maxWidth={false}
       slotProps={{
-        paper: { sx: { borderRadius: 2 }, elevation: 4 },
+        paper: {
+          sx: {
+            borderRadius: 2,
+            width: { xs: 'calc(100vw - 16px)', sm: 560 },
+          },
+          elevation: 4,
+        },
         backdrop: {
           sx: {
             backdropFilter: 'blur(4px)',
