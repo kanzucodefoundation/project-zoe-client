@@ -16,12 +16,19 @@ import {
   Visibility as VisibilityIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { styled, alpha } from '@mui/material/styles';
 import { get } from '../../utils/ajax';
-import { remoteRoutes, localRoutes } from '../../data/constants';
+import {
+  remoteRoutes,
+  localRoutes,
+  appPermissions,
+} from '../../data/constants';
+import type { RootState } from '../../data/store';
+import { hasAnyCapability } from '../../utils/permissions';
 import AddGroupDialog from './AddGroupDialog';
 import type { GroupNode } from './types';
 
@@ -55,9 +62,16 @@ interface TreeLabelProps {
   hasChildren: boolean;
   onViewDetails: (e: React.MouseEvent) => void;
   onAddChild: (e: React.MouseEvent) => void;
+  showAddChildAction: boolean;
 }
 
-const TreeLabel = ({ name, hasChildren, onViewDetails, onAddChild }: TreeLabelProps) => (
+const TreeLabel = ({
+  name,
+  hasChildren,
+  onViewDetails,
+  onAddChild,
+  showAddChildAction,
+}: TreeLabelProps) => (
   <Box
     display="flex"
     alignItems="center"
@@ -65,7 +79,13 @@ const TreeLabel = ({ name, hasChildren, onViewDetails, onAddChild }: TreeLabelPr
     width="100%"
     py={0.5}
   >
-    <Box display="flex" alignItems="center" flexGrow={1} onClick={onViewDetails} sx={{ cursor: 'pointer' }}>
+    <Box
+      display="flex"
+      alignItems="center"
+      flexGrow={1}
+      onClick={onViewDetails}
+      sx={{ cursor: 'pointer' }}
+    >
       <Typography variant="body1" fontWeight={hasChildren ? 500 : 400}>
         {name}
       </Typography>
@@ -79,27 +99,33 @@ const TreeLabel = ({ name, hasChildren, onViewDetails, onAddChild }: TreeLabelPr
       >
         <VisibilityIcon fontSize="small" />
       </IconButton>
-      <IconButton
-        size="small"
-        color="primary"
-        onClick={onAddChild}
-        title="Add Child Group"
-        sx={{ opacity: 0.6, '&:hover': { opacity: 1 } }}
-      >
-        <AddIcon fontSize="small" />
-      </IconButton>
+      {showAddChildAction ? (
+        <IconButton
+          size="small"
+          color="primary"
+          onClick={onAddChild}
+          title="Add Child Group"
+          sx={{ opacity: 0.6, '&:hover': { opacity: 1 } }}
+        >
+          <AddIcon fontSize="small" />
+        </IconButton>
+      ) : null}
     </Box>
   </Box>
 );
 
 const Groups = () => {
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.core);
 
   const [groups, setGroups] = useState<GroupNode[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedParent, setSelectedParent] = useState<GroupNode | null>(null);
+  const canViewGroupEditActions = hasAnyCapability(user, [
+    appPermissions.roleGroupEdit,
+  ]);
 
   useEffect(() => {
     fetchGroups();
@@ -113,7 +139,9 @@ const Groups = () => {
         const data = Array.isArray(response) ? response : [];
         console.log('Groups tree data:', data);
         console.log('Root groups:', data.length);
-        const withChildren = data.filter(g => g.children && g.children.length > 0);
+        const withChildren = data.filter(
+          (g) => g.children && g.children.length > 0,
+        );
         console.log('Root groups with children:', withChildren.length);
 
         setGroups(data);
@@ -142,11 +170,17 @@ const Groups = () => {
   const handleAddChild = (parentGroup: GroupNode) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!canViewGroupEditActions) {
+      return;
+    }
     setSelectedParent(parentGroup);
     setDialogOpen(true);
   };
 
   const handleAddRootGroup = () => {
+    if (!canViewGroupEditActions) {
+      return;
+    }
     setSelectedParent(null);
     setDialogOpen(true);
   };
@@ -178,6 +212,7 @@ const Groups = () => {
             hasChildren={node.children && node.children.length > 0}
             onViewDetails={handleViewDetails(node)}
             onAddChild={handleAddChild(node)}
+            showAddChildAction={canViewGroupEditActions}
           />
         }
       >
@@ -199,7 +234,14 @@ const Groups = () => {
   return (
     <Container maxWidth="lg">
       {/* Header */}
-      <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} flexWrap="wrap" gap={2}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="flex-start"
+        mb={3}
+        flexWrap="wrap"
+        gap={2}
+      >
         <Box>
           <Typography variant="h4">Groups</Typography>
           <Typography variant="body2" color="text.secondary">
@@ -208,15 +250,17 @@ const Groups = () => {
               : `${totalGroups} groups in your organization`}
           </Typography>
         </Box>
-        <Box display="flex" gap={1}>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAddRootGroup}
-          >
-            Add Group
-          </Button>
-        </Box>
+        {canViewGroupEditActions ? (
+          <Box display="flex" gap={1}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAddRootGroup}
+            >
+              Add Group
+            </Button>
+          </Box>
+        ) : null}
       </Box>
 
       {/* Tree View */}
@@ -227,7 +271,9 @@ const Groups = () => {
       ) : groups.length === 0 ? (
         <Box textAlign="center" py={6}>
           <Typography color="text.secondary">
-            No groups found. Create your first group to get started.
+            {canViewGroupEditActions
+              ? 'No groups found. Create your first group to get started.'
+              : 'No groups found.'}
           </Typography>
         </Box>
       ) : (

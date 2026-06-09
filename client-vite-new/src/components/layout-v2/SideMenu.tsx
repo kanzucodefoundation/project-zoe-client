@@ -59,19 +59,21 @@ export default function SideMenu() {
         }}
       >
         <Avatar
-          sx={{ 
-            width: 36, 
+          sx={{
+            width: 36,
             height: 36,
             borderRadius: 1,
           }}
         >
-          {user?.username?.charAt(0)?.toUpperCase() || user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+          {user?.username?.charAt(0)?.toUpperCase() ||
+            user?.fullName?.charAt(0)?.toUpperCase() ||
+            'U'}
         </Avatar>
         <Box sx={{ mr: 'auto', minWidth: 0 }}>
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              fontWeight: 500, 
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 500,
               lineHeight: '16px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -80,9 +82,9 @@ export default function SideMenu() {
           >
             {user?.fullName || user?.username || 'User'}
           </Typography>
-          <Typography 
-            variant="caption" 
-            sx={{ 
+          <Typography
+            variant="caption"
+            sx={{
               color: 'text.secondary',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

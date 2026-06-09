@@ -14,7 +14,7 @@ import ColorModeIconDropdown from './ColorModeIconDropdown';
 
 const Toolbar = styled(MuiToolbar)({
   width: '100%',
-  padding: '12px',
+  padding: '10px 12px',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'start',
@@ -66,10 +66,19 @@ export default function AppNavbar() {
           <Stack
             direction="row"
             spacing={1}
-            sx={{ alignItems: 'center' }}
+            sx={{ alignItems: 'center', minWidth: 0 }}
           >
-            <Typography variant="h4" component="h1" sx={{ color: 'text.primary' }}>
-              Project Zoe   
+            <Typography
+              variant="h6"
+              component="h1"
+              sx={{
+                color: 'text.primary',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Project Zoe
             </Typography>
           </Stack>
           <Box sx={{ flexGrow: 1 }} />

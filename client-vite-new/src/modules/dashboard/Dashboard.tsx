@@ -45,7 +45,7 @@ import { get } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
-import type {$TsFixMe} from "../../utils/types.ts";
+import type { $TsFixMe } from '../../utils/types.ts';
 import BirthdayWidget from './BirthdayWidget';
 
 interface SummaryMetrics {
@@ -138,7 +138,7 @@ const Dashboard = () => {
   const [selectedRow, setSelectedRow] = useState<RecentSubmission | null>(null);
 
   const navigate = useNavigate();
-  const { user } = useSelector((state: RootState) => state.core); 
+  const { user } = useSelector((state: RootState) => state.core);
 
   // Fetch user's accessible locations (groups with children from backend)
   useEffect(() => {
@@ -207,13 +207,17 @@ const Dashboard = () => {
     baptisms: 0,
   };
 
-  const timeRangeLabel = dashboardData?.timeRange?.label
-    || timeRangeOptions.find((o) => o.value === timeRange)?.label
-    || 'Past Month';
+  const timeRangeLabel =
+    dashboardData?.timeRange?.label ||
+    timeRangeOptions.find((o) => o.value === timeRange)?.label ||
+    'Past Month';
 
   const recentSubmissions = dashboardData?.recentSubmissions || [];
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, row: RecentSubmission) => {
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    row: RecentSubmission,
+  ) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
     setSelectedRow(row);
@@ -247,7 +251,11 @@ const Dashboard = () => {
         sx={{ mb: 3 }}
       >
         <Box>
-          <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 0.5 }}>
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ fontWeight: 600, mb: 0.5 }}
+          >
             Welcome, {user?.fullName || user?.username || 'User'}!
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -259,13 +267,17 @@ const Dashboard = () => {
             <FormControl size="small" sx={{ minWidth: 180 }}>
               <Select
                 value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value as number | '')}
+                onChange={(e) =>
+                  setSelectedLocation(e.target.value as number | '')
+                }
                 disabled={loading}
                 displayEmpty
               >
                 <MenuItem value="">All Locations</MenuItem>
                 {locations.map((loc) => (
-                  <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
+                  <MenuItem key={loc.id} value={loc.id}>
+                    {loc.name}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -277,7 +289,9 @@ const Dashboard = () => {
               disabled={loading}
             >
               {timeRangeOptions.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
+                <MenuItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -286,7 +300,13 @@ const Dashboard = () => {
 
       {/* Report Buttons */}
       {reports.filter((r) => r.fieldCount && r.fieldCount > 0).length > 0 && (
-        <Stack direction="row" alignItems="center" flexWrap="wrap" gap={1.5} sx={{ mb: 3 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          flexWrap="wrap"
+          gap={1.5}
+          sx={{ mb: 3 }}
+        >
           <Typography variant="subtitle2" color="text.secondary">
             Submit Report:
           </Typography>
@@ -320,7 +340,11 @@ const Dashboard = () => {
       ) : (
         <>
           {/* Summary Section */}
-          <Typography component="h2" variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          <Typography
+            component="h2"
+            variant="h6"
+            sx={{ mb: 2, fontWeight: 600 }}
+          >
             Sunday Service Metrics ({timeRangeLabel})
           </Typography>
           <Grid container spacing={2} columns={12} sx={{ mb: 4 }}>
@@ -337,10 +361,18 @@ const Dashboard = () => {
                         spacing={2}
                       >
                         <Box sx={{ flexGrow: 1 }}>
-                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          <Typography
+                            variant="subtitle2"
+                            color="text.secondary"
+                            gutterBottom
+                          >
                             {card.label}
                           </Typography>
-                          <Typography variant="h4" component="p" sx={{ fontWeight: 600 }}>
+                          <Typography
+                            variant="h4"
+                            component="p"
+                            sx={{ fontWeight: 600 }}
+                          >
                             {summaryData[card.key]}
                           </Typography>
                         </Box>
@@ -349,11 +381,12 @@ const Dashboard = () => {
                             width: 48,
                             height: 48,
                             borderRadius: '50%',
-                            backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                            backgroundColor: (theme) =>
+                              alpha(theme.palette.primary.main, 0.1),
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: 'primary.main',
+                            color: 'primary.paper',
                             flexShrink: 0,
                           }}
                         >
@@ -375,7 +408,11 @@ const Dashboard = () => {
           </Grid>
 
           {/* Detailed Breakdown */}
-          <Typography component="h2" variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          <Typography
+            component="h2"
+            variant="h6"
+            sx={{ mb: 2, fontWeight: 600 }}
+          >
             Service Breakdown
           </Typography>
           <Grid container spacing={2} columns={12} sx={{ mb: 4 }}>
@@ -388,10 +425,10 @@ const Dashboard = () => {
                     variant="outlined"
                     sx={{
                       height: '100%',
-                      backgroundColor: isOverall 
+                      backgroundColor: isOverall
                         ? (theme) => alpha(theme.palette.primary.main, 0.08)
                         : 'background.paper',
-                      borderColor: isOverall ? 'primary.main' : 'divider',
+                      borderColor: isOverall ? 'primary.paper' : 'divider',
                       borderWidth: isOverall ? 2 : 1,
                     }}
                   >
@@ -403,10 +440,19 @@ const Dashboard = () => {
                         spacing={2}
                       >
                         <Box sx={{ flexGrow: 1 }}>
-                          <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            display="block"
+                            gutterBottom
+                          >
                             {card.label}
                           </Typography>
-                          <Typography variant="h5" component="p" sx={{ fontWeight: 600 }}>
+                          <Typography
+                            variant="h5"
+                            component="p"
+                            sx={{ fontWeight: 600 }}
+                          >
                             {metrics[card.key]}
                           </Typography>
                         </Box>
@@ -415,13 +461,16 @@ const Dashboard = () => {
                             width: 40,
                             height: 40,
                             borderRadius: '50%',
-                            backgroundColor: isOverall 
-                              ? 'primary.main' 
-                              : (theme) => alpha(theme.palette.primary.main, 0.1),
+                            backgroundColor: isOverall
+                              ? 'primary.paper'
+                              : (theme) =>
+                                  alpha(theme.palette.primary.main, 0.1),
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: isOverall ? 'primary.contrastText' : 'primary.main',
+                            color: isOverall
+                              ? 'primary.contrastText'
+                              : 'primary.paper',
                             flexShrink: 0,
                           }}
                         >
@@ -436,7 +485,11 @@ const Dashboard = () => {
           </Grid>
 
           {/* Recent Reports Table */}
-          <Typography component="h2" variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          <Typography
+            component="h2"
+            variant="h6"
+            sx={{ mb: 2, fontWeight: 600 }}
+          >
             Recent PGA Reports
           </Typography>
 
@@ -452,24 +505,49 @@ const Dashboard = () => {
                 <Table size="small">
                   <TableHead>
                     <TableRow sx={{ backgroundColor: 'background.default' }}>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>DATE</TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>1SV</TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>2SV</TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>YXP</TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>KIDS</TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>LOCAL</TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>HC1</TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>HC2</TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>TOTAL</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 600 }}>ACTION</TableCell>
+                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        DATE
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        1SV
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        2SV
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        YXP
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        KIDS
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        LOCAL
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        HC1
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        HC2
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        TOTAL
+                      </TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 600 }}>
+                        ACTION
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {recentSubmissions
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage,
+                      )
                       .map((row) => (
                         <TableRow key={row.id} hover>
-                          <TableCell sx={{ whiteSpace: 'nowrap' }}>{formatDate(row.date)}</TableCell>
+                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                            {formatDate(row.date)}
+                          </TableCell>
                           <TableCell>{row.firstService ?? '-'}</TableCell>
                           <TableCell>{row.secondService ?? '-'}</TableCell>
                           <TableCell>{row.yxp ?? '-'}</TableCell>
@@ -477,9 +555,14 @@ const Dashboard = () => {
                           <TableCell>{row.local ?? '-'}</TableCell>
                           <TableCell>{row.hostingCenter1 ?? '-'}</TableCell>
                           <TableCell>{row.hostingCenter2 ?? '-'}</TableCell>
-                          <TableCell sx={{ fontWeight: 600 }}>{row.total ?? '-'}</TableCell>
+                          <TableCell sx={{ fontWeight: 600 }}>
+                            {row.total ?? '-'}
+                          </TableCell>
                           <TableCell align="right">
-                            <IconButton size="small" onClick={(e) => handleMenuOpen(e, row)}>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => handleMenuOpen(e, row)}
+                            >
                               <MoreVertRoundedIcon fontSize="small" />
                             </IconButton>
                           </TableCell>

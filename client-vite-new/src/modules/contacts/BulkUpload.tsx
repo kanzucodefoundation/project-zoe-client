@@ -19,7 +19,7 @@ import {
   Error as ErrorIcon,
   GetApp as DownloadIcon,
 } from '@mui/icons-material';
-import { postFile } from '../../utils/ajax';
+import { extractBadRequestErrorMessage, postFile } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { serviceRecordingApi } from '../service-recording/api';
 //import { BulkUploadSummary } from '../service-recording/types';
@@ -38,7 +38,7 @@ interface BulkUploadSummary {
   errors: BulkRowResult[];
 }
 
-type UploadMode = 'contacts' | 'guests' | 'believers';
+type UploadMode = 'contacts' | 'guests' | 'believers' | 'redzone';
 
 interface BulkUploadProps {
   onComplete?: () => void;
@@ -56,14 +56,33 @@ interface ContactsUploadResult {
 interface ServiceUploadResult {
   type: 'service';
   summary: BulkUploadSummary;
+  error?: string;
 }
 
 type UploadResult = ContactsUploadResult | ServiceUploadResult;
 
 const TEMPLATES: Record<UploadMode, string> = {
-  contacts: 'firstName,lastName,email,phone,dateOfBirth,gender',
-  guests: 'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You,Church Location,Service Date',
-  believers: 'First Name,Last Name,Phone,Email,Address,Led to Christ By,Led to Christ On,Notes',
+  contacts:
+    'firstName,lastName,email,phone,dateOfBirth,gender,district,country',
+  guests:
+    'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You,Church Location,Service Date',
+  believers:
+    'First Name,Last Name,Phone,Email,Address,Led to Christ By,Led to Christ On,Notes',
+  redzone: 'First Name,Last Name,Phone,Email,Gender,Notes,Church Location',
+};
+
+const UPLOAD_LABELS: Record<UploadMode, string> = {
+  contacts: 'Upload Contacts',
+  guests: 'Upload Guests',
+  believers: 'Upload Believers',
+  redzone: 'Upload Red Zone',
+};
+
+const EMPTY_SERVICE_SUMMARY: BulkUploadSummary = {
+  total: 0,
+  created: 0,
+  linked: 0,
+  errors: [],
 };
 
 function downloadTemplate(mode: UploadMode) {
@@ -82,7 +101,10 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
 
-  const handleModeChange = (_: React.MouseEvent<HTMLElement>, val: UploadMode | null) => {
+  const handleModeChange = (
+    _: React.MouseEvent<HTMLElement>,
+    val: UploadMode | null,
+  ) => {
     if (val) {
       setMode(val);
       setFile(null);
@@ -109,53 +131,83 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
         remoteRoutes.contactsPeopleUpload,
         formData,
         (response) => {
-          setResult({ type: 'contacts', ...response });
+          const backendMessage = extractBadRequestErrorMessage(
+            response?.message,
+            response?.errors,
+          );
+          const normalizedErrors = Array.isArray(response?.errors)
+            ? response.errors
+            : !response?.success && backendMessage !== 'Invalid request format'
+            ? [backendMessage]
+            : [];
+
+          setResult({
+            type: 'contacts',
+            success: !!response?.success,
+            totalRows: Number(response?.totalRows ?? 0),
+            successfulRows: Number(response?.successfulRows ?? 0),
+            errors: normalizedErrors,
+          });
           setUploading(false);
         },
-        (error) => {
+        (error, response) => {
           console.error('Upload error:', error);
+          const responseData = error?.response?.data || response?.data;
+          const backendMessage = extractBadRequestErrorMessage(
+            responseData?.message,
+            responseData?.errors,
+          );
+          const errorMessage =
+            backendMessage !== 'Invalid request format'
+              ? backendMessage
+              : error?.message && !String(error.message).includes('status code')
+              ? error.message
+              : 'Upload failed. Please try again.';
+
           setResult({
             type: 'contacts',
             success: false,
             totalRows: 0,
             successfulRows: 0,
-            errors: ['Upload failed. Please try again.'],
+            errors: [errorMessage],
           });
           setUploading(false);
-        }
+        },
       );
-    } else if (mode === 'guests') {
+    } else {
+      const serviceUploader =
+        mode === 'guests'
+          ? serviceRecordingApi.bulkUploadGuests
+          : mode === 'believers'
+          ? serviceRecordingApi.bulkUploadBelievers
+          : serviceRecordingApi.bulkUploadRedZone;
+
       try {
-        const summary = await serviceRecordingApi.bulkUploadGuests(file);
+        const summary = await serviceUploader(file);
         setResult({ type: 'service', summary });
-      } catch {
+      } catch (error: any) {
+        const responseData = error?.response?.data;
+        const backendMessage = extractBadRequestErrorMessage(
+          responseData?.message,
+          responseData?.errors,
+        );
+        const errorMessage =
+          backendMessage !== 'Invalid request format'
+            ? backendMessage
+            : error?.message && !String(error.message).includes('status code')
+            ? error.message
+            : 'Upload failed. Please try again.';
+
         setResult({
           type: 'service',
-          summary: { total: 0, created: 0, linked: 0, errors: [] },
-        });
-      } finally {
-        setUploading(false);
-      }
-    } else if (mode === 'believers') {
-      try {
-        const summary = await serviceRecordingApi.bulkUploadBelievers(file);
-        setResult({ type: 'service', summary });
-      } catch {
-        setResult({
-          type: 'service',
-          summary: { total: 0, created: 0, linked: 0, errors: [] },
+          summary: EMPTY_SERVICE_SUMMARY,
+          error: errorMessage,
         });
       } finally {
         setUploading(false);
       }
     }
   };
-
-  const uploadLabel = mode === 'contacts'
-    ? 'Upload Contacts'
-    : mode === 'guests'
-    ? 'Upload Guests'
-    : 'Upload Believers';
 
   return (
     <Box>
@@ -174,6 +226,7 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
         <ToggleButton value="contacts">Contacts</ToggleButton>
         <ToggleButton value="guests">First-time Guests</ToggleButton>
         <ToggleButton value="believers">New Believers</ToggleButton>
+        <ToggleButton value="redzone">Red Zone</ToggleButton>
       </ToggleButtonGroup>
 
       <Typography variant="body2" color="text.secondary" paragraph>
@@ -233,17 +286,13 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
       {/* Upload Results — Contacts */}
       {result?.type === 'contacts' && (
         <Box mb={2}>
-          <Alert
-            severity={result.success ? 'success' : 'error'}
-            sx={{ mb: 2 }}
-          >
+          <Alert severity={result.success ? 'success' : 'error'} sx={{ mb: 2 }}>
             {result.success
               ? `Successfully imported ${result.successfulRows} of ${result.totalRows} contacts`
-              : 'Upload failed'
-            }
+              : 'Upload failed'}
           </Alert>
 
-          {result.errors.length > 0 && (
+          {(result.errors?.length ?? 0) > 0 && (
             <Box>
               <Typography variant="subtitle2" gutterBottom>
                 Issues Found:
@@ -260,7 +309,9 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
                 {result.errors.length > 10 && (
                   <ListItem>
                     <ListItemText
-                      primary={`... and ${result.errors.length - 10} more errors`}
+                      primary={`... and ${
+                        result.errors.length - 10
+                      } more errors`}
                       sx={{ fontStyle: 'italic' }}
                     />
                   </ListItem>
@@ -271,19 +322,25 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
         </Box>
       )}
 
-      {/* Upload Results — Guests / Believers */}
+      {/* Upload Results — Guests / Believers / Red Zone */}
       {result?.type === 'service' && (
         <Box mb={2}>
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {result.summary.created} new contact{result.summary.created !== 1 ? 's' : ''} created,{' '}
-            {result.summary.linked} linked to existing contacts.
+          <Alert severity={result.error ? 'error' : 'success'} sx={{ mb: 2 }}>
+            {result.error
+              ? result.error
+              : `${result.summary.created} new contact${
+                  result.summary.created !== 1 ? 's' : ''
+                } created, ${
+                  result.summary.linked
+                } linked to existing contacts.`}
           </Alert>
 
           {result.summary.errors.length > 0 && (
             <Alert severity="warning" sx={{ mb: 2 }}>
-              {result.summary.errors.length} row{result.summary.errors.length !== 1 ? 's' : ''} had issues:
+              {result.summary.errors.length} row
+              {result.summary.errors.length !== 1 ? 's' : ''} had issues:
               <Box component="ul" sx={{ mt: 1, mb: 0, pl: 2 }}>
-                {result.summary.errors.map(e => (
+                {result.summary.errors.map((e) => (
                   <li key={e.row}>
                     Row {e.row} — {e.name || 'Unknown'}: {e.error}
                   </li>
@@ -292,7 +349,9 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             </Alert>
           )}
 
-          <Button onClick={onComplete} variant="contained">Done</Button>
+          <Button onClick={onComplete} variant="contained">
+            Done
+          </Button>
         </Box>
       )}
 
@@ -305,12 +364,16 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             Required CSV Columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>firstName</strong> - First name (required)<br />
-            • <strong>lastName</strong> - Last name (required)<br />
-            • <strong>email</strong> - Email address<br />
-            • <strong>phone</strong> - Phone number<br />
-            • <strong>dateOfBirth</strong> - Date of birth (YYYY-MM-DD format)<br />
-            • <strong>gender</strong> - Gender (Male/Female/Other)<br />
+            • <strong>firstName</strong> - First name (required)
+            <br />• <strong>lastName</strong> - Last name (required)
+            <br />• <strong>email</strong> - Email address (required — used for
+            login)
+            <br />• <strong>phone</strong> - Phone number
+            <br />• <strong>dateOfBirth</strong> - Date of birth (YYYY-MM-DD
+            format)
+            <br />• <strong>gender</strong> - Gender (Male/Female)
+            <br />• <strong>country</strong> - Country (required)
+            <br />
           </Typography>
         </Box>
       )}
@@ -321,20 +384,24 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             Required columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>First Name</strong> (required)<br />
-            • <strong>Last Name</strong> (required)<br />
-            • <strong>Phone</strong> (required)<br />
+            • <strong>firstName</strong> - First name (required)
+            <br />• <strong>lastName</strong> - Last name (required)
+            <br />• <strong>phone</strong> - Phone number
+            <br />
           </Typography>
           <Typography variant="subtitle2" gutterBottom sx={{ mt: 1 }}>
             Optional columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>Email</strong><br />
-            • <strong>Address</strong><br />
-            • <strong>How Did You Hear About Us</strong><br />
-            • <strong>How May We Pray For You</strong><br />
-            • <strong>Church Location</strong> — defaults to your location if blank<br />
-            • <strong>Service Date</strong> — YYYY-MM-DD or DD/MM/YYYY, defaults to today if blank<br />
+            • <strong>email</strong> - Email address
+            <br />• <strong>Address</strong>
+            <br />• <strong>How Did You Hear About Us</strong>
+            <br />• <strong>How May We Pray For You</strong>
+            <br />• <strong>Church Location</strong> — defaults to your location
+            if blank
+            <br />• <strong>Service Date</strong> — YYYY-MM-DD or DD/MM/YYYY,
+            defaults to today if blank
+            <br />
           </Typography>
         </Box>
       )}
@@ -345,34 +412,53 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             Required columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>First Name</strong> (required)<br />
-            • <strong>Last Name</strong> (required)<br />
-            • <strong>Phone</strong> (required)<br />
+            • <strong>firstName</strong> - First name (required)
+            <br />• <strong>lastName</strong> - Last name (required)
+            <br />• <strong>phone</strong> - Phone number
+            <br />
           </Typography>
           <Typography variant="subtitle2" gutterBottom sx={{ mt: 1 }}>
             Optional columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>Email</strong><br />
-            • <strong>Address</strong><br />
-            • <strong>Led to Christ By</strong><br />
-            • <strong>Led to Christ On</strong> — YYYY-MM-DD or DD/MM/YYYY, defaults to today if blank<br />
-            • <strong>Notes</strong><br />
+            • <strong>email</strong> - Email address
+            <br />• <strong>Address</strong>
+            <br />• <strong>Led to Christ By</strong>
+            <br />• <strong>Led to Christ On</strong> — YYYY-MM-DD or
+            DD/MM/YYYY, defaults to today if blank
+            <br />• <strong>Notes</strong>
+            <br />
+          </Typography>
+        </Box>
+      )}
+
+      {mode === 'redzone' && (
+        <Box mb={3}>
+          <Typography variant="subtitle2" gutterBottom>
+            Use these CSV columns:
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            • <strong>First Name</strong>
+            <br />• <strong>Last Name</strong>
+            <br />• <strong>Phone</strong>
+            <br />• <strong>Email</strong>
+            <br />• <strong>Gender</strong>
+            <br />• <strong>Notes</strong>
+            <br />• <strong>Church Location</strong>
+            <br />
           </Typography>
         </Box>
       )}
 
       {/* Action Buttons */}
       <Box display="flex" gap={2} justifyContent="flex-end">
-        <Button onClick={onCancel}>
-          Cancel
-        </Button>
+        <Button onClick={onCancel}>Cancel</Button>
         <Button
           variant="contained"
           onClick={handleUpload}
           disabled={!file || uploading}
         >
-          {uploading ? 'Uploading...' : uploadLabel}
+          {uploading ? 'Uploading...' : UPLOAD_LABELS[mode]}
         </Button>
         {result?.type === 'contacts' && result.success && (
           <Button

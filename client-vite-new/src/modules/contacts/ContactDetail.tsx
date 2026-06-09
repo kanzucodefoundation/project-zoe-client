@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Typography,
@@ -19,6 +20,9 @@ import {
   ListItemText,
   Tabs,
   Tab,
+  Alert,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -32,7 +36,13 @@ import {
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 import { get } from '../../utils/ajax';
-import { remoteRoutes, localRoutes } from '../../data/constants';
+import {
+  remoteRoutes,
+  localRoutes,
+  appPermissions,
+} from '../../data/constants';
+import type { RootState } from '../../data/store';
+import { canViewTasks, hasAnyCapability } from '../../utils/permissions';
 import ContactForm from './ContactForm';
 import ContactTasksTab from '../tasks/ContactTasksTab';
 import ContactActivityFeed from './ContactActivityFeed';
@@ -50,13 +60,18 @@ interface ContactData {
   ageGroup?: string;
   address?: string;
   groupMemberships?: Array<{ group?: { id: number; name: string } }>;
+  avatar?: string;
 }
 
 function mapApiResponse(response: any): ContactData {
   const person = response.person || {};
-  const primaryEmail = response.emails?.find((e: any) => e.isPrimary) || response.emails?.[0];
-  const primaryPhone = response.phones?.find((p: any) => p.isPrimary) || response.phones?.[0];
-  const primaryAddress = response.addresses?.find((a: any) => a.isPrimary) || response.addresses?.[0];
+  const primaryEmail =
+    response.emails?.find((e: any) => e.isPrimary) || response.emails?.[0];
+  const primaryPhone =
+    response.phones?.find((p: any) => p.isPrimary) || response.phones?.[0];
+  const primaryAddress =
+    response.addresses?.find((a: any) => a.isPrimary) ||
+    response.addresses?.[0];
 
   const addressParts = [
     primaryAddress?.freeForm,
@@ -81,12 +96,20 @@ function mapApiResponse(response: any): ContactData {
 }
 
 const ContactDetail = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { contactId } = useParams<{ contactId: string }>();
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.core);
   const [contact, setContact] = useState<ContactData | null>(null);
   const [loading, setLoading] = useState(true);
   const [editDialog, setEditDialog] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+  const canViewContactEditActions = hasAnyCapability(user, [
+    appPermissions.roleCrmEdit,
+  ]);
+  const canViewTaskTab = canViewTasks(user);
 
   useEffect(() => {
     if (contactId) {
@@ -106,15 +129,20 @@ const ContactDetail = () => {
       (error) => {
         console.error('Contact detail error:', error);
         setLoading(false);
-      }
+      },
     );
   };
 
   const handleEdit = () => {
+    if (!canViewContactEditActions) {
+      return;
+    }
+    setEditError(null);
     setEditDialog(true);
   };
 
   const handleEditSave = () => {
+    setEditError(null);
     setEditDialog(false);
     fetchContact();
   };
@@ -163,38 +191,49 @@ const ContactDetail = () => {
   return (
     <Box>
       {/* Header */}
-      <Box display="flex" alignItems="center" gap={2} mb={3}>
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        gap={1.5}
+        mb={{ xs: 2, sm: 3 }}
+      >
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(localRoutes.contacts)}
+          fullWidth={isMobile}
         >
           Back
         </Button>
         <Typography variant="h4" flex={1}>
           Contact Details
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<EditIcon />}
-          onClick={handleEdit}
-        >
-          Edit
-        </Button>
+        {canViewContactEditActions ? (
+          <Button
+            variant="contained"
+            startIcon={<EditIcon />}
+            onClick={handleEdit}
+            fullWidth={isMobile}
+          >
+            Edit
+          </Button>
+        ) : null}
       </Box>
 
-      <Grid container spacing={6}>
+      <Grid container spacing={{ xs: 2, md: 6 }}>
         {/* Profile Card */}
         <Grid size={{ xs: 12, md: 4 }}>
           <Card elevation={2}>
             <CardContent sx={{ textAlign: 'center' }}>
               <Avatar
+                src={contact.avatar || undefined}
                 sx={{
                   width: 120,
                   height: 120,
                   mx: 'auto',
                   mb: 2,
-                  bgcolor: 'primary.main',
-                  fontSize: '2rem'
+                  bgcolor: 'primary.paper',
+                  fontSize: '2rem',
                 }}
               >
                 {getInitials(contact)}
@@ -220,15 +259,18 @@ const ContactDetail = () => {
                     size="medium"
                   />
                 )}
-                {contact.groupMemberships?.map((gm) => gm.group && (
-                  <Chip
-                    key={gm.group.id}
-                    icon={<GroupIcon />}
-                    label={gm.group.name}
-                    color="primary"
-                    size="medium"
-                  />
-                ))}
+                {contact.groupMemberships?.map(
+                  (gm) =>
+                    gm.group && (
+                      <Chip
+                        key={gm.group.id}
+                        icon={<GroupIcon />}
+                        label={gm.group.name}
+                        color="primary"
+                        size="medium"
+                      />
+                    ),
+                )}
               </Box>
             </CardContent>
           </Card>
@@ -237,9 +279,14 @@ const ContactDetail = () => {
         {/* Tabs + Content */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-            <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, v) => setActiveTab(v)}
+              variant="scrollable"
+              allowScrollButtonsMobile
+            >
               <Tab label="Profile" />
-              <Tab label="Tasks" />
+              {canViewTaskTab ? <Tab label="Tasks" /> : null}
               <Tab label="Activity" />
             </Tabs>
           </Box>
@@ -253,35 +300,42 @@ const ContactDetail = () => {
                 </Typography>
                 <List>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
-                    <ListItemText
-                      primary="Full Name"
-                      secondary={fullName}
-                    />
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <PersonIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Full Name" secondary={fullName} />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><CalendarIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <CalendarIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Date of Birth"
                       secondary={formatDate(contact.dateOfBirth)}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <PersonIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Gender"
                       secondary={contact.gender || 'Not specified'}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <PersonIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Marital Status"
                       secondary={contact.civilStatus || 'Not specified'}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><WorkIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <WorkIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Place of Work"
                       secondary={contact.placeOfWork || 'Not specified'}
@@ -296,21 +350,27 @@ const ContactDetail = () => {
                 </Typography>
                 <List>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><EmailIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <EmailIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Email"
                       secondary={contact.email || 'Not provided'}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PhoneIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <PhoneIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Phone"
                       secondary={contact.phone || 'Not provided'}
                     />
                   </ListItem>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><LocationIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <LocationIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Address"
                       secondary={contact.address || 'Not provided'}
@@ -325,12 +385,18 @@ const ContactDetail = () => {
                 </Typography>
                 <List>
                   <ListItem sx={{ gap: 2 }}>
-                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><GroupIcon /></ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <GroupIcon />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Group Memberships"
                       secondary={
-                        contact.groupMemberships && contact.groupMemberships.length > 0
-                          ? contact.groupMemberships.map(gm => gm.group?.name).filter(Boolean).join(', ')
+                        contact.groupMemberships &&
+                        contact.groupMemberships.length > 0
+                          ? contact.groupMemberships
+                              .map((gm) => gm.group?.name)
+                              .filter(Boolean)
+                              .join(', ')
                           : 'Not assigned'
                       }
                     />
@@ -346,7 +412,11 @@ const ContactDetail = () => {
                         </Typography>
                         <List>
                           <ListItem sx={{ gap: 2 }}>
-                            <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}><PersonIcon /></ListItemIcon>
+                            <ListItemIcon
+                              sx={{ minWidth: 'auto', fontSize: 28 }}
+                            >
+                              <PersonIcon />
+                            </ListItemIcon>
                             <ListItemText
                               primary="Age Group"
                               secondary={contact.ageGroup}
@@ -362,12 +432,12 @@ const ContactDetail = () => {
           )}
 
           {/* Tasks Tab */}
-          {activeTab === 1 && (
+          {canViewTaskTab && activeTab === 1 && (
             <ContactTasksTab contactId={contact.id} />
           )}
 
           {/* Activity Tab */}
-          {activeTab === 2 && (
+          {activeTab === (canViewTaskTab ? 2 : 1) && (
             <ContactActivityFeed contactId={contact.id} />
           )}
         </Grid>
@@ -376,16 +446,30 @@ const ContactDetail = () => {
       {/* Edit Dialog */}
       <Dialog
         open={editDialog}
-        onClose={() => setEditDialog(false)}
+        onClose={() => {
+          setEditError(null);
+          setEditDialog(false);
+        }}
         maxWidth="md"
         fullWidth
+        fullScreen={isMobile}
+        scroll="paper"
       >
         <DialogTitle>Edit Contact</DialogTitle>
-        <DialogContent>
+        <DialogContent dividers={isMobile}>
+          {editError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {editError}
+            </Alert>
+          )}
           <ContactForm
             contactId={contactId}
             onSave={handleEditSave}
-            onCancel={() => setEditDialog(false)}
+            onCancel={() => {
+              setEditError(null);
+              setEditDialog(false);
+            }}
+            onError={(message) => setEditError(message || null)}
           />
         </DialogContent>
       </Dialog>

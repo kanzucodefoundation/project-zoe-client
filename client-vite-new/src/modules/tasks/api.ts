@@ -1,6 +1,15 @@
 import ajax from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
-import type { Task, TaskComment, TaskAttachment, ContactActivity, RetentionSummary, TaskFilters } from '../../utils/types';
+import type {
+  Task,
+  TaskComment,
+  TaskAttachment,
+  ContactActivity,
+  RetentionSummary,
+  RetentionReport,
+  RetentionWeekReport,
+  TaskFilters,
+} from '../../utils/types';
 
 export const taskApi = {
   create: (data: {
@@ -24,21 +33,44 @@ export const taskApi = {
   updateStatus: (id: number, data: Record<string, any>): Promise<Task> =>
     ajax.patch(`${remoteRoutes.tasks}/${id}/status`, data).then((r) => r.data),
 
-  update: (id: number, data: { title?: string; dueAt?: string | null; assignedToId?: number | null }): Promise<Task> =>
+  update: (
+    id: number,
+    data: {
+      title?: string;
+      dueAt?: string | null;
+      assignedToId?: number | null;
+    },
+  ): Promise<Task> =>
     ajax.patch(`${remoteRoutes.tasks}/${id}`, data).then((r) => r.data),
 
   reassign: (id: number, assignedToId: number): Promise<Task> =>
-    ajax.patch(`${remoteRoutes.tasks}/${id}/assign`, { assignedToId }).then((r) => r.data),
+    ajax
+      .patch(`${remoteRoutes.tasks}/${id}/assign`, { assignedToId })
+      .then((r) => r.data),
 
   addComment: (id: number, body: string): Promise<TaskComment> =>
-    ajax.post(`${remoteRoutes.tasks}/${id}/comments`, { body }).then((r) => r.data),
+    ajax
+      .post(`${remoteRoutes.tasks}/${id}/comments`, { body })
+      .then((r) => r.data),
 
-  addAttachment: (id: number, url: string, label?: string): Promise<TaskAttachment> =>
-    ajax.post(`${remoteRoutes.tasks}/${id}/attachments`, { url, label }).then((r) => r.data),
+  addAttachment: (
+    id: number,
+    url: string,
+    label?: string,
+  ): Promise<TaskAttachment> =>
+    ajax
+      .post(`${remoteRoutes.tasks}/${id}/attachments`, { url, label })
+      .then((r) => r.data),
 
-  getRetentionReport: (window: 'month' | '90days' | 'ytd'): Promise<RetentionSummary> =>
-    ajax.get(`${remoteRoutes.tasks}/retention-report`, { params: { window } }).then((r) => r.data),
+  getRetentionReport: (
+    window: 'week' | 'month' | '90days' | 'ytd',
+  ): Promise<RetentionSummary | RetentionReport | RetentionWeekReport> =>
+    ajax
+      .get(`${remoteRoutes.tasks}/retention-report`, { params: { window } })
+      .then((r) => r.data),
 
   getContactActivity: (contactId: number): Promise<ContactActivity[]> =>
-    ajax.get(`${remoteRoutes.contacts}/${contactId}/activity`).then((r) => r.data),
+    ajax
+      .get(`${remoteRoutes.contacts}/${contactId}/activity`)
+      .then((r) => r.data),
 };

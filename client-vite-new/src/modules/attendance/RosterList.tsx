@@ -22,6 +22,7 @@ type FilterMode = 'all' | 'checked' | 'pending';
 interface Props {
   members: RosterMember[];
   isLoading: boolean;
+  canSelect?: boolean;
   selectedIds: Set<number>;
   onToggleSelect: (id: number) => void;
   filterMode: FilterMode;
@@ -34,116 +35,133 @@ function getInitials(firstName: string, lastName: string) {
 
 function getAvatarColor(id: number) {
   const colors = [
-    '#1976d2', '#388e3c', '#f57c00', '#7b1fa2',
-    '#c62828', '#0097a7', '#558b2f', '#ad1457',
+    '#1976d2',
+    '#388e3c',
+    '#f57c00',
+    '#7b1fa2',
+    '#c62828',
+    '#0097a7',
+    '#558b2f',
+    '#ad1457',
   ];
   return colors[id % colors.length];
 }
 
 interface RosterItemProps {
+  canSelect: boolean;
   member: RosterMember;
   isSelected: boolean;
   onToggle: (id: number) => void;
 }
 
-const RosterItem = memo(({ member, isSelected, onToggle }: RosterItemProps) => {
-  const { id, firstName, lastName, isCheckedIn, isFirstTimer, isChild } = member;
-  const initials = getInitials(firstName, lastName);
-  const avatarBg = getAvatarColor(id);
+const RosterItem = memo(
+  ({ member, isSelected, onToggle, canSelect }: RosterItemProps) => {
+    const { id, firstName, lastName, isCheckedIn, isFirstTimer, isChild } =
+      member;
+    const initials = getInitials(firstName, lastName);
+    const avatarBg = getAvatarColor(id);
 
-  return (
-    <ListItem
-      disablePadding
-      divider
-      secondaryAction={
-        isCheckedIn ? (
-          <CheckCircleRoundedIcon color="success" sx={{ fontSize: 28 }} />
-        ) : (
-          <Checkbox
-            edge="end"
-            checked={isSelected}
-            onChange={() => onToggle(id)}
-            icon={<RadioButtonUncheckedRoundedIcon />}
-            checkedIcon={<CheckCircleRoundedIcon />}
-            color="primary"
-            sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
-            inputProps={{ 'aria-label': `Select ${firstName} ${lastName}` }}
-          />
-        )
-      }
-      sx={{
-        bgcolor: isCheckedIn
-          ? 'success.50'
-          : isSelected
-          ? 'primary.50'
-          : 'transparent',
-        transition: 'background-color 0.15s',
-      }}
-    >
-      <ListItemButton
-        onClick={() => !isCheckedIn && onToggle(id)}
-        disabled={isCheckedIn}
+    return (
+      <ListItem
+        disablePadding
+        divider
+        secondaryAction={
+          isCheckedIn ? (
+            <CheckCircleRoundedIcon color="success" sx={{ fontSize: 28 }} />
+          ) : canSelect ? (
+            <Checkbox
+              edge="end"
+              checked={isSelected}
+              onChange={() => onToggle(id)}
+              icon={<RadioButtonUncheckedRoundedIcon />}
+              checkedIcon={<CheckCircleRoundedIcon />}
+              color="primary"
+              sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
+              inputProps={{ 'aria-label': `Select ${firstName} ${lastName}` }}
+            />
+          ) : null
+        }
         sx={{
-          py: 1.25,
-          px: 2,
-          minHeight: 64,
-          '&.Mui-disabled': { opacity: 1 },
+          bgcolor: isCheckedIn
+            ? 'success.50'
+            : isSelected
+            ? 'primary.50'
+            : 'transparent',
+          transition: 'background-color 0.15s',
         }}
       >
-        <ListItemAvatar>
-          <Avatar
-            sx={{
-              bgcolor: isCheckedIn ? 'success.main' : avatarBg,
-              width: 44,
-              height: 44,
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              opacity: isCheckedIn ? 0.7 : 1,
-            }}
-          >
-            {initials}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <Typography
-                variant="body1"
-                fontWeight={isSelected ? 600 : 400}
-                sx={{ color: isCheckedIn ? 'text.secondary' : 'text.primary' }}
-              >
-                {firstName} {lastName}
-              </Typography>
-              {isFirstTimer && (
-                <Chip
-                  label="New"
-                  size="small"
-                  color="success"
-                  icon={<FiberNewRoundedIcon />}
-                  sx={{ height: 20, fontSize: '0.65rem' }}
-                />
-              )}
-              {isChild && (
-                <Chip
-                  label="Child"
-                  size="small"
-                  color="info"
-                  icon={<ChildCareRoundedIcon />}
-                  sx={{ height: 20, fontSize: '0.65rem' }}
-                />
-              )}
-            </Box>
-          }
-          secondary={
-            isCheckedIn && member.checkedInAt
-              ? `Checked in at ${new Date(member.checkedInAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-              : member.phone ?? undefined
-          }
-        />
-      </ListItemButton>
-    </ListItem>
-  );
-});
+        <ListItemButton
+          onClick={() => !isCheckedIn && canSelect && onToggle(id)}
+          disabled={isCheckedIn || !canSelect}
+          sx={{
+            py: 1.25,
+            px: 2,
+            minHeight: 64,
+            '&.Mui-disabled': { opacity: 1 },
+          }}
+        >
+          <ListItemAvatar>
+            <Avatar
+              sx={{
+                bgcolor: isCheckedIn ? 'success.main' : avatarBg,
+                width: 44,
+                height: 44,
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                opacity: isCheckedIn ? 0.7 : 1,
+              }}
+            >
+              {initials}
+            </Avatar>
+          </ListItemAvatar>
+          <ListItemText
+            primary={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                <Typography
+                  variant="body1"
+                  fontWeight={isSelected ? 600 : 400}
+                  sx={{
+                    color: isCheckedIn ? 'text.secondary' : 'text.primary',
+                  }}
+                >
+                  {firstName} {lastName}
+                </Typography>
+                {isFirstTimer && (
+                  <Chip
+                    label="New"
+                    size="small"
+                    color="success"
+                    icon={<FiberNewRoundedIcon />}
+                    sx={{ height: 20, fontSize: '0.65rem' }}
+                  />
+                )}
+                {isChild && (
+                  <Chip
+                    label="Child"
+                    size="small"
+                    color="info"
+                    icon={<ChildCareRoundedIcon />}
+                    sx={{ height: 20, fontSize: '0.65rem' }}
+                  />
+                )}
+              </Box>
+            }
+            secondary={
+              isCheckedIn && member.checkedInAt
+                ? `Checked in at ${new Date(
+                    member.checkedInAt,
+                  ).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}`
+                : member.phone ?? undefined
+            }
+          />
+        </ListItemButton>
+      </ListItem>
+    );
+  },
+);
 RosterItem.displayName = 'RosterItem';
 
 function RosterSkeleton() {
@@ -167,6 +185,7 @@ function RosterSkeleton() {
 export default function RosterList({
   members,
   isLoading,
+  canSelect = true,
   selectedIds,
   onToggleSelect,
   filterMode,
@@ -176,7 +195,8 @@ export default function RosterList({
     let list = members;
 
     if (filterMode === 'checked') list = list.filter((m) => m.isCheckedIn);
-    else if (filterMode === 'pending') list = list.filter((m) => !m.isCheckedIn);
+    else if (filterMode === 'pending')
+      list = list.filter((m) => !m.isCheckedIn);
 
     // Client-side fuzzy filter (server already filters by search, but this handles
     // the cached/offline case and provides instant feedback as user types)
@@ -219,6 +239,7 @@ export default function RosterList({
       {visible.map((member) => (
         <RosterItem
           key={member.id}
+          canSelect={canSelect}
           member={member}
           isSelected={selectedIds.has(member.id)}
           onToggle={onToggleSelect}

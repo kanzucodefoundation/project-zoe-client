@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
@@ -18,7 +19,10 @@ interface SideMenuMobileProps {
   toggleDrawer: (newOpen: boolean) => () => void;
 }
 
-export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobileProps) {
+export default function SideMenuMobile({
+  open,
+  toggleDrawer,
+}: SideMenuMobileProps) {
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.core);
 
@@ -37,46 +41,85 @@ export default function SideMenuMobile({ open, toggleDrawer }: SideMenuMobilePro
         [`& .${drawerClasses.paper}`]: {
           backgroundImage: 'none',
           backgroundColor: 'background.paper',
+          width: { xs: 'min(92vw, 380px)', sm: 380 },
+          maxWidth: '100vw',
         },
       }}
+      ModalProps={{ keepMounted: true }}
     >
       <Stack
         sx={{
-          maxWidth: '70dvw',
-          height: '100%',
+          width: '100%',
+          height: '100dvh',
+          minHeight: 0,
         }}
       >
-        <Stack direction="row" sx={{ p: 2, pb: 0, gap: 1 }}>
+        <Stack
+          direction="row"
+          sx={{
+            p: 2,
+            pb: 1.5,
+            gap: 1,
+            alignItems: 'center',
+          }}
+        >
           <Stack
             direction="row"
-            sx={{ gap: 1, alignItems: 'center', flexGrow: 1, p: 1 }}
+            sx={{ gap: 1.25, alignItems: 'center', flexGrow: 1, minWidth: 0 }}
           >
             <Avatar
-              sx={{ 
-                width: 24, 
-                height: 24,
+              sx={{
+                width: 36,
+                height: 36,
                 borderRadius: 1,
               }}
             >
-              {user?.username?.charAt(0)?.toUpperCase() || user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+              {user?.username?.charAt(0)?.toUpperCase() ||
+                user?.fullName?.charAt(0)?.toUpperCase() ||
+                'U'}
             </Avatar>
-            <Typography component="p" variant="h6" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {user?.fullName || user?.username || 'User'}
-            </Typography>
+            <Stack sx={{ minWidth: 0 }}>
+              <Typography
+                component="p"
+                variant="subtitle1"
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  lineHeight: 1.2,
+                }}
+              >
+                {user?.fullName || user?.username || 'User'}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {user?.email || 'Project Zoe'}
+              </Typography>
+            </Stack>
           </Stack>
           <MenuButton showBadge>
             <NotificationsRoundedIcon />
           </MenuButton>
+          <MenuButton aria-label="Close menu" onClick={toggleDrawer(false)}>
+            <CloseRoundedIcon />
+          </MenuButton>
         </Stack>
         <Divider />
         <Stack sx={{ flexGrow: 1, overflow: 'auto' }}>
-          <MenuContent />
+          <MenuContent onNavigate={toggleDrawer(false)} />
           <Divider />
         </Stack>
-        <Stack sx={{ p: 2 }}>
-          <Button 
-            variant="outlined" 
-            fullWidth 
+        <Stack sx={{ p: 2, pb: 'calc(16px + env(safe-area-inset-bottom))' }}>
+          <Button
+            variant="outlined"
+            fullWidth
             startIcon={<LogoutRoundedIcon />}
             onClick={handleLogout}
           >

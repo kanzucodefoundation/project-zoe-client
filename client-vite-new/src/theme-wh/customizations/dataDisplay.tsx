@@ -1,11 +1,10 @@
-import {type Theme, alpha, type Components } from '@mui/material/styles';
+import { type Theme, alpha, type Components } from '@mui/material/styles';
 import { svgIconClasses } from '@mui/material/SvgIcon';
 import { typographyClasses } from '@mui/material/Typography';
 import { buttonBaseClasses } from '@mui/material/ButtonBase';
 import { chipClasses } from '@mui/material/Chip';
 import { iconButtonClasses } from '@mui/material/IconButton';
 import { gray, red, green } from '../themePrimitives';
-
 
 export const dataDisplayCustomizations: Components<Theme> = {
   MuiList: {
@@ -199,6 +198,26 @@ export const dataDisplayCustomizations: Components<Theme> = {
   },
   MuiTablePagination: {
     styleOverrides: {
+      root: ({ theme }) => ({
+        [theme.breakpoints.down('sm')]: {
+          overflow: 'hidden',
+          '& .MuiTablePagination-toolbar': {
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            gap: 1,
+            justifyContent: 'flex-end',
+            paddingLeft: 8,
+            paddingRight: 8,
+          },
+          '& .MuiTablePagination-spacer': {
+            display: 'none',
+          },
+          '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows':
+            {
+              margin: 0,
+            },
+        },
+      }),
       actions: {
         display: 'flex',
         gap: 8,
@@ -209,6 +228,17 @@ export const dataDisplayCustomizations: Components<Theme> = {
           height: 36,
         },
       },
+    },
+  },
+  MuiTableContainer: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        WebkitOverflowScrolling: 'touch',
+        [theme.breakpoints.down('sm')]: {
+          borderRadius: theme.shape.borderRadius,
+          maxWidth: '100%',
+        },
+      }),
     },
   },
   MuiIcon: {

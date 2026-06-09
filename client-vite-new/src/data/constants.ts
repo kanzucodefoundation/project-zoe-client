@@ -29,6 +29,12 @@ export const appPermissions = {
 
   roleFinanceView: 'FINANCE_VIEW',
   roleFinanceEdit: 'FINANCE_EDIT',
+
+  roleTaskView: 'TASK_VIEW',
+  roleTaskEdit: 'TASK_EDIT',
+
+  roleAttendanceView: 'ATTENDANCE_VIEW',
+  roleAttendanceEdit: 'ATTENDANCE_EDIT',
 };
 
 export const permissionsList = Object.values(appPermissions);
@@ -103,6 +109,7 @@ export const localRoutes = {
   // Tasks
   tasks: '/tasks',
   tasksMine: '/tasks/mine',
+  tasksAssign: '/tasks/assign',
   retentionReport: '/reports/retention',
 
   // Attendance
@@ -111,7 +118,9 @@ export const localRoutes = {
   attendanceHistory: '/attendance/history',
 };
 
-export const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';
+export const apiBaseUrl =
+  import.meta.env.VITE_API_URL ||
+  'https://projectzoe.kanzucodefoundation.org/server';
 
 export const remoteRoutes = {
   authServer: apiBaseUrl,

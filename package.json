@@ -132,6 +132,9 @@
     ]
   },
   "lint-staged": {
+    "client-vite-new/**/*.{ts,tsx}": [
+      "prettier --write"
+    ],
     "*.js": "eslint --cache --fix",
     "*.{ts,tsx}": [
       "prettier --write",

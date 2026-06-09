@@ -7,50 +7,42 @@ import {
   Alert,
   Link,
   CircularProgress,
-  IconButton,
-  InputAdornment,
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../../data/coreSlice';
 import { post } from '../../utils/ajax';
-import { remoteRoutes, localRoutes } from '../../data/constants';
+import { localRoutes, remoteRoutes } from '../../data/constants';
 import loginBackground from '../../assets/images/login-background.jpg';
 
-const Login = () => {
-  const dispatch = useDispatch();
+const ForgotPassword = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    churchName: 'Worship Harvest', // Hardcoded for initial launch - uncomment field below to re-enable
-    username: '',
-    password: '',
-  });
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     post(
-      remoteRoutes.login,
-      formData,
-      (data) => {
-        dispatch(login(data));
+      remoteRoutes.forgotPassword,
+      {
+        churchName: 'Worship Harvest',
+        username: email,
+      },
+      () => {
+        setSuccess(
+          'An email has been sent to the provided address if it exists in the platform.',
+        );
+        setEmail('');
         setLoading(false);
       },
-      (_error) => {
-        setError('Login failed. Please check your credentials.');
+      () => {
+        setError(
+          'Sorry, we encountered an issue while processing your password reset request. Please try again.',
+        );
         setLoading(false);
       },
     );
@@ -91,12 +83,11 @@ const Login = () => {
             Project Zoe
           </Typography>
           <Typography variant="body1" sx={{ mt: 1, opacity: 0.9 }}>
-            Church Management System
+            Password Recovery
           </Typography>
         </Box>
       </Box>
 
-      {/* Left image panel */}
       <Box
         sx={{
           flex: 1,
@@ -128,12 +119,11 @@ const Login = () => {
             Project Zoe
           </Typography>
           <Typography variant="h6" sx={{ opacity: 0.9 }}>
-            Church Management System
+            Password Recovery
           </Typography>
         </Box>
       </Box>
 
-      {/* Right form panel */}
       <Box
         sx={{
           flex: 1,
@@ -147,10 +137,11 @@ const Login = () => {
       >
         <Box sx={{ width: '100%', maxWidth: 400 }}>
           <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Sign in
+            Forgot Password
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-            Enter your credentials to access your account
+            Enter your email address and we&apos;ll send reset instructions if
+            an account exists.
           </Typography>
 
           {error && (
@@ -159,69 +150,26 @@ const Login = () => {
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit}>
-            {/* Church Name - HIDDEN for initial launch (hardcoded to "Worship Harvest") */}
-            {/* Uncomment below to re-enable church name field for multi-tenant:
-            <TextField
-              variant="outlined"
-              fullWidth
-              label="Church Name"
-              name="churchName"
-              autoComplete="organization"
-              autoFocus
-              value={formData.churchName}
-              onChange={handleChange}
-              sx={{ mb: 2.5 }}
-            />
-            */}
+          {success && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {success}
+            </Alert>
+          )}
 
+          <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
               label="Email"
-              name="username"
+              name="email"
               type="email"
               autoComplete="email"
               autoFocus
-              value={formData.username}
-              onChange={handleChange}
-              sx={{ mb: 2.5 }}
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{ mb: 3 }}
             />
-            <TextField
-              fullWidth
-              label="Password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              autoComplete="current-password"
-              value={formData.password}
-              onChange={handleChange}
-              sx={{ mb: 2 }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      edge="end"
-                      onClick={() => setShowPassword((value) => !value)}
-                      aria-label={
-                        showPassword ? 'Hide password' : 'Show password'
-                      }
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
-              <Link
-                component="button"
-                type="button"
-                variant="body2"
-                onClick={() => navigate(localRoutes.forgotPassword)}
-                sx={{ cursor: 'pointer' }}
-              >
-                Forgot Password?
-              </Link>
-            </Box>
+
             <Button
               type="submit"
               fullWidth
@@ -239,20 +187,20 @@ const Login = () => {
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                'Sign in'
+                'Send Reset Email'
               )}
             </Button>
 
             <Typography variant="body2" align="center" color="text.secondary">
-              Don&apos;t have an account?{' '}
+              Remembered your password?{' '}
               <Link
                 component="button"
                 type="button"
                 variant="body2"
-                onClick={() => navigate(localRoutes.register)}
+                onClick={() => navigate(localRoutes.login)}
                 sx={{ cursor: 'pointer' }}
               >
-                Sign up
+                Back to login
               </Link>
             </Typography>
           </Box>
@@ -262,4 +210,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

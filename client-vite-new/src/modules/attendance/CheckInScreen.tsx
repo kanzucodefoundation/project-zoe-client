@@ -21,8 +21,14 @@ import PersonAddRoundedIcon from '@mui/icons-material/PersonAddRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import SelectAllRoundedIcon from '@mui/icons-material/SelectAllRounded';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { fetchLocations, fetchRoster, fetchTodayService, postCheckIn } from './api';
+import {
+  fetchLocations,
+  fetchRoster,
+  fetchTodayService,
+  postCheckIn,
+} from './api';
 import {
   cacheRoster,
   dequeue,
@@ -37,19 +43,25 @@ import OfflineBanner from './OfflineBanner';
 import RosterList from './RosterList';
 import StatsWidget from './StatsWidget';
 import type { LocationOption } from './types';
+import type { RootState } from '../../data/store';
+import { canEditAttendance } from '../../utils/permissions';
 
 type FilterMode = 'all' | 'checked' | 'pending';
 
 export default function CheckInScreen() {
+  const user = useSelector((state: RootState) => state.core.user);
   const queryClient = useQueryClient();
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const [locationId, setLocationId] = useState<number | null>(getSelectedLocation());
+  const [locationId, setLocationId] = useState<number | null>(
+    getSelectedLocation(),
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [guestOpen, setGuestOpen] = useState(false);
+  const canEditAttendanceData = canEditAttendance(user);
 
   // Debounce search
   useEffect(() => {
@@ -73,18 +85,24 @@ export default function CheckInScreen() {
         searchRef.current?.blur();
       }
       if (e.key === 'n' && !isInput) {
+        if (!canEditAttendanceData) return;
         e.preventDefault();
         setGuestOpen(true);
       }
-      if (e.key === 'Enter' && !isInput && selectedIds.size > 0) {
+      if (
+        e.key === 'Enter' &&
+        !isInput &&
+        canEditAttendanceData &&
+        selectedIds.size > 0
+      ) {
         e.preventDefault();
         handleCheckIn();
       }
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedIds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canEditAttendanceData, selectedIds]);
 
   // Locations
   const { data: locations = [], isLoading: loadingLocations } = useQuery({
@@ -119,7 +137,7 @@ export default function CheckInScreen() {
     },
     enabled: service !== undefined,
     placeholderData: service
-      ? (getCachedRoster(service.id) ?? undefined)
+      ? getCachedRoster(service.id) ?? undefined
       : undefined,
   });
 
@@ -154,7 +172,11 @@ export default function CheckInScreen() {
         (old: typeof roster) =>
           old?.map((m) =>
             ids.includes(m.id)
-              ? { ...m, isCheckedIn: true, checkedInAt: new Date().toISOString() }
+              ? {
+                  ...m,
+                  isCheckedIn: true,
+                  checkedInAt: new Date().toISOString(),
+                }
               : m,
           ) ?? [],
       );
@@ -173,10 +195,16 @@ export default function CheckInScreen() {
       const count = ids.length;
       const offline = !navigator.onLine;
       if (offline) {
-        toast.info(`${count} check-in${count > 1 ? 's' : ''} queued — will sync when online.`);
+        toast.info(
+          `${count} check-in${
+            count > 1 ? 's' : ''
+          } queued — will sync when online.`,
+        );
       } else {
         toast.success(`${count} member${count > 1 ? 's' : ''} checked in!`);
-        queryClient.invalidateQueries({ queryKey: ['attendance-stats', service?.id] });
+        queryClient.invalidateQueries({
+          queryKey: ['attendance-stats', service?.id],
+        });
       }
     },
     onSettled: () => {
@@ -185,13 +213,16 @@ export default function CheckInScreen() {
   });
 
   const handleCheckIn = useCallback(() => {
-    if (!service || selectedIds.size === 0) return;
-    checkInMutation.mutate({ serviceId: service.id, ids: Array.from(selectedIds) });
-  }, [service, selectedIds, checkInMutation]);
+    if (!canEditAttendanceData || !service || selectedIds.size === 0) return;
+    checkInMutation.mutate({
+      serviceId: service.id,
+      ids: Array.from(selectedIds),
+    });
+  }, [canEditAttendanceData, service, selectedIds, checkInMutation]);
 
   // Sync offline queue when online
   const syncOfflineQueue = useCallback(async () => {
-    if (!service) return;
+    if (!canEditAttendanceData || !service) return;
     const queue = getQueue().filter((item) => item.serviceId === service.id);
     for (const item of queue) {
       try {
@@ -202,22 +233,27 @@ export default function CheckInScreen() {
       }
     }
     refetchRoster();
-    queryClient.invalidateQueries({ queryKey: ['attendance-stats', service.id] });
-  }, [service, refetchRoster, queryClient]);
-
-  const handleToggleSelect = useCallback((id: number) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
+    queryClient.invalidateQueries({
+      queryKey: ['attendance-stats', service.id],
     });
-  }, []);
+  }, [canEditAttendanceData, service, refetchRoster, queryClient]);
+
+  const handleToggleSelect = useCallback(
+    (id: number) => {
+      if (!canEditAttendanceData) return;
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        return next;
+      });
+    },
+    [canEditAttendanceData],
+  );
 
   const handleSelectAll = () => {
-    const pending = roster
-      .filter((m) => !m.isCheckedIn)
-      .map((m) => m.id);
+    if (!canEditAttendanceData) return;
+    const pending = roster.filter((m) => !m.isCheckedIn).map((m) => m.id);
     setSelectedIds(new Set(pending));
   };
 
@@ -235,7 +271,15 @@ export default function CheckInScreen() {
     <Container maxWidth="md" sx={{ py: 2 }}>
       <Stack spacing={2}>
         {/* Offline banner */}
-        <OfflineBanner onSync={syncOfflineQueue} />
+        <OfflineBanner
+          onSync={canEditAttendanceData ? syncOfflineQueue : undefined}
+        />
+
+        {!canEditAttendanceData ? (
+          <Alert severity="info">
+            Attendance is in read-only mode for your account.
+          </Alert>
+        ) : null}
 
         {/* Location selector */}
         {!locationId || locations.length > 1 ? (
@@ -306,7 +350,9 @@ export default function CheckInScreen() {
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {service.serviceDate
-                  ? new Date(`${service.serviceDate}T00:00:00`).toLocaleDateString([], {
+                  ? new Date(
+                      `${service.serviceDate}T00:00:00`,
+                    ).toLocaleDateString([], {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
@@ -323,7 +369,12 @@ export default function CheckInScreen() {
             <StatsWidget serviceId={service.id} />
 
             {/* Toolbar: search + filters + actions */}
-            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              flexWrap="wrap"
+            >
               <TextField
                 inputRef={searchRef}
                 value={searchQuery}
@@ -360,28 +411,32 @@ export default function CheckInScreen() {
                 inputProps={{ 'aria-label': 'Search members' }}
               />
 
-              <Tooltip title="Select all pending">
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<SelectAllRoundedIcon />}
-                  onClick={handleSelectAll}
-                  sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
-                >
-                  All
-                </Button>
-              </Tooltip>
+              {canEditAttendanceData ? (
+                <>
+                  <Tooltip title="Select all pending">
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<SelectAllRoundedIcon />}
+                      onClick={handleSelectAll}
+                      sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
+                    >
+                      All
+                    </Button>
+                  </Tooltip>
 
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<PersonAddRoundedIcon />}
-                onClick={() => setGuestOpen(true)}
-                sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
-                aria-label="Add guest (press n)"
-              >
-                Guest
-              </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<PersonAddRoundedIcon />}
+                    onClick={() => setGuestOpen(true)}
+                    sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
+                    aria-label="Add guest (press n)"
+                  >
+                    Guest
+                  </Button>
+                </>
+              ) : null}
             </Stack>
 
             {/* Filter tabs */}
@@ -398,12 +453,16 @@ export default function CheckInScreen() {
                 sx={{ minHeight: 44 }}
               />
               <Tab
-                label={`Checked In (${roster.filter((m) => m.isCheckedIn).length})`}
+                label={`Checked In (${
+                  roster.filter((m) => m.isCheckedIn).length
+                })`}
                 value="checked"
                 sx={{ minHeight: 44 }}
               />
               <Tab
-                label={`Pending (${roster.filter((m) => !m.isCheckedIn).length})`}
+                label={`Pending (${
+                  roster.filter((m) => !m.isCheckedIn).length
+                })`}
                 value="pending"
                 sx={{ minHeight: 44 }}
               />
@@ -412,11 +471,17 @@ export default function CheckInScreen() {
             {/* Roster */}
             <Paper
               variant="outlined"
-              sx={{ borderRadius: 2, overflow: 'hidden', maxHeight: '60vh', overflowY: 'auto' }}
+              sx={{
+                borderRadius: 2,
+                overflow: 'hidden',
+                maxHeight: '60vh',
+                overflowY: 'auto',
+              }}
             >
               <RosterList
                 members={roster}
                 isLoading={loadingRoster}
+                canSelect={canEditAttendanceData}
                 selectedIds={selectedIds}
                 onToggleSelect={handleToggleSelect}
                 filterMode={filterMode}
@@ -428,7 +493,7 @@ export default function CheckInScreen() {
       </Stack>
 
       {/* Floating check-in button (shows when members are selected) */}
-      {service && selectedIds.size > 0 && (
+      {service && canEditAttendanceData && selectedIds.size > 0 && (
         <Fab
           variant="extended"
           color="primary"
@@ -443,7 +508,9 @@ export default function CheckInScreen() {
             zIndex: 1200,
             boxShadow: 6,
           }}
-          aria-label={`Check in ${selectedIds.size} member${selectedIds.size > 1 ? 's' : ''}`}
+          aria-label={`Check in ${selectedIds.size} member${
+            selectedIds.size > 1 ? 's' : ''
+          }`}
         >
           {checkInMutation.isPending ? (
             <CircularProgress size={20} sx={{ mr: 1, color: 'white' }} />
@@ -459,7 +526,7 @@ export default function CheckInScreen() {
       )}
 
       {/* Guest dialog */}
-      {service && (
+      {service && canEditAttendanceData && (
         <GuestDialog
           open={guestOpen}
           serviceId={service.id}

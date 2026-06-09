@@ -1,4 +1,4 @@
-export type $TsFixMe = any
+export type $TsFixMe = any;
 
 // ─── Tasks ────────────────────────────────────────────────────────────────────
 
@@ -14,6 +14,7 @@ export const TaskStatus = {
   TODO: 'todo',
   IN_PROGRESS: 'in_progress',
   DONE: 'done',
+  UNREACHABLE: 'unreachable',
   MATCHED_TO_FELLOWSHIP: 'matched_to_fellowship',
   ATTENDED_FELLOWSHIP: 'attended_fellowship',
   JOINED_SERVING_TEAM: 'joined_serving_team',
@@ -23,13 +24,15 @@ export type TaskStatus = typeof TaskStatus[keyof typeof TaskStatus];
 
 export const CLOSED_STATUSES: TaskStatus[] = [
   TaskStatus.DONE,
+  TaskStatus.UNREACHABLE,
 ];
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {
   [TaskStatus.TODO]: 'To Do',
   [TaskStatus.IN_PROGRESS]: 'In Progress',
   [TaskStatus.DONE]: 'Done',
-  [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Matched to Fellowship',
+  [TaskStatus.UNREACHABLE]: 'Unreachable',
+  [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Tea Hangout - Matched to Fellowship',
   [TaskStatus.ATTENDED_FELLOWSHIP]: 'Attended Fellowship',
   [TaskStatus.JOINED_SERVING_TEAM]: 'Joined Serving Team',
   [TaskStatus.GOT_BAPTISED]: 'Got Baptised',
@@ -45,6 +48,7 @@ export const TYPE_LABELS: Record<TaskType, string> = {
 export const NEXT_STATUS_OPTIONS: TaskStatus[] = [
   TaskStatus.IN_PROGRESS,
   TaskStatus.DONE,
+  TaskStatus.UNREACHABLE,
   TaskStatus.MATCHED_TO_FELLOWSHIP,
   TaskStatus.ATTENDED_FELLOWSHIP,
   TaskStatus.JOINED_SERVING_TEAM,
@@ -76,6 +80,7 @@ export interface Task {
   comments: TaskComment[];
   attachments: TaskAttachment[];
   createdAt: string;
+  latestComment?: TaskComment;
 }
 
 export interface TaskComment {
@@ -110,6 +115,38 @@ export interface RetentionSummary {
   joinedFellowship: number;
   joinedServingTeam: number;
   baptised: number;
+}
+
+export interface RetentionMonthData {
+  month: number;
+  monthName: string;
+  totalNewContacts: number;
+  successfulCallsMade: number;
+  wantToJoinMC: number;
+  servingTeam: number;
+  teaHangout: number;
+  baptism: number;
+}
+
+export interface RetentionReport {
+  year: number;
+  months: RetentionMonthData[];
+}
+
+export interface RetentionWeekData {
+  weekStart: string;
+  label: string;
+  totalNewContacts: number;
+  successfulCallsMade: number;
+  wantToJoinMC: number;
+  servingTeams: number;
+  teaHangout: number;
+  baptism: number;
+}
+
+export interface RetentionWeekReport {
+  year: number;
+  weeks: RetentionWeekData[];
 }
 
 export interface TaskFilters {

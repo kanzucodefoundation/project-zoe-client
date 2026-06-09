@@ -14,10 +14,7 @@ import {
   CircularProgress,
   Link,
 } from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-} from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { post } from '../../utils/ajax';
@@ -78,7 +75,9 @@ const SignUp = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [fobs, setFobs] = useState<Fob[]>([]);
   const [isLoadingLocations, setIsLoadingLocations] = useState(false);
-  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
+  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(
+    null,
+  );
 
   // Fetch locations from backend when church name is entered
   useEffect(() => {
@@ -91,7 +90,11 @@ const SignUp = () => {
       try {
         setIsLoadingLocations(true);
         const response = await fetch(
-          `${remoteRoutes.groupsCombo}/locations/public?churchName=${encodeURIComponent(formData.churchName)}`
+          `${
+            remoteRoutes.groupsCombo
+          }/locations/public?churchName=${encodeURIComponent(
+            formData.churchName,
+          )}`,
         );
 
         if (!response.ok) {
@@ -107,7 +110,10 @@ const SignUp = () => {
         }
       } catch (error: any) {
         console.error('Failed to load locations:', error);
-        toast.error(error.message || 'Failed to load locations. Please check the church name.');
+        toast.error(
+          error.message ||
+            'Failed to load locations. Please check the church name.',
+        );
         setFobs([]);
       } finally {
         setIsLoadingLocations(false);
@@ -123,7 +129,7 @@ const SignUp = () => {
   }, [formData.churchName]);
 
   const availableLocations = formData.fob
-    ? fobs.find(f => f.name === formData.fob)?.locations || []
+    ? fobs.find((f) => f.name === formData.fob)?.locations || []
     : [];
 
   const handleChange = (field: keyof FormData, value: string) => {
@@ -148,7 +154,9 @@ const SignUp = () => {
   };
 
   const handleLocationChange = (locationName: string) => {
-    const location = availableLocations.find(loc => loc.name === locationName);
+    const location = availableLocations.find(
+      (loc) => loc.name === locationName,
+    );
     setFormData((prev) => ({ ...prev, location: locationName }));
     setSelectedLocationId(location?.id || null);
     if (errors.location) {
@@ -219,7 +227,9 @@ const SignUp = () => {
     }
 
     if (fobs.length === 0) {
-      toast.error('No locations available for this church. Please check the church name.');
+      toast.error(
+        'No locations available for this church. Please check the church name.',
+      );
       return;
     }
 
@@ -253,7 +263,11 @@ const SignUp = () => {
 
         if (responseData?.message) {
           errorMessage = responseData.message;
-        } else if (responseData?.errors && Array.isArray(responseData.errors) && responseData.errors.length > 0) {
+        } else if (
+          responseData?.errors &&
+          Array.isArray(responseData.errors) &&
+          responseData.errors.length > 0
+        ) {
           errorMessage = responseData.errors[0];
         } else if (error?.message && !error.message.includes('status code')) {
           // Use axios error message only if it's not the generic "Request failed with status code"
@@ -268,7 +282,45 @@ const SignUp = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        minHeight: '100vh',
+        backgroundColor: 'background.paper',
+      }}
+    >
+      {/* Mobile image masthead */}
+      <Box
+        sx={{
+          display: { xs: 'flex', md: 'none' },
+          minHeight: { xs: 184, sm: 220 },
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+          textAlign: 'center',
+          color: 'common.white',
+          px: 3,
+          pb: { xs: 3, sm: 4 },
+          backgroundImage: `linear-gradient(180deg, rgba(14, 23, 36, 0.28), rgba(14, 23, 36, 0.72)), url(${loginBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <Box>
+          <Typography
+            component="h1"
+            variant="h4"
+            fontWeight="bold"
+            sx={{ lineHeight: 1.1 }}
+          >
+            Project Zoe
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 1, opacity: 0.9 }}>
+            Church Management System
+          </Typography>
+        </Box>
+      </Box>
+
       {/* Left image panel */}
       <Box
         sx={{
@@ -308,7 +360,8 @@ const SignUp = () => {
           alignItems: 'center',
           justifyContent: 'center',
           p: { xs: 3, sm: 6 },
-          backgroundColor: '#fff',
+          pt: { xs: 4, sm: 6 },
+          backgroundColor: 'background.paper',
         }}
       >
         <Box sx={{ width: '100%', maxWidth: 400 }}>
@@ -366,12 +419,16 @@ const SignUp = () => {
               <Select
                 value={formData.gender}
                 label="Gender"
-                onChange={(e) => handleChange('gender', e.target.value as string)}
+                onChange={(e) =>
+                  handleChange('gender', e.target.value as string)
+                }
               >
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
               </Select>
-              {errors.gender && <FormHelperText>{errors.gender}</FormHelperText>}
+              {errors.gender && (
+                <FormHelperText>{errors.gender}</FormHelperText>
+              )}
             </FormControl>
 
             {/* Email */}
@@ -407,13 +464,21 @@ const SignUp = () => {
                 ))}
               </Select>
               {errors.fob && <FormHelperText>{errors.fob}</FormHelperText>}
-              {isLoadingLocations && <FormHelperText>Loading locations...</FormHelperText>}
-              {!isLoadingLocations && fobs.length === 0 && formData.churchName && (
-                <FormHelperText>No locations found. Check church name.</FormHelperText>
+              {isLoadingLocations && (
+                <FormHelperText>Loading locations...</FormHelperText>
               )}
-              {!isLoadingLocations && fobs.length === 0 && !formData.churchName && (
-                <FormHelperText>Enter church name first</FormHelperText>
-              )}
+              {!isLoadingLocations &&
+                fobs.length === 0 &&
+                formData.churchName && (
+                  <FormHelperText>
+                    No locations found. Check church name.
+                  </FormHelperText>
+                )}
+              {!isLoadingLocations &&
+                fobs.length === 0 &&
+                !formData.churchName && (
+                  <FormHelperText>Enter church name first</FormHelperText>
+                )}
             </FormControl>
 
             {/* Location */}
@@ -421,7 +486,11 @@ const SignUp = () => {
               fullWidth
               error={!!errors.location}
               sx={{ mb: 2.5 }}
-              disabled={!formData.fob || isLoadingLocations || availableLocations.length === 0}
+              disabled={
+                !formData.fob ||
+                isLoadingLocations ||
+                availableLocations.length === 0
+              }
             >
               <InputLabel>Location</InputLabel>
               <Select
@@ -435,12 +504,16 @@ const SignUp = () => {
                   </MenuItem>
                 ))}
               </Select>
-              {errors.location && <FormHelperText>{errors.location}</FormHelperText>}
+              {errors.location && (
+                <FormHelperText>{errors.location}</FormHelperText>
+              )}
               {!formData.fob && !errors.location && (
                 <FormHelperText>Select FOB first</FormHelperText>
               )}
               {formData.fob && availableLocations.length === 0 && (
-                <FormHelperText>No locations available for this FOB</FormHelperText>
+                <FormHelperText>
+                  No locations available for this FOB
+                </FormHelperText>
               )}
             </FormControl>
 
@@ -458,7 +531,11 @@ const SignUp = () => {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" size="small">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                      size="small"
+                    >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -480,7 +557,13 @@ const SignUp = () => {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end" size="small">
+                    <IconButton
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      edge="end"
+                      size="small"
+                    >
                       {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
@@ -503,7 +586,11 @@ const SignUp = () => {
                 mb: 2,
               }}
             >
-              {isSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Create account'}
+              {isSubmitting ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Create account'
+              )}
             </Button>
 
             {/* Sign in link */}

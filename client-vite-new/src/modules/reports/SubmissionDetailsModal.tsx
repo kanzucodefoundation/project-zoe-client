@@ -8,6 +8,8 @@ import {
   Box,
   CircularProgress,
   Divider,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 
 interface SubmissionLabel {
@@ -31,7 +33,16 @@ interface Props {
   reportName: string;
 }
 
-const SubmissionDetailsModal = ({ open, onClose, details, loading, reportName }: Props) => {
+const SubmissionDetailsModal = ({
+  open,
+  onClose,
+  details,
+  loading,
+  reportName,
+}: Props) => {
+  const theme = useTheme();
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
+
   const formatValue = (value: any): string => {
     if (value === null || value === undefined) return '-';
     if (typeof value === 'object') return JSON.stringify(value);
@@ -39,16 +50,29 @@ const SubmissionDetailsModal = ({ open, onClose, details, loading, reportName }:
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={isPhone}
+      scroll="paper"
+    >
       <DialogTitle>{reportName} Submission Details</DialogTitle>
-      <DialogContent>
+      <DialogContent dividers={isPhone}>
         {loading ? (
           <Box display="flex" justifyContent="center" py={4}>
             <CircularProgress />
           </Box>
         ) : details ? (
           <Box>
-            <Box display="flex" justifyContent="space-between" mb={2}>
+            <Box
+              display="flex"
+              flexDirection={{ xs: 'column', sm: 'row' }}
+              justifyContent="space-between"
+              gap={0.5}
+              mb={2}
+            >
               <Typography variant="body2" color="textSecondary">
                 Submitted by: <strong>{details.submittedBy || '-'}</strong>
               </Typography>
@@ -61,7 +85,13 @@ const SubmissionDetailsModal = ({ open, onClose, details, loading, reportName }:
             <Divider sx={{ mb: 2 }} />
             <Box display="flex" flexDirection="column" gap={1.5}>
               {details.labels.map((label) => (
-                <Box key={label.name} display="flex" justifyContent="space-between">
+                <Box
+                  key={label.name}
+                  display="flex"
+                  flexDirection={{ xs: 'column', sm: 'row' }}
+                  justifyContent="space-between"
+                  gap={0.5}
+                >
                   <Typography variant="body2" color="textSecondary">
                     {label.label}
                   </Typography>
@@ -77,7 +107,9 @@ const SubmissionDetailsModal = ({ open, onClose, details, loading, reportName }:
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+        <Button onClick={onClose} fullWidth={isPhone}>
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
   );
