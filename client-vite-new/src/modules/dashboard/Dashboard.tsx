@@ -47,6 +47,8 @@ import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
 import type { $TsFixMe } from '../../utils/types.ts';
 import BirthdayWidget from './BirthdayWidget';
+import { LineChart } from '@mui/x-charts/LineChart';
+import { BarChart } from '@mui/x-charts/BarChart';
 
 interface SummaryMetrics {
   avgAttendance: number;
@@ -80,10 +82,23 @@ interface RecentSubmission {
   total: number;
 }
 
+interface PgaTrendPoint {
+  period: string;
+  total: number;
+}
+
+interface LocationPgaRanking {
+  groupId: number;
+  name: string;
+  pga: number;
+}
+
 interface DashboardData {
   metrics: DashboardMetrics;
   timeRange: { label: string };
   recentSubmissions: RecentSubmission[];
+  pgaTrend: PgaTrendPoint[];
+  locationRanking: LocationPgaRanking[];
 }
 
 interface IReport {
@@ -213,6 +228,8 @@ const Dashboard = () => {
     'Past Month';
 
   const recentSubmissions = dashboardData?.recentSubmissions || [];
+  const pgaTrend = dashboardData?.pgaTrend || [];
+  const locationRanking = dashboardData?.locationRanking || [];
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
@@ -238,6 +255,14 @@ const Dashboard = () => {
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
     return dateString.slice(0, 10);
+  };
+
+  const formatPeriodLabel = (period: string) => {
+    const [year, month, day] = period.split('-').map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   return (
@@ -398,6 +423,104 @@ const Dashboard = () => {
                 </Grid>
               );
             })}
+          </Grid>
+
+          {/* PGA Trend & Location Ranking */}
+          <Typography
+            component="h2"
+            variant="h6"
+            sx={{ mb: 2, fontWeight: 600 }}
+          >
+            PGA Trends
+          </Typography>
+          <Grid container spacing={2} columns={12} sx={{ mb: 4 }}>
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Card variant="outlined" sx={{ height: '100%' }}>
+                <CardContent>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    Weekly PGA Trend
+                  </Typography>
+                  {pgaTrend.length > 0 ? (
+                    <LineChart
+                      height={280}
+                      series={[
+                        {
+                          data: pgaTrend.map((p) => p.total),
+                          label: 'PGA',
+                          curve: 'linear',
+                        },
+                      ]}
+                      xAxis={[
+                        {
+                          scaleType: 'point',
+                          data: pgaTrend.map((p) =>
+                            formatPeriodLabel(p.period),
+                          ),
+                        },
+                      ]}
+                    />
+                  ) : (
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      height={280}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        No trend data available
+                      </Typography>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Card variant="outlined" sx={{ height: '100%' }}>
+                <CardContent>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    Top Locations by PGA (latest week)
+                  </Typography>
+                  {locationRanking.length > 0 ? (
+                    <BarChart
+                      height={Math.max(220, locationRanking.length * 36)}
+                      layout="horizontal"
+                      series={[
+                        {
+                          data: locationRanking.map((l) => l.pga),
+                          label: 'PGA',
+                        },
+                      ]}
+                      yAxis={[
+                        {
+                          scaleType: 'band',
+                          data: locationRanking.map((l) => l.name),
+                        },
+                      ]}
+                      margin={{ left: 110 }}
+                    />
+                  ) : (
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      height={220}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        No ranking data available
+                      </Typography>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
 
           {/* Birthday Widget */}
