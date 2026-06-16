@@ -25,18 +25,10 @@ import {
 import {
   SendRounded as SendRoundedIcon,
   MoreVertRounded as MoreVertRoundedIcon,
-  AccessTimeRounded as AccessTimeRoundedIcon,
-  StarRounded as StarRoundedIcon,
-  EmojiEmotionsRounded as EmojiEmotionsRoundedIcon,
-  ChildCareRounded as ChildCareRoundedIcon,
-  LocationOnRounded as LocationOnRoundedIcon,
-  HomeRounded as HomeRoundedIcon,
   PeopleRounded as PeopleRoundedIcon,
-  BarChartRounded as BarChartRoundedIcon,
   GroupsRounded as GroupsRoundedIcon,
-  PersonAddRounded as PersonAddRoundedIcon,
-  FavoriteRounded as FavoriteRoundedIcon,
-  WaterDropRounded as WaterDropRoundedIcon,
+  TrendingUpRounded as TrendingUpRoundedIcon,
+  LocationOnRounded as LocationOnRoundedIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -47,43 +39,44 @@ import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
 import type { $TsFixMe } from '../../utils/types.ts';
 import BirthdayWidget from './BirthdayWidget';
+import { LineChart } from '@mui/x-charts/LineChart';
+import { BarChart } from '@mui/x-charts/BarChart';
 
 interface SummaryMetrics {
   avgAttendance: number;
-  totalVisitors: number;
-  salvations: number;
-  baptisms: number;
+  peakAttendance: number;
+  totalAttendance: number;
+  locationsReporting: number;
 }
 
 interface DashboardMetrics {
-  firstService: number;
-  secondService: number;
-  yxp: number;
-  kids: number;
-  local: number;
-  hostingCenter1: number;
-  hostingCenter2: number;
-  overall: number;
   summary: SummaryMetrics;
 }
 
 interface RecentSubmission {
   id: number;
   date: string;
-  firstService: number;
-  secondService: number;
-  yxp: number;
-  kids: number;
-  local: number;
-  hostingCenter1: number;
-  hostingCenter2: number;
+  location: string;
+  pga: number;
+}
+
+interface PgaTrendPoint {
+  period: string;
   total: number;
+}
+
+interface LocationPgaRanking {
+  groupId: number;
+  name: string;
+  pga: number;
 }
 
 interface DashboardData {
   metrics: DashboardMetrics;
   timeRange: { label: string };
   recentSubmissions: RecentSubmission[];
+  pgaTrend: PgaTrendPoint[];
+  locationRanking: LocationPgaRanking[];
 }
 
 interface IReport {
@@ -108,21 +101,30 @@ interface LocationGroup {
 }
 
 const summaryCardsDef = [
-  { key: 'avgAttendance', label: 'Avg Attendance', icon: GroupsRoundedIcon },
-  { key: 'totalVisitors', label: 'Total Visitors', icon: PersonAddRoundedIcon },
-  { key: 'salvations', label: 'Salvations', icon: FavoriteRoundedIcon },
-  { key: 'baptisms', label: 'Baptisms', icon: WaterDropRoundedIcon },
-] as const;
-
-const metricCards = [
-  { key: 'firstService', label: '1st Service', icon: AccessTimeRoundedIcon },
-  { key: 'secondService', label: '2nd Service', icon: StarRoundedIcon },
-  { key: 'yxp', label: 'YXP', icon: EmojiEmotionsRoundedIcon },
-  { key: 'kids', label: 'Kids', icon: ChildCareRoundedIcon },
-  { key: 'local', label: 'Local', icon: LocationOnRoundedIcon },
-  { key: 'hostingCenter1', label: 'Hosting Center 1', icon: HomeRoundedIcon },
-  { key: 'hostingCenter2', label: 'Hosting Center 2', icon: PeopleRoundedIcon },
-  { key: 'overall', label: 'Overall', icon: BarChartRoundedIcon },
+  {
+    key: 'avgAttendance',
+    label: 'Avg Attendance',
+    icon: GroupsRoundedIcon,
+    format: true,
+  },
+  {
+    key: 'peakAttendance',
+    label: 'Peak Attendance',
+    icon: TrendingUpRoundedIcon,
+    format: true,
+  },
+  {
+    key: 'totalAttendance',
+    label: 'Total Attendance',
+    icon: PeopleRoundedIcon,
+    format: true,
+  },
+  {
+    key: 'locationsReporting',
+    label: 'Locations Reporting',
+    icon: LocationOnRoundedIcon,
+    format: false,
+  },
 ] as const;
 
 const Dashboard = () => {
@@ -188,23 +190,11 @@ const Dashboard = () => {
     );
   }, []);
 
-  const metrics: DashboardMetrics = dashboardData?.metrics || {
-    firstService: 0,
-    secondService: 0,
-    yxp: 0,
-    kids: 0,
-    local: 0,
-    hostingCenter1: 0,
-    hostingCenter2: 0,
-    overall: 0,
-    summary: { avgAttendance: 0, totalVisitors: 0, salvations: 0, baptisms: 0 },
-  };
-
   const summaryData: SummaryMetrics = dashboardData?.metrics?.summary || {
     avgAttendance: 0,
-    totalVisitors: 0,
-    salvations: 0,
-    baptisms: 0,
+    peakAttendance: 0,
+    totalAttendance: 0,
+    locationsReporting: 0,
   };
 
   const timeRangeLabel =
@@ -213,6 +203,8 @@ const Dashboard = () => {
     'Past Month';
 
   const recentSubmissions = dashboardData?.recentSubmissions || [];
+  const pgaTrend = dashboardData?.pgaTrend || [];
+  const locationRanking = dashboardData?.locationRanking || [];
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
@@ -238,6 +230,14 @@ const Dashboard = () => {
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
     return dateString.slice(0, 10);
+  };
+
+  const formatPeriodLabel = (period: string) => {
+    const [year, month, day] = period.split('-').map(Number);
+    return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   return (
@@ -373,7 +373,9 @@ const Dashboard = () => {
                             component="p"
                             sx={{ fontWeight: 600 }}
                           >
-                            {summaryData[card.key]}
+                            {card.format
+                              ? summaryData[card.key].toLocaleString()
+                              : summaryData[card.key]}
                           </Typography>
                         </Box>
                         <Box
@@ -400,88 +402,109 @@ const Dashboard = () => {
             })}
           </Grid>
 
-          {/* Birthday Widget */}
-          <Grid container spacing={2} columns={12} sx={{ mb: 4 }}>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <BirthdayWidget />
-            </Grid>
-          </Grid>
-
-          {/* Detailed Breakdown */}
+          {/* PGA Trend & Location Ranking */}
           <Typography
             component="h2"
             variant="h6"
             sx={{ mb: 2, fontWeight: 600 }}
           >
-            Service Breakdown
+            PGA Trends
           </Typography>
           <Grid container spacing={2} columns={12} sx={{ mb: 4 }}>
-            {metricCards.map((card) => {
-              const IconComponent = card.icon;
-              const isOverall = card.key === 'overall';
-              return (
-                <Grid key={card.key} size={{ xs: 12, sm: 6, md: 3 }}>
-                  <Card
-                    variant="outlined"
-                    sx={{
-                      height: '100%',
-                      backgroundColor: isOverall
-                        ? (theme) => alpha(theme.palette.primary.main, 0.08)
-                        : 'background.paper',
-                      borderColor: isOverall ? 'primary.paper' : 'divider',
-                      borderWidth: isOverall ? 2 : 1,
-                    }}
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Card variant="outlined" sx={{ height: '100%' }}>
+                <CardContent>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
                   >
-                    <CardContent>
-                      <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="flex-start"
-                        spacing={2}
-                      >
-                        <Box sx={{ flexGrow: 1 }}>
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                            display="block"
-                            gutterBottom
-                          >
-                            {card.label}
-                          </Typography>
-                          <Typography
-                            variant="h5"
-                            component="p"
-                            sx={{ fontWeight: 600 }}
-                          >
-                            {metrics[card.key]}
-                          </Typography>
-                        </Box>
-                        <Box
-                          sx={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: '50%',
-                            backgroundColor: isOverall
-                              ? 'primary.paper'
-                              : (theme) =>
-                                  alpha(theme.palette.primary.main, 0.1),
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: isOverall
-                              ? 'primary.contrastText'
-                              : 'primary.paper',
-                            flexShrink: 0,
-                          }}
-                        >
-                          <IconComponent sx={{ fontSize: 20 }} />
-                        </Box>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })}
+                    Weekly PGA Trend
+                  </Typography>
+                  {pgaTrend.length > 0 ? (
+                    <LineChart
+                      height={280}
+                      series={[
+                        {
+                          data: pgaTrend.map((p) => p.total),
+                          label: 'PGA',
+                          curve: 'linear',
+                        },
+                      ]}
+                      xAxis={[
+                        {
+                          scaleType: 'point',
+                          data: pgaTrend.map((p) =>
+                            formatPeriodLabel(p.period),
+                          ),
+                        },
+                      ]}
+                    />
+                  ) : (
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      height={280}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        No trend data available
+                      </Typography>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Card variant="outlined" sx={{ height: '100%' }}>
+                <CardContent>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    Top Locations by PGA (latest week)
+                  </Typography>
+                  {locationRanking.length > 0 ? (
+                    <BarChart
+                      height={Math.max(220, locationRanking.length * 36)}
+                      layout="horizontal"
+                      series={[
+                        {
+                          data: locationRanking.map((l) => l.pga),
+                          label: 'PGA',
+                        },
+                      ]}
+                      yAxis={[
+                        {
+                          scaleType: 'band',
+                          data: locationRanking.map((l) => l.name),
+                        },
+                      ]}
+                      margin={{ left: 110 }}
+                    />
+                  ) : (
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      height={220}
+                    >
+                      <Typography variant="body2" color="text.secondary">
+                        No ranking data available
+                      </Typography>
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          {/* Birthday Widget */}
+          <Grid container spacing={2} columns={12} sx={{ mb: 4 }}>
+            <Grid size={{ xs: 12, md: 4 }}>
+              <BirthdayWidget />
+            </Grid>
           </Grid>
 
           {/* Recent Reports Table */}
@@ -509,28 +532,10 @@ const Dashboard = () => {
                         DATE
                       </TableCell>
                       <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        1SV
+                        LOCATION
                       </TableCell>
                       <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        2SV
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        YXP
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        KIDS
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        LOCAL
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        HC1
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        HC2
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        TOTAL
+                        PGA
                       </TableCell>
                       <TableCell align="right" sx={{ fontWeight: 600 }}>
                         ACTION
@@ -548,15 +553,11 @@ const Dashboard = () => {
                           <TableCell sx={{ whiteSpace: 'nowrap' }}>
                             {formatDate(row.date)}
                           </TableCell>
-                          <TableCell>{row.firstService ?? '-'}</TableCell>
-                          <TableCell>{row.secondService ?? '-'}</TableCell>
-                          <TableCell>{row.yxp ?? '-'}</TableCell>
-                          <TableCell>{row.kids ?? '-'}</TableCell>
-                          <TableCell>{row.local ?? '-'}</TableCell>
-                          <TableCell>{row.hostingCenter1 ?? '-'}</TableCell>
-                          <TableCell>{row.hostingCenter2 ?? '-'}</TableCell>
+                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                            {row.location}
+                          </TableCell>
                           <TableCell sx={{ fontWeight: 600 }}>
-                            {row.total ?? '-'}
+                            {row.pga ?? '-'}
                           </TableCell>
                           <TableCell align="right">
                             <IconButton

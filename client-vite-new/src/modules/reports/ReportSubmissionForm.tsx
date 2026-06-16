@@ -12,6 +12,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Checkbox,
   FormLabel,
   FormHelperText,
   CircularProgress,
@@ -39,7 +40,14 @@ interface IReportField {
   id?: string;
   name: string;
   label: string;
-  type: 'text' | 'number' | 'date' | 'radio' | 'select' | 'textarea';
+  type:
+    | 'text'
+    | 'number'
+    | 'date'
+    | 'radio'
+    | 'select'
+    | 'textarea'
+    | 'checkbox';
   required?: boolean;
   hidden?: boolean;
   options?: string[] | DynamicGroupOption[];
@@ -48,6 +56,21 @@ interface IReportField {
 interface DynamicGroup {
   id: number;
   name: string;
+}
+
+interface FellowshipMember {
+  id: number;
+  firstName: string;
+  lastName: string;
+  avatar?: string;
+}
+
+interface ScheduleData {
+  exists: boolean;
+  day?: number;
+  label?: string;
+  fellowshipGroupId?: number;
+  weekdays?: { value: number; label: string }[];
 }
 
 interface GroupResponseNode extends DynamicGroup {
@@ -150,6 +173,13 @@ const ReportSubmissionForm = () => {
   const [dynamicLoading, setDynamicLoading] = useState<Record<string, boolean>>(
     {},
   );
+  const [fellowshipMembers, setFellowshipMembers] = useState<
+    Record<string, FellowshipMember[]>
+  >({});
+  const [fellowshipSchedules, setFellowshipSchedules] = useState<
+    Record<string, ScheduleData>
+  >({});
+  const [memberSearch, setMemberSearch] = useState<Record<string, string>>({});
   const [smallGroups, setSmallGroups] = useState<DynamicGroup[]>([]);
   const [smallGroupsLoading, setSmallGroupsLoading] = useState(false);
 
@@ -332,11 +362,74 @@ const ReportSubmissionForm = () => {
     );
   };
 
-  // Fetch dynamic group options when fields are loaded
+  const isDynamicScheduleField = (field: IReportField): boolean => {
+    if (!field.options || !Array.isArray(field.options)) return false;
+    return field.options.some(
+      (opt) =>
+        typeof opt === 'object' &&
+        opt !== null &&
+        (opt as $TsFixMe).type === 'dynamic_fellowship_schedule',
+    );
+  };
+
+  const isDynamicMemberField = (field: IReportField): boolean => {
+    if (!field.options || !Array.isArray(field.options)) return false;
+    return field.options.some(
+      (opt) =>
+        typeof opt === 'object' &&
+        opt !== null &&
+        (opt as $TsFixMe).type === 'dynamic_member_selector',
+    );
+  };
+
+  const fetchFellowshipSchedule = (field: IReportField) => {
+    setDynamicLoading((prev) => ({ ...prev, [field.name]: true }));
+    get(
+      `${remoteRoutes.fellowships}/my-schedule`,
+      (response: ScheduleData) => {
+        setFellowshipSchedules((prev) => ({ ...prev, [field.name]: response }));
+        setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
+        if (response.exists && response.day !== undefined) {
+          handleChange(field.name, response.day);
+        }
+      },
+      (error: $TsFixMe) => {
+        console.error('Failed to fetch fellowship schedule:', error);
+        setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
+      },
+    );
+  };
+
+  const fetchFellowshipMembers = (field: IReportField) => {
+    setDynamicLoading((prev) => ({ ...prev, [field.name]: true }));
+    get(
+      `${remoteRoutes.fellowships}/my-members`,
+      (response: FellowshipMember[]) => {
+        setFellowshipMembers((prev) => ({
+          ...prev,
+          [field.name]: Array.isArray(response) ? response : [],
+        }));
+        setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
+      },
+      (error: $TsFixMe) => {
+        console.error('Failed to fetch fellowship members:', error);
+        setFellowshipMembers((prev) => ({ ...prev, [field.name]: [] }));
+        setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
+      },
+    );
+  };
+
+  // Fetch dynamic options when fields are loaded
   useEffect(() => {
     reportFields.forEach((field) => {
       if (field.type === 'select' && isDynamicGroupField(field)) {
         fetchDynamicGroups(field);
+      }
+      if (field.type === 'select' && isDynamicScheduleField(field)) {
+        fetchFellowshipSchedule(field);
+      }
+      if (field.type === 'checkbox' && isDynamicMemberField(field)) {
+        fetchFellowshipMembers(field);
       }
     });
   }, [reportFields]);
@@ -352,7 +445,11 @@ const ReportSubmissionForm = () => {
     reportFields.forEach((field) => {
       if (field.required) {
         const value = formData[field.name];
-        if (value === undefined || value === null || value === '') {
+        const isEmpty =
+          field.type === 'checkbox'
+            ? !Array.isArray(value) || value.length === 0
+            : value === undefined || value === null || value === '';
+        if (isEmpty) {
           errors[field.name] = `${field.label || field.name} is required`;
         }
       }
@@ -395,6 +492,7 @@ const ReportSubmissionForm = () => {
     const value = formData[field.name] ?? '';
     const hasError = !!validationErrors[field.name];
 
+    // Small group (MC) name picker
     if (isSmallGroupNameField(field)) {
       const autoSelected = smallGroups.length === 1;
 
@@ -440,6 +538,167 @@ const ReportSubmissionForm = () => {
               </MenuItem>
             ))}
           </Select>
+          {hasError && (
+            <FormHelperText>{validationErrors[field.name]}</FormHelperText>
+          )}
+        </FormControl>
+      );
+    }
+
+    // Fellowship schedule selector
+    if (field.type === 'select' && isDynamicScheduleField(field)) {
+      const schedule = fellowshipSchedules[field.name];
+      const isLoading = dynamicLoading[field.name];
+
+      if (isLoading) {
+        return (
+          <Box display="flex" alignItems="center" gap={1}>
+            <CircularProgress size={20} />
+            <Typography variant="body2" color="textSecondary">
+              Loading {field.label}...
+            </Typography>
+          </Box>
+        );
+      }
+
+      if (schedule?.exists) {
+        return (
+          <Box
+            sx={{
+              p: 2,
+              bgcolor: 'success.50',
+              border: '1px solid',
+              borderColor: 'success.300',
+              borderRadius: 1,
+            }}
+          >
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+              {field.label}
+            </Typography>
+            <Typography fontWeight="medium">
+              We meet on {schedule.label}
+            </Typography>
+          </Box>
+        );
+      }
+
+      return (
+        <FormControl fullWidth error={hasError}>
+          <InputLabel>
+            {field.label}
+            {field.required ? ' *' : ''}
+          </InputLabel>
+          <Select
+            value={value}
+            label={`${field.label}${field.required ? ' *' : ''}`}
+            onChange={(e) => handleChange(field.name, e.target.value)}
+          >
+            {schedule?.weekdays?.map((day) => (
+              <MenuItem key={day.value} value={day.value}>
+                {day.label}
+              </MenuItem>
+            ))}
+          </Select>
+          {hasError && (
+            <FormHelperText>{validationErrors[field.name]}</FormHelperText>
+          )}
+        </FormControl>
+      );
+    }
+
+    // Fellowship member checklist
+    if (field.type === 'checkbox' && isDynamicMemberField(field)) {
+      const members = fellowshipMembers[field.name] || [];
+      const isLoading = dynamicLoading[field.name];
+      const memberSearchVal = memberSearch[field.name] || '';
+      const selectedIds: number[] = Array.isArray(formData[field.name])
+        ? formData[field.name]
+        : [];
+      const filtered = members.filter((m) =>
+        `${m.firstName} ${m.lastName}`
+          .toLowerCase()
+          .includes(memberSearchVal.toLowerCase()),
+      );
+
+      const toggleMember = (id: number) => {
+        const next = selectedIds.includes(id)
+          ? selectedIds.filter((i) => i !== id)
+          : [...selectedIds, id];
+        handleChange(field.name, next);
+      };
+
+      if (isLoading) {
+        return (
+          <Box display="flex" alignItems="center" gap={1}>
+            <CircularProgress size={20} />
+            <Typography variant="body2" color="textSecondary">
+              Loading {field.label}...
+            </Typography>
+          </Box>
+        );
+      }
+
+      return (
+        <FormControl fullWidth error={hasError} component="fieldset">
+          <FormLabel component="legend">
+            {field.label}
+            {field.required ? ' *' : ''}
+          </FormLabel>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mt: 0.5, mb: 1 }}
+          >
+            {selectedIds.length} of {members.length} members selected
+          </Typography>
+          <TextField
+            size="small"
+            placeholder="Search members..."
+            value={memberSearchVal}
+            onChange={(e) =>
+              setMemberSearch((prev) => ({
+                ...prev,
+                [field.name]: e.target.value,
+              }))
+            }
+            sx={{ mb: 1 }}
+          />
+          <Box
+            sx={{
+              maxHeight: 300,
+              overflowY: 'auto',
+              border: '1px solid',
+              borderColor: hasError ? 'error.main' : 'divider',
+              borderRadius: 1,
+            }}
+          >
+            {filtered.map((member) => (
+              <FormControlLabel
+                key={member.id}
+                control={
+                  <Checkbox
+                    checked={selectedIds.includes(member.id)}
+                    onChange={() => toggleMember(member.id)}
+                    size="small"
+                  />
+                }
+                label={`${member.firstName} ${member.lastName}`}
+                sx={{
+                  display: 'flex',
+                  mx: 0,
+                  px: 1,
+                  '&:hover': { bgcolor: 'action.hover' },
+                }}
+              />
+            ))}
+            {filtered.length === 0 && (
+              <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>
+                {memberSearchVal
+                  ? 'No members match your search'
+                  : 'No members found'}
+              </Typography>
+            )}
+          </Box>
           {hasError && (
             <FormHelperText>{validationErrors[field.name]}</FormHelperText>
           )}
