@@ -48,12 +48,13 @@ interface GroupMembership {
   id: number;
   groupId: number;
   contactId: number;
-  role: 'Leader' | 'Member';
+  role?: string;
   joinedAt?: string;
   leftAt?: string | null;
   isActive?: boolean;
   isInferred?: boolean;
   group?: GroupRef;
+  category?: GroupRef;
   contact?: GroupRef;
 }
 
@@ -215,6 +216,8 @@ const GroupDetails = () => {
   const isLeaderMembership = (membership: GroupMembership) =>
     membership.role === 'Leader' ||
     (!membership.role && group?.leaders?.includes(membership.contactId));
+  const getMembershipRole = (membership: GroupMembership) =>
+    isLeaderMembership(membership) ? 'Leader' : membership.role || 'Member';
 
   const canManageCurrentGroup = (() => {
     if (!group) {
@@ -269,7 +272,9 @@ const GroupDetails = () => {
     setMembershipsLoading(true);
     try {
       const data = await getJson<GroupMembership | GroupMembership[]>(
-        `${remoteRoutes.groupsMembership}/group/${groupId}`,
+        `${remoteRoutes.groupsMembership}?groupId=${encodeURIComponent(
+          groupId,
+        )}`,
       );
       const membershipList = Array.isArray(data)
         ? data
@@ -294,7 +299,8 @@ const GroupDetails = () => {
   }, [fetchGroup, fetchMemberships]);
 
   const handleRoleToggle = async (membership: GroupMembership) => {
-    const nextRole = membership.role === 'Leader' ? 'Member' : 'Leader';
+    const nextRole =
+      getMembershipRole(membership) === 'Leader' ? 'Member' : 'Leader';
 
     setUpdatingMembershipId(membership.id);
     try {
@@ -548,9 +554,26 @@ const GroupDetails = () => {
       </Paper>
 
       <Paper sx={{ p: 3, mt: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Group Membership
-        </Typography>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          gap={2}
+          flexWrap="wrap"
+        >
+          <Typography variant="h6" gutterBottom>
+            People in this Group
+          </Typography>
+          {!membershipsLoading && memberships.length > 0 ? (
+            <Chip
+              label={`${memberships.length} ${
+                memberships.length === 1 ? 'person' : 'people'
+              }`}
+              size="small"
+              variant="outlined"
+            />
+          ) : null}
+        </Box>
         <Divider sx={{ mb: 2 }} />
 
         {membershipsLoading ? (
@@ -570,6 +593,7 @@ const GroupDetails = () => {
                   display="flex"
                   alignItems="center"
                   justifyContent="space-between"
+                  flexDirection={{ xs: 'column', sm: 'row' }}
                   gap={2}
                   p={1.5}
                   sx={{
@@ -577,12 +601,33 @@ const GroupDetails = () => {
                     borderRadius: 1,
                   }}
                 >
-                  <Box>
-                    <Typography variant="body2">
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    gap={1.5}
+                    flexGrow={1}
+                    width={{ xs: '100%', sm: 'auto' }}
+                    minWidth={0}
+                  >
+                    <Typography variant="body2" noWrap sx={{ minWidth: 0 }}>
                       {membership.contact?.name ||
-                        `Contact #${membership.contactId}`}{' '}
-                      - {isLeaderMembership(membership) ? 'Leader' : 'Member'}
+                        `Contact #${membership.contactId}`}
                     </Typography>
+                    <Chip
+                      label={getMembershipRole(membership)}
+                      size="small"
+                      color={
+                        getMembershipRole(membership) === 'Leader'
+                          ? 'primary'
+                          : 'default'
+                      }
+                      variant={
+                        getMembershipRole(membership) === 'Leader'
+                          ? 'filled'
+                          : 'outlined'
+                      }
+                    />
                   </Box>
 
                   {canManageCurrentGroup ? (
@@ -591,10 +636,14 @@ const GroupDetails = () => {
                       variant="outlined"
                       disabled={updatingMembershipId === membership.id}
                       onClick={() => handleRoleToggle(membership)}
+                      sx={{
+                        alignSelf: { xs: 'stretch', sm: 'center' },
+                        whiteSpace: 'nowrap',
+                      }}
                     >
                       {updatingMembershipId === membership.id
                         ? 'Saving...'
-                        : isLeaderMembership(membership)
+                        : getMembershipRole(membership) === 'Leader'
                         ? 'Make Member'
                         : 'Make Leader'}
                     </Button>
