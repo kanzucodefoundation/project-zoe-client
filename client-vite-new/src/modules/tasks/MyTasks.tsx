@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
-import { useAllTasks } from './hooks';
+import { useAllTasks, useMyLocationGroups } from './hooks';
 import TaskCard from './TaskCard';
 import TaskDrawer from './TaskDrawer';
 import { TaskStatus, STATUS_LABELS, type Task } from '../../utils/types';
@@ -29,9 +29,13 @@ export default function MyTasks() {
   const userId = user?.id ? Number(user.id) : undefined;
   const hasStatusFilter = selectedStatuses.length > 0;
 
+  const { data: locationGroupIds } = useMyLocationGroups();
+
   const { data, isLoading } = useAllTasks({
     assignedToId: userId,
     status: hasStatusFilter ? selectedStatuses : undefined,
+    ...(locationGroupIds &&
+      locationGroupIds.length > 0 && { locationGroupIds }),
     limit: 100,
   });
 

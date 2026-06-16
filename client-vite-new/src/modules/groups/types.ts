@@ -4,9 +4,17 @@ export const GroupPrivacy = {
 } as const;
 export type GroupPrivacy = typeof GroupPrivacy[keyof typeof GroupPrivacy];
 
+export enum GroupCategoryPurpose {
+  FELLOWSHIP = 'fellowship',
+  LOCATION = 'location',
+  SERVING_TEAM = 'serving_team',
+  STRUCTURE = 'structure',
+}
+
 export interface IGroupCategory {
   id: number;
   name: string;
+  purpose?: GroupCategoryPurpose | null;
 }
 
 export interface IAddress {

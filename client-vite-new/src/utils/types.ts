@@ -153,6 +153,7 @@ export interface TaskFilters {
   status?: TaskStatus[];
   type?: TaskType[];
   assignedToId?: number | 'unassigned';
+  locationGroupIds?: number[];
   page?: number;
   limit?: number;
 }

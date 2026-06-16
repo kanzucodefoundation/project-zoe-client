@@ -2,13 +2,31 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { taskApi } from './api';
 import type { TaskFilters } from '../../utils/types';
+import ajax from '../../utils/ajax';
+import { remoteRoutes } from '../../data/constants';
+import { GroupCategoryPurpose } from '../groups/types';
 
 export const taskKeys = {
   forContact: (contactId: number) => ['tasks', 'contact', contactId] as const,
   all: (filters: TaskFilters) => ['tasks', 'all', filters] as const,
   retentionReport: (window: string) => ['tasks', 'retention', window] as const,
   activity: (contactId: number) => ['activity', contactId] as const,
+  myLocationGroups: ['groups', 'me', 'location'] as const,
 };
+
+export function useMyLocationGroups() {
+  return useQuery({
+    queryKey: taskKeys.myLocationGroups,
+    queryFn: async () => {
+      const r = await ajax.get(remoteRoutes.groupsMyGroups);
+      const groups: any[] = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
+      return groups
+        .filter((g) => g.category?.purpose === GroupCategoryPurpose.LOCATION)
+        .map((g) => g.id as number);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
 
 export function useContactTasks(contactId: number) {
   return useQuery({
