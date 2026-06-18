@@ -65,10 +65,10 @@ const TEMPLATES: Record<UploadMode, string> = {
   contacts:
     'firstName,lastName,email,phone,dateOfBirth,gender,district,country',
   guests:
-    'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You,Church Location,Service Date',
+    'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You,Service Date',
   believers:
     'First Name,Last Name,Phone,Email,Address,Led to Christ By,Led to Christ On,Notes',
-  redzone: 'First Name,Last Name,Phone,Email,Gender,Notes,Church Location',
+  redzone: 'First Name,Last Name,Phone,Email,Gender,Notes',
 };
 
 const UPLOAD_LABELS: Record<UploadMode, string> = {
