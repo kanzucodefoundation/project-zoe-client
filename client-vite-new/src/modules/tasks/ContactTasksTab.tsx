@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useSelector } from 'react-redux';
-import { useContactTasks } from './hooks';
+import { useLocationScopedContactTasks } from './hooks';
 import TaskCard from './TaskCard';
 import TaskDrawer from './TaskDrawer';
 import CreateTaskDialog from './CreateTaskDialog';
@@ -25,7 +25,8 @@ export default function ContactTasksTab({ contactId }: Props) {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const user = useSelector((state: RootState) => state.core.user);
-  const { data: tasks = [], isLoading } = useContactTasks(contactId);
+  const { data: tasks = [], isLoading } =
+    useLocationScopedContactTasks(contactId);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const canViewTaskData = canViewTasks(user);

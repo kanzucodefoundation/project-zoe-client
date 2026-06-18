@@ -20,7 +20,7 @@ import {
   type GridPaginationModel,
 } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
-import { useAllTasks, useMyLocationGroups } from './hooks';
+import { useLocationScopedTasks } from './hooks';
 import TaskStatusChip from './TaskStatusChip';
 import TaskDrawer from './TaskDrawer';
 import TaskCard from './TaskCard';
@@ -78,19 +78,7 @@ export default function TaskQueue() {
     limit: pagination.pageSize,
   };
 
-  const { data: locationGroupIds, isLoading: locationLoading } =
-    useMyLocationGroups();
-
-  const filtersWithLocation: TaskFilters = {
-    ...filters,
-    ...(locationGroupIds &&
-      locationGroupIds.length > 0 && {
-        locationGroupIds,
-      }),
-  };
-
-  const { data, isLoading: tasksLoading } = useAllTasks(filtersWithLocation);
-  const isLoading = locationLoading || tasksLoading;
+  const { data, isLoading } = useLocationScopedTasks(filters);
   const tasks = data?.data ?? [];
   const total = data?.total ?? 0;
 

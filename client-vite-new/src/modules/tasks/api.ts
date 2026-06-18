@@ -30,7 +30,7 @@ export const taskApi = {
   getAll: (filters: TaskFilters): Promise<{ data: Task[]; total: number }> =>
     ajax.get(`${remoteRoutes.tasks}`, { params: filters }).then((r) => r.data),
 
-  updateStatus: (id: number, data: Record<string, any>): Promise<Task> =>
+  updateStatus: (id: number, data: Record<string, unknown>): Promise<Task> =>
     ajax.patch(`${remoteRoutes.tasks}/${id}/status`, data).then((r) => r.data),
 
   update: (

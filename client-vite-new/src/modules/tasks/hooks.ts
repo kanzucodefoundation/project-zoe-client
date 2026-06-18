@@ -1,10 +1,16 @@
+import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { taskApi } from './api';
-import type { TaskFilters } from '../../utils/types';
+import {
+  getLocationGroupIdsFromResponse,
+  hasLocationScope,
+  scopeTaskListToLocations,
+  scopeTasksToLocations,
+} from './locationScope';
+import type { Task, TaskFilters } from '../../utils/types';
 import ajax from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
-import { GroupCategoryPurpose } from '../groups/types';
 
 export const taskKeys = {
   forContact: (contactId: number) => ['tasks', 'contact', contactId] as const,
@@ -19,27 +25,87 @@ export function useMyLocationGroups() {
     queryKey: taskKeys.myLocationGroups,
     queryFn: async () => {
       const r = await ajax.get(remoteRoutes.groupsMyGroups);
-      const groups: any[] = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
-      return groups
-        .filter((g) => g.category?.purpose === GroupCategoryPurpose.LOCATION)
-        .map((g) => g.id as number);
+      return getLocationGroupIdsFromResponse(r.data);
     },
     staleTime: 5 * 60 * 1000,
   });
 }
 
-export function useContactTasks(contactId: number) {
+export function useContactTasks(
+  contactId: number,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: taskKeys.forContact(contactId),
     queryFn: () => taskApi.getForContact(contactId),
+    enabled: options?.enabled ?? true,
   });
 }
 
-export function useAllTasks(filters: TaskFilters) {
+export function useAllTasks(
+  filters: TaskFilters,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: taskKeys.all(filters),
     queryFn: () => taskApi.getAll(filters),
+    enabled: options?.enabled ?? true,
   });
+}
+
+export function useLocationScopedTasks(filters: TaskFilters) {
+  const {
+    data: locationGroupIds = [],
+    isLoading: locationGroupsLoading,
+    isError: locationGroupsError,
+  } = useMyLocationGroups();
+  const locationScopeReady = hasLocationScope(locationGroupIds);
+  const filtersWithLocationScope: TaskFilters = useMemo(
+    () => ({
+      ...filters,
+      locationGroupIds,
+    }),
+    [filters, locationGroupIds],
+  );
+  const tasksQuery = useAllTasks(filtersWithLocationScope, {
+    enabled: !locationGroupsLoading && locationScopeReady,
+  });
+  const scopedData = useMemo(
+    () => scopeTaskListToLocations(tasksQuery.data, locationGroupIds),
+    [tasksQuery.data, locationGroupIds],
+  );
+
+  return {
+    ...tasksQuery,
+    data: scopedData,
+    locationGroupIds,
+    isLoading: locationGroupsLoading || tasksQuery.isLoading,
+    isError: locationGroupsError || tasksQuery.isError,
+  };
+}
+
+export function useLocationScopedContactTasks(contactId: number) {
+  const {
+    data: locationGroupIds = [],
+    isLoading: locationGroupsLoading,
+    isError: locationGroupsError,
+  } = useMyLocationGroups();
+  const locationScopeReady = hasLocationScope(locationGroupIds);
+  const tasksQuery = useContactTasks(contactId, {
+    enabled: !locationGroupsLoading && locationScopeReady,
+  });
+  const scopedTasks = useMemo<Task[]>(
+    () => scopeTasksToLocations(tasksQuery.data, locationGroupIds),
+    [tasksQuery.data, locationGroupIds],
+  );
+
+  return {
+    ...tasksQuery,
+    data: scopedTasks,
+    locationGroupIds,
+    isLoading: locationGroupsLoading || tasksQuery.isLoading,
+    isError: locationGroupsError || tasksQuery.isError,
+  };
 }
 
 export function useRetentionReport(
@@ -75,7 +141,7 @@ export function useCreateTask(contactId?: number) {
 export function useUpdateTaskStatus(contactId?: number) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Record<string, any> }) =>
+    mutationFn: ({ id, data }: { id: number; data: Record<string, unknown> }) =>
       taskApi.updateStatus(id, data),
     onSuccess: () => {
       if (contactId)

@@ -81,6 +81,10 @@ export interface Task {
   attachments: TaskAttachment[];
   createdAt: string;
   latestComment?: TaskComment;
+  locationGroup?: {
+    id: number | string;
+    name: string;
+  } | null;
 }
 
 export interface TaskComment {

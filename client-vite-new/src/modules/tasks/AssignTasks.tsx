@@ -29,7 +29,7 @@ import { alpha } from '@mui/material/styles';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
-import { useAllTasks } from './hooks';
+import { useLocationScopedTasks } from './hooks';
 import TaskStatusChip from './TaskStatusChip';
 import AssignTaskDialog from './AssignTaskDialog';
 import { CLOSED_STATUSES, TYPE_LABELS, type Task } from '../../utils/types';
@@ -97,7 +97,7 @@ export default function AssignTasks() {
   const [dialogTask, setDialogTask] = useState<Task | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const { data, isLoading } = useAllTasks({ limit: 200 });
+  const { data, isLoading } = useLocationScopedTasks({ limit: 200 });
 
   const allTasks = useMemo(() => data?.data ?? [], [data]);
 
