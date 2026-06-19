@@ -21,9 +21,13 @@ export const fetchTodayService = async (
 export const fetchRoster = async (
   serviceId: number,
   searchQuery?: string,
+  locationId?: number,
 ): Promise<RosterMember[]> => {
+  const params: Record<string, unknown> = {};
+  if (searchQuery) params.search = searchQuery;
+  if (locationId) params.locationId = locationId;
   const res = await api.get(`${remoteRoutes.services}/${serviceId}/roster`, {
-    params: searchQuery ? { search: searchQuery } : {},
+    params,
   });
   return res.data;
 };

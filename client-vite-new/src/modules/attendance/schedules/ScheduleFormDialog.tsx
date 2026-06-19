@@ -25,7 +25,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { fetchLocations } from '../api';
+import { fetchMyLocationGroups } from '../api';
 import { createSchedule, updateSchedule } from './api';
 import type {
   CreateSchedulePayload,
@@ -37,7 +37,10 @@ import type {
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const SUGGESTED_TAGS: { category: string; tags: string[] }[] = [
-  { category: 'Timing', tags: ['First', 'Second', 'Third', 'Morning', 'Evening'] },
+  {
+    category: 'Timing',
+    tags: ['First', 'Second', 'Third', 'Morning', 'Evening'],
+  },
   { category: 'Language', tags: ['English', 'Luganda', 'Swahili'] },
   { category: 'Audience', tags: ['Youth', 'Adults', 'Children', 'Mixed'] },
 ];
@@ -112,8 +115,8 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
   const queryClient = useQueryClient();
 
   const { data: locations = [], isLoading: loadingLocations } = useQuery({
-    queryKey: ['locations'],
-    queryFn: fetchLocations,
+    queryKey: ['my-location-groups'],
+    queryFn: fetchMyLocationGroups,
     staleTime: 5 * 60_000,
   });
 
@@ -137,7 +140,10 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
         },
       };
       if (editing) {
-        return updateSchedule(editing.id, { ...payload, isActive: values.isActive });
+        return updateSchedule(editing.id, {
+          ...payload,
+          isActive: values.isActive,
+        });
       }
       return createSchedule(payload);
     },
@@ -180,7 +186,7 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
     } else if (open && !editing) {
       formik.resetForm({ values: defaultValues });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, editing]);
 
   const handleClose = () => {
@@ -269,7 +275,10 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
 
               <FormControl fullWidth required>
                 <InputLabel>Frequency</InputLabel>
-                <Select label="Frequency" {...formik.getFieldProps('frequency')}>
+                <Select
+                  label="Frequency"
+                  {...formik.getFieldProps('frequency')}
+                >
                   <MenuItem value="weekly">Weekly</MenuItem>
                   <MenuItem value="biweekly">Bi-weekly</MenuItem>
                   <MenuItem value="monthly">Monthly</MenuItem>
@@ -285,7 +294,9 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
               inputProps={{ step: 300 }}
               sx={{ maxWidth: 180 }}
               {...formik.getFieldProps('startTime')}
-              error={formik.touched.startTime && Boolean(formik.errors.startTime)}
+              error={
+                formik.touched.startTime && Boolean(formik.errors.startTime)
+              }
               helperText={
                 (formik.touched.startTime && formik.errors.startTime) ||
                 'HH:MM (24-hour)'
@@ -317,13 +328,19 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
                 ))}
               </FormGroup>
               {formik.touched.daysOfWeek && formik.errors.daysOfWeek && (
-                <FormHelperText>{String(formik.errors.daysOfWeek)}</FormHelperText>
+                <FormHelperText>
+                  {String(formik.errors.daysOfWeek)}
+                </FormHelperText>
               )}
             </FormControl>
 
             {/* Tags */}
             <Box>
-              <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mb: 0.5, display: 'block' }}
+              >
                 Tags (optional)
               </Typography>
               {/* Suggested tags */}
@@ -332,7 +349,14 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
                   <Typography variant="caption" color="text.disabled">
                     {group.category}
                   </Typography>
-                  <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mt: 0.5 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: 0.5,
+                      flexWrap: 'wrap',
+                      mt: 0.5,
+                    }}
+                  >
                     {group.tags.map((tag) => {
                       const selected = formik.values.tags.includes(tag);
                       return (
@@ -462,10 +486,16 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
             type="submit"
             variant="contained"
             disabled={mutation.isPending}
-            startIcon={mutation.isPending ? <CircularProgress size={16} /> : null}
+            startIcon={
+              mutation.isPending ? <CircularProgress size={16} /> : null
+            }
             sx={{ minWidth: 120, minHeight: 44 }}
           >
-            {mutation.isPending ? 'Saving…' : editing ? 'Save changes' : 'Create'}
+            {mutation.isPending
+              ? 'Saving…'
+              : editing
+              ? 'Save changes'
+              : 'Create'}
           </Button>
         </DialogActions>
       </form>

@@ -131,9 +131,13 @@ export default function CheckInScreen() {
     isLoading: loadingRoster,
     refetch: refetchRoster,
   } = useQuery({
-    queryKey: ['roster', service?.id, debouncedQuery],
+    queryKey: ['roster', service?.id, debouncedQuery, locationId],
     queryFn: async () => {
-      const data = await fetchRoster(service!.id, debouncedQuery || undefined);
+      const data = await fetchRoster(
+        service!.id,
+        debouncedQuery || undefined,
+        locationId ?? undefined,
+      );
       cacheRoster(service!.id, data);
       return data;
     },
@@ -274,6 +278,10 @@ export default function CheckInScreen() {
             Attendance is in read-only mode for your account.
           </Alert>
         ) : null}
+
+        <Typography variant="h4" gutterBottom>
+          Check-In
+        </Typography>
 
         {/* Location selector — only shown when user belongs to multiple location groups */}
         {locations.length > 1 ? (

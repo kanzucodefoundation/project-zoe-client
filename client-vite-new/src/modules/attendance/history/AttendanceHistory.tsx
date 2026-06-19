@@ -27,7 +27,7 @@ import EventNoteRoundedIcon from '@mui/icons-material/EventNoteRounded';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../utils/ajax';
 import { remoteRoutes } from '../../../data/constants';
-import { fetchLocations } from '../api';
+import { fetchMyLocationGroups } from '../api';
 import { fetchSchedules } from '../schedules/api';
 import type { ServiceInstance } from '../types';
 import type { ServiceSchedule } from '../schedules/types';
@@ -42,7 +42,10 @@ interface Attendee {
   isChild: boolean;
 }
 
-const fetchInstances = async (scheduleId?: number, locationId?: number): Promise<ServiceInstance[]> => {
+const fetchInstances = async (
+  scheduleId?: number,
+  locationId?: number,
+): Promise<ServiceInstance[]> => {
   const params: Record<string, any> = {};
   if (scheduleId) params.scheduleId = scheduleId;
   if (locationId) params.locationId = locationId;
@@ -69,12 +72,19 @@ function formatDate(dateStr: string) {
 }
 
 function formatTime(ts: string) {
-  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return new Date(ts).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 // --- Attendee list for a single instance ---
 function AttendeeList({ serviceId }: { serviceId: number }) {
-  const { data: attendees = [], isLoading, error } = useQuery({
+  const {
+    data: attendees = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['attendees', serviceId],
     queryFn: () => fetchAttendees(serviceId),
     staleTime: 5 * 60_000,
@@ -84,7 +94,13 @@ function AttendeeList({ serviceId }: { serviceId: number }) {
     return (
       <Box sx={{ px: 2, py: 1 }}>
         {Array.from({ length: 4 }).map((_, i) => (
-          <Stack key={i} direction="row" spacing={1.5} alignItems="center" sx={{ py: 0.75 }}>
+          <Stack
+            key={i}
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+            sx={{ py: 0.75 }}
+          >
             <Skeleton variant="circular" width={36} height={36} />
             <Skeleton width={160} />
           </Stack>
@@ -96,7 +112,9 @@ function AttendeeList({ serviceId }: { serviceId: number }) {
   if (error) {
     return (
       <Box sx={{ px: 2, py: 1 }}>
-        <Alert severity="error" sx={{ fontSize: '0.8rem' }}>Failed to load attendees.</Alert>
+        <Alert severity="error" sx={{ fontSize: '0.8rem' }}>
+          Failed to load attendees.
+        </Alert>
       </Box>
     );
   }
@@ -104,7 +122,9 @@ function AttendeeList({ serviceId }: { serviceId: number }) {
   if (attendees.length === 0) {
     return (
       <Box sx={{ px: 2, py: 2 }}>
-        <Typography variant="body2" color="text.secondary">No check-ins recorded.</Typography>
+        <Typography variant="body2" color="text.secondary">
+          No check-ins recorded.
+        </Typography>
       </Box>
     );
   }
@@ -118,7 +138,14 @@ function AttendeeList({ serviceId }: { serviceId: number }) {
           sx={{ px: 3, py: 0.75 }}
         >
           <ListItemAvatar sx={{ minWidth: 44 }}>
-            <Avatar sx={{ width: 32, height: 32, fontSize: '0.75rem', bgcolor: 'primary.light' }}>
+            <Avatar
+              sx={{
+                width: 32,
+                height: 32,
+                fontSize: '0.75rem',
+                bgcolor: 'primary.light',
+              }}
+            >
               {getInitials(a.firstName, a.lastName)}
             </Avatar>
           </ListItemAvatar>
@@ -179,7 +206,8 @@ function InstanceRow({ instance }: { instance: ServiceInstance }) {
               {formatDate(instance.serviceDate)}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {name}{location ? ` · ${location}` : ''}
+              {name}
+              {location ? ` · ${location}` : ''}
             </Typography>
           </Box>
         </Stack>
@@ -191,7 +219,10 @@ function InstanceRow({ instance }: { instance: ServiceInstance }) {
               {instance.cachedTotalCount}
             </Typography>
           </Stack>
-          <IconButton size="small" aria-label={expanded ? 'Collapse' : 'Expand'}>
+          <IconButton
+            size="small"
+            aria-label={expanded ? 'Collapse' : 'Expand'}
+          >
             {expanded ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
           </IconButton>
         </Stack>
@@ -209,11 +240,13 @@ function InstanceRow({ instance }: { instance: ServiceInstance }) {
 // --- Main page ---
 export default function AttendanceHistory() {
   const [filterLocationId, setFilterLocationId] = useState<number | null>(null);
-  const [filterSchedule, setFilterSchedule] = useState<ServiceSchedule | null>(null);
+  const [filterSchedule, setFilterSchedule] = useState<ServiceSchedule | null>(
+    null,
+  );
 
   const { data: locations = [] } = useQuery({
-    queryKey: ['locations'],
-    queryFn: fetchLocations,
+    queryKey: ['my-location-groups'],
+    queryFn: fetchMyLocationGroups,
     staleTime: 5 * 60_000,
   });
 
@@ -233,7 +266,7 @@ export default function AttendanceHistory() {
     queryFn: () =>
       fetchInstances(
         filterSchedule?.id,
-        !filterSchedule ? (filterLocationId ?? undefined) : undefined,
+        !filterSchedule ? filterLocationId ?? undefined : undefined,
       ),
     staleTime: 60_000,
   });
@@ -292,7 +325,11 @@ export default function AttendanceHistory() {
         {error && (
           <Alert
             severity="error"
-            action={<Button size="small" onClick={() => refetch()}>Retry</Button>}
+            action={
+              <Button size="small" onClick={() => refetch()}>
+                Retry
+              </Button>
+            }
           >
             Failed to load attendance history.
           </Alert>
@@ -300,7 +337,9 @@ export default function AttendanceHistory() {
 
         {!isLoading && !error && instances.length === 0 && (
           <Stack alignItems="center" sx={{ py: 8 }}>
-            <Typography variant="h6" color="text.secondary">No services found</Typography>
+            <Typography variant="h6" color="text.secondary">
+              No services found
+            </Typography>
             <Typography variant="body2" color="text.disabled" sx={{ mt: 0.5 }}>
               {filterLocationId || filterSchedule
                 ? 'Try clearing the filters.'
