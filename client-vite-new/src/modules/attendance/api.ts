@@ -55,6 +55,18 @@ export const fetchStats = async (serviceId: number): Promise<ServiceStats> => {
   return res.data;
 };
 
+export const fetchAllLocationGroups = async (): Promise<LocationOption[]> => {
+  const res = await api.get(remoteRoutes.groups, {
+    params: { purpose: 'location' },
+  });
+  const flatten = (nodes: any[]): LocationOption[] =>
+    nodes.flatMap((n) => [
+      { id: n.id as number, name: n.name as string },
+      ...flatten(n.children ?? []),
+    ]);
+  return flatten(Array.isArray(res.data) ? res.data : []);
+};
+
 export const fetchMyLocationGroups = async (): Promise<LocationOption[]> => {
   const res = await api.get(remoteRoutes.groupsMyGroups);
   const memberships: any[] = Array.isArray(res.data) ? res.data : [];

@@ -27,7 +27,7 @@ import EventNoteRoundedIcon from '@mui/icons-material/EventNoteRounded';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../utils/ajax';
 import { remoteRoutes } from '../../../data/constants';
-import { fetchMyLocationGroups } from '../api';
+import { fetchAllLocationGroups } from '../api';
 import { fetchSchedules } from '../schedules/api';
 import type { ServiceInstance } from '../types';
 import type { ServiceSchedule } from '../schedules/types';
@@ -245,8 +245,8 @@ export default function AttendanceHistory() {
   );
 
   const { data: locations = [] } = useQuery({
-    queryKey: ['my-location-groups'],
-    queryFn: fetchMyLocationGroups,
+    queryKey: ['all-location-groups'],
+    queryFn: fetchAllLocationGroups,
     staleTime: 5 * 60_000,
   });
 
