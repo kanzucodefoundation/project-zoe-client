@@ -24,7 +24,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
-  fetchLocations,
+  fetchMyLocationGroups,
   fetchRoster,
   fetchTodayService,
   postCheckIn,
@@ -35,8 +35,6 @@ import {
   enqueue,
   getCachedRoster,
   getQueue,
-  getSelectedLocation,
-  setSelectedLocation,
 } from './offlineQueue';
 import GuestDialog from './GuestDialog';
 import OfflineBanner from './OfflineBanner';
@@ -53,9 +51,7 @@ export default function CheckInScreen() {
   const queryClient = useQueryClient();
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const [locationId, setLocationId] = useState<number | null>(
-    getSelectedLocation(),
-  );
+  const [locationId, setLocationId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -104,12 +100,18 @@ export default function CheckInScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canEditAttendanceData, selectedIds]);
 
-  // Locations
-  const { data: locations = [], isLoading: loadingLocations } = useQuery({
-    queryKey: ['locations'],
-    queryFn: fetchLocations,
+  // User's location groups
+  const { data: locations = [] } = useQuery({
+    queryKey: ['my-location-groups'],
+    queryFn: fetchMyLocationGroups,
     staleTime: 5 * 60_000,
   });
+
+  useEffect(() => {
+    if (locations.length === 1) {
+      setLocationId(locations[0].id);
+    }
+  }, [locations]);
 
   // Today's service
   const {
@@ -257,14 +259,6 @@ export default function CheckInScreen() {
     setSelectedIds(new Set(pending));
   };
 
-  const handleLocationChange = (_: unknown, option: LocationOption | null) => {
-    if (option) {
-      setLocationId(option.id);
-      setSelectedLocation(option.id);
-      setSelectedIds(new Set());
-    }
-  };
-
   // --- Render ---
 
   return (
@@ -281,8 +275,8 @@ export default function CheckInScreen() {
           </Alert>
         ) : null}
 
-        {/* Location selector */}
-        {!locationId || locations.length > 1 ? (
+        {/* Location selector — only shown when user belongs to multiple location groups */}
+        {locations.length > 1 ? (
           <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
             <Stack spacing={1}>
               <Typography variant="subtitle2" color="text.secondary">
@@ -292,23 +286,18 @@ export default function CheckInScreen() {
                 options={locations}
                 getOptionLabel={(o) => o.name}
                 value={locations.find((l) => l.id === locationId) ?? null}
-                onChange={handleLocationChange}
-                loading={loadingLocations}
+                onChange={(_, option) => {
+                  if (option) {
+                    setLocationId(option.id);
+                    setSelectedIds(new Set());
+                  }
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     label="Location"
                     size="medium"
                     placeholder="Search locations…"
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {loadingLocations && <CircularProgress size={16} />}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
                   />
                 )}
                 sx={{ maxWidth: 400 }}

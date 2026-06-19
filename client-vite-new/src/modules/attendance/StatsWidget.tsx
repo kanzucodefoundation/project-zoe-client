@@ -22,7 +22,12 @@ interface StatChipProps {
   color?: string;
 }
 
-function StatChip({ icon, label, value, color = 'text.secondary' }: StatChipProps) {
+function StatChip({
+  icon,
+  label,
+  value,
+  color = 'text.secondary',
+}: StatChipProps) {
   return (
     <Tooltip title={label}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -30,7 +35,10 @@ function StatChip({ icon, label, value, color = 'text.secondary' }: StatChipProp
         <Typography variant="body2" fontWeight={600} sx={{ color }}>
           {value}
         </Typography>
-        <Typography variant="caption" sx={{ color: 'text.disabled', display: { xs: 'none', sm: 'inline' } }}>
+        <Typography
+          variant="caption"
+          sx={{ color: 'text.disabled', display: { xs: 'none', sm: 'inline' } }}
+        >
           {label}
         </Typography>
       </Box>
@@ -71,8 +79,8 @@ export default function StatsWidget({ serviceId }: Props) {
     >
       {/* Total — prominently displayed */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <PeopleAltRoundedIcon color="primary" />
-        <Typography variant="h5" fontWeight={700} color="primary">
+        <PeopleAltRoundedIcon color="paper.background" />
+        <Typography variant="h5" fontWeight={700} color="paper.background">
           {stats.totalCheckedIn}
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -106,8 +114,8 @@ export default function StatsWidget({ serviceId }: Props) {
         <>
           <Divider orientation="vertical" flexItem />
           <Typography variant="caption" color="text.secondary">
-            {Math.round((stats.totalCheckedIn / stats.expectedCount) * 100)}% of expected{' '}
-            {stats.expectedCount}
+            {Math.round((stats.totalCheckedIn / stats.expectedCount) * 100)}% of
+            expected {stats.expectedCount}
           </Typography>
         </>
       )}

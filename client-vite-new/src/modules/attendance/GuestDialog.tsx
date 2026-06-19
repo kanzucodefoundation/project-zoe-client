@@ -39,7 +39,9 @@ export default function GuestDialog({ open, serviceId, onClose }: Props) {
     onSuccess: () => {
       toast.success('Guest added and checked in!');
       queryClient.invalidateQueries({ queryKey: ['roster', serviceId] });
-      queryClient.invalidateQueries({ queryKey: ['attendance-stats', serviceId] });
+      queryClient.invalidateQueries({
+        queryKey: ['attendance-stats', serviceId],
+      });
       onClose();
       formik.resetForm();
     },
@@ -93,7 +95,9 @@ export default function GuestDialog({ open, serviceId, onClose }: Props) {
                 size="medium"
                 inputProps={{ style: { fontSize: 16 } }}
                 {...formik.getFieldProps('firstName')}
-                error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                error={
+                  formik.touched.firstName && Boolean(formik.errors.firstName)
+                }
                 helperText={formik.touched.firstName && formik.errors.firstName}
               />
               <TextField
@@ -103,7 +107,9 @@ export default function GuestDialog({ open, serviceId, onClose }: Props) {
                 size="medium"
                 inputProps={{ style: { fontSize: 16 } }}
                 {...formik.getFieldProps('lastName')}
-                error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                error={
+                  formik.touched.lastName && Boolean(formik.errors.lastName)
+                }
                 helperText={formik.touched.lastName && formik.errors.lastName}
               />
             </Stack>
@@ -130,7 +136,7 @@ export default function GuestDialog({ open, serviceId, onClose }: Props) {
                     color="success"
                   />
                 }
-                label="First-time guest"
+                label="First-time guest adult"
               />
               <FormControlLabel
                 control={
@@ -157,7 +163,9 @@ export default function GuestDialog({ open, serviceId, onClose }: Props) {
             variant="contained"
             color="success"
             disabled={mutation.isPending}
-            startIcon={mutation.isPending ? <CircularProgress size={16} /> : null}
+            startIcon={
+              mutation.isPending ? <CircularProgress size={16} /> : null
+            }
             sx={{ minWidth: 140, minHeight: 44 }}
           >
             {mutation.isPending ? 'Adding…' : 'Add & Check In'}

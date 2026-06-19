@@ -51,10 +51,35 @@ export const fetchStats = async (serviceId: number): Promise<ServiceStats> => {
   return res.data;
 };
 
-export const fetchLocations = async (): Promise<LocationOption[]> => {
-  const res = await api.get(remoteRoutes.groups);
-  // Backend returns a tree; flatten to a simple id/name list
-  const flatten = (nodes: { id: number; name: string; children?: any[] }[]): LocationOption[] =>
-    nodes.flatMap((n) => [{ id: n.id, name: n.name }, ...flatten(n.children ?? [])]);
-  return flatten(Array.isArray(res.data) ? res.data : []);
+export const fetchMyLocationGroups = async (): Promise<LocationOption[]> => {
+  const res = await api.get(remoteRoutes.groupsMyGroups);
+  const memberships: any[] = Array.isArray(res.data) ? res.data : [];
+  return memberships
+    .filter((m) => {
+      if (m.isActive === false) return false;
+      const purpose = (
+        m.group?.category?.purpose ??
+        m.category?.purpose ??
+        m.groupCategoryPurpose ??
+        m.categoryPurpose ??
+        ''
+      )
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '_');
+      const catName = (
+        m.group?.category?.name ??
+        m.category?.name ??
+        m.categoryName ??
+        ''
+      )
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '_');
+      return purpose === 'location' || catName === 'location';
+    })
+    .map((m) => ({
+      id: Number(m.groupId ?? m.group?.id ?? m.id),
+      name: String(m.group?.name ?? m.name ?? 'Unknown'),
+    }));
 };
