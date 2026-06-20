@@ -43,8 +43,8 @@ export default function ScheduleCard({
     mutationFn: (isActive: boolean) =>
       updateSchedule(schedule.id, { isActive }),
     onSuccess: (updated) => {
-      queryClient.setQueryData<ServiceSchedule[]>(
-        ['schedules'],
+      queryClient.setQueriesData<ServiceSchedule[]>(
+        { queryKey: ['schedules'] },
         (old) => old?.map((s) => (s.id === updated.id ? updated : s)) ?? [],
       );
       toast.success(

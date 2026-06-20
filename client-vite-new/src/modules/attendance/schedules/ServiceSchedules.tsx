@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
-import { fetchMyLocationGroups } from '../api';
+import { fetchAllLocationGroups } from '../api';
 import { fetchSchedules } from './api';
 import ScheduleCard from './ScheduleCard';
 import ScheduleFormDialog from './ScheduleFormDialog';
@@ -45,8 +45,8 @@ export default function ServiceSchedules() {
   const canEditAttendanceData = canEditAttendance(user);
 
   const { data: locations = [] } = useQuery({
-    queryKey: ['my-location-groups'],
-    queryFn: fetchMyLocationGroups,
+    queryKey: ['all-location-groups'],
+    queryFn: fetchAllLocationGroups,
     staleTime: 5 * 60_000,
   });
 

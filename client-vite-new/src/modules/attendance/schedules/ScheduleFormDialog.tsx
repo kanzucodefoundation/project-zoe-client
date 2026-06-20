@@ -23,9 +23,11 @@ import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { toast } from 'react-toastify';
-import { fetchMyLocationGroups } from '../api';
+import { fetchAllLocationGroups } from '../api';
 import { createSchedule, updateSchedule } from './api';
 import type {
   CreateSchedulePayload,
@@ -54,9 +56,7 @@ const schema = Yup.object({
   serviceType: Yup.string()
     .oneOf(['Sunday', 'Midweek', 'Special'])
     .required('Service type is required'),
-  startTime: Yup.string()
-    .matches(/^\d{2}:\d{2}$/, 'Use HH:MM format')
-    .required('Start time is required'),
+  startTime: Yup.string().required('Start time is required'),
   frequency: Yup.string()
     .oneOf(['weekly', 'biweekly', 'monthly'])
     .required('Frequency is required'),
@@ -115,8 +115,8 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
   const queryClient = useQueryClient();
 
   const { data: locations = [], isLoading: loadingLocations } = useQuery({
-    queryKey: ['my-location-groups'],
-    queryFn: fetchMyLocationGroups,
+    queryKey: ['all-location-groups'],
+    queryFn: fetchAllLocationGroups,
     staleTime: 5 * 60_000,
   });
 
@@ -152,8 +152,11 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
       handleClose();
     },
-    onError: () => {
-      toast.error('Failed to save schedule. Please try again.');
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message ??
+        'Failed to save schedule. Please try again.';
+      toast.error(message);
     },
   });
 
@@ -212,7 +215,7 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
       open={open}
       onClose={handleClose}
       fullWidth
-      maxWidth="sm"
+      maxWidth="md"
       aria-labelledby="schedule-dialog-title"
     >
       <DialogTitle id="schedule-dialog-title">
@@ -221,47 +224,19 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
 
       <form onSubmit={formik.handleSubmit}>
         <DialogContent>
-          <Stack spacing={2.5} sx={{ pt: 0.5 }}>
-            {/* Name */}
-            <TextField
-              label="Schedule name"
-              required
-              fullWidth
-              autoFocus
-              {...formik.getFieldProps('name')}
-              error={formik.touched.name && Boolean(formik.errors.name)}
-              helperText={formik.touched.name && formik.errors.name}
-            />
-
-            {/* Location */}
-            <Autocomplete
-              options={locations}
-              getOptionLabel={(o) => o.name}
-              value={selectedLocation}
-              loading={loadingLocations}
-              onChange={(_, opt) =>
-                formik.setFieldValue('locationGroupId', opt?.id ?? 0)
-              }
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Location"
-                  required
-                  error={
-                    formik.touched.locationGroupId &&
-                    Boolean(formik.errors.locationGroupId)
-                  }
-                  helperText={
-                    formik.touched.locationGroupId &&
-                    formik.errors.locationGroupId
-                  }
-                />
-              )}
-            />
-
-            {/* Service type + frequency */}
-            <Stack direction="row" spacing={2}>
-              <FormControl fullWidth required>
+          <Stack spacing={1.5} sx={{ pt: 0 }}>
+            {/* Name + Service type */}
+            <Stack direction="row" spacing={1.5}>
+              <TextField
+                label="Schedule name"
+                required
+                autoFocus
+                sx={{ flex: 1 }}
+                {...formik.getFieldProps('name')}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+              />
+              <FormControl required sx={{ flex: 1 }}>
                 <InputLabel>Service type</InputLabel>
                 <Select
                   label="Service type"
@@ -272,8 +247,36 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
                   <MenuItem value="Special">Special</MenuItem>
                 </Select>
               </FormControl>
+            </Stack>
 
-              <FormControl fullWidth required>
+            {/* Location + Frequency */}
+            <Stack direction="row" spacing={1.5}>
+              <Autocomplete
+                sx={{ flex: 1 }}
+                options={locations}
+                getOptionLabel={(o) => o.name}
+                value={selectedLocation}
+                loading={loadingLocations}
+                onChange={(_, opt) =>
+                  formik.setFieldValue('locationGroupId', opt?.id ?? 0)
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Location"
+                    required
+                    error={
+                      formik.touched.locationGroupId &&
+                      Boolean(formik.errors.locationGroupId)
+                    }
+                    helperText={
+                      formik.touched.locationGroupId &&
+                      formik.errors.locationGroupId
+                    }
+                  />
+                )}
+              />
+              <FormControl required sx={{ flex: 1 }}>
                 <InputLabel>Frequency</InputLabel>
                 <Select
                   label="Frequency"
@@ -286,53 +289,69 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
               </FormControl>
             </Stack>
 
-            {/* Start time */}
-            <TextField
-              label="Start time"
-              required
-              type="time"
-              inputProps={{ step: 300 }}
-              sx={{ maxWidth: 180 }}
-              {...formik.getFieldProps('startTime')}
-              error={
-                formik.touched.startTime && Boolean(formik.errors.startTime)
-              }
-              helperText={
-                (formik.touched.startTime && formik.errors.startTime) ||
-                'HH:MM (24-hour)'
-              }
-            />
+            {/* Start time + Days of week */}
+            <Stack direction="row" spacing={2} alignItems="flex-start">
+              <TimePicker
+                label="Start time"
+                ampm={false}
+                value={
+                  formik.values.startTime
+                    ? dayjs(`2000-01-01T${formik.values.startTime}`)
+                    : null
+                }
+                onChange={(val) => {
+                  const d = val ? dayjs(val) : null;
+                  formik.setFieldValue(
+                    'startTime',
+                    d?.isValid() ? d.format('HH:mm') : '',
+                  );
+                  formik.setFieldTouched('startTime', true, false);
+                }}
+                sx={{ flex: 1 }}
+                slotProps={{
+                  textField: {
+                    required: true,
+                    error:
+                      formik.touched.startTime &&
+                      Boolean(formik.errors.startTime),
+                    helperText:
+                      (formik.touched.startTime && formik.errors.startTime) ||
+                      'HH:MM (24-hour)',
+                  },
+                }}
+              />
 
-            {/* Days of week */}
-            <FormControl
-              error={
-                formik.touched.daysOfWeek && Boolean(formik.errors.daysOfWeek)
-              }
-            >
-              <FormLabel>Days of week</FormLabel>
-              <FormGroup row sx={{ mt: 0.5, gap: 0.5 }}>
-                {DAYS.map((day, i) => (
-                  <FormControlLabel
-                    key={day}
-                    label={day}
-                    labelPlacement="bottom"
-                    sx={{ m: 0 }}
-                    control={
-                      <Checkbox
-                        checked={formik.values.daysOfWeek.includes(i)}
-                        onChange={() => toggleDay(i)}
-                        size="small"
-                      />
-                    }
-                  />
-                ))}
-              </FormGroup>
-              {formik.touched.daysOfWeek && formik.errors.daysOfWeek && (
-                <FormHelperText>
-                  {String(formik.errors.daysOfWeek)}
-                </FormHelperText>
-              )}
-            </FormControl>
+              <FormControl
+                sx={{ flex: 1 }}
+                error={
+                  formik.touched.daysOfWeek && Boolean(formik.errors.daysOfWeek)
+                }
+              >
+                <FormLabel>Days of week</FormLabel>
+                <FormGroup row sx={{ mt: 0.5, gap: 0.5 }}>
+                  {DAYS.map((day, i) => (
+                    <FormControlLabel
+                      key={day}
+                      label={day}
+                      labelPlacement="bottom"
+                      sx={{ m: 0 }}
+                      control={
+                        <Checkbox
+                          checked={formik.values.daysOfWeek.includes(i)}
+                          onChange={() => toggleDay(i)}
+                          size="small"
+                        />
+                      }
+                    />
+                  ))}
+                </FormGroup>
+                {formik.touched.daysOfWeek && formik.errors.daysOfWeek && (
+                  <FormHelperText>
+                    {String(formik.errors.daysOfWeek)}
+                  </FormHelperText>
+                )}
+              </FormControl>
+            </Stack>
 
             {/* Tags */}
             <Box>
@@ -345,7 +364,7 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
               </Typography>
               {/* Suggested tags */}
               {SUGGESTED_TAGS.map((group) => (
-                <Box key={group.category} sx={{ mb: 1 }}>
+                <Box key={group.category} sx={{ mb: 0.5 }}>
                   <Typography variant="caption" color="text.disabled">
                     {group.category}
                   </Typography>
@@ -410,7 +429,7 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
             </Box>
 
             {/* Metadata */}
-            <Stack spacing={1}>
+            <Stack spacing={0.75}>
               <Typography variant="caption" color="text.secondary">
                 Optional settings
               </Typography>
@@ -478,9 +497,9 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
           </Stack>
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, pb: 2 }}>
+        <DialogActions sx={{ px: 2, pb: 1.5 }}>
           <Button onClick={handleClose} disabled={mutation.isPending}>
-            Cancel
+            Close
           </Button>
           <Button
             type="submit"
