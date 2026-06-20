@@ -97,7 +97,7 @@ interface LocationGroup {
   id: number;
   name: string;
   categoryName?: string;
-  category?: { name: string };
+  category?: { name: string; purpose?: string };
 }
 
 const summaryCardsDef = [
@@ -147,7 +147,9 @@ const Dashboard = () => {
     get(
       remoteRoutes.groupsMyGroups,
       (response: LocationGroup[]) => {
-        setLocations(response || []);
+        setLocations(
+          (response || []).filter((g) => g.category?.purpose === 'location'),
+        );
       },
       (error: $TsFixMe) => {
         console.error('Failed to fetch user locations:', error);
