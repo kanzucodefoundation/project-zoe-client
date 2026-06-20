@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import * as React from 'react';
 import {
   Container,
@@ -8,12 +8,16 @@ import {
   CircularProgress,
   IconButton,
   Paper,
+  InputAdornment,
+  TextField,
 } from '@mui/material';
 import {
   Add as AddIcon,
   ChevronRight as ChevronRightIcon,
   ExpandMore as ExpandMoreIcon,
   Visibility as VisibilityIcon,
+  Search as SearchIcon,
+  Clear as ClearIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -123,6 +127,7 @@ const Groups = () => {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedParent, setSelectedParent] = useState<GroupNode | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const canViewGroupEditActions = hasAnyCapability(user, [
     appPermissions.roleGroupEdit,
   ]);
@@ -137,13 +142,13 @@ const Groups = () => {
       remoteRoutes.groups,
       (response: GroupNode[]) => {
         const data = Array.isArray(response) ? response : [];
-        console.log('Groups tree data:', data);
+        /*console.log('Groups tree data:', data);
         console.log('Root groups:', data.length);
         const withChildren = data.filter(
           (g) => g.children && g.children.length > 0,
         );
         console.log('Root groups with children:', withChildren.length);
-
+        */
         setGroups(data);
         // Auto-expand root level items that have children
         const rootIds = data
@@ -200,6 +205,44 @@ const Groups = () => {
   ) => {
     setExpandedItems(itemIds);
   };
+
+  // Returns a filtered copy of nodes where any node matching the query
+  // is kept, and parent nodes that contain matches are kept with only
+  // their matching subtrees. Collect IDs of all surviving parents for auto-expand.
+  const filterNodes = (
+    nodes: GroupNode[],
+    query: string,
+    expandIds: Set<string>,
+  ): GroupNode[] => {
+    const q = query.toLowerCase();
+    return nodes.reduce<GroupNode[]>((acc, node) => {
+      const selfMatches = node.name.toLowerCase().includes(q);
+      const filteredChildren = node.children
+        ? filterNodes(node.children, query, expandIds)
+        : [];
+      if (selfMatches) {
+        acc.push({ ...node, children: node.children ?? [] });
+        if (node.children && node.children.length > 0)
+          expandIds.add(String(node.id));
+      } else if (filteredChildren.length > 0) {
+        acc.push({ ...node, children: filteredChildren });
+        expandIds.add(String(node.id));
+      }
+      return acc;
+    }, []);
+  };
+
+  const { filteredGroups, searchExpandedIds } = useMemo(() => {
+    if (!searchQuery.trim())
+      return { filteredGroups: groups, searchExpandedIds: null };
+    const expandIds = new Set<string>();
+    const filteredGroups = filterNodes(groups, searchQuery, expandIds);
+    return { filteredGroups, searchExpandedIds: [...expandIds] };
+  }, [groups, searchQuery]);
+
+  const displayedExpandedItems = searchQuery.trim()
+    ? searchExpandedIds ?? []
+    : expandedItems;
 
   const renderTreeItems = (nodes: GroupNode[]): React.ReactNode => {
     return nodes.map((node) => (
@@ -263,6 +306,43 @@ const Groups = () => {
         ) : null}
       </Box>
 
+      {/* Search */}
+      {!loading && groups.length > 0 && (
+        <Box mb={2}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search groups"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon
+                      fontSize="small"
+                      sx={{ color: 'text.secondary' }}
+                    />
+                  </InputAdornment>
+                ),
+                endAdornment: searchQuery ? (
+                  <InputAdornment position="end">
+                    <IconButton
+                      size="small"
+                      onClick={() => setSearchQuery('')}
+                      edge="end"
+                    >
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                ) : null,
+              },
+            }}
+            sx={{ maxWidth: 400 }}
+          />
+        </Box>
+      )}
+
       {/* Tree View */}
       {loading ? (
         <Box display="flex" justifyContent="center" py={6}>
@@ -276,11 +356,19 @@ const Groups = () => {
               : 'No groups found.'}
           </Typography>
         </Box>
+      ) : filteredGroups.length === 0 ? (
+        <Box textAlign="center" py={6}>
+          <Typography color="text.secondary">
+            No groups match &ldquo;{searchQuery}&rdquo;
+          </Typography>
+        </Box>
       ) : (
         <Paper sx={{ p: 2 }}>
           <SimpleTreeView
-            expandedItems={expandedItems}
-            onExpandedItemsChange={handleExpandedItemsChange}
+            expandedItems={displayedExpandedItems}
+            onExpandedItemsChange={
+              searchQuery.trim() ? undefined : handleExpandedItemsChange
+            }
             slots={{
               collapseIcon: ExpandMoreIcon,
               expandIcon: ChevronRightIcon,
@@ -293,7 +381,7 @@ const Groups = () => {
               },
             }}
           >
-            {renderTreeItems(groups)}
+            {renderTreeItems(filteredGroups)}
           </SimpleTreeView>
         </Paper>
       )}
