@@ -79,7 +79,7 @@ export default function StatsWidget({ serviceId }: Props) {
     >
       {/* Total — prominently displayed */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <PeopleAltRoundedIcon color="paper.background" />
+        <PeopleAltRoundedIcon sx={{ color: 'paper.background' }} />
         <Typography variant="h5" fontWeight={700} color="paper.background">
           {stats.totalCheckedIn}
         </Typography>
