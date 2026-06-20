@@ -13,20 +13,18 @@ import Stack from '@mui/material/Stack';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import TextField from '@mui/material/TextField';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import PersonAddRoundedIcon from '@mui/icons-material/PersonAddRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import SelectAllRoundedIcon from '@mui/icons-material/SelectAllRounded';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   fetchMyLocationGroups,
   fetchRoster,
-  fetchTodayService,
+  fetchTodayServices,
   postCheckIn,
 } from './api';
 import {
@@ -40,11 +38,17 @@ import GuestDialog from './GuestDialog';
 import OfflineBanner from './OfflineBanner';
 import RosterList from './RosterList';
 import StatsWidget from './StatsWidget';
-import type { LocationOption } from './types';
+import type { LocationOption, ServiceInstance } from './types';
 import type { RootState } from '../../data/store';
 import { canEditAttendance } from '../../utils/permissions';
 
 type FilterMode = 'all' | 'checked' | 'pending';
+
+function serviceLabel(s: ServiceInstance): string {
+  const name = s.schedule?.name ?? 'Service';
+  const time = s.schedule?.startTime;
+  return time ? `${name} · ${time}` : name;
+}
 
 export default function CheckInScreen() {
   const user = useSelector((state: RootState) => state.core.user);
@@ -52,6 +56,7 @@ export default function CheckInScreen() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   const [locationId, setLocationId] = useState<number | null>(null);
+  const [serviceId, setServiceId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -113,17 +118,32 @@ export default function CheckInScreen() {
     }
   }, [locations]);
 
-  // Today's service
+  // Reset service selection when location changes
+  useEffect(() => {
+    setServiceId(null);
+    setSelectedIds(new Set());
+  }, [locationId]);
+
+  // Today's services for the selected location
   const {
-    data: service,
-    isLoading: loadingService,
-    error: serviceError,
-    refetch: refetchService,
+    data: todayServices = [],
+    isLoading: loadingServices,
+    error: servicesError,
+    refetch: refetchServices,
   } = useQuery({
-    queryKey: ['today-service', locationId],
-    queryFn: () => fetchTodayService(locationId!),
+    queryKey: ['today-services', locationId],
+    queryFn: () => fetchTodayServices(locationId!),
     enabled: locationId !== null,
   });
+
+  // Auto-select when there is exactly one service
+  useEffect(() => {
+    if (todayServices.length === 1) {
+      setServiceId(todayServices[0].id);
+    }
+  }, [todayServices]);
+
+  const service = todayServices.find((s) => s.id === serviceId);
 
   // Roster
   const {
@@ -131,13 +151,9 @@ export default function CheckInScreen() {
     isLoading: loadingRoster,
     refetch: refetchRoster,
   } = useQuery({
-    queryKey: ['roster', service?.id, debouncedQuery, locationId],
+    queryKey: ['roster', serviceId, debouncedQuery],
     queryFn: async () => {
-      const data = await fetchRoster(
-        service!.id,
-        debouncedQuery || undefined,
-        locationId ?? undefined,
-      );
+      const data = await fetchRoster(service!.id, debouncedQuery || undefined);
       cacheRoster(service!.id, data);
       return data;
     },
@@ -150,31 +166,29 @@ export default function CheckInScreen() {
   // Check-in mutation (with optimistic update)
   const checkInMutation = useMutation({
     mutationFn: async ({
-      serviceId,
+      serviceId: sid,
       ids,
     }: {
       serviceId: number;
       ids: number[];
     }) => {
       if (!navigator.onLine) {
-        // Queue for later
-        enqueue(serviceId, { contactIds: ids });
+        enqueue(sid, { contactIds: ids });
         return;
       }
-      await postCheckIn(serviceId, { contactIds: ids });
+      await postCheckIn(sid, { contactIds: ids });
     },
     onMutate: async ({ ids }) => {
-      await queryClient.cancelQueries({ queryKey: ['roster', service?.id] });
+      await queryClient.cancelQueries({ queryKey: ['roster', serviceId] });
 
       const previousRoster = queryClient.getQueryData([
         'roster',
-        service?.id,
+        serviceId,
         debouncedQuery,
       ]);
 
-      // Optimistically mark as checked in
       queryClient.setQueryData(
-        ['roster', service?.id, debouncedQuery],
+        ['roster', serviceId, debouncedQuery],
         (old: typeof roster) =>
           old?.map((m) =>
             ids.includes(m.id)
@@ -190,9 +204,8 @@ export default function CheckInScreen() {
       return { previousRoster };
     },
     onError: (_err, _vars, ctx) => {
-      // Rollback
       queryClient.setQueryData(
-        ['roster', service?.id, debouncedQuery],
+        ['roster', serviceId, debouncedQuery],
         ctx?.previousRoster,
       );
       toast.error('Check-in failed. Please try again.');
@@ -209,7 +222,7 @@ export default function CheckInScreen() {
       } else {
         toast.success(`${count} member${count > 1 ? 's' : ''} checked in!`);
         queryClient.invalidateQueries({
-          queryKey: ['attendance-stats', service?.id],
+          queryKey: ['attendance-stats', serviceId],
         });
       }
     },
@@ -257,12 +270,6 @@ export default function CheckInScreen() {
     [canEditAttendanceData],
   );
 
-  const handleSelectAll = () => {
-    if (!canEditAttendanceData) return;
-    const pending = roster.filter((m) => !m.isCheckedIn).map((m) => m.id);
-    setSelectedIds(new Set(pending));
-  };
-
   // --- Render ---
 
   return (
@@ -295,10 +302,7 @@ export default function CheckInScreen() {
                 getOptionLabel={(o) => o.name}
                 value={locations.find((l) => l.id === locationId) ?? null}
                 onChange={(_, option) => {
-                  if (option) {
-                    setLocationId(option.id);
-                    setSelectedIds(new Set());
-                  }
+                  if (option) setLocationId(option.id);
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -314,28 +318,57 @@ export default function CheckInScreen() {
           </Paper>
         ) : null}
 
-        {/* Service loading/error */}
-        {locationId && loadingService && (
+        {/* Services loading/error */}
+        {locationId && loadingServices && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 2 }}>
             <CircularProgress size={20} />
             <Typography variant="body2" color="text.secondary">
-              Loading today&apos;s service…
+              Loading today&apos;s services…
             </Typography>
           </Box>
         )}
 
-        {locationId && serviceError && (
+        {locationId && servicesError && (
           <Alert
             severity="error"
             action={
-              <Button size="small" onClick={() => refetchService()}>
+              <Button size="small" onClick={() => refetchServices()}>
                 Retry
               </Button>
             }
           >
-            Could not load today&apos;s service.
+            Could not load today&apos;s services.
           </Alert>
         )}
+
+        {/* Service selector — only shown when multiple services exist today */}
+        {todayServices.length > 1 ? (
+          <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+            <Stack spacing={1}>
+              <Typography variant="subtitle2" color="text.secondary">
+                Select service
+              </Typography>
+              <Autocomplete<ServiceInstance>
+                options={todayServices}
+                getOptionLabel={serviceLabel}
+                value={service ?? null}
+                onChange={(_, option) => {
+                  setServiceId(option ? option.id : null);
+                  setSelectedIds(new Set());
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Service"
+                    size="medium"
+                    placeholder="Choose a service…"
+                  />
+                )}
+                sx={{ maxWidth: 400 }}
+              />
+            </Stack>
+          </Paper>
+        ) : null}
 
         {/* Main check-in area */}
         {service && (
@@ -365,7 +398,7 @@ export default function CheckInScreen() {
             {/* Stats */}
             <StatsWidget serviceId={service.id} />
 
-            {/* Toolbar: search + filters + actions */}
+            {/* Toolbar: search + actions */}
             <Stack
               direction="row"
               spacing={1}
@@ -409,30 +442,16 @@ export default function CheckInScreen() {
               />
 
               {canEditAttendanceData ? (
-                <>
-                  <Tooltip title="Select all pending">
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      startIcon={<SelectAllRoundedIcon />}
-                      onClick={handleSelectAll}
-                      sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
-                    >
-                      All
-                    </Button>
-                  </Tooltip>
-
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<PersonAddRoundedIcon />}
-                    onClick={() => setGuestOpen(true)}
-                    sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
-                    aria-label="Add guest (press n)"
-                  >
-                    Guest
-                  </Button>
-                </>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  startIcon={<PersonAddRoundedIcon />}
+                  onClick={() => setGuestOpen(true)}
+                  sx={{ minHeight: 40, whiteSpace: 'nowrap' }}
+                  aria-label="Add guest (press n)"
+                >
+                  Guest
+                </Button>
               ) : null}
             </Stack>
 

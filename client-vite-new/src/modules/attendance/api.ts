@@ -9,23 +9,21 @@ import type {
   LocationOption,
 } from './types';
 
-export const fetchTodayService = async (
+export const fetchTodayServices = async (
   locationId: number,
-): Promise<ServiceInstance> => {
+): Promise<ServiceInstance[]> => {
   const res = await api.get(`${remoteRoutes.services}/today`, {
     params: { locationId },
   });
-  return res.data;
+  return Array.isArray(res.data) ? res.data : [res.data];
 };
 
 export const fetchRoster = async (
   serviceId: number,
   searchQuery?: string,
-  locationId?: number,
 ): Promise<RosterMember[]> => {
   const params: Record<string, unknown> = {};
   if (searchQuery) params.search = searchQuery;
-  if (locationId) params.locationId = locationId;
   const res = await api.get(`${remoteRoutes.services}/${serviceId}/roster`, {
     params,
   });
