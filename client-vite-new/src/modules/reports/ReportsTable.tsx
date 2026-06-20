@@ -51,7 +51,9 @@ const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {
   if (data.length === 0) {
     return (
       <Box textAlign="center" py={6}>
-        <Typography color="textSecondary">No submissions found for this report</Typography>
+        <Typography color="textSecondary">
+          No submissions found for this report
+        </Typography>
       </Box>
     );
   }
@@ -60,15 +62,24 @@ const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {
     <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
       <Table size="small">
         <TableHead>
-          <TableRow sx={{ backgroundColor: 'grey.100' }}>
+          <TableRow sx={{ backgroundColor: 'primary.paper' }}>
             {columns.map((col) => (
-              <TableCell key={col.name} sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+              <TableCell
+                key={col.name}
+                sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+              >
                 {col.label}
               </TableCell>
             ))}
-            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Submitted By</TableCell>
-            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>Submitted At</TableCell>
-            <TableCell align="right" sx={{ fontWeight: 'bold' }}>Action</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+              Submitted By
+            </TableCell>
+            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+              Submitted At
+            </TableCell>
+            <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+              Action
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -85,13 +96,21 @@ const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {
                 </TableCell>
               ))}
               <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                {typeof row.submittedBy === 'object' ? row.submittedBy?.name || '-' : row.submittedBy || '-'}
+                {typeof row.submittedBy === 'object'
+                  ? row.submittedBy?.name || '-'
+                  : row.submittedBy || '-'}
               </TableCell>
               <TableCell sx={{ whiteSpace: 'nowrap' }}>
                 {formatCell(row.submittedAt)}
               </TableCell>
               <TableCell align="right">
-                <IconButton size="small" onClick={(e) => { e.stopPropagation(); onRowClick(row); }}>
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRowClick(row);
+                  }}
+                >
                   <MoreVert fontSize="small" />
                 </IconButton>
               </TableCell>
