@@ -409,7 +409,7 @@ export default function CheckInScreen() {
                 inputRef={searchRef}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search members… (press /)"
+                placeholder="Search members…"
                 size="small"
                 sx={{ flex: 1, minWidth: 200 }}
                 InputProps={{
