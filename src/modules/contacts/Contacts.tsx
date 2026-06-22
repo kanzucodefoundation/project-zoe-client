@@ -1,287 +1,580 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Hidden from '@material-ui/core/Hidden';
-import AddIcon from '@material-ui/icons/Add';
-import Fab from '@material-ui/core/Fab';
-import Typography from '@material-ui/core/Typography';
-import UploadIcon from '@material-ui/icons/CloudUpload';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-import { useHistory } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import Navigation from '../../components/layout/Layout';
-import { IContactListDto, IContactsFilter } from './types';
-import XTable from '../../components/table/XTable';
-import { XHeadCell } from '../../components/table/XTableHead';
-import ContactLink from '../../components/ContactLink';
-import IconLink from '../../components/IconLink';
-import { search } from '../../utils/ajax';
-
+import { useState, useEffect } from 'react';
 import {
-  appPermissions,
-  localRoutes,
-  remoteRoutes,
-} from '../../data/constants';
-import Loading from '../../components/Loading';
-import EditDialog from '../../components/EditDialog';
-import NewPersonForm from './NewPersonForm';
-import { IMobileRow } from '../../components/DataList';
-import { hasValue } from '../../components/inputs/inputHelpers';
-import { crmConstants, ICrmState } from '../../data/contacts/reducer';
-import { printBirthday } from '../../utils/dateHelpers';
-import GroupLink from '../../components/GroupLink';
-import PersonAvatar from '../../components/PersonAvatar';
-import { hasAnyRole } from '../../data/appRoles';
-import { IState } from '../../data/types';
-import ListHeader from '../../components/ListHeader';
-import ContactFilter from './ContactFilter';
-import ContactUpload from './ContactUpload';
+  Container,
+  Typography,
+  Box,
+  Avatar,
+  Button,
+  TextField,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Menu,
+  MenuItem,
+  CircularProgress,
+  TablePagination,
+  Card,
+  CardContent,
+  Stack,
+  Divider,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
+import {
+  Add as AddIcon,
+  Search as SearchIcon,
+  CloudUpload as UploadIcon,
+  MoreVert as MoreVertIcon,
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { search } from '../../utils/ajax';
+import { remoteRoutes, localRoutes } from '../../data/constants';
+import ContactForm from './ContactForm';
+import BulkUpload from './BulkUpload';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    filterPaper: {
-      borderRadius: 0,
-      padding: theme.spacing(2),
-    },
-    fab: {
-      position: 'absolute',
-      bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  }),
-);
+interface Contact {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  dateOfBirth?: string;
+  location?: {
+    id: string;
+    name: string;
+  };
+  cellGroup?: {
+    id: string;
+    name: string;
+  };
+  avatar?: string;
+}
 
-const headCells: XHeadCell[] = [
-  {
-    name: 'id',
-    label: 'Name',
-    render: (value, rec) => <ContactLink id={value} name={rec.name} />,
-  },
-  { name: 'phone', label: 'Phone' },
-  { name: 'dateOfBirth', label: 'D.O.B', render: printBirthday },
-  {
-    name: 'cellGroup',
-    label: 'MC',
-    render: (value) =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
-  },
-  {
-    name: 'location',
-    label: 'Location',
-    render: (value) =>
-      hasValue(value) ? <GroupLink id={value.id} name={value.name} /> : '-na-',
-  },
-  {
-    name: 'id',
-    label: '',
-    render: (value) => (
-      <IconLink id={`${value}?showEdit=true`} name={value.name} />
-    ),
-  },
-];
+interface ContactFilter {
+  limit?: number;
+  skip?: number;
+}
 
-const toMobileRow = (data: IContactListDto): IMobileRow => ({
-  avatar: <PersonAvatar data={data} />,
-  primary: data.name,
-  secondary: (
-    <>
-      <Typography variant="caption" color="textSecondary" display="block">
-        {data.email}
-      </Typography>
-      <Typography variant="caption" color="textSecondary">
-        {data.phone}
-      </Typography>
-    </>
-  ),
-});
+const CONTACT_FETCH_LIMIT = 100;
 
 const Contacts = () => {
-  const dispatch = useDispatch();
-  const history = useHistory();
-  const [selected, setSelected] = useState<any | null>(null);
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState<string>('');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+
   const [createDialog, setCreateDialog] = useState(false);
-  const { data, loading }: ICrmState = useSelector((state: any) => state.crm);
   const [uploadDialog, setUploadDialog] = useState(false);
-  const [filter, setFilter] = useState<IContactsFilter>({
-    limit: 200,
+  const [filter, setFilter] = useState<ContactFilter>({
+    limit: CONTACT_FETCH_LIMIT,
+    skip: 0,
   });
-  const user = useSelector((state: IState) => state.core.user);
-  const classes = useStyles();
+  const [total, setTotal] = useState<number>(0);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const paginatedContacts = contacts.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage,
+  );
 
   useEffect(() => {
-    dispatch({
-      type: crmConstants.crmFetchLoading,
-      payload: true,
-    });
-    search(
-      remoteRoutes.contacts,
-      filter,
-      (resp) => {
-        dispatch({
-          type: crmConstants.crmFetchAll,
-          payload: [...resp],
-        });
-      },
-      undefined,
-      () => {
-        dispatch({
-          type: crmConstants.crmFetchLoading,
-          payload: false,
-        });
-      },
-    );
-  }, [filter, dispatch]);
+    let active = true;
 
-  function handleNew() {
-    setSelected(null);
-    setCreateDialog(true);
-  }
+    const loadAllContacts = async () => {
+      setLoading(true);
 
-  const handleItemClick = (id: string) => () => {
-    history.push(`${localRoutes.contacts}/${id}`);
-  };
+      const collected: Contact[] = [];
+      let skip = 0;
 
-  function closeCreateDialog() {
-    setCreateDialog(false);
-  }
+      try {
+        while (true) {
+          const batch = await new Promise<Contact[]>((resolve, reject) => {
+            search(
+              remoteRoutes.contacts,
+              {
+                ...filter,
+                skip,
+                query: appliedSearch || undefined,
+              },
+              (response) => {
+                const data: Contact[] = Array.isArray(response)
+                  ? response
+                  : response?.data ?? [];
+                resolve(data);
+              },
+              reject,
+            );
+          });
 
-  function handleUpload() {
-    setUploadDialog(true);
-  }
+          collected.push(...batch);
 
-  function handleUploadComplete() {
-    setFilter({ ...filter });
-    setUploadDialog(false);
-  }
+          if (batch.length < CONTACT_FETCH_LIMIT) {
+            break;
+          }
 
-  function closeUploadDialog() {
-    setUploadDialog(false);
-  }
+          skip += CONTACT_FETCH_LIMIT;
+        }
 
-  const handleEdit = (dt: any) => {
-    const { id, name, phone, dateOfBirth, contactId } = dt;
-    const toEdit = {
-      id,
-      name,
-      phone,
-      dateOfBirth,
-      contact: { id: contactId, label: name },
+        if (!active) return;
+
+        setContacts(collected);
+        setTotal(collected.length);
+      } catch (error) {
+        if (!active) return;
+        console.error('Contacts error:', error);
+        setContacts([]);
+        setTotal(0);
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
     };
-    setSelected(toEdit);
-    setCreateDialog(true);
+
+    loadAllContacts();
+
+    return () => {
+      active = false;
+    };
+  }, [appliedSearch, filter]);
+
+  useEffect(() => {
+    if (page > 0 && page * rowsPerPage >= contacts.length) {
+      setPage(Math.max(0, Math.ceil(contacts.length / rowsPerPage) - 1));
+    }
+  }, [contacts.length, page, rowsPerPage]);
+
+  const handleSearch = () => {
+    setAppliedSearch(searchInput.trim());
+    setPage(0);
   };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    contact: Contact,
+  ) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setSelectedContact(contact);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedContact(null);
+  };
+
+  const handleViewDetails = () => {
+    if (selectedContact) {
+      navigate(`${localRoutes.contacts}/${selectedContact.id}`);
+    }
+    handleMenuClose();
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((part) => part[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  if (loading) {
+    return (
+      <Container maxWidth="lg">
+        <Box display="flex" justifyContent="center" py={6}>
+          <CircularProgress />
+        </Box>
+      </Container>
+    );
+  }
 
   return (
-    <Navigation>
-      <Box p={1} className={classes.root}>
-        <ListHeader
-          title="People"
-          onFilter={setFilter}
-          filter={filter}
-          filterComponent={<ContactFilter onFilter={setFilter} />}
-          loading={loading}
-          buttons={
-            <>
-              {hasAnyRole(user, [appPermissions.roleCrmEdit]) && (
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                  onClick={handleNew}
-                  style={{ marginLeft: 8 }}
-                >
-                  Add new&nbsp;&nbsp;
-                </Button>
-              )}
-              {hasAnyRole(user, [appPermissions.roleCrmEdit]) && (
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<UploadIcon />}
-                  onClick={handleUpload}
-                  style={{ marginLeft: 8 }}
-                >
-                  Upload&nbsp;&nbsp;
-                </Button>
-              )}
-            </>
-          }
-        />
-        <Hidden smDown>
-          <Box pt={1}>
-            {loading ? (
-              <Loading />
-            ) : (
-              <XTable
-                headCells={headCells}
-                data={data}
-                initialRowsPerPage={10}
-                initialSortBy="name"
-                handleSelection={handleItemClick}
-              />
-            )}
-          </Box>
-        </Hidden>
-        <Hidden mdUp>
-          <List>
-            {loading ? (
-              <Loading />
-            ) : (
-              data.map((row: any) => {
-                const mobileRow = toMobileRow(row);
-                return (
-                  <Fragment key={row.id}>
-                    <ListItem
-                      alignItems="flex-start"
-                      button
-                      disableGutters
-                      onClick={handleItemClick(row.id)}
-                    >
-                      <ListItemAvatar>{mobileRow.avatar}</ListItemAvatar>
-                      <ListItemText
-                        primary={mobileRow.primary}
-                        secondary={mobileRow.secondary}
-                      />
-                    </ListItem>
-                    <Divider component="li" />
-                  </Fragment>
-                );
-              })
-            )}
-          </List>
-          {hasAnyRole(user, [appPermissions.roleCrmEdit]) ? (
-            <Fab
-              aria-label="add-new"
-              className={classes.fab}
-              color="primary"
-              onClick={handleNew}
-            >
-              <AddIcon />
-            </Fab>
-          ) : null}
-        </Hidden>
-      </Box>
-      <EditDialog
-        title={selected ? `Edit ${selected.name}` : 'New Person'}
-        open={createDialog}
-        onClose={closeCreateDialog}
+    <Container
+      maxWidth="lg"
+      disableGutters={isMobile}
+      sx={{ px: { xs: 0, sm: 2 } }}
+    >
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent={{ xs: 'flex-start', sm: 'space-between' }}
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        gap={1.5}
+        mb={{ xs: 2, sm: 3 }}
       >
-        <NewPersonForm data={{}} done={closeCreateDialog} />
-      </EditDialog>
-      <ContactUpload
-        show={uploadDialog}
-        onClose={closeUploadDialog}
-        onDone={handleUploadComplete}
-      />
-    </Navigation>
+        <Typography variant="h4" gutterBottom>
+          People ({total || contacts.length})
+        </Typography>
+
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} gap={1}>
+          <Button
+            variant="outlined"
+            startIcon={<UploadIcon />}
+            onClick={() => setUploadDialog(true)}
+            fullWidth={isMobile}
+          >
+            Upload
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateDialog(true)}
+            fullWidth={isMobile}
+          >
+            Add New
+          </Button>
+        </Box>
+      </Box>
+
+      {/* Search */}
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        gap={{ xs: 1, sm: 2 }}
+        mb={{ xs: 2, sm: 3 }}
+      >
+        <TextField
+          fullWidth
+          placeholder="Search people..."
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={handleSearchKeyDown}
+          InputProps={{
+            startAdornment: (
+              <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
+            ),
+          }}
+        />
+        <Button variant="outlined" onClick={handleSearch} fullWidth={isMobile}>
+          Search
+        </Button>
+      </Box>
+
+      {/* Table */}
+      {contacts.length === 0 ? (
+        <Box textAlign="center" py={8}>
+          <Typography variant="h6" color="text.secondary">
+            No contacts found
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Add your first contact to get started
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateDialog(true)}
+          >
+            Add Contact
+          </Button>
+        </Box>
+      ) : (
+        <>
+          {isMobile ? (
+            <Stack spacing={1.5}>
+              {paginatedContacts.map((contact, idx) => (
+                <Card
+                  key={contact.id}
+                  elevation={2}
+                  onClick={() =>
+                    navigate(`${localRoutes.contacts}/${contact.id}`)
+                  }
+                  sx={{
+                    cursor: 'pointer',
+                    borderRadius: 2,
+                    '&:active': { transform: 'scale(0.995)' },
+                  }}
+                >
+                  <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                    <Stack direction="row" spacing={1.25} alignItems="center">
+                      <Avatar
+                        src={contact.avatar || undefined}
+                        sx={{
+                          width: 44,
+                          height: 44,
+                          bgcolor: 'primary.paper',
+                          fontSize: '14px',
+                        }}
+                      >
+                        {getInitials(contact.name)}
+                      </Avatar>
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
+                        <Typography variant="subtitle2" noWrap>
+                          {contact.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          #{page * rowsPerPage + idx + 1}
+                        </Typography>
+                      </Box>
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleMenuOpen(e, contact)}
+                        aria-label={`Actions for ${contact.name}`}
+                        sx={{ width: 40, height: 40 }}
+                      >
+                        <MoreVertIcon fontSize="small" />
+                      </IconButton>
+                    </Stack>
+
+                    <Divider sx={{ my: 1.25 }} />
+
+                    <Stack spacing={0.75}>
+                      {contact.phone ? (
+                        <Typography
+                          variant="body2"
+                          component="a"
+                          href={`tel:${contact.phone}`}
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{ color: 'primary.main', textDecoration: 'none' }}
+                        >
+                          {contact.phone}
+                        </Typography>
+                      ) : null}
+                      {contact.email ? (
+                        <Typography
+                          variant="body2"
+                          component="a"
+                          href={`mailto:${contact.email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          sx={{ color: 'primary.main', textDecoration: 'none' }}
+                        >
+                          {contact.email}
+                        </Typography>
+                      ) : null}
+                      <Typography variant="caption" color="text.secondary">
+                        Group: {contact.cellGroup?.name || 'Not assigned'}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Birthday: {formatDate(contact.dateOfBirth)}
+                      </Typography>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stack>
+          ) : (
+            <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ width: 64, fontWeight: 'bold' }}>
+                      #
+                    </TableCell>
+                    <TableCell sx={{ width: 56 }}></TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Name
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Email
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Phone
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Group
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Date of Birth
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                      Actions
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {paginatedContacts.map((contact, idx) => (
+                    <TableRow
+                      key={contact.id}
+                      hover
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        navigate(`${localRoutes.contacts}/${contact.id}`)
+                      }
+                    >
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {page * rowsPerPage + idx + 1}
+                      </TableCell>
+                      <TableCell>
+                        <Avatar
+                          src={contact.avatar || undefined}
+                          sx={{
+                            width: 40,
+                            height: 40,
+                            bgcolor: 'primary.paper',
+                            fontSize: '14px',
+                          }}
+                        >
+                          {getInitials(contact.name)}
+                        </Avatar>
+                      </TableCell>
+                      <TableCell
+                        sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}
+                      >
+                        {contact.name}
+                      </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {contact.email ? (
+                          <a
+                            href={`mailto:${contact.email}`}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ color: '#1976d2', textDecoration: 'none' }}
+                          >
+                            {contact.email}
+                          </a>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {contact.phone ? (
+                          <a
+                            href={`tel:${contact.phone}`}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ color: '#1976d2', textDecoration: 'none' }}
+                          >
+                            {contact.phone}
+                          </a>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {contact.cellGroup?.name || '-'}
+                      </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {formatDate(contact.dateOfBirth)}
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleMenuOpen(e, contact)}
+                        >
+                          <MoreVertIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+
+          {/* Bottom-right paginator */}
+          <Box
+            display="flex"
+            justifyContent={{ xs: 'center', sm: 'flex-end' }}
+            mt={1}
+          >
+            <TablePagination
+              component="div"
+              count={total}
+              page={page}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => {
+                const newLimit = parseInt(e.target.value, 10);
+                setRowsPerPage(newLimit);
+                setPage(0);
+              }}
+              rowsPerPageOptions={[10, 25, 50, 100]}
+            />
+          </Box>
+        </>
+      )}
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
+        <MenuItem onClick={handleViewDetails}>Edit</MenuItem>
+      </Menu>
+
+      {/* New Contact Dialog */}
+      <Dialog
+        open={createDialog}
+        onClose={() => setCreateDialog(false)}
+        maxWidth="md"
+        fullWidth
+        fullScreen={isMobile}
+        scroll="paper"
+      >
+        <DialogTitle>Add New Contact</DialogTitle>
+        <DialogContent dividers={isMobile}>
+          <ContactForm
+            onSave={() => {
+              setCreateDialog(false);
+              // Refresh contacts list; keep same pagination
+              setFilter((prev) => ({ ...prev }));
+            }}
+            onCancel={() => setCreateDialog(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Dialog */}
+      <Dialog
+        open={uploadDialog}
+        onClose={() => setUploadDialog(false)}
+        maxWidth="md"
+        fullWidth
+        fullScreen={isMobile}
+        scroll="paper"
+      >
+        <DialogTitle>Upload Contacts</DialogTitle>
+        <DialogContent dividers={isMobile}>
+          <BulkUpload
+            onComplete={() => {
+              setUploadDialog(false);
+              // Refresh contacts list
+              setFilter((prev) => ({ ...prev }));
+            }}
+            onCancel={() => setUploadDialog(false)}
+          />
+        </DialogContent>
+      </Dialog>
+    </Container>
   );
 };
 

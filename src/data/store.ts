@@ -1,24 +1,24 @@
-import { applyMiddleware, combineReducers, createStore } from 'redux';
-import thunk from 'redux-thunk';
-import core from './coreReducer';
-import crm from './contacts/reducer';
-import events from './events/eventsReducer';
-import groupReports from './events/groupReportsReducer';
-import tags from './tags/reducer';
-import reports from './reports/reducer';
+import { configureStore } from '@reduxjs/toolkit';
+import coreReducer from './coreSlice';
 
-const myWindow = window as any;
-const toolsName = '__REDUX_DEVTOOLS_EXTENSION__';
-const devTools: any = myWindow[toolsName]
-  ? myWindow[toolsName]()
-  : (f: any) => f;
-const reducers: any = {
-  core, crm, tags, events, groupReports, reports,
-};
-const middleware = applyMiddleware(
-  // createLogger(),
-  thunk,
-);
-const store: any = middleware(devTools(createStore))(combineReducers(reducers));
+const store = configureStore({
+  reducer: {
+    core: coreReducer,
+    // contacts: contactsSlice.reducer,
+    // events: eventsSlice.reducer,
+    // groups: groupsSlice.reducer,
+    // reports: reportsSlice.reducer,
+    // tags: tagsSlice.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [],
+      },
+    }),
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
 export default store;

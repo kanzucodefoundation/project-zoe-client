@@ -1,13 +1,53 @@
-import * as superagent from 'superagent';
-import Toast from './Toast';
-import { AUTH_TOKEN_KEY } from '../data/constants';
-import { hasNoValue, hasValue } from '../components/inputs/inputHelpers';
+import axios, { AxiosError } from 'axios';
+import type { AxiosResponse } from 'axios';
+import { toast } from 'react-toastify';
+import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from '../data/constants';
+import { logout } from '../data/coreSlice';
+import store from '../data/store';
 
-export const getToken = (): string | null => localStorage.getItem(AUTH_TOKEN_KEY);
+export const getToken = (): string | null =>
+  localStorage.getItem(AUTH_TOKEN_KEY);
+
+export const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+};
 
 type CallbackFunction = (data?: any) => void;
-type ErrorCallback = (err: any, res: superagent.Response) => void;
-type EndCallback = (data?: any) => void;
+type ErrorCallback = (err: any, res?: AxiosResponse) => void;
+
+const api = axios.create({
+  timeout: 30000,
+  paramsSerializer: { indexes: null },
+});
+
+const clearSession = () => {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_USER_KEY);
+  store.dispatch(logout());
+};
+
+// Request interceptor to add auth token
+api.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    if (token) {
+      if (isTokenExpired(token)) {
+        toast.error('Your session has expired. Please log in again.');
+        clearSession();
+        return Promise.reject(new Error('Token expired'));
+      }
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    config.headers.Accept = 'application/json';
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
 export const extractBadRequestErrorMessage = (message: any, errors: any) => {
   let msg = 'Invalid request format';
@@ -17,106 +57,144 @@ export const extractBadRequestErrorMessage = (message: any, errors: any) => {
   if (Array.isArray(message)) {
     [msg] = message;
   }
-  if (hasNoValue(msg) && hasValue(errors)) {
-    [msg] = errors;
+  if (!message && errors) {
+    [msg] = Array.isArray(errors) ? errors : [errors];
   }
   return msg;
 };
 
-// eslint-disable-next-line @typescript-eslint/default-param-last
-export const handleError = (err: any = {}, res: superagent.Response) => {
-  const authError = 22000987;
-  const ajaxError = 22000987;
-  const defaultMessage = 'Invalid request, please contact admin';
-  if ((res && res.forbidden) || (res && res.unauthorized)) {
-    Toast.error('Authentication Error', authError);
-    window.location.reload();
-  } else if (res && res.badRequest) {
-    const { message, errors } = res.body;
-    const msg = extractBadRequestErrorMessage(message, errors);
-    Toast.error(msg || defaultMessage, ajaxError);
-  } else if (
-    (res && res.clientError)
-    || (res && res.notAcceptable)
-    || (res && res.error)
-  ) {
-    const { message } = res.body || {};
-    Toast.error(message || defaultMessage, ajaxError);
-  } else {
-    const message = err.message || 'Unknown error, contact admin';
-    const finalMessage = message.indexOf('offline') !== -1
-      ? "Can't reach server, Check connectivity"
-      : message;
-    Toast.error(finalMessage, ajaxError);
+const getErrorData = (err: AxiosError) => {
+  const responseData = err.response?.data as any;
+  if (responseData && typeof responseData === 'object') {
+    return responseData;
   }
+
+  if (typeof responseData === 'string') {
+    try {
+      return JSON.parse(responseData);
+    } catch {
+      return {};
+    }
+  }
+
+  return {};
 };
 
-const timeout = 0;
-// eslint-disable-next-line @typescript-eslint/default-param-last
-export const isAuthError = (err: any = {}, res: superagent.Response) => {
-  if (err) {
-    console.log(err);
-    return false;
+export const extractErrorMessageFromData = (data: any = {}) => {
+  const normalizedData = Array.isArray(data) ? data[0] : data;
+  const { message, errors, response } = normalizedData || {};
+  const directMessage = extractBadRequestErrorMessage(message, errors);
+  if (
+    directMessage !== 'Invalid request format' &&
+    directMessage !== 'Bad Request Exception'
+  ) {
+    return directMessage;
   }
-  return (res && res.forbidden) || (res && res.unauthorized);
+
+  if (typeof response === 'string') {
+    return response;
+  }
+
+  if (response && typeof response === 'object') {
+    const nestedMessage = extractBadRequestErrorMessage(
+      response.message,
+      response.errors,
+    );
+    if (nestedMessage !== 'Invalid request format') {
+      return nestedMessage;
+    }
+    if (typeof response.error === 'string') {
+      return response.error;
+    }
+  }
+
+  if (directMessage !== 'Invalid request format') {
+    return directMessage;
+  }
+
+  return undefined;
+};
+
+export const handleError = (err: AxiosError, _res?: AxiosResponse) => {
+  const defaultMessage = 'Invalid request, please contact admin';
+  const errorData = getErrorData(err);
+
+  if (err.response?.status === 401 || err.response?.status === 403) {
+    toast.error('Your session has expired. Please log in again.');
+    clearSession();
+  } else if (err.response?.status === 400) {
+    const msg = extractErrorMessageFromData(errorData);
+    toast.error(msg || defaultMessage);
+  } else if (err.response?.status && err.response.status >= 400) {
+    const msg = extractErrorMessageFromData(errorData);
+    toast.error(msg || errorData.message || defaultMessage);
+  } else {
+    const message = err.message || 'Unknown error, contact admin';
+    const finalMessage = message.toLowerCase().includes('network')
+      ? "Can't reach server, Check connectivity"
+      : message;
+    toast.error(finalMessage);
+  }
 };
 
 export const handleResponse = (
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback,
-) => (err: any, res: superagent.Response) => {
-  try {
-    if (err || !res.ok) {
+) => {
+  return {
+    then: (response: AxiosResponse) => {
+      callBack(response.data);
+      return Promise.resolve(response);
+    },
+    catch: (error: AxiosError) => {
       if (errorCallBack) {
-        errorCallBack(err, res);
+        errorCallBack(error, error.response);
       } else {
-        handleError(err, res);
+        handleError(error, error.response);
       }
-    } else {
-      callBack(res.body);
-    }
-  } catch (e) {
-    console.error('Failed to process response', e);
-  } finally {
-    if (endCallBack) {
-      endCallBack();
-    }
-  }
+      return Promise.reject(error);
+    },
+  };
 };
 
 export const get = (
   url: string,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback,
 ) => {
-  superagent
+  return api
     .get(url)
-    .set('Authorization', `Bearer ${getToken()}`)
-    .set('Accept', 'application/json')
-    .timeout(timeout)
-    .end(handleResponse(callBack, errorCallBack, endCallBack));
+    .then((response) => callBack(response.data))
+    .catch((error) => {
+      if (errorCallBack) {
+        errorCallBack(error, error.response);
+      } else {
+        handleError(error, error.response);
+      }
+    });
 };
-const cleanUp = (data: any = {}) => Object.fromEntries(
-  Object.entries(data).filter(([, v]) => v !== undefined),
-);
 
 export const search = (
   url: string,
   data: any,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback,
 ) => {
-  const searchData = cleanUp(data);
-  superagent
-    .get(url)
-    .set('Authorization', `Bearer ${getToken()}`)
-    .set('Accept', 'application/json')
-    .query(searchData)
-    .timeout(timeout)
-    .end(handleResponse(callBack, errorCallBack, endCallBack));
+  // Remove undefined values
+  const cleanData = Object.fromEntries(
+    Object.entries(data || {}).filter(([, v]) => v !== undefined),
+  );
+
+  return api
+    .get(url, { params: cleanData })
+    .then((response) => callBack(response.data))
+    .catch((error) => {
+      if (errorCallBack) {
+        errorCallBack(error, error.response);
+      } else {
+        handleError(error, error.response);
+      }
+    });
 };
 
 export const post = (
@@ -124,32 +202,39 @@ export const post = (
   data: any,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback,
 ) => {
-  superagent
-    .post(url)
-    .set('Authorization', `Bearer ${getToken()}`)
-    .set('Accept', 'application/json')
-    .set('Content-Type', 'application/json')
-    .send(data)
-    .timeout(timeout)
-    .end(handleResponse(callBack, errorCallBack, endCallBack));
+  return api
+    .post(url, data)
+    .then((response) => callBack(response.data))
+    .catch((error) => {
+      if (errorCallBack) {
+        errorCallBack(error, error.response);
+      } else {
+        handleError(error, error.response);
+      }
+    });
 };
 
 export const postFile = (
   url: string,
-  data: any,
+  data: FormData,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback,
 ) => {
-  superagent
-    .post(url)
-    .set('Authorization', `Bearer ${getToken()}`)
-    .set('Accept', 'application/json')
-    .send(data)
-    .timeout(timeout)
-    .end(handleResponse(callBack, errorCallBack, endCallBack));
+  return api
+    .post(url, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then((response) => callBack(response.data))
+    .catch((error) => {
+      if (errorCallBack) {
+        errorCallBack(error, error.response);
+      } else {
+        handleError(error, error.response);
+      }
+    });
 };
 
 export const put = (
@@ -157,43 +242,69 @@ export const put = (
   data: any,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback,
 ) => {
-  superagent
-    .put(url)
-    .set('Authorization', `Bearer ${getToken()}`)
-    .set('Content-Type', 'application/json')
-    .set('Accept', 'application/json')
-    .send(data)
-    .timeout(timeout)
-    .end(handleResponse(callBack, errorCallBack, endCallBack));
+  return api
+    .put(url, data)
+    .then((response) => callBack(response.data))
+    .catch((error) => {
+      if (errorCallBack) {
+        errorCallBack(error, error.response);
+      } else {
+        handleError(error, error.response);
+      }
+    });
+};
+
+export const patch = (
+  url: string,
+  data: any,
+  callBack: CallbackFunction,
+  errorCallBack?: ErrorCallback,
+) => {
+  return api
+    .patch(url, data)
+    .then((response) => callBack(response.data))
+    .catch((error) => {
+      if (errorCallBack) {
+        errorCallBack(error, error.response);
+      } else {
+        handleError(error, error.response);
+      }
+    });
 };
 
 export const del = (
   url: string,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback,
 ) => {
-  superagent
+  return api
     .delete(url)
-    .set('Authorization', `Bearer ${getToken()}`)
-    .set('Accept', 'application/json')
-    .timeout(timeout)
-    .end(handleResponse(callBack, errorCallBack, endCallBack));
+    .then((response) => callBack(response.data))
+    .catch((error) => {
+      if (errorCallBack) {
+        errorCallBack(error, error.response);
+      } else {
+        handleError(error, error.response);
+      }
+    });
 };
 
 export const downLoad = (
   url: string,
   callBack: CallbackFunction,
   errorCallBack?: ErrorCallback,
-  endCallBack?: EndCallback,
 ) => {
-  superagent
-    .get(url)
-    .set('Authorization', `Bearer ${getToken()}`)
-    .responseType('blob')
-    .end(handleResponse(callBack, errorCallBack, endCallBack));
+  return api
+    .get(url, { responseType: 'blob' })
+    .then((response) => callBack(response.data))
+    .catch((error) => {
+      if (errorCallBack) {
+        errorCallBack(error, error.response);
+      } else {
+        handleError(error, error.response);
+      }
+    });
 };
 
 export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
@@ -202,3 +313,5 @@ export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
   a.download = fileName;
   a.click();
 };
+
+export default api;

@@ -1,32 +1,45 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
-/node_modules
-/.pnp
+node_modules
+.pnp
 .pnp.js
 
+# build output
+dist
+dist-ssr
+build
+
 # testing
-/coverage
+coverage
 
-# production
-/build
-
-# misc
-.DS_Store
+# env files
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+*.local
 
+# logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.idea/
+pnpm-debug.log*
+lerna-debug.log*
 
-.env
-#Eslint cache file
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# misc
 .eslintcache
-
 .codex
-
 scripts/*

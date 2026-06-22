@@ -3,7 +3,7 @@ name: Staging - Build and deploy Project Zoe client
 on:
   push:
     branches: [ develop ]
- 
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -13,37 +13,37 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: '20.x'
 
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: node_modules
+          key: ${{ runner.os }}-client-vite-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
-        run: |
-          npm install   
-          
-      - name: Run the tests and generate coverage report
-        run: npm test -- --coverage
+        run: npm install
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-          
-      - name: Create an .env file
+      # - name: Run tests
+      # - Re-introduce once a test suite is configured for the Vite app
+      #   run: npm test
+
+      - name: Create .env file
         env:
           STAGING_ENV_FILE: ${{ secrets.STAGING_ENV_FILE }}
-        run: |
-          echo $STAGING_ENV_FILE | base64 --decode > ./.env
-      
-      # Temporarily skip eslint by using DISABLE_ESLINT_PLUGIN
+        run: echo "VITE_API_URL=https://staging.projectzoe.kanzucodefoundation.org/server/" > ./.env
+
       - name: Build
-        run: |
-          DISABLE_ESLINT_PLUGIN=true npm run build
+        run: npm run build
+
+      - name: Archive npm failure logs
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: npm-logs
+          path: ~/.npm/_logs
 
       - name: Configure SSH
         run: |
@@ -62,11 +62,7 @@ jobs:
           DO_PRIVATE_KEY: ${{ secrets.DO_PRIVATE_KEY }}
           DO_HOST: ${{ secrets.DO_HOST }}
 
-      - name: Deploy the .env file
-        run: |
-          rsync -rtvO ./.env project-zoe-prod-1:/opt/staging/project-zoe-client/build/
-
       - name: Deploy the app
-        run: rsync -rtvO ./build/ project-zoe-prod-1:/opt/staging/project-zoe-client/build/
-            
- 
+        # NOTE: nginx on staging must serve from /opt/staging/project-zoe-client/dist/
+        # (previously served from build/ — update nginx config if not already done)
+        run: rsync -rtvO ./dist/ project-zoe-prod-1:/opt/staging/project-zoe-client/dist/

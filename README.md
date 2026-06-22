@@ -4,7 +4,7 @@ Project Zoe is a church management centered on what's at the heart of all minist
 
 # The tech
 
-This repo holds the Project Zoe church relationship management system (RMS) client. 
+This repo holds the Project Zoe church relationship management system (RMS) client.
 It was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Project Setup / Installation 🚀
@@ -17,10 +17,6 @@ It was bootstrapped with [Create React App](https://github.com/facebook/create-r
 
 > `git checkout develop`
 
-3. Install dependencies with npm version 6.14.5:
-
-> `npx npm@6.14.5 install`
-
 4. Create a `.env` file based on the `.env.sample`.
 
 > You should set the `REACT_APP_ENVIRONMENT=local` if you are running the app locally.
@@ -29,7 +25,7 @@ It was bootstrapped with [Create React App](https://github.com/facebook/create-r
 
 > `npm start`
 
-**Please Note:** 
+**Please Note:**
 - If you don't have `node.js` installed, check out this guide https://nodejs.org/en/
 - This repo works with the server at https://github.com/kanzucodefoundation/project-zoe-server so be sure to set that up too.
 

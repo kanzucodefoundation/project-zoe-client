@@ -1,26 +1,51 @@
-export interface IUser {
+export interface User {
+  id: string;
   username: string;
-  contact: any;
-  avatar: string;
-  id?: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
   roles: string[];
-}
-export interface IUserDto {
-  fullName: string;
   isActive: boolean;
-  avatar: string;
-  id?: string;
-  roles: string[];
+  lastLogin?: string;
+  createdAt: string;
+  avatar?: string;
+  fullName?: string;
+  contactId: number;
 }
 
-export interface IUsersFilter {
-  query?: string;
-  skip?: number;
-  limit?: number;
-}
-
-export interface IRoles {
+export interface ContactOption {
   id: number;
+  name: string;
+  avatar?: string | null;
+}
+
+export interface RoleDto {
+  id: number;
+  role: string;
+  description: string;
+  permissions: string[];
+  isActive: boolean;
+}
+
+export interface AuthUserWithPermissions {
+  permissions?: string[];
+}
+
+export interface CreateUserData {
+  contact: ContactOption | null;
+  password: string;
+  roles: string[];
+  isActive: boolean;
+}
+
+export interface EditUserData {
+  password: string;
+  roles: string[];
+  isActive: boolean;
+}
+
+export interface RoleFormData {
+  id?: number;
   role: string;
   description: string;
   permissions: string[];

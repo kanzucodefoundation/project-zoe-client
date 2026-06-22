@@ -1,98 +1,213 @@
-import React, { SyntheticEvent } from 'react';
-import { Button } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import { Form, Formik, FormikHelpers } from 'formik';
-import Link from '@material-ui/core/Link';
-import HelpIcon from '@material-ui/icons/Help';
-import * as yup from 'yup';
-import { useHistory } from 'react-router';
-import { useLoginStyles } from './loginStyles';
-import XTextInput from '../../components/inputs/XTextInput';
+import { useState } from 'react';
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Alert,
+  Link,
+  CircularProgress,
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import { post } from '../../utils/ajax';
-import { remoteRoutes } from '../../data/constants';
-import Toast from '../../utils/Toast';
+import { localRoutes, remoteRoutes } from '../../data/constants';
+import loginBackground from '../../assets/images/login-background.jpg';
 
-export default function ForgotPassword() {
-  const classes = useLoginStyles();
-  const history = useHistory();
-  const schema = yup.object().shape({
-    username: yup.string().email('Invalid Email').required('Email is required'),
-  });
+const ForgotPassword = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const onSubmit = (data: any, actions: FormikHelpers<any>) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
     post(
       remoteRoutes.forgotPassword,
-      data,
-      (resp) => {
-        Toast.success('An email has been sent to the provided address if it exists in the platform');
-        const { token } = resp;
-        localStorage.setItem('password_token', token);
-        actions.resetForm();
+      {
+        churchName: 'Worship Harvest',
+        username: email,
       },
       () => {
-        Toast.error('Sorry, we encountered an issue while processing your password reset request. Please double-check the email address you provided and try again. If the problem persists, please contact the platform administrator for further assistance.');
-        actions.setSubmitting(false);
-        actions.resetForm();
+        setSuccess(
+          'An email has been sent to the provided address if it exists in the platform.',
+        );
+        setEmail('');
+        setLoading(false);
+      },
+      () => {
+        setError(
+          'Sorry, we encountered an issue while processing your password reset request. Please try again.',
+        );
+        setLoading(false);
       },
     );
   };
 
-  function handleBackToLogin(e: SyntheticEvent<any>) {
-    e.preventDefault();
-    history.goBack();
-  }
-
   return (
-    <main className={classes.main}>
-      <CssBaseline />
-      <Paper className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <HelpIcon />
-        </Avatar>
-        <Typography component="h1">Recover Password</Typography>
-        <Formik
-          initialValues={{}}
-          validationSchema={schema}
-          onSubmit={onSubmit}
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        minHeight: '100vh',
+        backgroundColor: 'background.paper',
+      }}
+    >
+      {/* Mobile image masthead */}
+      <Box
+        sx={{
+          display: { xs: 'flex', md: 'none' },
+          minHeight: { xs: 184, sm: 220 },
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+          textAlign: 'center',
+          color: 'common.white',
+          px: 3,
+          pb: { xs: 3, sm: 4 },
+          backgroundImage: `linear-gradient(180deg, rgba(14, 23, 36, 0.28), rgba(14, 23, 36, 0.72)), url(${loginBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <Box>
+          <Typography
+            component="h1"
+            variant="h4"
+            fontWeight="bold"
+            sx={{ lineHeight: 1.1 }}
+          >
+            Project Zoe
+          </Typography>
+          <Typography variant="body1" sx={{ mt: 1, opacity: 0.9 }}>
+            Password Recovery
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          flex: 1,
+          display: { xs: 'none', md: 'flex' },
+          backgroundImage: `url(${loginBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          }}
+        />
+        <Box
+          sx={{
+            textAlign: 'center',
+            color: 'white',
+            zIndex: 1,
+            px: 4,
+            margin: 'auto',
+          }}
         >
-          {(formState) => (
-            <Form className={classes.form}>
-              <XTextInput
-                type="text"
-                name="churchName"
-                label="Church Name"
-                autoComplete="off"
-                autoFocus
-                margin="normal"
-              />
-              <XTextInput
-                type="email"
-                name="username"
-                label="Email"
-                autoComplete="off"
-                autoFocus
-                margin="normal"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                disabled={formState.isSubmitting}
-              >
-                Submit
-              </Button>
-              <Link className={classes.link} onClick={handleBackToLogin}>
-                Back To Login Page
-              </Link>
-            </Form>
+          <Typography variant="h3" fontWeight="bold" gutterBottom>
+            Project Zoe
+          </Typography>
+          <Typography variant="h6" sx={{ opacity: 0.9 }}>
+            Password Recovery
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          p: { xs: 3, sm: 6 },
+          pt: { xs: 4, sm: 6 },
+          backgroundColor: 'background.paper',
+        }}
+      >
+        <Box sx={{ width: '100%', maxWidth: 400 }}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Forgot Password
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+            Enter your email address and we&apos;ll send reset instructions if
+            an account exists.
+          </Typography>
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
           )}
-        </Formik>
-      </Paper>
-    </main>
+
+          {success && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {success}
+            </Alert>
+          )}
+
+          <Box component="form" onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              autoFocus
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={loading}
+              sx={{
+                py: 1.5,
+                backgroundColor: '#1a2332',
+                '&:hover': { backgroundColor: '#2d4059' },
+                textTransform: 'none',
+                fontSize: '1rem',
+                mb: 2,
+              }}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Send Reset Email'
+              )}
+            </Button>
+
+            <Typography variant="body2" align="center" color="text.secondary">
+              Remembered your password?{' '}
+              <Link
+                component="button"
+                type="button"
+                variant="body2"
+                onClick={() => navigate(localRoutes.login)}
+                sx={{ cursor: 'pointer' }}
+              >
+                Back to login
+              </Link>
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
-}
+};
+
+export default ForgotPassword;

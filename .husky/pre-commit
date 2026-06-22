@@ -1,4 +1,6 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npx lint-staged
+# TODO: configure lint-staged for the Vite/flat-ESLint setup
+# lint-staged was removed with the CRA → Vite migration
+# npx lint-staged

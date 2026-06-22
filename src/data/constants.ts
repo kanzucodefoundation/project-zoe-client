@@ -26,6 +26,15 @@ export const appPermissions = {
   roleReportViewSubmissions: 'REPORT_VIEW_SUBMISSIONS',
 
   manageHelp: 'MANAGE_HELP',
+
+  roleFinanceView: 'FINANCE_VIEW',
+  roleFinanceEdit: 'FINANCE_EDIT',
+
+  roleTaskView: 'TASK_VIEW',
+  roleTaskEdit: 'TASK_EDIT',
+
+  roleAttendanceView: 'ATTENDANCE_VIEW',
+  roleAttendanceEdit: 'ATTENDANCE_EDIT',
 };
 
 export const permissionsList = Object.values(appPermissions);
@@ -82,16 +91,44 @@ export const localRoutes = {
 
   calendar: '/calendar',
   reportCategories: '/admin/report-categories',
+  reportConfiguration: '/admin/report-configuration',
   groupsCategories: '/admin/group-categories',
   eventCategories: '/admin/event-categories',
+
+  // Financial Management
+  financialAccounts: '/admin/financial-management/accounts',
+  financialImport: '/admin/financial-management/import',
+  financialReconciliation: '/admin/financial-management/reconciliation',
+  financialDistributions: '/admin/financial-management/distributions',
+  financialCategoryRules: '/admin/financial-management/category-rules',
+  financialReports: '/admin/financial-management/reports',
+
+  // Notifications
+  notifications: '/admin/notifications',
+
+  // Tasks
+  tasks: '/tasks',
+  tasksMine: '/tasks/mine',
+  tasksAssign: '/tasks/assign',
+  retentionReport: '/reports/retention',
+
+  // Attendance
+  attendance: '/attendance',
+  attendanceSchedules: '/attendance/schedules',
+  attendanceHistory: '/attendance/history',
 };
 
-export const apiBaseUrl = process.env.REACT_APP_API_URL || 'https://projectzoe.kanzucodefoundation.org/server';
+export const apiBaseUrl =
+  import.meta.env.VITE_API_URL ||
+  'https://projectzoe.kanzucodefoundation.org/server';
 
 export const remoteRoutes = {
   authServer: apiBaseUrl,
 
   login: `${apiBaseUrl}/api/auth/login`,
+  signup: `${apiBaseUrl}/api/register`,
+  dashboardSummary: `${apiBaseUrl}/api/dashboard/summary`,
+  dashboardBirthdays: `${apiBaseUrl}/api/dashboard/birthdays-this-week`,
   profile: `${apiBaseUrl}/api/auth/profile`,
   register: `${apiBaseUrl}/api/register`,
   forgotPassword: `${apiBaseUrl}/api/auth/forgot-password`,
@@ -115,14 +152,16 @@ export const remoteRoutes = {
   contactsIdentification: `${apiBaseUrl}/api/crm/identifications`,
   contactsRequests: `${apiBaseUrl}/api/crm/requests`,
 
-  groups: `${apiBaseUrl}/api/groups/group`,
+  groups: `${apiBaseUrl}/api/groups`,
+  group: `${apiBaseUrl}/api/groups/group`,
   groupsCombo: `${apiBaseUrl}/api/groups/combo`,
-  groupsCategories: `${apiBaseUrl}/api/groups/category`,
+  groupsCategories: `${apiBaseUrl}/api/groups/categories`,
   groupsMembership: `${apiBaseUrl}/api/groups/member`,
   groupsRequest: `${apiBaseUrl}/api/groups/request`,
   groupReports: `${apiBaseUrl}/api/groups/groupreports`,
   groupReportFrequency: `${apiBaseUrl}/api/groups/reportfrequency`,
   groupCategoriesCombo: `${apiBaseUrl}/api/groups/groupscombo`,
+  groupsMyGroups: `${apiBaseUrl}/api/groups/me`,
 
   events: `${apiBaseUrl}/api/events/event`,
   eventsMetricsRaw: `${apiBaseUrl}/api/events/metrics/raw`,
@@ -134,7 +173,6 @@ export const remoteRoutes = {
   dayOff: `${apiBaseUrl}/api/events/dayoff`,
 
   reports: `${apiBaseUrl}/api/reports`,
-  reportsSubmit: `${apiBaseUrl}/api/reports/submit`,
   reportsCategories: `${apiBaseUrl}/api/reports/category`,
 
   contactsCompany: `${apiBaseUrl}/api/crm/contact/company`,
@@ -142,4 +180,21 @@ export const remoteRoutes = {
   chat: `${apiBaseUrl}/api/chat/email`,
   eventsRegistration: `${apiBaseUrl}/api/events/registration`,
   help: `${apiBaseUrl}/api/help`,
+
+  // Financial Management
+  financialAccounts: `${apiBaseUrl}/api/finance/accounts`,
+  financialTransactions: `${apiBaseUrl}/api/finance/transactions`,
+  financialReconciliation: `${apiBaseUrl}/api/finance/reconciliation`,
+  financialDistributions: `${apiBaseUrl}/api/finance/distributions`,
+  financialCategoryRules: `${apiBaseUrl}/api/finance/category-rules`,
+
+  // Notifications
+  notificationSettings: `${apiBaseUrl}/api/notifications/settings`,
+
+  // Tasks
+  tasks: `${apiBaseUrl}/api/tasks`,
+
+  // Attendance
+  services: `${apiBaseUrl}/api/services`,
+  fellowships: `${apiBaseUrl}/api/fellowships`,
 };

@@ -1,88 +1,58 @@
-import React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
-import Paper from '@material-ui/core/Paper';
-import { Typography } from '@material-ui/core';
-import { BarView } from '../Profile';
-import { useStyles } from './styles';
-import NavMenu from './NavMenu';
+// import {useState} from 'react';
+// import {Box, Toolbar} from '@mui/material';
+// import {Sidebar} from './Sidebar';
+// import {Header} from './Header';
+// import * as React from "react";
 
-interface IProps {
-  title?: string;
-  children?: any;
-  mobilePadding?: boolean;
-}
+// interface LayoutProps {
+//     children: React.ReactNode;
+//     title?: string;
+// }
 
-function Layout(props: IProps) {
-  const classes = useStyles();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+// const Layout = ({children, title}: LayoutProps) => {
+//     const [mobileOpen, setMobileOpen] = useState(false);
 
-  function handleDrawerToggle() {
-    setMobileOpen(!mobileOpen);
-  }
+//     const handleDrawerToggle = () => {
+//         setMobileOpen(!mobileOpen);
+//     };
 
-  return (
-        <div className={classes.root}>
-            <CssBaseline/>
-            <AppBar position="fixed" className={classes.appBar} color='default'>
-                <Toolbar>
-                    <IconButton
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        className={classes.menuButton}
-                    >
-                        <MenuIcon/>
-                    </IconButton>
-                    <Typography variant="h6" noWrap className={classes.title}>
-                        {props.title}
-                    </Typography>
-                    <BarView/>
-                </Toolbar>
-            </AppBar>
-            <nav className={classes.drawer} aria-label="mailbox folders">
-                {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-                <Hidden mdUp implementation="css">
-                    <Drawer
-                        variant="temporary"
-                        anchor={'left'}
-                        open={mobileOpen}
-                        onClose={handleDrawerToggle}
-                        classes={{
-                          paper: classes.drawerPaper,
-                        }}
-                        ModalProps={{
-                          keepMounted: true, // Better open performance on mobile.
-                        }}
-                    >
-                        <NavMenu/>
-                    </Drawer>
-                </Hidden>
-                <Hidden smDown implementation="css">
-                    <Drawer
-                        classes={{
-                          paper: classes.drawerPaper,
-                        }}
-                        variant="permanent"
-                        open={false}
-                    >
-                        <NavMenu/>
-                    </Drawer>
-                </Hidden>
-            </nav>
-            <main className={classes.content}>
-                <div className={classes.toolbar}/>
-                <Paper className={classes.body} >
-                    {props.children}
-                </Paper>
-            </main>
-        </div>
-  );
-}
+//     return (
+//         <Box sx={{
+//             display: 'flex',
+//             width: '100%',
+//             height: '100%',
+//             overflowX: 'hidden',
+//             maxWidth: '100vw',
+//         }}>
+//             <Sidebar mobileOpen={mobileOpen} onMobileClose={handleDrawerToggle}/>
+//             <Box sx={{
+//                 display: 'flex',
+//                 flexDirection: 'column',
+//                 width: '100%',
+//                 height: '100%',
+//                 overflowX: 'hidden',
+//                 maxWidth: '100%',
+//                 minWidth: 0, // Important: allows flex items to shrink below content size
+//             }}>
+//                 <Header title={title} onDrawerToggle={handleDrawerToggle}/>
+//                 <Box
+//                     component="main"
+//                     sx={{
+//                         flexGrow: 1,
+//                         p: 3,
+//                         minHeight: '100vh',
+//                         position: 'relative',
+//                         overflowX: 'hidden',
+//                         maxWidth: '100%',
+//                         minWidth: 0, // Important: allows flex items to shrink below content size
+//                     }}
+//                 >
+//                     <Toolbar/>
+//                     {children}
+//                 </Box>
+//             </Box>
+//         </Box>
+//     );
+// };
 
-export default Layout;
+// export default Layout;

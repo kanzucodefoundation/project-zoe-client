@@ -1,60 +1,64 @@
-import { IOption } from '../../components/inputs/inputHelpers';
+export const GroupPrivacy = {
+  Private: 'Private',
+  Public: 'Public',
+} as const;
+export type GroupPrivacy = typeof GroupPrivacy[keyof typeof GroupPrivacy];
+
+export const GroupCategoryPurpose = {
+  FELLOWSHIP: 'fellowship',
+  LOCATION: 'location',
+  SERVING_TEAM: 'serving_team',
+  STRUCTURE: 'structure',
+} as const;
+export type GroupCategoryPurpose =
+  typeof GroupCategoryPurpose[keyof typeof GroupCategoryPurpose];
+
+export interface IGroupCategory {
+  id: number;
+  name: string;
+  purpose?: GroupCategoryPurpose | null;
+}
+
+export interface IAddress {
+  placeId?: string;
+  name?: string;
+  description?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface GroupNode {
+  id: number;
+  privacy: string;
+  name: string;
+  details: string | null;
+  metaData: string | null;
+  parentId: number | null;
+  address?: IAddress | null;
+  categoryId?: number;
+  category?: IGroupCategory | null;
+  parent?: Pick<IGroup, 'id' | 'name'> | null;
+  children: GroupNode[];
+}
 
 export interface IGroup {
-  id: string;
+  id: number;
   privacy: GroupPrivacy;
   name: string;
   details?: string;
-  category?: any;
-  categoryId: string;
-  parent?: any;
-  parentId?: number;
-  metaData?: any;
-  address?: any;
-  leaders?: number[];
-  canEditGroup?: boolean;
-  parents?: number[];
-  children: any[];
-  totalAttendance?: number;
-  percentageAttendance?: number;
-  reports?: any[];
+  category?: IGroupCategory;
+  categoryId?: number;
+  parent?: IGroup;
+  parentId?: number | null;
+  metaData?: unknown;
+  address?: IAddress | null;
+  children: IGroup[];
 }
 
-export interface IGroupMembership {
-  id: string;
-  group: IOption;
-  groupId: string;
-  contact: any;
-  contactId: string;
-  role: GroupRole;
-}
-
-export interface ICreateBatchMembership {
-  groupId: string;
-  members: string[];
-  role: GroupRole;
-}
-
-export enum GroupPrivacy {
-  Private = 'Private',
-  Public = 'Public',
-}
-
-export enum GroupRole {
-  Member = 'Member',
-  Leader = 'Leader',
-}
-
-export enum GroupCategory {
-  Cohort = 'Cohort',
-  MC = 'MC',
-  GarageTeam = 'GarageTeam',
-  Huddle = 'Huddle',
-  Location = 'Loaction',
-}
-
-export interface IStats {
-  isComplete: boolean;
-  percentage: number;
-  childCount: number;
+export interface GroupFormData {
+  name: string;
+  privacy: GroupPrivacy;
+  details: string;
+  categoryId: number | null;
+  parentId: number | null;
 }
