@@ -1,83 +1,83 @@
-# About project Zoe
+# Project Zoe — Client
 
-Project Zoe is a church management centered on what's at the heart of all ministry - people. The platform simplifies the process of managing people and their relationships between each other and the church, keeping track of data across the organization and creates a foundation for adding new features that are specific to your church.
+Project Zoe is a church relationship management system (RMS) centred on people. The platform simplifies managing people and their relationships within a church, tracking data across the organisation, and provides a foundation for church-specific features.
 
-# The tech
+This repo holds the React client, built with Vite and Material UI.
 
-This repo holds the Project Zoe church relationship management system (RMS) client.
-It was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Tech stack
 
-## Project Setup / Installation 🚀
+- **Framework:** React 19, TypeScript
+- **Build tool:** Vite
+- **UI:** Material UI (MUI v7)
+- **State:** Redux Toolkit, TanStack Query
+- **Routing:** React Router v6
 
-1. Clone the repository:
+## Getting started
 
-> `git clone https://github.com/kanzucodefoundation/project-zoe-client.git`
+### Prerequisites
 
-2. Checkout to the Develop branch
+- Node.js 20+ — [nodejs.org](https://nodejs.org/en/)
+- The Project Zoe server running locally — [project-zoe-server](https://github.com/kanzucodefoundation/project-zoe-server)
 
-> `git checkout develop`
+### Setup
 
-4. Create a `.env` file based on the `.env.sample`.
+1. Clone the repository and check out `develop`:
 
-> You should set the `REACT_APP_ENVIRONMENT=local` if you are running the app locally.
+   ```bash
+   git clone https://github.com/kanzucodefoundation/project-zoe-client.git
+   cd project-zoe-client
+   git checkout develop
+   ```
 
-4. Finally, spin up the project with:
+2. Install dependencies:
 
-> `npm start`
+   ```bash
+   npm install
+   ```
 
-**Please Note:**
-- If you don't have `node.js` installed, check out this guide https://nodejs.org/en/
-- This repo works with the server at https://github.com/kanzucodefoundation/project-zoe-server so be sure to set that up too.
+3. Create a `.env` file from the sample:
 
-## Available npm scripts
+   ```bash
+   cp .env.sample .env
+   ```
 
-In the project directory, you can run:
+   Set `VITE_API_URL` to point at your local server (default: `http://localhost:4002`).
 
-### `npm start`
+4. Start the development server:
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+   ```bash
+   npm run dev
+   ```
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+   The app runs on `http://localhost:5173` by default.
 
-### `npm test`
+## Available scripts
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start the dev server with hot-reload |
+| `npm run build` | Type-check and build for production |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint` | Lint the codebase |
 
-### `npm run build`
+## Deployment
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+| Branch | Environment |
+|--------|-------------|
+| `master` | Production — auto-deploys on push |
+| `develop` | Staging — auto-deploys on push |
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+The CI pipeline sets `VITE_API_URL` via an environment variable at build time. To encode a local `.env` for CI use:
 
--See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+openssl base64 -A -in .env -out .env.encrypted
+```
 
 ## Contributing
-Before making any contribution to this codebase, please read through this [contributing guide](https://github.com/kanzucodefoundation/project-zoe-client/blob/master/contributing.md).
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Commitizen friendly
+
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-
-## Badges
 ![Build & Deploy workflow](https://github.com/kanzucodefoundation/project-zoe-client/actions/workflows/main.yml/badge.svg)
-
-[![codecov](https://codecov.io/gh/kanzucodefoundation/project-zoe-client/branch/master/graph/badge.svg?token=4BBZPRO0YM)](https://codecov.io/gh/kanzucodefoundation/project-zoe-client)
-
-## Github Actions
-This repo is automatically deployed to the prod server using github actions. We create an `.env` file during the deployment process. Rather than add each environment variable to the file one by one, we copied a complete `.env` file and encrypted it using base64. We use the command:
-
-```
-openssl base64 -A -in .env -out .env.prod.encrypted
-```
-
-We then get the contents of `.env.prod.encrypted` and add them as a Github Action variable called `PROD_ENV_FILE`
-
-## Learn More
-
-- You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-- To learn React, check out the [React documentation](https://reactjs.org/).
