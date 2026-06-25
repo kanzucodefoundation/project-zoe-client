@@ -353,7 +353,8 @@ const UserManagement = () => {
         setReloadUsersKey((prev) => prev + 1);
         setSubmitting(false);
       },
-      () => {
+      (error) => {
+        handleError(error);
         setSubmitting(false);
       },
     );
