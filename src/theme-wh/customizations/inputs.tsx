@@ -33,6 +33,18 @@ export const inputsCustomizations: Components<Theme> = {
         boxShadow: 'none',
         borderRadius: (theme.vars || theme).shape.borderRadius,
         textTransform: 'none',
+        '&.Mui-disabled': {
+          backgroundColor: gray[200],
+          color: gray[500],
+          backgroundImage: 'none',
+          boxShadow: 'none',
+          border: `1px solid ${gray[200]}`,
+          ...theme.applyStyles('dark', {
+            backgroundColor: gray[700],
+            color: gray[500],
+            border: `1px solid ${gray[700]}`,
+          }),
+        },
         variants: [
           {
             props: {

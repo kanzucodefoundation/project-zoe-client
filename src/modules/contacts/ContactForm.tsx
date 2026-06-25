@@ -11,7 +11,6 @@ import {
   Typography,
   Divider,
   Autocomplete,
-  Tooltip,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -492,36 +491,18 @@ const ContactForm = ({
           <Button onClick={onCancel} fullWidth={isPhone}>
             Cancel
           </Button>
-          <Tooltip
-            title={
-              !formData.firstName || !formData.lastName
-                ? 'First name and last name are required'
-                : ''
-            }
-            arrow
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={submitting || !formData.firstName || !formData.lastName}
+            fullWidth={isPhone}
           >
-            {/* span needed so Tooltip works on a disabled button */}
-            <span style={{ display: isPhone ? 'block' : 'inline-flex' }}>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={submitting || !formData.firstName || !formData.lastName}
-                fullWidth={isPhone}
-                sx={{
-                  '&.Mui-disabled': {
-                    backgroundColor: 'grey.300',
-                    color: 'grey.600',
-                  },
-                }}
-              >
-                {submitting
-                  ? 'Saving...'
-                  : contactId
-                  ? 'Update Contact'
-                  : 'Create Contact'}
-              </Button>
-            </span>
-          </Tooltip>
+            {submitting
+              ? 'Saving...'
+              : contactId
+              ? 'Update Contact'
+              : 'Create Contact'}
+          </Button>
         </Box>
       </Box>
   );
