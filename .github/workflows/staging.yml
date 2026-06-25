@@ -33,7 +33,7 @@ jobs:
       - name: Create .env file
         env:
           STAGING_ENV_FILE: ${{ secrets.STAGING_ENV_FILE }}
-        run: echo "VITE_API_URL=https://staging.projectzoe.kanzucodefoundation.org/server/" > ./.env
+        run: echo "VITE_API_URL=https://staging-projectzoe.kanzucodefoundation.org/server/" > ./.env
 
       - name: Build
         run: npm run build
