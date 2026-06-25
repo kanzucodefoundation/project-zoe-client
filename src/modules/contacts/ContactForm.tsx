@@ -14,10 +14,8 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { toast } from 'react-toastify';
+import { COUNTRIES } from '../../data/countries';
 import {
   extractErrorMessageFromData,
   get,
@@ -27,12 +25,19 @@ import {
 } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
+
 interface ContactFormData {
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
-  dateOfBirth?: Date | null;
+  dobMonth: number | '';
+  dobDay: number | '';
   gender?: string;
   civilStatus?: string;
   placeOfWork?: string;
@@ -71,7 +76,8 @@ const ContactForm = ({
     lastName: '',
     email: '',
     phone: '',
-    dateOfBirth: null,
+    dobMonth: '',
+    dobDay: '',
     gender: '',
     civilStatus: '',
     placeOfWork: '',
@@ -141,9 +147,14 @@ const ContactForm = ({
             lastName: person.lastName || '',
             email: primaryEmail?.value || '',
             phone: primaryPhone?.value || '',
-            dateOfBirth: person.dateOfBirth
-              ? new Date(person.dateOfBirth)
-              : null,
+            // Parse day/month directly from the ISO string to avoid timezone shifts.
+            // Year is ignored — we use 1900 as a sentinel for "year unknown".
+            dobMonth: person.dateOfBirth
+              ? parseInt(person.dateOfBirth.split('T')[0].split('-')[1], 10) || ''
+              : '',
+            dobDay: person.dateOfBirth
+              ? parseInt(person.dateOfBirth.split('T')[0].split('-')[2], 10) || ''
+              : '',
             gender: person.gender || '',
             civilStatus: person.civilStatus || '',
             placeOfWork: person.placeOfWork || '',
@@ -207,8 +218,11 @@ const ContactForm = ({
         gender: formData.gender || undefined,
         civilStatus: formData.civilStatus || undefined,
         placeOfWork: formData.placeOfWork || undefined,
+        // Store as 1900-MM-DD when year is unknown (1900 is the sentinel).
         dateOfBirth:
-          formData.dateOfBirth?.toISOString()?.split('T')[0] || undefined,
+          formData.dobMonth !== '' && formData.dobDay !== ''
+            ? `1900-${String(formData.dobMonth).padStart(2, '0')}-${String(formData.dobDay).padStart(2, '0')}`
+            : undefined,
       },
       emails: formData.email
         ? [{ category: 'Personal', value: formData.email, isPrimary: true }]
@@ -266,8 +280,7 @@ const ContactForm = ({
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box component="form" onSubmit={handleSubmit}>
+    <Box component="form" onSubmit={handleSubmit}>
         {/* Basic Information */}
         <Typography variant="h6" gutterBottom>
           Basic Information
@@ -309,18 +322,34 @@ const ContactForm = ({
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <DatePicker
-              label="Date of Birth"
-              value={formData.dateOfBirth}
-              onChange={(date) => handleChange('dateOfBirth', date)}
-              openTo="year"
-              views={['year', 'month', 'day']}
-              minDate={new Date(new Date().getFullYear() - 100, 0, 1)}
-              maxDate={
-                new Date(new Date().getFullYear() - 5, new Date().getMonth(), 1)
-              }
-              slotProps={{ textField: { fullWidth: true } }}
-            />
+            <Box display="flex" gap={1}>
+              <FormControl sx={{ flex: 2 }}>
+                <InputLabel>Birth Month</InputLabel>
+                <Select
+                  value={formData.dobMonth}
+                  onChange={(e) => handleChange('dobMonth', e.target.value)}
+                  label="Birth Month"
+                >
+                  <MenuItem value=""><em>Month</em></MenuItem>
+                  {MONTHS.map((m, i) => (
+                    <MenuItem key={m} value={i + 1}>{m}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl sx={{ flex: 1 }}>
+                <InputLabel>Day</InputLabel>
+                <Select
+                  value={formData.dobDay}
+                  onChange={(e) => handleChange('dobDay', e.target.value)}
+                  label="Day"
+                >
+                  <MenuItem value=""><em>Day</em></MenuItem>
+                  {DAYS.map((d) => (
+                    <MenuItem key={d} value={d}>{d}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <FormControl fullWidth>
@@ -332,7 +361,6 @@ const ContactForm = ({
               >
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
-                <MenuItem value="Other">Other</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -432,13 +460,15 @@ const ContactForm = ({
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField
-              label="Country"
-              fullWidth
-              value={formData.address?.country}
-              onChange={(e) =>
-                handleNestedChange('address', 'country', e.target.value)
+            <Autocomplete
+              options={COUNTRIES}
+              value={formData.address?.country || null}
+              onChange={(_, value) =>
+                handleNestedChange('address', 'country', value ?? '')
               }
+              renderInput={(params) => (
+                <TextField {...params} label="Country" fullWidth />
+              )}
             />
           </Grid>
         </Grid>
@@ -468,7 +498,6 @@ const ContactForm = ({
           </Button>
         </Box>
       </Box>
-    </LocalizationProvider>
   );
 };
 

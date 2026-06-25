@@ -155,7 +155,16 @@ const ContactDetail = () => {
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Not provided';
-    return new Date(dateString).toLocaleDateString();
+    // Parse parts directly to avoid timezone shifts on date-only strings.
+    const [year, month, day] = dateString.split('T')[0].split('-').map(Number);
+    // Year 1900 is the sentinel for "year not captured" — show day + month only.
+    if (year === 1900) {
+      return new Date(1900, month - 1, day).toLocaleDateString(undefined, {
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+    return new Date(year, month - 1, day).toLocaleDateString();
   };
 
   const fullName = contact
