@@ -322,13 +322,20 @@ const ContactForm = ({
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', mb: 0.5, pl: 0.25 }}
+            >
+              Date of Birth
+            </Typography>
             <Box display="flex" gap={1}>
               <FormControl sx={{ flex: 2 }}>
-                <InputLabel>Birth Month</InputLabel>
+                <InputLabel>Month</InputLabel>
                 <Select
                   value={formData.dobMonth}
                   onChange={(e) => handleChange('dobMonth', e.target.value)}
-                  label="Birth Month"
+                  label="Month"
                 >
                   <MenuItem value=""><em>Month</em></MenuItem>
                   {MONTHS.map((m, i) => (
