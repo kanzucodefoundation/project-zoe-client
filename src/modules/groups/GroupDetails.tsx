@@ -24,6 +24,7 @@ import {
   remoteRoutes,
   localRoutes,
   appPermissions,
+  appRoles,
 } from '../../data/constants';
 import type { RootState } from '../../data/store';
 import { hasAnyCapability } from '../../utils/permissions';
@@ -630,7 +631,7 @@ const GroupDetails = () => {
                     />
                   </Box>
 
-                  {canManageCurrentGroup ? (
+                  {canManageCurrentGroup && user?.roles?.includes(appRoles.RoleAdmin) ? (
                     <Button
                       size="small"
                       variant="outlined"
