@@ -23,8 +23,7 @@ import { get, del, put } from '../../utils/ajax';
 import {
   remoteRoutes,
   localRoutes,
-  appPermissions,
-  appRoles,
+  appPermissions
 } from '../../data/constants';
 import type { RootState } from '../../data/store';
 import { hasAnyCapability } from '../../utils/permissions';
@@ -631,7 +630,7 @@ const GroupDetails = () => {
                     />
                   </Box>
 
-                  {canManageCurrentGroup && user?.roles?.includes(appRoles.RoleAdmin) ? (
+                  {canManageCurrentGroup ? (
                     <Button
                       size="small"
                       variant="outlined"
