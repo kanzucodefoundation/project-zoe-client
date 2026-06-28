@@ -127,6 +127,9 @@ function getCurrentWeekSunday(): string {
   return format(d, 'yyyy-MM-dd');
 }
 
+/**
+ * Renders the retention report page with window selection, report summaries, and Excel export.
+ */
 export default function RetentionReport() {
   const [selectedWindow, setSelectedWindow] = useState<Window>('month');
   const { data, isLoading } = useRetentionReport(selectedWindow);
