@@ -32,7 +32,7 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
   [TaskStatus.IN_PROGRESS]: 'In Progress',
   [TaskStatus.DONE]: 'Done',
   [TaskStatus.UNREACHABLE]: 'Unreachable',
-  [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Tea Hangout - Matched to Fellowship',
+  [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Matched to Fellowship',
   [TaskStatus.ATTENDED_FELLOWSHIP]: 'Attended Fellowship',
   [TaskStatus.JOINED_SERVING_TEAM]: 'Joined Serving Team',
   [TaskStatus.GOT_BAPTISED]: 'Got Baptised',
@@ -116,6 +116,7 @@ export interface ContactActivity {
 export interface RetentionSummary {
   recorded: number;
   retained: number;
+  unreachable: number;
   joinedFellowship: number;
   joinedServingTeam: number;
   baptised: number;
@@ -127,6 +128,7 @@ export interface RetentionMonthData {
   totalNewContacts: number;
   successfulCallsMade: number;
   wantToJoinMC: number;
+  unreachable: number;
   servingTeam: number;
   teaHangout: number;
   baptism: number;
@@ -143,6 +145,7 @@ export interface RetentionWeekData {
   totalNewContacts: number;
   successfulCallsMade: number;
   wantToJoinMC: number;
+  unreachable: number;
   servingTeams: number;
   teaHangout: number;
   baptism: number;
