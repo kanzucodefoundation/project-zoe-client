@@ -1,5 +1,35 @@
 export type $TsFixMe = any;
 
+// ─── Contact Status ───────────────────────────────────────────────────────────
+
+export const ContactStatus = {
+  Active: 'Active',
+  Inactive: 'Inactive',
+  MovedAway: 'MovedAway',
+  TransferredToAnotherChurch: 'TransferredToAnotherChurch',
+  Deceased: 'Deceased',
+} as const;
+export type ContactStatus = (typeof ContactStatus)[keyof typeof ContactStatus];
+
+export const CONTACT_STATUS_LABELS: Record<ContactStatus, string> = {
+  [ContactStatus.Active]: 'Active',
+  [ContactStatus.Inactive]: 'Inactive',
+  [ContactStatus.MovedAway]: 'Moved Away',
+  [ContactStatus.TransferredToAnotherChurch]: 'Transferred to Another Church',
+  [ContactStatus.Deceased]: 'Deceased',
+};
+
+export const CONTACT_STATUS_COLORS: Record<
+  ContactStatus,
+  'success' | 'default' | 'info' | 'warning' | 'error'
+> = {
+  [ContactStatus.Active]: 'success',
+  [ContactStatus.Inactive]: 'default',
+  [ContactStatus.MovedAway]: 'info',
+  [ContactStatus.TransferredToAnotherChurch]: 'warning',
+  [ContactStatus.Deceased]: 'error',
+};
+
 // ─── Tasks ────────────────────────────────────────────────────────────────────
 
 export const TaskType = {

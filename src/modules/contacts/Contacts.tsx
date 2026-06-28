@@ -24,6 +24,7 @@ import {
   Card,
   CardContent,
   Stack,
+  Chip,
   Divider,
   useMediaQuery,
   useTheme,
@@ -39,6 +40,11 @@ import { search } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import ContactForm from './ContactForm';
 import BulkUpload from './BulkUpload';
+import {
+  ContactStatus,
+  CONTACT_STATUS_LABELS,
+  CONTACT_STATUS_COLORS,
+} from '../../utils/types';
 
 interface Contact {
   id: string;
@@ -46,6 +52,7 @@ interface Contact {
   email: string;
   phone: string;
   dateOfBirth?: string;
+  status?: ContactStatus;
   location?: {
     id: string;
     name: string;
@@ -373,6 +380,20 @@ const Contacts = () => {
                       <Typography variant="caption" color="text.secondary">
                         Group: {contact.cellGroup?.name || 'Not assigned'}
                       </Typography>
+                      <Chip
+                        label={
+                          contact.status
+                            ? CONTACT_STATUS_LABELS[contact.status]
+                            : 'Active'
+                        }
+                        color={
+                          contact.status
+                            ? CONTACT_STATUS_COLORS[contact.status]
+                            : 'success'
+                        }
+                        size="small"
+                        sx={{ alignSelf: 'flex-start' }}
+                      />
                       <Typography variant="caption" color="text.secondary">
                         Birthday: {formatDate(contact.dateOfBirth)}
                       </Typography>
@@ -409,6 +430,11 @@ const Contacts = () => {
                       sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
                     >
                       Group
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                    >
+                      Status
                     </TableCell>
                     <TableCell
                       sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
@@ -479,6 +505,21 @@ const Contacts = () => {
                       </TableCell>
                       <TableCell sx={{ whiteSpace: 'nowrap' }}>
                         {contact.cellGroup?.name || '-'}
+                      </TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                        {contact.status ? (
+                          <Chip
+                            label={CONTACT_STATUS_LABELS[contact.status]}
+                            color={CONTACT_STATUS_COLORS[contact.status]}
+                            size="small"
+                          />
+                        ) : (
+                          <Chip
+                            label="Active"
+                            color="success"
+                            size="small"
+                          />
+                        )}
                       </TableCell>
                       <TableCell sx={{ whiteSpace: 'nowrap' }}>
                         {formatDate(contact.dateOfBirth)}

@@ -24,6 +24,10 @@ import {
   post,
 } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
+import {
+  ContactStatus,
+  CONTACT_STATUS_LABELS,
+} from '../../utils/types';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -41,6 +45,7 @@ interface ContactFormData {
   gender?: string;
   civilStatus?: string;
   placeOfWork?: string;
+  status?: ContactStatus;
   address?: {
     country?: string;
     district?: string;
@@ -81,6 +86,7 @@ const ContactForm = ({
     gender: '',
     civilStatus: '',
     placeOfWork: '',
+    status: ContactStatus.Active,
     address: {
       country: '',
       district: '',
@@ -158,6 +164,8 @@ const ContactForm = ({
             gender: person.gender || '',
             civilStatus: person.civilStatus || '',
             placeOfWork: person.placeOfWork || '',
+            status:
+              (response.status as ContactStatus) || ContactStatus.Active,
             address: {
               country: primaryAddress?.country || '',
               district: primaryAddress?.district || '',
@@ -236,6 +244,7 @@ const ContactForm = ({
         formData.address?.freeForm
           ? [{ category: 'Home', isPrimary: true, ...formData.address }]
           : [],
+      status: formData.status,
       // Now groups is an array of numbers like [12, 13]
       groups: selectedGroupIds.map((id) => ({ id })),
     };
@@ -403,6 +412,24 @@ const ContactForm = ({
               value={formData.placeOfWork}
               onChange={(e) => handleChange('placeOfWork', e.target.value)}
             />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={formData.status ?? ContactStatus.Active}
+                onChange={(e) =>
+                  handleChange('status', e.target.value as ContactStatus)
+                }
+                label="Status"
+              >
+                {(Object.values(ContactStatus) as ContactStatus[]).map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {CONTACT_STATUS_LABELS[s]}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
 
           {/* Groups dropdown */}

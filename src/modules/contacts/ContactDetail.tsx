@@ -41,6 +41,11 @@ import {
   localRoutes,
   appPermissions,
 } from '../../data/constants';
+import {
+  ContactStatus,
+  CONTACT_STATUS_LABELS,
+  CONTACT_STATUS_COLORS,
+} from '../../utils/types';
 import type { RootState } from '../../data/store';
 import { canViewTasks, hasAnyCapability } from '../../utils/permissions';
 import ContactForm from './ContactForm';
@@ -59,6 +64,7 @@ interface ContactData {
   placeOfWork?: string;
   ageGroup?: string;
   address?: string;
+  status?: ContactStatus;
   groupMemberships?: Array<{ group?: { id: number; name: string } }>;
   avatar?: string;
 }
@@ -91,6 +97,7 @@ function mapApiResponse(response: any): ContactData {
     placeOfWork: person.placeOfWork,
     ageGroup: person.ageGroup,
     address: addressParts.length > 0 ? addressParts.join(', ') : undefined,
+    status: response.status as ContactStatus | undefined,
     groupMemberships: response.groupMemberships,
   };
 }
@@ -250,6 +257,14 @@ const ContactDetail = () => {
               <Typography variant="h5" gutterBottom>
                 {fullName}
               </Typography>
+              {contact.status && (
+                <Chip
+                  label={CONTACT_STATUS_LABELS[contact.status]}
+                  color={CONTACT_STATUS_COLORS[contact.status]}
+                  size="small"
+                  sx={{ mb: 1 }}
+                />
+              )}
 
               <Box display="flex" flexDirection="column" gap={1} mt={3}>
                 {contact.email && (
@@ -393,6 +408,19 @@ const ContactDetail = () => {
                   Church Information
                 </Typography>
                 <List>
+                  <ListItem sx={{ gap: 2 }}>
+                    <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
+                      <PersonIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Status"
+                      secondary={
+                        contact.status
+                          ? CONTACT_STATUS_LABELS[contact.status]
+                          : 'Active'
+                      }
+                    />
+                  </ListItem>
                   <ListItem sx={{ gap: 2 }}>
                     <ListItemIcon sx={{ minWidth: 'auto', fontSize: 28 }}>
                       <GroupIcon />
