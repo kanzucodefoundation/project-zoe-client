@@ -244,7 +244,7 @@ const SignUp = () => {
         email: formData.email,
         password: formData.password,
         groupId: selectedLocationId,
-        groupRole: 'Leader',
+        groupRole: 'Member',
         churchName: formData.churchName,
       },
       () => {

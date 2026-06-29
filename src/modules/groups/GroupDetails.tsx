@@ -23,7 +23,7 @@ import { get, del, put } from '../../utils/ajax';
 import {
   remoteRoutes,
   localRoutes,
-  appPermissions,
+  appPermissions
 } from '../../data/constants';
 import type { RootState } from '../../data/store';
 import { hasAnyCapability } from '../../utils/permissions';
