@@ -428,7 +428,7 @@ const ReportSubmissionForm = () => {
       if (field.type === 'select' && isDynamicScheduleField(field)) {
         fetchFellowshipSchedule(field);
       }
-      if (field.type === 'checkbox' && isDynamicMemberField(field)) {
+      if (isDynamicMemberField(field)) {
         fetchFellowshipMembers(field);
       }
     });
@@ -607,7 +607,7 @@ const ReportSubmissionForm = () => {
     }
 
     // Fellowship member checklist
-    if (field.type === 'checkbox' && isDynamicMemberField(field)) {
+    if ((field.type === 'checkbox' || field.type === 'select') && isDynamicMemberField(field)) {
       const members = fellowshipMembers[field.name] || [];
       const isLoading = dynamicLoading[field.name];
       const memberSearchVal = memberSearch[field.name] || '';

@@ -66,7 +66,7 @@ type GroupNode = {
   name: string;
   children?: GroupNode[];
 };
-type GroupOption = { id: number; name: string };
+type GroupOption = { id: number; name: string; parentName?: string };
 
 const ContactForm = ({
   contactId,
@@ -101,20 +101,21 @@ const ContactForm = ({
   const [groupsOptions, setGroupsOptions] = useState<GroupOption[]>([]);
   const [selectedGroupIds, setSelectedGroupIds] = useState<number[]>([]);
 
-  // Flatten hierarchical groups into simple id/name array
-  const flattenGroups = (nodes: GroupNode[] | undefined): GroupOption[] => {
+  // Flatten hierarchical groups, preserving parent name for display
+  const flattenGroups = (nodes: GroupNode[] | undefined, parentName?: string): GroupOption[] => {
     const out: GroupOption[] = [];
-    const stack: GroupNode[] = [...(nodes || [])];
-    while (stack.length) {
-      const n = stack.pop() as GroupNode;
-      out.push({ id: n.id, name: n.name });
-      if (n.children && n.children.length) {
-        for (let i = 0; i < n.children.length; i++) stack.push(n.children[i]);
+    for (const n of (nodes || [])) {
+      out.push({ id: n.id, name: n.name, parentName });
+      if (n.children?.length) {
+        out.push(...flattenGroups(n.children, n.name));
       }
     }
     out.sort((a, b) => a.name.localeCompare(b.name));
     return out;
   };
+
+  const getGroupLabel = (option: GroupOption) =>
+    option.parentName ? `${option.name} - ${option.parentName}` : option.name;
 
   // Fetch groups once
   useEffect(() => {
@@ -445,7 +446,7 @@ const ContactForm = ({
                 onChange={(_, newValue) => {
                   setSelectedGroupIds(newValue.map((g) => g.id));
                 }}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={getGroupLabel}
                 filterSelectedOptions
                 renderInput={(params) => (
                   <TextField
@@ -454,10 +455,9 @@ const ContactForm = ({
                     placeholder="Type to search groups"
                   />
                 )}
-                // To show ID in option list
                 renderOption={(props, option) => (
                   <li {...props} key={option.id}>
-                    {option.name}
+                    {getGroupLabel(option)}
                   </li>
                 )}
                 isOptionEqualToValue={(opt, val) => opt.id === val.id}
