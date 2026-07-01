@@ -495,6 +495,13 @@ const GroupDetails = () => {
 
           <Box>
             <Typography variant="body2" color="text.secondary">
+              Group Id
+            </Typography>
+            <Typography variant="body1">{group.id ?? '-'}</Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="body2" color="text.secondary">
               Parent Group
             </Typography>
             <Typography variant="body1">{group.parent?.name || '-'}</Typography>

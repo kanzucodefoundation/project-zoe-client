@@ -490,7 +490,8 @@ const ReportSubmissionForm = () => {
       if (field.required) {
         const value = formData[field.name];
         const isEmpty =
-          field.type === 'checkbox'
+          field.type === 'checkbox' ||
+          (field.type === 'select' && isDynamicMemberField(field))
             ? !Array.isArray(value) || value.length === 0
             : value === undefined || value === null || value === '';
         if (isEmpty) {

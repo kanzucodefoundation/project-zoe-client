@@ -17,6 +17,7 @@ import { login } from '../../data/coreSlice';
 import { post } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import loginBackground from '../../assets/images/login-background.jpg';
+import HelpFab from './HelpFab';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -65,6 +66,8 @@ const Login = () => {
         backgroundColor: 'background.paper',
       }}
     >
+      <HelpFab />
+
       {/* Mobile image masthead */}
       <Box
         sx={{

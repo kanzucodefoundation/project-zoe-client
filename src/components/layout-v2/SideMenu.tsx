@@ -10,6 +10,7 @@ import type { RootState } from '../../data/store';
 import SelectContent from './SelectContent';
 import MenuContent from './MenuContent';
 import OptionsMenu from './OptionsMenu';
+import SidebarHelpButton from './SidebarHelpButton';
 
 const drawerWidth = 280;
 
@@ -48,14 +49,23 @@ export default function SideMenu() {
       >
         <MenuContent />
       </Box>
+      <Box
+        sx={{
+          p: 2,
+          pb: 1.5,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <SidebarHelpButton />
+      </Box>
       <Stack
         direction="row"
         sx={{
           p: 2,
+          pt: 1.5,
           gap: 1,
           alignItems: 'center',
-          borderTop: '1px solid',
-          borderColor: 'divider',
         }}
       >
         <Avatar

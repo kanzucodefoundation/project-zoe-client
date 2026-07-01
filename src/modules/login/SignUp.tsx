@@ -20,6 +20,7 @@ import { toast } from 'react-toastify';
 import { post } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import loginBackground from '../../assets/images/login-background.jpg';
+import HelpFab from './HelpFab';
 
 interface Location {
   id: number;
@@ -290,6 +291,8 @@ const SignUp = () => {
         backgroundColor: 'background.paper',
       }}
     >
+      <HelpFab />
+
       {/* Mobile image masthead */}
       <Box
         sx={{
