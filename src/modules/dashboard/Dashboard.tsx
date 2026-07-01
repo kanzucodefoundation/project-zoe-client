@@ -324,7 +324,7 @@ const Dashboard = () => {
                 sx={{
                   backgroundColor: 'success.main',
                   '&:hover': { backgroundColor: 'success.dark',
-                    color: (theme) => theme.palette.mode === 'dark' ? '#ffffff' : 'inherit'
+                    color: (theme) => theme.palette.mode === 'dark' ? '#ffffff' : undefined
  },
                   fontWeight: 600,
                   textTransform: 'none',
