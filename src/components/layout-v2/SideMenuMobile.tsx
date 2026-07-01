@@ -13,6 +13,7 @@ import type { RootState } from '../../data/store';
 import { logout } from '../../data/coreSlice';
 import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
+import SidebarHelpButton from './SidebarHelpButton';
 
 interface SideMenuMobileProps {
   open: boolean | undefined;
@@ -116,7 +117,14 @@ export default function SideMenuMobile({
           <MenuContent onNavigate={toggleDrawer(false)} />
           <Divider />
         </Stack>
-        <Stack sx={{ p: 2, pb: 'calc(16px + env(safe-area-inset-bottom))' }}>
+        <Stack
+          sx={{
+            p: 2,
+            pb: 'calc(16px + env(safe-area-inset-bottom))',
+            gap: 1.5,
+          }}
+        >
+          <SidebarHelpButton />
           <Button
             variant="outlined"
             fullWidth
