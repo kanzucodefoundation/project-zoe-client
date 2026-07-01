@@ -18,6 +18,7 @@ import {
   Visibility as VisibilityIcon,
   Search as SearchIcon,
   Clear as ClearIcon,
+  FileUpload as FileUploadIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -34,6 +35,7 @@ import {
 import type { RootState } from '../../data/store';
 import { hasAnyCapability } from '../../utils/permissions';
 import AddGroupDialog from './AddGroupDialog';
+import BulkGroupImport from './BulkGroupImport';
 import type { GroupNode } from './types';
 
 // Styled TreeItem with dashed border for hierarchy visualization
@@ -126,6 +128,7 @@ const Groups = () => {
   const [loading, setLoading] = useState(true);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [selectedParent, setSelectedParent] = useState<GroupNode | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const canViewGroupEditActions = hasAnyCapability(user, [
@@ -296,6 +299,13 @@ const Groups = () => {
         {canViewGroupEditActions ? (
           <Box display="flex" gap={1}>
             <Button
+              variant="outlined"
+              startIcon={<FileUploadIcon />}
+              onClick={() => setBulkImportOpen(true)}
+            >
+              Bulk Import
+            </Button>
+            <Button
               variant="contained"
               startIcon={<AddIcon />}
               onClick={handleAddRootGroup}
@@ -385,6 +395,16 @@ const Groups = () => {
           </SimpleTreeView>
         </Paper>
       )}
+
+      {/* Bulk Import Dialog */}
+      <BulkGroupImport
+        open={bulkImportOpen}
+        onClose={() => setBulkImportOpen(false)}
+        onSuccess={() => {
+          setBulkImportOpen(false);
+          fetchGroups();
+        }}
+      />
 
       {/* Add Group Dialog */}
       <AddGroupDialog
