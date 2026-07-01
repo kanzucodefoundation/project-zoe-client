@@ -1,5 +1,35 @@
 export type $TsFixMe = any;
 
+// ─── Contact Status ───────────────────────────────────────────────────────────
+
+export const ContactStatus = {
+  Active: 'Active',
+  Inactive: 'Inactive',
+  MovedAway: 'MovedAway',
+  TransferredToAnotherChurch: 'TransferredToAnotherChurch',
+  Deceased: 'Deceased',
+} as const;
+export type ContactStatus = (typeof ContactStatus)[keyof typeof ContactStatus];
+
+export const CONTACT_STATUS_LABELS: Record<ContactStatus, string> = {
+  [ContactStatus.Active]: 'Active',
+  [ContactStatus.Inactive]: 'Inactive',
+  [ContactStatus.MovedAway]: 'Moved Away',
+  [ContactStatus.TransferredToAnotherChurch]: 'Transferred to Another Church',
+  [ContactStatus.Deceased]: 'Deceased',
+};
+
+export const CONTACT_STATUS_COLORS: Record<
+  ContactStatus,
+  'success' | 'default' | 'info' | 'warning' | 'error'
+> = {
+  [ContactStatus.Active]: 'success',
+  [ContactStatus.Inactive]: 'default',
+  [ContactStatus.MovedAway]: 'info',
+  [ContactStatus.TransferredToAnotherChurch]: 'warning',
+  [ContactStatus.Deceased]: 'error',
+};
+
 // ─── Tasks ────────────────────────────────────────────────────────────────────
 
 export const TaskType = {
@@ -32,7 +62,7 @@ export const STATUS_LABELS: Record<TaskStatus, string> = {
   [TaskStatus.IN_PROGRESS]: 'In Progress',
   [TaskStatus.DONE]: 'Done',
   [TaskStatus.UNREACHABLE]: 'Unreachable',
-  [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Tea Hangout - Matched to Fellowship',
+  [TaskStatus.MATCHED_TO_FELLOWSHIP]: 'Matched to Fellowship',
   [TaskStatus.ATTENDED_FELLOWSHIP]: 'Attended Fellowship',
   [TaskStatus.JOINED_SERVING_TEAM]: 'Joined Serving Team',
   [TaskStatus.GOT_BAPTISED]: 'Got Baptised',
@@ -116,6 +146,7 @@ export interface ContactActivity {
 export interface RetentionSummary {
   recorded: number;
   retained: number;
+  unreachable: number;
   joinedFellowship: number;
   joinedServingTeam: number;
   baptised: number;
@@ -127,6 +158,7 @@ export interface RetentionMonthData {
   totalNewContacts: number;
   successfulCallsMade: number;
   wantToJoinMC: number;
+  unreachable: number;
   servingTeam: number;
   teaHangout: number;
   baptism: number;
@@ -143,6 +175,7 @@ export interface RetentionWeekData {
   totalNewContacts: number;
   successfulCallsMade: number;
   wantToJoinMC: number;
+  unreachable: number;
   servingTeams: number;
   teaHangout: number;
   baptism: number;

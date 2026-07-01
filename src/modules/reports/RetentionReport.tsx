@@ -83,6 +83,7 @@ function getPeriodRange(window: Window) {
 const SUMMARY_CARDS: Array<{ label: string; key: keyof RetentionSummary }> = [
   { label: 'Recorded', key: 'recorded' },
   { label: 'Retained', key: 'retained' },
+  { label: 'Unreachable', key: 'unreachable' },
   { label: 'Joined Fellowship', key: 'joinedFellowship' },
   { label: 'Joined Serving Team', key: 'joinedServingTeam' },
   { label: 'Baptised', key: 'baptised' },
@@ -92,8 +93,9 @@ const MONTH_CARDS: Array<{ label: string; key: keyof RetentionMonthData }> = [
   { label: 'New Contacts', key: 'totalNewContacts' },
   { label: 'Successful Calls', key: 'successfulCallsMade' },
   { label: 'Want to Join MC', key: 'wantToJoinMC' },
+  { label: 'Unreachable', key: 'unreachable' },
   { label: 'Serving Team', key: 'servingTeam' },
-  { label: 'Tea / Hangout', key: 'teaHangout' },
+  { label: 'Matched', key: 'teaHangout' },
   { label: 'Baptism', key: 'baptism' },
 ];
 
@@ -101,8 +103,9 @@ const WEEK_CARDS: Array<{ label: string; key: keyof RetentionWeekData }> = [
   { label: 'New Contacts', key: 'totalNewContacts' },
   { label: 'Successful Calls', key: 'successfulCallsMade' },
   { label: 'Want to Join MC', key: 'wantToJoinMC' },
+  { label: 'Unreachable', key: 'unreachable' },
   { label: 'Serving Team', key: 'servingTeams' },
-  { label: 'Tea / Hangout', key: 'teaHangout' },
+  { label: 'Matched', key: 'teaHangout' },
   { label: 'Baptism', key: 'baptism' },
 ];
 
@@ -124,6 +127,9 @@ function getCurrentWeekSunday(): string {
   return format(d, 'yyyy-MM-dd');
 }
 
+/**
+ * Renders the retention report page with window selection, report summaries, and Excel export.
+ */
 export default function RetentionReport() {
   const [selectedWindow, setSelectedWindow] = useState<Window>('month');
   const { data, isLoading } = useRetentionReport(selectedWindow);
@@ -147,8 +153,9 @@ export default function RetentionReport() {
         'New Contacts': m.totalNewContacts,
         'Successful Calls': m.successfulCallsMade,
         'Want to Join MC': m.wantToJoinMC,
+        Unreachable: m.unreachable,
         'Serving Team': m.servingTeam,
-        'Tea / Hangout': m.teaHangout,
+        Matched: m.teaHangout,
         Baptism: m.baptism,
       }));
       XLSX.utils.book_append_sheet(
@@ -163,8 +170,9 @@ export default function RetentionReport() {
         'New Contacts': w.totalNewContacts,
         'Successful Calls': w.successfulCallsMade,
         'Want to Join MC': w.wantToJoinMC,
+        Unreachable: w.unreachable,
         'Serving Team': w.servingTeams,
-        'Tea / Hangout': w.teaHangout,
+        Matched: w.teaHangout,
         Baptism: w.baptism,
       }));
       XLSX.utils.book_append_sheet(
@@ -180,6 +188,7 @@ export default function RetentionReport() {
           'Period End': selectedPeriod.to,
           Recorded: data.recorded,
           Retained: data.retained,
+          Unreachable: data.unreachable,
           'Joined Fellowship': data.joinedFellowship,
           'Joined Serving Team': data.joinedServingTeam,
           Baptised: data.baptised,
@@ -258,7 +267,7 @@ export default function RetentionReport() {
       {(!data || (!isMonthReport(data) && !isWeekReport(data))) && (
         <Grid container spacing={3}>
           {SUMMARY_CARDS.map(({ label, key }) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }} key={key}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={key}>
               <Card sx={{ textAlign: 'center', p: 1 }}>
                 <CardContent>
                   {isLoading ? (
@@ -285,7 +294,7 @@ export default function RetentionReport() {
         <>
           <Grid container spacing={3} mb={4}>
             {MONTH_CARDS.map(({ label, key }) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={key}>
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 1.7 }} key={key}>
                 <Card sx={{ textAlign: 'center', p: 1 }}>
                   <CardContent>
                     {isLoading ? (
@@ -350,7 +359,7 @@ export default function RetentionReport() {
         <>
           <Grid container spacing={3} mb={4}>
             {WEEK_CARDS.map(({ label, key }) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={key}>
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 1.7 }} key={key}>
                 <Card sx={{ textAlign: 'center', p: 1 }}>
                   <CardContent>
                     {isLoading ? (

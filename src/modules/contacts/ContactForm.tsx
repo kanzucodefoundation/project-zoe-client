@@ -24,6 +24,16 @@ import {
   post,
 } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
+import {
+  ContactStatus,
+  CONTACT_STATUS_LABELS,
+} from '../../utils/types';
+
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -41,6 +51,7 @@ interface ContactFormData {
   gender?: string;
   civilStatus?: string;
   placeOfWork?: string;
+  status?: ContactStatus;
   address?: {
     country?: string;
     district?: string;
@@ -61,7 +72,7 @@ type GroupNode = {
   name: string;
   children?: GroupNode[];
 };
-type GroupOption = { id: number; name: string };
+type GroupOption = { id: number; name: string; parentName?: string };
 
 const ContactForm = ({
   contactId,
@@ -81,6 +92,7 @@ const ContactForm = ({
     gender: '',
     civilStatus: '',
     placeOfWork: '',
+    status: ContactStatus.Active,
     address: {
       country: '',
       district: '',
@@ -95,20 +107,21 @@ const ContactForm = ({
   const [groupsOptions, setGroupsOptions] = useState<GroupOption[]>([]);
   const [selectedGroupIds, setSelectedGroupIds] = useState<number[]>([]);
 
-  // Flatten hierarchical groups into simple id/name array
-  const flattenGroups = (nodes: GroupNode[] | undefined): GroupOption[] => {
+  // Flatten hierarchical groups, preserving parent name for display
+  const flattenGroups = (nodes: GroupNode[] | undefined, parentName?: string): GroupOption[] => {
     const out: GroupOption[] = [];
-    const stack: GroupNode[] = [...(nodes || [])];
-    while (stack.length) {
-      const n = stack.pop() as GroupNode;
-      out.push({ id: n.id, name: n.name });
-      if (n.children && n.children.length) {
-        for (let i = 0; i < n.children.length; i++) stack.push(n.children[i]);
+    for (const n of (nodes || [])) {
+      out.push({ id: n.id, name: n.name, parentName });
+      if (n.children?.length) {
+        out.push(...flattenGroups(n.children, n.name));
       }
     }
     out.sort((a, b) => a.name.localeCompare(b.name));
     return out;
   };
+
+  const getGroupLabel = (option: GroupOption) =>
+    option.parentName ? `${option.name} - ${option.parentName}` : option.name;
 
   // Fetch groups once
   useEffect(() => {
@@ -158,6 +171,8 @@ const ContactForm = ({
             gender: person.gender || '',
             civilStatus: person.civilStatus || '',
             placeOfWork: person.placeOfWork || '',
+            status:
+              (response.status as ContactStatus) || ContactStatus.Active,
             address: {
               country: primaryAddress?.country || '',
               district: primaryAddress?.district || '',
@@ -236,6 +251,7 @@ const ContactForm = ({
         formData.address?.freeForm
           ? [{ category: 'Home', isPrimary: true, ...formData.address }]
           : [],
+      status: formData.status,
       // Now groups is an array of numbers like [12, 13]
       groups: selectedGroupIds.map((id) => ({ id })),
     };
@@ -404,6 +420,24 @@ const ContactForm = ({
               onChange={(e) => handleChange('placeOfWork', e.target.value)}
             />
           </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={formData.status ?? ContactStatus.Active}
+                onChange={(e) =>
+                  handleChange('status', e.target.value as ContactStatus)
+                }
+                label="Status"
+              >
+                {(Object.values(ContactStatus) as ContactStatus[]).map((s) => (
+                  <MenuItem key={s} value={s}>
+                    {CONTACT_STATUS_LABELS[s]}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
           {/* Groups dropdown */}
           <Grid size={{ xs: 12, sm: 12 }}>
@@ -418,7 +452,7 @@ const ContactForm = ({
                 onChange={(_, newValue) => {
                   setSelectedGroupIds(newValue.map((g) => g.id));
                 }}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={getGroupLabel}
                 filterSelectedOptions
                 renderInput={(params) => (
                   <TextField
@@ -427,10 +461,9 @@ const ContactForm = ({
                     placeholder="Type to search groups"
                   />
                 )}
-                // To show ID in option list
                 renderOption={(props, option) => (
                   <li {...props} key={option.id}>
-                    {option.name}
+                    {getGroupLabel(option)}
                   </li>
                 )}
                 isOptionEqualToValue={(opt, val) => opt.id === val.id}

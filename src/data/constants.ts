@@ -1,6 +1,9 @@
 export const AUTH_TOKEN_KEY = '__demo__eva__token';
 export const AUTH_USER_KEY = '__demo__eva__user';
 
+export const appRoles = {
+  RoleAdmin: 'RoleAdmin',
+}
 export const appPermissions = {
   roleDashboard: 'DASHBOARD',
   roleCrmView: 'CRM_VIEW',

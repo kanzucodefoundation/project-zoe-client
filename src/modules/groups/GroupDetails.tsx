@@ -23,7 +23,7 @@ import { get, del, put } from '../../utils/ajax';
 import {
   remoteRoutes,
   localRoutes,
-  appPermissions,
+  appPermissions
 } from '../../data/constants';
 import type { RootState } from '../../data/store';
 import { hasAnyCapability } from '../../utils/permissions';
@@ -491,6 +491,13 @@ const GroupDetails = () => {
             <Typography variant="body1">
               {group.category?.name || '-'}
             </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="body2" color="text.secondary">
+              Group Id
+            </Typography>
+            <Typography variant="body1">{group.id ?? '-'}</Typography>
           </Box>
 
           <Box>

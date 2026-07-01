@@ -17,18 +17,28 @@ import {
   FormHelperText,
   CircularProgress,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Stack,
 } from '@mui/material';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 import { format, parseISO } from 'date-fns';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { get, post } from '../../utils/ajax';
+import { get, post, put } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import type { $TsFixMe } from '../../utils/types.ts';
 import type { RootState } from '../../data/store';
+
+const WEEKDAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 interface DynamicGroupOption {
   type: 'dynamic_group_selector';
@@ -67,8 +77,11 @@ interface FellowshipMember {
 
 interface ScheduleData {
   exists: boolean;
+  id?: number;
   day?: number;
   label?: string;
+  startTime?: string;
+  frequency?: string;
   fellowshipGroupId?: number;
   weekdays?: { value: number; label: string }[];
 }
@@ -182,6 +195,12 @@ const ReportSubmissionForm = () => {
   const [memberSearch, setMemberSearch] = useState<Record<string, string>>({});
   const [smallGroups, setSmallGroups] = useState<DynamicGroup[]>([]);
   const [smallGroupsLoading, setSmallGroupsLoading] = useState(false);
+  const [scheduleEditOpen, setScheduleEditOpen] = useState(false);
+  const [scheduleEditFieldName, setScheduleEditFieldName] = useState<string | null>(null);
+  const [scheduleEditDay, setScheduleEditDay] = useState(3);
+  const [scheduleEditTime, setScheduleEditTime] = useState('19:00');
+  const [scheduleEditFrequency, setScheduleEditFrequency] = useState<'weekly' | 'biweekly' | 'monthly'>('weekly');
+  const [scheduleEditSaving, setScheduleEditSaving] = useState(false);
 
   useEffect(() => {
     get(
@@ -428,7 +447,7 @@ const ReportSubmissionForm = () => {
       if (field.type === 'select' && isDynamicScheduleField(field)) {
         fetchFellowshipSchedule(field);
       }
-      if (field.type === 'checkbox' && isDynamicMemberField(field)) {
+      if (isDynamicMemberField(field)) {
         fetchFellowshipMembers(field);
       }
     });
@@ -440,13 +459,39 @@ const ReportSubmissionForm = () => {
     }
   }, [reportFields, user?.canManageGroups]);
 
+  const handleScheduleSave = () => {
+    if (!scheduleEditFieldName) return;
+    const schedule = fellowshipSchedules[scheduleEditFieldName];
+    if (!schedule?.id) return;
+
+    setScheduleEditSaving(true);
+    put(
+      `${remoteRoutes.fellowships}/schedules/${schedule.id}`,
+      { meetingDay: scheduleEditDay, startTime: scheduleEditTime, frequency: scheduleEditFrequency },
+      () => {
+        // Re-fetch so the display and form value both update
+        const field = reportFields.find((f) => f.name === scheduleEditFieldName);
+        if (field) fetchFellowshipSchedule(field);
+        setScheduleEditOpen(false);
+        setScheduleEditSaving(false);
+        toast.success('Meeting schedule updated');
+      },
+      (error: $TsFixMe) => {
+        const message = error?.response?.data?.message || 'Failed to update schedule';
+        toast.error(message);
+        setScheduleEditSaving(false);
+      },
+    );
+  };
+
   const handleSubmit = () => {
     const errors: Record<string, string> = {};
     reportFields.forEach((field) => {
       if (field.required) {
         const value = formData[field.name];
         const isEmpty =
-          field.type === 'checkbox'
+          field.type === 'checkbox' ||
+          (field.type === 'select' && isDynamicMemberField(field))
             ? !Array.isArray(value) || value.length === 0
             : value === undefined || value === null || value === '';
         if (isEmpty) {
@@ -570,44 +615,46 @@ const ReportSubmissionForm = () => {
               border: '1px solid',
               borderColor: 'success.300',
               borderRadius: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-              {field.label}
-            </Typography>
-            <Typography fontWeight="medium">
-              We meet on {schedule.label}
-            </Typography>
+            <Box>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                {field.label}
+              </Typography>
+              <Typography fontWeight="medium">
+                We meet on {schedule.label}
+              </Typography>
+            </Box>
+            <Button
+              size="small"
+              variant="text"
+              onClick={() => {
+                setScheduleEditFieldName(field.name);
+                setScheduleEditDay(schedule.day ?? 3);
+                setScheduleEditTime(schedule.startTime ?? '19:00');
+                setScheduleEditFrequency((schedule.frequency as any) ?? 'weekly');
+                setScheduleEditOpen(true);
+              }}
+            >
+              Change
+            </Button>
           </Box>
         );
       }
 
+      // Fallback: no schedule (edge case after auto-creation is in place)
       return (
-        <FormControl fullWidth error={hasError}>
-          <InputLabel>
-            {field.label}
-            {field.required ? ' *' : ''}
-          </InputLabel>
-          <Select
-            value={value}
-            label={`${field.label}${field.required ? ' *' : ''}`}
-            onChange={(e) => handleChange(field.name, e.target.value)}
-          >
-            {schedule?.weekdays?.map((day) => (
-              <MenuItem key={day.value} value={day.value}>
-                {day.label}
-              </MenuItem>
-            ))}
-          </Select>
-          {hasError && (
-            <FormHelperText>{validationErrors[field.name]}</FormHelperText>
-          )}
-        </FormControl>
+        <Alert severity="warning" variant="outlined">
+          No meeting schedule found for your MC. Contact your administrator.
+        </Alert>
       );
     }
 
     // Fellowship member checklist
-    if (field.type === 'checkbox' && isDynamicMemberField(field)) {
+    if ((field.type === 'checkbox' || field.type === 'select') && isDynamicMemberField(field)) {
       const members = fellowshipMembers[field.name] || [];
       const isLoading = dynamicLoading[field.name];
       const memberSearchVal = memberSearch[field.name] || '';
@@ -925,7 +972,9 @@ const ReportSubmissionForm = () => {
             disabled={submitting}
             sx={{
               backgroundColor: '#1b813e',
-              '&:hover': { backgroundColor: '#15662f' },
+              '&:hover': { backgroundColor: '#15662f', 
+                    color: (theme) => theme.palette.mode === 'dark' ? '#ffffff' : undefined
+ },
               fontWeight: 'bold',
             }}
           >
@@ -941,6 +990,68 @@ const ReportSubmissionForm = () => {
           </Button>
         </Box>
       </Box>
+      {/* Fellowship schedule edit dialog */}
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Dialog
+          open={scheduleEditOpen}
+          onClose={() => !scheduleEditSaving && setScheduleEditOpen(false)}
+          fullWidth
+          maxWidth="xs"
+        >
+          <DialogTitle>Change Meeting Day</DialogTitle>
+          <DialogContent>
+            <Stack spacing={2} sx={{ pt: 1 }}>
+              <FormControl fullWidth>
+                <InputLabel>Day of week</InputLabel>
+                <Select
+                  value={scheduleEditDay}
+                  label="Day of week"
+                  onChange={(e) => setScheduleEditDay(Number(e.target.value))}
+                >
+                  {WEEKDAY_LABELS.map((label, i) => (
+                    <MenuItem key={i} value={i}>{label}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TimePicker
+                label="Start time"
+                ampm={false}
+                value={scheduleEditTime ? dayjs(`2000-01-01T${scheduleEditTime}`) : null}
+                onChange={(val) => {
+                  const d = val ? dayjs(val) : null;
+                  if (d?.isValid()) setScheduleEditTime(d.format('HH:mm'));
+                }}
+                slotProps={{ textField: { fullWidth: true } }}
+              />
+              <FormControl fullWidth>
+                <InputLabel>Frequency</InputLabel>
+                <Select
+                  value={scheduleEditFrequency}
+                  label="Frequency"
+                  onChange={(e) => setScheduleEditFrequency(e.target.value as any)}
+                >
+                  <MenuItem value="weekly">Weekly</MenuItem>
+                  <MenuItem value="biweekly">Bi-weekly</MenuItem>
+                  <MenuItem value="monthly">Monthly</MenuItem>
+                </Select>
+              </FormControl>
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ px: 2, pb: 2 }}>
+            <Button onClick={() => setScheduleEditOpen(false)} disabled={scheduleEditSaving}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleScheduleSave}
+              disabled={scheduleEditSaving}
+              startIcon={scheduleEditSaving ? <CircularProgress size={16} /> : null}
+            >
+              {scheduleEditSaving ? 'Saving…' : 'Save'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </LocalizationProvider>
     </Container>
   );
 };
