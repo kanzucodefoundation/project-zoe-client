@@ -973,7 +973,7 @@ const ReportSubmissionForm = () => {
             sx={{
               backgroundColor: '#1b813e',
               '&:hover': { backgroundColor: '#15662f', 
-                    color: (theme) => theme.palette.mode === 'dark' ? '#ffffff' : undefined
+                    color: (theme) => theme.palette.mode === 'dark' ? '#ffffff' : 'text.primary'
  },
               fontWeight: 'bold',
             }}
