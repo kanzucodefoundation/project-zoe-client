@@ -497,7 +497,7 @@ const GroupDetails = () => {
             <Typography variant="body2" color="text.secondary">
               Group Id
             </Typography>
-            <Typography variant="body1">{group.id || '-'}</Typography>
+            <Typography variant="body1">{group.id ?? '-'}</Typography>
           </Box>
 
           <Box>
