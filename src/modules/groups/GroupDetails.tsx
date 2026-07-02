@@ -39,6 +39,11 @@ interface GroupRef {
   name: string;
 }
 
+interface ContactRef {
+  id: number;
+  name: string;
+}
+
 interface GroupAddress {
   name?: string;
   placeId?: string;
@@ -217,8 +222,8 @@ const GroupDetails = () => {
   >(null);
   const [submittingMember, setSubmittingMember] = useState(false);
   const [showAddMemberForm, setShowAddMemberForm] = useState(false);
-  const [allContacts, setAllContacts] = useState<GroupRef[]>([]);
-  const [selectedContacts, setSelectedContacts] = useState<GroupRef[]>([]);
+  const [allContacts, setAllContacts] = useState<ContactRef[]>([]);
+  const [selectedContacts, setSelectedContacts] = useState<ContactRef[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
   useEffect(() => {
     if (!showAddMemberForm) return;
@@ -226,9 +231,9 @@ const GroupDetails = () => {
     const fetchAllContacts = async () => {
       setContactsLoading(true);
       try {
-        const data = await getJson<GroupRef[]>(remoteRoutes.contacts || '/api/contacts');
+        const data = await getJson<ContactRef[]>(remoteRoutes.contacts || '/api/contacts');
         setAllContacts(Array.isArray(data) ? data : []);
-      } catch (error) {
+      } catch{
         toast.error('Failed to load people for selection.');
       } finally {
         setContactsLoading(false);
@@ -248,14 +253,14 @@ const GroupDetails = () => {
     post(
       `${remoteRoutes.groupsMembership}`,
       payload,
-      (response: any) => {
+      (response: { message?: string }) => {
         toast.success(response?.message || `Successfully added ${selectedContacts.length} members`);
         setSelectedContacts([]);
         setShowAddMemberForm(false);
         fetchMemberships(); 
         setSubmittingMember(false);
       },
-      (error: unknown) => {
+      () => {
         toast.error('Could not save selection to the database');
         setSubmittingMember(false);
       }
@@ -455,7 +460,8 @@ const GroupDetails = () => {
     children: group.children || [],
   };
   const addressLabel = getAddressLabel(group.address);
-
+  const isMember = (contactId: ContactRef['id']) =>
+    memberships.some((m) => m.contactId === contactId);
   return (
     <Container maxWidth="lg">
       {/* Header */}
@@ -636,34 +642,45 @@ const GroupDetails = () => {
                   variant="outlined"
                 />
               ) : null}
-              {canManageCurrentGroup && <Button startIcon={<PersonAddIcon />} variant="outlined" size="small" onClick={() => setShowAddMemberForm(!showAddMemberForm)}>{showAddMemberForm ? 'Close' : 'Add Member'}</Button>}     
-          </Box> 
+              {canManageCurrentGroup && (
+                <Button
+                  startIcon={<PersonAddIcon />}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => {
+                    setShowAddMemberForm(!showAddMemberForm);
+                    setSelectedContacts([]);
+                  }}
+                >
+                  {showAddMemberForm ? 'Close' : 'Add Member'}
+                </Button>
+              )}               </Box> 
           
         </Box>        
         <Divider sx={{ mb: 2 }} />
         {showAddMemberForm && (
             <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
               <Box display="flex" flexDirection="column" gap={2}>
-                <Autocomplete
+                <Autocomplete<ContactRef, true, false, false>
                   multiple
                   options={allContacts}
                   loading={contactsLoading}
                   value={selectedContacts}
                   onChange={(_, newValue) => setSelectedContacts(newValue)}
-                  getOptionLabel={(option) => option.name || ''}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  getOptionDisabled={(option) =>
-                    memberships.some((m) => m.contactId === option.id)
-                  }                  
-                  renderOption={(props, option) => {
-                    const isAlreadyMember = memberships.some((m) => m.contactId === option.id);
+                  getOptionLabel={(option: ContactRef) => option.name || ''}
+                  isOptionEqualToValue={(option: ContactRef, value: ContactRef) =>
+                    option.id === value.id
+                  }
+                  getOptionDisabled={(option: ContactRef) => isMember(option.id)}
+                  renderOption={(props, option: ContactRef) => {
+                    const isAlreadyMember = isMember(option.id);
                     return (
-                      <Box 
-                        component="li" 
-                        {...props} 
-                        sx={{ 
+                      <Box
+                        component="li"
+                        {...props}
+                        sx={{
                           color: isAlreadyMember ? 'text.disabled' : 'text.primary',
-                          pointerEvents: isAlreadyMember ? 'none' : 'auto' 
+                          pointerEvents: isAlreadyMember ? 'none' : 'auto',
                         }}
                       >
                         {option.name} {isAlreadyMember && '(Already in Group)'}
