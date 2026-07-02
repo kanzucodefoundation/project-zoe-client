@@ -11,15 +11,18 @@ import {
   Divider,
   Chip,
   IconButton,
+  Autocomplete,
+  TextField,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   SmsRounded as SmsIcon,
+  PersonAdd as PersonAddIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, del, put } from '../../utils/ajax';
+import { get, del, put , post} from '../../utils/ajax';
 import {
   remoteRoutes,
   localRoutes,
@@ -212,6 +215,52 @@ const GroupDetails = () => {
   const [updatingMembershipId, setUpdatingMembershipId] = useState<
     number | null
   >(null);
+  const [submittingMember, setSubmittingMember] = useState(false);
+  const [showAddMemberForm, setShowAddMemberForm] = useState(false);
+  const [allContacts, setAllContacts] = useState<GroupRef[]>([]);
+  const [selectedContacts, setSelectedContacts] = useState<GroupRef[]>([]);
+  const [contactsLoading, setContactsLoading] = useState(false);
+  useEffect(() => {
+    if (!showAddMemberForm) return;
+
+    const fetchAllContacts = async () => {
+      setContactsLoading(true);
+      try {
+        const data = await getJson<GroupRef[]>(remoteRoutes.contacts || '/api/contacts');
+        setAllContacts(Array.isArray(data) ? data : []);
+      } catch (error) {
+        toast.error('Failed to load people for selection.');
+      } finally {
+        setContactsLoading(false);
+      }
+    };
+    fetchAllContacts();
+  }, [showAddMemberForm]);
+  const handleBulkAddMembers = async () => {
+    if (!groupId || selectedContacts.length === 0) return;
+    setSubmittingMember(true);
+    const memberIds = selectedContacts.map((contact) => contact.id);
+    const payload = {
+      groupId: Number(groupId),
+      members: memberIds, 
+      role: 'Member'  
+    };
+    post(
+      `${remoteRoutes.groupsMembership}`,
+      payload,
+      (response: any) => {
+        toast.success(response?.message || `Successfully added ${selectedContacts.length} members`);
+        setSelectedContacts([]);
+        setShowAddMemberForm(false);
+        fetchMemberships(); 
+        setSubmittingMember(false);
+      },
+      (error: unknown) => {
+        toast.error('Could not save selection to the database');
+        setSubmittingMember(false);
+      }
+    );
+  };
 
   const isLeaderMembership = (membership: GroupMembership) =>
     membership.role === 'Leader' ||
@@ -570,19 +619,87 @@ const GroupDetails = () => {
         >
           <Typography variant="h6" gutterBottom>
             People in this Group
-          </Typography>
-          {!membershipsLoading && memberships.length > 0 ? (
-            <Chip
-              label={`${memberships.length} ${
-                memberships.length === 1 ? 'person' : 'people'
-              }`}
-              size="small"
-              variant="outlined"
-            />
-          ) : null}
-        </Box>
+          </Typography>   
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={2}
+            flexWrap="wrap"
+            padding={2}
+          >
+              {!membershipsLoading && memberships.length > 0 ? (
+                <Chip
+                  label={`${memberships.length} ${
+                    memberships.length === 1 ? 'person' : 'people'
+                  }`}
+                  size="small"
+                  variant="outlined"
+                />
+              ) : null}
+              {canManageCurrentGroup && <Button startIcon={<PersonAddIcon />} variant="outlined" size="small" onClick={() => setShowAddMemberForm(!showAddMemberForm)}>{showAddMemberForm ? 'Close' : 'Add Member'}</Button>}     
+          </Box> 
+          
+        </Box>        
         <Divider sx={{ mb: 2 }} />
-
+        {showAddMemberForm && (
+            <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+              <Box display="flex" flexDirection="column" gap={2}>
+                <Autocomplete
+                  multiple
+                  options={allContacts}
+                  loading={contactsLoading}
+                  value={selectedContacts}
+                  onChange={(_, newValue) => setSelectedContacts(newValue)}
+                  getOptionLabel={(option) => option.name || ''}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  getOptionDisabled={(option) =>
+                    memberships.some((m) => m.contactId === option.id)
+                  }                  
+                  renderOption={(props, option) => {
+                    const isAlreadyMember = memberships.some((m) => m.contactId === option.id);
+                    return (
+                      <Box 
+                        component="li" 
+                        {...props} 
+                        sx={{ 
+                          color: isAlreadyMember ? 'text.disabled' : 'text.primary',
+                          pointerEvents: isAlreadyMember ? 'none' : 'auto' 
+                        }}
+                      >
+                        {option.name} {isAlreadyMember && '(Already in Group)'}
+                      </Box>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Type name to search members..."
+                      variant="outlined"
+                      placeholder="Select people..."
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {contactsLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                <Box display="flex" justifyContent="flex-end">
+                  <Button
+                    variant="contained"
+                    onClick={handleBulkAddMembers}
+                    disabled={submittingMember || selectedContacts.length === 0}
+                  >
+                    {submittingMember ? <CircularProgress size={24} /> : `Add Selected (${selectedContacts.length})`}
+                  </Button>
+                </Box>
+              </Box>
+            </Paper>
+          )}
         {membershipsLoading ? (
           <Box display="flex" justifyContent="center" py={3}>
             <CircularProgress size={28} />
