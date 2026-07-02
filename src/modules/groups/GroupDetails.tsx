@@ -227,19 +227,20 @@ const GroupDetails = () => {
   const [contactsLoading, setContactsLoading] = useState(false);
   useEffect(() => {
     if (!showAddMemberForm) return;
-
+    let ignore = false;
     const fetchAllContacts = async () => {
       setContactsLoading(true);
       try {
-        const data = await getJson<ContactRef[]>(remoteRoutes.contacts || '/api/contacts');
-        setAllContacts(Array.isArray(data) ? data : []);
+        const data = await getJson<ContactRef[]>(remoteRoutes.contactsPeopleCombo);
+        if (!ignore) setAllContacts(Array.isArray(data) ? data : []);
       } catch{
-        toast.error('Failed to load people for selection.');
+        if (!ignore) toast.error('Failed to load people for selection.');
       } finally {
-        setContactsLoading(false);
+        if (!ignore) setContactsLoading(false);
       }
     };
     fetchAllContacts();
+    return () => { ignore = true; };
   }, [showAddMemberForm]);
   const handleBulkAddMembers = async () => {
     if (!groupId || selectedContacts.length === 0) return;
