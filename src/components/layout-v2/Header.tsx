@@ -141,21 +141,19 @@ export default function Header() {
               }}
             >
               {userLocations.length > 0 && (
-                <>
-                  <MenuItem
-                    disabled
-                    sx={{ opacity: '1 !important', pointerEvents: 'none' }}
-                  >
-                    <ListItemIcon>
-                      <LocationOnRoundedIcon fontSize="small" />
-                    </ListItemIcon>
-                    <Typography variant="body2" color="text.secondary">
-                      {userLocations.map((l) => l.name).join(', ')}
-                    </Typography>
-                  </MenuItem>
-                  <Divider />
-                </>
+                <MenuItem
+                  disabled
+                  sx={{ opacity: '1 !important', pointerEvents: 'none' }}
+                >
+                  <ListItemIcon>
+                    <LocationOnRoundedIcon fontSize="small" />
+                  </ListItemIcon>
+                  <Typography variant="body2" color="text.secondary">
+                    {userLocations.map((l) => l.name).join(', ')}
+                  </Typography>
+                </MenuItem>
               )}
+              {userLocations.length > 0 && <Divider />}
               <MenuItem onClick={handleLogout}>
                 <ListItemIcon>
                   <LogoutRoundedIcon fontSize="small" />
