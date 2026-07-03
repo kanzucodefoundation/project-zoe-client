@@ -13,6 +13,7 @@ import {
   IconButton,
   Autocomplete,
   TextField,
+  TablePagination,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -225,6 +226,14 @@ const GroupDetails = () => {
   const [allContacts, setAllContacts] = useState<ContactRef[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<ContactRef[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(100); 
+  const [total, setTotal] = useState(0); 
+
+  useEffect(() => {
+    setPage(0);
+  }, [groupId]);
+
   useEffect(() => {
     if (!showAddMemberForm) return;
     let ignore = false;
@@ -321,16 +330,17 @@ const GroupDetails = () => {
     }
   }, [groupId]);
 
-  const fetchMemberships = useCallback(async () => {
+  const fetchMemberships = useCallback(async (signal?: AbortSignal) => {
     if (!groupId) return;
-
     setMembershipsLoading(true);
     try {
+      const currentSkip = page * rowsPerPage;      
       const data = await getJson<GroupMembership | GroupMembership[]>(
         `${remoteRoutes.groupsMembership}?groupId=${encodeURIComponent(
           groupId,
-        )}`,
+        )}&limit=${rowsPerPage}&skip=${currentSkip}`, 
       );
+      if (signal?.aborted) return;
       const membershipList = Array.isArray(data)
         ? data
         : data
@@ -340,18 +350,24 @@ const GroupDetails = () => {
         (membership) => membership.isActive !== false,
       );
       setMemberships(activeMemberships);
+      if (membershipList.length < rowsPerPage) {
+        setTotal(currentSkip + activeMemberships.length);
+      } else {
+        setTotal(currentSkip + rowsPerPage + 1);
+      }
     } catch (error: unknown) {
       console.error('Failed to fetch memberships:', error);
-      // toast.error('Failed to load group members');
+      toast.error('Failed to load group members');
     } finally {
       setMembershipsLoading(false);
-    }
-  }, [groupId]);
-
-  useEffect(() => {
-    fetchGroup();
-    fetchMemberships();
-  }, [fetchGroup, fetchMemberships]);
+    }  }, [groupId, page, rowsPerPage]); 
+    
+    useEffect(() => {
+      fetchGroup();
+    }, [fetchGroup]);
+    useEffect(() => {    
+      fetchMemberships();
+    }, [fetchMemberships]);
 
   const handleRoleToggle = async (membership: GroupMembership) => {
     const nextRole =
@@ -769,7 +785,7 @@ const GroupDetails = () => {
                           ? 'filled'
                           : 'outlined'
                       }
-                    />
+                    />               
                   </Box>
 
                   {canManageCurrentGroup ? (
@@ -790,11 +806,34 @@ const GroupDetails = () => {
                         : 'Make Leader'}
                     </Button>
                   ) : null}
-                </Box>
+                </Box>          
               ))
             )}
           </Box>
         )}
+        <Box display="flex" justifyContent="center" mt={4} mb={2}>
+          {/*   Pagination Section */}
+          <Box
+            display="flex"
+            justifyContent={{ xs: 'center', sm: 'flex-end' }}
+            mt={1}
+            width="100%"
+          >
+            <TablePagination
+              component="div"
+              count={total}
+              page={page}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => {
+                const newLimit = parseInt(e.target.value, 10);
+                setRowsPerPage(newLimit);
+                setPage(0); // Snap back to page 1 on limit adjustments
+              }}
+              rowsPerPageOptions={[10, 25, 50, 100]}
+            />
+          </Box>
+        </Box>
       </Paper>
 
       {/* Edit Dialog */}
