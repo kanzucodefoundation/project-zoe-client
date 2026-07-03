@@ -330,9 +330,8 @@ const GroupDetails = () => {
     }
   }, [groupId]);
 
-   const fetchMemberships = useCallback(async () => {
+  const fetchMemberships = useCallback(async (signal?: AbortSignal) => {
     if (!groupId) return;
-
     setMembershipsLoading(true);
     try {
       const currentSkip = page * rowsPerPage;      
@@ -341,6 +340,7 @@ const GroupDetails = () => {
           groupId,
         )}&limit=${rowsPerPage}&skip=${currentSkip}`, 
       );
+      if (signal?.aborted) return;
       const membershipList = Array.isArray(data)
         ? data
         : data
@@ -351,9 +351,9 @@ const GroupDetails = () => {
       );
       setMemberships(activeMemberships);
       if (membershipList.length < rowsPerPage) {
-        setTotal(currentSkip + membershipList.length);
+        setTotal(currentSkip + activeMemberships.length);
       } else {
-        setTotal(currentSkip + membershipList.length + 1); 
+        setTotal(currentSkip + rowsPerPage + 1);
       }
     } catch (error: unknown) {
       console.error('Failed to fetch memberships:', error);
@@ -809,31 +809,31 @@ const GroupDetails = () => {
                 </Box>          
               ))
             )}
-            <Box display="flex" justifyContent="center" mt={4} mb={2}>
-              {/*   Pagination Section */}
-              <Box
-                display="flex"
-                justifyContent={{ xs: 'center', sm: 'flex-end' }}
-                mt={1}
-                width="100%"
-              >
-                <TablePagination
-                  component="div"
-                  count={total}
-                  page={page}
-                  onPageChange={(_, newPage) => setPage(newPage)}
-                  rowsPerPage={rowsPerPage}
-                  onRowsPerPageChange={(e) => {
-                    const newLimit = parseInt(e.target.value, 10);
-                    setRowsPerPage(newLimit);
-                    setPage(0); // Snap back to page 1 on limit adjustments
-                  }}
-                  rowsPerPageOptions={[10, 25, 50, 100]}
-                />
-              </Box>
-            </Box>
           </Box>
         )}
+        <Box display="flex" justifyContent="center" mt={4} mb={2}>
+          {/*   Pagination Section */}
+          <Box
+            display="flex"
+            justifyContent={{ xs: 'center', sm: 'flex-end' }}
+            mt={1}
+            width="100%"
+          >
+            <TablePagination
+              component="div"
+              count={total}
+              page={page}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => {
+                const newLimit = parseInt(e.target.value, 10);
+                setRowsPerPage(newLimit);
+                setPage(0); // Snap back to page 1 on limit adjustments
+              }}
+              rowsPerPageOptions={[10, 25, 50, 100]}
+            />
+          </Box>
+        </Box>
       </Paper>
 
       {/* Edit Dialog */}
