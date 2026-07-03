@@ -61,7 +61,7 @@ interface RecentSubmission {
 }
 
 interface PgaTrendPoint {
-  period: string;
+  period: string | null;
   total: number;
 }
 
@@ -205,7 +205,10 @@ const Dashboard = () => {
     'Past Month';
 
   const recentSubmissions = dashboardData?.recentSubmissions || [];
-  const pgaTrend = dashboardData?.pgaTrend || [];
+  const pgaTrend = (dashboardData?.pgaTrend || []).filter(
+    (point): point is PgaTrendPoint & { period: string } =>
+      typeof point.period === 'string' && point.period.length > 0,
+  );
   const locationRanking = dashboardData?.locationRanking || [];
 
   const handleMenuOpen = (
@@ -236,6 +239,10 @@ const Dashboard = () => {
 
   const formatPeriodLabel = (period: string) => {
     const [year, month, day] = period.split('-').map(Number);
+    if (!year || !month || !day) {
+      return period;
+    }
+
     return new Date(year, month - 1, day).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
