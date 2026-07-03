@@ -231,6 +231,10 @@ const GroupDetails = () => {
   const [total, setTotal] = useState(0); 
 
   useEffect(() => {
+    setPage(0);
+  }, [groupId]);
+
+  useEffect(() => {
     if (!showAddMemberForm) return;
     let ignore = false;
     const fetchAllContacts = async () => {
