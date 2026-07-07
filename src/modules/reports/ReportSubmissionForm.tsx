@@ -245,6 +245,9 @@ const ReportSubmissionForm = () => {
   const isSmallGroupNameField = (field: IReportField): boolean =>
     field.name === 'smallGroupName';
 
+  const isServiceLocationNameField = (field: IReportField): boolean =>
+    field.name === 'serviceLocationName';
+
   const handleChange = (name: string, value: $TsFixMe) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     setValidationErrors((prev) => {
@@ -276,12 +279,42 @@ const ReportSubmissionForm = () => {
     });
   };
 
-  const handleDynamicGroupChange = (fieldName: string, group: DynamicGroup) => {
-    const lowerName = fieldName.toLowerCase();
+  const handleServiceLocationChange = (group: DynamicGroup | null) => {
+    setFormData((prev) => {
+      const next = { ...prev };
+
+      if (group) {
+        next.serviceLocationName = group.name;
+        next.serviceLocationId = group.id;
+      } else {
+        delete next.serviceLocationName;
+        delete next.serviceLocationId;
+      }
+
+      return next;
+    });
+
+    setValidationErrors((prev) => {
+      const next = { ...prev };
+      delete next.serviceLocationName;
+      return next;
+    });
+  };
+
+  const handleDynamicGroupChange = (
+    field: IReportField,
+    group: DynamicGroup,
+  ) => {
+    if (isServiceLocationNameField(field)) {
+      handleServiceLocationChange(group);
+      return;
+    }
+
+    const lowerName = field.name.toLowerCase();
     if (lowerName.includes('id')) {
-      handleChange(fieldName, group.id);
+      handleChange(field.name, group.id);
     } else {
-      handleChange(fieldName, group.name);
+      handleChange(field.name, group.name);
     }
   };
 
@@ -317,7 +350,7 @@ const ReportSubmissionForm = () => {
 
         // Auto-select if only one option
         if (groups.length === 1) {
-          handleDynamicGroupChange(field.name, groups[0]);
+          handleDynamicGroupChange(field, groups[0]);
         }
       },
       (error: $TsFixMe) => {
@@ -487,7 +520,7 @@ const ReportSubmissionForm = () => {
   const handleSubmit = () => {
     const errors: Record<string, string> = {};
     reportFields.forEach((field) => {
-      if (field.required) {
+      if (field.required && !field.hidden) {
         const value = formData[field.name];
         const isEmpty =
           field.type === 'checkbox' ||
@@ -795,7 +828,7 @@ const ReportSubmissionForm = () => {
               const selected = groups.find((g) =>
                 useId ? g.id === e.target.value : g.name === e.target.value,
               );
-              if (selected) handleDynamicGroupChange(field.name, selected);
+              if (selected) handleDynamicGroupChange(field, selected);
             }}
             sx={autoSelected ? { backgroundColor: 'success.50' } : undefined}
           >
