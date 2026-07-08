@@ -540,7 +540,7 @@ const ReportSubmissionForm = () => {
     if (Object.keys(errors).length > 0 || hiddenFieldMissing) {
       setValidationErrors(errors);
       toast.error(
-        hiddenFieldMissing
+        hiddenFieldMissing && Object.keys(errors).length === 0
           ? 'Some required information failed to load. Please refresh and try again.'
           : 'Please fill out all required fields',
       );
