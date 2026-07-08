@@ -245,6 +245,9 @@ const ReportSubmissionForm = () => {
   const isSmallGroupNameField = (field: IReportField): boolean =>
     field.name === 'smallGroupName';
 
+  const isServiceLocationNameField = (field: IReportField): boolean =>
+    field.name === 'serviceLocationName';
+
   const handleChange = (name: string, value: $TsFixMe) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     setValidationErrors((prev) => {
@@ -276,12 +279,43 @@ const ReportSubmissionForm = () => {
     });
   };
 
-  const handleDynamicGroupChange = (fieldName: string, group: DynamicGroup) => {
-    const lowerName = fieldName.toLowerCase();
+  const handleServiceLocationChange = (group: DynamicGroup | null) => {
+    setFormData((prev) => {
+      const next = { ...prev };
+
+      if (group) {
+        next.serviceLocationName = group.name;
+        next.serviceLocationId = group.id;
+      } else {
+        delete next.serviceLocationName;
+        delete next.serviceLocationId;
+      }
+
+      return next;
+    });
+
+    setValidationErrors((prev) => {
+      const next = { ...prev };
+      delete next.serviceLocationName;
+      delete next.serviceLocationId;
+      return next;
+    });
+  };
+
+  const handleDynamicGroupChange = (
+    field: IReportField,
+    group: DynamicGroup,
+  ) => {
+    if (isServiceLocationNameField(field)) {
+      handleServiceLocationChange(group);
+      return;
+    }
+
+    const lowerName = field.name.toLowerCase();
     if (lowerName.includes('id')) {
-      handleChange(fieldName, group.id);
+      handleChange(field.name, group.id);
     } else {
-      handleChange(fieldName, group.name);
+      handleChange(field.name, group.name);
     }
   };
 
@@ -317,7 +351,7 @@ const ReportSubmissionForm = () => {
 
         // Auto-select if only one option
         if (groups.length === 1) {
-          handleDynamicGroupChange(field.name, groups[0]);
+          handleDynamicGroupChange(field, groups[0]);
         }
       },
       (error: $TsFixMe) => {
@@ -486,23 +520,30 @@ const ReportSubmissionForm = () => {
 
   const handleSubmit = () => {
     const errors: Record<string, string> = {};
+    let hiddenFieldMissing = false;
     reportFields.forEach((field) => {
-      if (field.required) {
-        const value = formData[field.name];
-        const isEmpty =
-          field.type === 'checkbox' ||
-          (field.type === 'select' && isDynamicMemberField(field))
-            ? !Array.isArray(value) || value.length === 0
-            : value === undefined || value === null || value === '';
-        if (isEmpty) {
-          errors[field.name] = `${field.label || field.name} is required`;
-        }
+      if (!field.required) return;
+      const value = formData[field.name];
+      const isEmpty =
+        field.type === 'checkbox' ||
+        (field.type === 'select' && isDynamicMemberField(field))
+          ? !Array.isArray(value) || value.length === 0
+          : value === undefined || value === null || value === '';
+      if (!isEmpty) return;
+      if (field.hidden) {
+        hiddenFieldMissing = true;
+      } else {
+        errors[field.name] = `${field.label || field.name} is required`;
       }
     });
 
-    if (Object.keys(errors).length > 0) {
+    if (Object.keys(errors).length > 0 || hiddenFieldMissing) {
       setValidationErrors(errors);
-      toast.error('Please fill out all required fields');
+      toast.error(
+        hiddenFieldMissing && Object.keys(errors).length === 0
+          ? 'Some required information failed to load. Please refresh and try again.'
+          : 'Please fill out all required fields',
+      );
       return;
     }
 
@@ -793,9 +834,9 @@ const ReportSubmissionForm = () => {
             label={`${field.label}${field.required ? ' *' : ''}`}
             onChange={(e) => {
               const selected = groups.find((g) =>
-                useId ? g.id === e.target.value : g.name === e.target.value,
+                useId ? String(g.id) === e.target.value : g.name === e.target.value,
               );
-              if (selected) handleDynamicGroupChange(field.name, selected);
+              if (selected) handleDynamicGroupChange(field, selected);
             }}
             sx={autoSelected ? { backgroundColor: 'success.50' } : undefined}
           >
