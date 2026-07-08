@@ -20,6 +20,14 @@ const HelpFab = () => (
         boxShadow: 6,
         textTransform: 'none',
         fontWeight: 600,
+        '[data-mui-color-scheme="dark"] &': {
+        backgroundColor: '#ffffff',
+        color: '#000000',
+        '&:hover': {
+          backgroundColor: '#f5f5f5',
+        },
+      },
+
       }}
     >
       <HelpOutlineRoundedIcon sx={{ mr: 1 }} />
