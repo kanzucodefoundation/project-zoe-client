@@ -26,9 +26,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Run tests
-      # - Re-introduce once a test suite is configured for the Vite app
-      #   run: npm test
+      - name: Run tests
+        run: npm run test:run
 
       - name: Create .env file
         run: echo "VITE_API_URL=https://projectzoe.kanzucodefoundation.org/server/" > ./.env
