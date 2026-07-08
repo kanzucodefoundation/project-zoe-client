@@ -284,9 +284,9 @@ const BulkGroupImport = ({ open, onClose, onSuccess }: Props) => {
                   Already existed (skipped)
                 </Typography>
                 <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-                  <CountChip label="zones" value={result.skipped.zones} color="default" />
-                  <CountChip label="sectors" value={result.skipped.sectors} color="default" />
-                  <CountChip label="MCs" value={result.skipped.mcs} color="default" />
+                  <CountChip label="zones" value={result.skipped.zones} color="warning" />
+                  <CountChip label="sectors" value={result.skipped.sectors} color="warning" />
+                  <CountChip label="MCs" value={result.skipped.mcs} color="warning" />
                 </Stack>
               </Box>
             )}
@@ -335,7 +335,7 @@ const BulkGroupImport = ({ open, onClose, onSuccess }: Props) => {
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleClose} disabled={uploading}>
+        <Button onClick={result && totalCreated > 0 ? handleDone : handleClose} disabled={uploading}>
           {result ? 'Close' : 'Cancel'}
         </Button>
         {!result && (
