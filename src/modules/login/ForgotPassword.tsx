@@ -140,8 +140,8 @@ const ForgotPassword = () => {
             Forgot Password
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-            Enter your email address and we&apos;ll send reset instructions if
-            an account exists.
+            Enter your username or email address and we&apos;ll send reset
+            instructions if an account with an email address is on file.
           </Typography>
 
           {error && (
@@ -159,10 +159,10 @@ const ForgotPassword = () => {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="Email"
-              name="email"
-              type="email"
-              autoComplete="email"
+              label="Username or Email"
+              name="username"
+              type="text"
+              autoComplete="username"
               autoFocus
               required
               value={email}
