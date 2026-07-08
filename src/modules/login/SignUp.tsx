@@ -20,7 +20,7 @@ import { toast } from 'react-toastify';
 import { post } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import loginBackground from '../../assets/images/login-background.jpg';
-import HelpFab from './HelpFab';
+import HelpFab, { NARROW_SCREEN_QUERY } from './HelpFab';
 
 interface Location {
   id: number;
@@ -367,7 +367,7 @@ const SignUp = () => {
           backgroundColor: 'background.paper',
           // Extra bottom clearance so the fixed Need Help FAB never covers
           // the "Already have an account?" link on narrow screens.
-          '@media (max-width: 500px)': {
+          [NARROW_SCREEN_QUERY]: {
             pb: 10,
           },
         }}

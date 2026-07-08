@@ -6,7 +6,7 @@ const HELP_URL = 'https://linktr.ee/AtProjectZoe';
 // Below this width the extended "Need Help?" pill can overlap the
 // "Already have an account? / Don't have an account?" links on the
 // login/register forms, so it collapses to an icon-only circular FAB.
-const NARROW_SCREEN_QUERY = '@media (max-width: 500px)';
+export const NARROW_SCREEN_QUERY = '@media (max-width: 500px)';
 
 const HelpFab = () => (
   <Tooltip title="Need help? Click Me!" placement="left">
