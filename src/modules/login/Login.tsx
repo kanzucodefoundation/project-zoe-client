@@ -146,6 +146,11 @@ const Login = () => {
           p: { xs: 3, sm: 6 },
           pt: { xs: 4, sm: 6 },
           backgroundColor: 'background.paper',
+          // Extra bottom clearance so the fixed Need Help FAB never covers
+          // the "Don't have an account?" link on narrow screens.
+          '@media (max-width: 500px)': {
+            pb: 10,
+          },
         }}
       >
         <Box sx={{ width: '100%', maxWidth: 400 }}>
