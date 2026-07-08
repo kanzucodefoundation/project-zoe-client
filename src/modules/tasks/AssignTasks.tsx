@@ -421,7 +421,7 @@ function MobileTaskList({
                       variant="caption"
                       color="text.secondary"
                       display="block"
-                      noWrap
+                      sx={{ wordBreak: 'break-word' }}
                     >
                       {task.contact.address}
                     </Typography>
