@@ -209,6 +209,10 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
     }
   };
 
+  const isSuccess =
+    (result?.type === 'contacts' && result.success) ||
+    (result?.type === 'service' && !result.error);
+
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
@@ -349,9 +353,6 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             </Alert>
           )}
 
-          <Button onClick={onComplete} variant="contained">
-            Done
-          </Button>
         </Box>
       )}
 
@@ -453,14 +454,16 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
       {/* Action Buttons */}
       <Box display="flex" gap={2} justifyContent="flex-end">
         <Button onClick={onCancel}>Cancel</Button>
-        <Button
-          variant="contained"
-          onClick={handleUpload}
-          disabled={!file || uploading}
-        >
-          {uploading ? 'Uploading...' : UPLOAD_LABELS[mode]}
-        </Button>
-        {result?.type === 'contacts' && result.success && (
+        {!isSuccess && (
+          <Button
+            variant="contained"
+            onClick={handleUpload}
+            disabled={!file || uploading}
+          >
+            {uploading ? 'Uploading...' : UPLOAD_LABELS[mode]}
+          </Button>
+        )}
+        {isSuccess && (
           <Button
             variant="contained"
             color="success"

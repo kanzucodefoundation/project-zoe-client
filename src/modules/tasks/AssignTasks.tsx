@@ -224,6 +224,9 @@ function DesktopTable({
               Due Date
             </TableCell>
             <TableCell sx={{ fontWeight: 600, width: '15%' }}>
+              Address
+            </TableCell>
+            <TableCell sx={{ fontWeight: 600, width: '15%' }}>
               Assigned To
             </TableCell>
             <TableCell sx={{ fontWeight: 600 }}>Comment</TableCell>
@@ -281,6 +284,16 @@ function DesktopTable({
                     {task.dueAt
                       ? dayjs(task.dueAt).format('MMM DD, YYYY')
                       : '—'}
+                  </Typography>
+                </TableCell>
+
+                <TableCell>
+                  <Typography
+                    variant="body2"
+                    color={task.contact?.address ? 'text.primary' : 'text.disabled'}
+                    sx={{ wordBreak: 'break-word' }}
+                  >
+                    {task.contact?.address ?? '—'}
                   </Typography>
                 </TableCell>
 
@@ -401,6 +414,16 @@ function MobileTaskList({
                   {contactName && (
                     <Typography variant="caption" color="text.secondary">
                       {contactName}
+                    </Typography>
+                  )}
+                  {task.contact?.address && (
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      sx={{ wordBreak: 'break-word' }}
+                    >
+                      {task.contact.address}
                     </Typography>
                   )}
                 </Box>

@@ -1,7 +1,7 @@
 export interface User {
   id: string;
   username: string;
-  email: string;
+  email: string | null;
   firstName?: string;
   lastName?: string;
   roles: string[];
@@ -33,6 +33,7 @@ export interface AuthUserWithPermissions {
 
 export interface CreateUserData {
   contact: ContactOption | null;
+  username: string;
   password: string;
   roles: string[];
   isActive: boolean;

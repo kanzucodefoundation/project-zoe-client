@@ -99,6 +99,7 @@ export interface Task {
   contact?: {
     id: number;
     person?: { firstName: string; lastName: string; avatar?: string };
+    address?: string | null;
   };
   type: TaskType;
   title: string | null;

@@ -15,7 +15,7 @@ import loginBackground from '../../assets/images/login-background.jpg';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -30,13 +30,13 @@ const ForgotPassword = () => {
       remoteRoutes.forgotPassword,
       {
         churchName: 'Worship Harvest',
-        username: email,
+        username: identifier,
       },
       () => {
         setSuccess(
-          'An email has been sent to the provided address if it exists in the platform.',
+          'If your account has an email address on file, reset instructions have been sent to that address.',
         );
-        setEmail('');
+        setIdentifier('');
         setLoading(false);
       },
       () => {
@@ -140,8 +140,8 @@ const ForgotPassword = () => {
             Forgot Password
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-            Enter your email address and we&apos;ll send reset instructions if
-            an account exists.
+            Enter your username or email address and we&apos;ll send reset
+            instructions if an account with an email address is on file.
           </Typography>
 
           {error && (
@@ -159,14 +159,14 @@ const ForgotPassword = () => {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="Email"
-              name="email"
-              type="email"
-              autoComplete="email"
+              label="Username or Email"
+              name="username"
+              type="text"
+              autoComplete="username"
               autoFocus
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               sx={{ mb: 3 }}
             />
 

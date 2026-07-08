@@ -11,15 +11,19 @@ import {
   Divider,
   Chip,
   IconButton,
+  Autocomplete,
+  TextField,
+  TablePagination,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   SmsRounded as SmsIcon,
+  PersonAdd as PersonAddIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, del, put } from '../../utils/ajax';
+import { get, del, put , post} from '../../utils/ajax';
 import {
   remoteRoutes,
   localRoutes,
@@ -32,6 +36,11 @@ import MessageGroupModal from './MessageGroupModal';
 import type { GroupNode } from './types';
 
 interface GroupRef {
+  id: number;
+  name: string;
+}
+
+interface ContactRef {
   id: number;
   name: string;
 }
@@ -212,6 +221,61 @@ const GroupDetails = () => {
   const [updatingMembershipId, setUpdatingMembershipId] = useState<
     number | null
   >(null);
+  const [submittingMember, setSubmittingMember] = useState(false);
+  const [showAddMemberForm, setShowAddMemberForm] = useState(false);
+  const [allContacts, setAllContacts] = useState<ContactRef[]>([]);
+  const [selectedContacts, setSelectedContacts] = useState<ContactRef[]>([]);
+  const [contactsLoading, setContactsLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(100); 
+  const [total, setTotal] = useState(0); 
+
+  useEffect(() => {
+    setPage(0);
+  }, [groupId]);
+
+  useEffect(() => {
+    if (!showAddMemberForm) return;
+    let ignore = false;
+    const fetchAllContacts = async () => {
+      setContactsLoading(true);
+      try {
+        const data = await getJson<ContactRef[]>(remoteRoutes.contactsPeopleCombo);
+        if (!ignore) setAllContacts(Array.isArray(data) ? data : []);
+      } catch{
+        if (!ignore) toast.error('Failed to load people for selection.');
+      } finally {
+        if (!ignore) setContactsLoading(false);
+      }
+    };
+    fetchAllContacts();
+    return () => { ignore = true; };
+  }, [showAddMemberForm]);
+  const handleBulkAddMembers = async () => {
+    if (!groupId || selectedContacts.length === 0) return;
+    setSubmittingMember(true);
+    const memberIds = selectedContacts.map((contact) => contact.id);
+    const payload = {
+      groupId: Number(groupId),
+      members: memberIds, 
+      role: 'Member'  
+    };
+    post(
+      `${remoteRoutes.groupsMembership}`,
+      payload,
+      (response: { message?: string }) => {
+        toast.success(response?.message || `Successfully added ${selectedContacts.length} members`);
+        setSelectedContacts([]);
+        setShowAddMemberForm(false);
+        fetchMemberships(); 
+        setSubmittingMember(false);
+      },
+      () => {
+        toast.error('Could not save selection to the database');
+        setSubmittingMember(false);
+      }
+    );
+  };
 
   const isLeaderMembership = (membership: GroupMembership) =>
     membership.role === 'Leader' ||
@@ -266,16 +330,17 @@ const GroupDetails = () => {
     }
   }, [groupId]);
 
-  const fetchMemberships = useCallback(async () => {
+  const fetchMemberships = useCallback(async (signal?: AbortSignal) => {
     if (!groupId) return;
-
     setMembershipsLoading(true);
     try {
+      const currentSkip = page * rowsPerPage;      
       const data = await getJson<GroupMembership | GroupMembership[]>(
         `${remoteRoutes.groupsMembership}?groupId=${encodeURIComponent(
           groupId,
-        )}`,
+        )}&limit=${rowsPerPage}&skip=${currentSkip}`, 
       );
+      if (signal?.aborted) return;
       const membershipList = Array.isArray(data)
         ? data
         : data
@@ -285,18 +350,24 @@ const GroupDetails = () => {
         (membership) => membership.isActive !== false,
       );
       setMemberships(activeMemberships);
+      if (membershipList.length < rowsPerPage) {
+        setTotal(currentSkip + activeMemberships.length);
+      } else {
+        setTotal(currentSkip + rowsPerPage + 1);
+      }
     } catch (error: unknown) {
       console.error('Failed to fetch memberships:', error);
-      // toast.error('Failed to load group members');
+      toast.error('Failed to load group members');
     } finally {
       setMembershipsLoading(false);
-    }
-  }, [groupId]);
-
-  useEffect(() => {
-    fetchGroup();
-    fetchMemberships();
-  }, [fetchGroup, fetchMemberships]);
+    }  }, [groupId, page, rowsPerPage]); 
+    
+    useEffect(() => {
+      fetchGroup();
+    }, [fetchGroup]);
+    useEffect(() => {    
+      fetchMemberships();
+    }, [fetchMemberships]);
 
   const handleRoleToggle = async (membership: GroupMembership) => {
     const nextRole =
@@ -406,7 +477,8 @@ const GroupDetails = () => {
     children: group.children || [],
   };
   const addressLabel = getAddressLabel(group.address);
-
+  const isMember = (contactId: ContactRef['id']) =>
+    memberships.some((m) => m.contactId === contactId);
   return (
     <Container maxWidth="lg">
       {/* Header */}
@@ -570,19 +642,98 @@ const GroupDetails = () => {
         >
           <Typography variant="h6" gutterBottom>
             People in this Group
-          </Typography>
-          {!membershipsLoading && memberships.length > 0 ? (
-            <Chip
-              label={`${memberships.length} ${
-                memberships.length === 1 ? 'person' : 'people'
-              }`}
-              size="small"
-              variant="outlined"
-            />
-          ) : null}
-        </Box>
+          </Typography>   
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={2}
+            flexWrap="wrap"
+            padding={2}
+          >
+              {!membershipsLoading && memberships.length > 0 ? (
+                <Chip
+                  label={`${memberships.length} ${
+                    memberships.length === 1 ? 'person' : 'people'
+                  }`}
+                  size="small"
+                  variant="outlined"
+                />
+              ) : null}
+              {canManageCurrentGroup && (
+                <Button
+                  startIcon={<PersonAddIcon />}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => {
+                    setShowAddMemberForm(!showAddMemberForm);
+                    setSelectedContacts([]);
+                  }}
+                >
+                  {showAddMemberForm ? 'Close' : 'Add Member'}
+                </Button>
+              )}               </Box> 
+          
+        </Box>        
         <Divider sx={{ mb: 2 }} />
-
+        {showAddMemberForm && (
+            <Paper variant="outlined" sx={{ p: 2, mb: 3 }}>
+              <Box display="flex" flexDirection="column" gap={2}>
+                <Autocomplete<ContactRef, true, false, false>
+                  multiple
+                  options={allContacts}
+                  loading={contactsLoading}
+                  value={selectedContacts}
+                  onChange={(_, newValue) => setSelectedContacts(newValue)}
+                  getOptionLabel={(option: ContactRef) => option.name || ''}
+                  isOptionEqualToValue={(option: ContactRef, value: ContactRef) =>
+                    option.id === value.id
+                  }
+                  getOptionDisabled={(option: ContactRef) => isMember(option.id)}
+                  renderOption={(props, option: ContactRef) => {
+                    const isAlreadyMember = isMember(option.id);
+                    return (
+                      <Box
+                        component="li"
+                        {...props}
+                        sx={{
+                          color: isAlreadyMember ? 'text.disabled' : 'text.primary',
+                          pointerEvents: isAlreadyMember ? 'none' : 'auto',
+                        }}
+                      >
+                        {option.name} {isAlreadyMember && '(Already in Group)'}
+                      </Box>
+                    );
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Type name to search members..."
+                      variant="outlined"
+                      placeholder="Select people..."
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {contactsLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                <Box display="flex" justifyContent="flex-end">
+                  <Button
+                    variant="contained"
+                    onClick={handleBulkAddMembers}
+                    disabled={submittingMember || selectedContacts.length === 0}
+                  >
+                    {submittingMember ? <CircularProgress size={24} /> : `Add Selected (${selectedContacts.length})`}
+                  </Button>
+                </Box>
+              </Box>
+            </Paper>
+          )}
         {membershipsLoading ? (
           <Box display="flex" justifyContent="center" py={3}>
             <CircularProgress size={28} />
@@ -634,7 +785,7 @@ const GroupDetails = () => {
                           ? 'filled'
                           : 'outlined'
                       }
-                    />
+                    />               
                   </Box>
 
                   {canManageCurrentGroup ? (
@@ -655,11 +806,34 @@ const GroupDetails = () => {
                         : 'Make Leader'}
                     </Button>
                   ) : null}
-                </Box>
+                </Box>          
               ))
             )}
           </Box>
         )}
+        <Box display="flex" justifyContent="center" mt={4} mb={2}>
+          {/*   Pagination Section */}
+          <Box
+            display="flex"
+            justifyContent={{ xs: 'center', sm: 'flex-end' }}
+            mt={1}
+            width="100%"
+          >
+            <TablePagination
+              component="div"
+              count={total}
+              page={page}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => {
+                const newLimit = parseInt(e.target.value, 10);
+                setRowsPerPage(newLimit);
+                setPage(0); // Snap back to page 1 on limit adjustments
+              }}
+              rowsPerPageOptions={[10, 25, 50, 100]}
+            />
+          </Box>
+        </Box>
       </Paper>
 
       {/* Edit Dialog */}

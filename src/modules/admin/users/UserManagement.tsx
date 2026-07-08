@@ -70,6 +70,7 @@ const USER_FETCH_LIMIT = 100;
 
 const INITIAL_CREATE_FORM: CreateUserData = {
   contact: null,
+  username: '',
   password: '',
   roles: [],
   isActive: true,
@@ -339,14 +340,21 @@ const UserManagement = () => {
     }
 
     setSubmitting(true);
+
+    const payload: Record<string, unknown> = {
+      contactId: createFormData.contact.id,
+      password: createFormData.password,
+      roles: createFormData.roles,
+      isActive: createFormData.isActive,
+    };
+
+    if (createFormData.username.trim()) {
+      payload.username = createFormData.username.trim();
+    }
+
     post(
       remoteRoutes.users,
-      {
-        contactId: createFormData.contact.id,
-        password: createFormData.password,
-        roles: createFormData.roles,
-        isActive: createFormData.isActive,
-      },
+      payload,
       () => {
         toast.success('User created successfully');
         setCreateDialog(false);
@@ -1078,6 +1086,14 @@ const UserManagement = () => {
                   }}
                 />
               )}
+            />
+            <TextField
+              label="Login Username"
+              value={createFormData.username}
+              onChange={(event) =>
+                handleCreateFormChange('username', event.target.value)
+              }
+              helperText="Required only for contacts without an email address (e.g. phone number). Leave blank if the contact has an email on file."
             />
             <TextField
               label="Password"

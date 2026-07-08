@@ -180,10 +180,10 @@ const Login = () => {
 
             <TextField
               fullWidth
-              label="Email"
+              label="Username or Email"
               name="username"
-              type="email"
-              autoComplete="email"
+              type="text"
+              autoComplete="username"
               autoFocus
               value={formData.username}
               onChange={handleChange}
