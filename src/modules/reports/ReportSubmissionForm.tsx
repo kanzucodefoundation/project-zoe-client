@@ -297,6 +297,7 @@ const ReportSubmissionForm = () => {
     setValidationErrors((prev) => {
       const next = { ...prev };
       delete next.serviceLocationName;
+      delete next.serviceLocationId;
       return next;
     });
   };
@@ -519,23 +520,30 @@ const ReportSubmissionForm = () => {
 
   const handleSubmit = () => {
     const errors: Record<string, string> = {};
+    let hiddenFieldMissing = false;
     reportFields.forEach((field) => {
-      if (field.required && !field.hidden) {
-        const value = formData[field.name];
-        const isEmpty =
-          field.type === 'checkbox' ||
-          (field.type === 'select' && isDynamicMemberField(field))
-            ? !Array.isArray(value) || value.length === 0
-            : value === undefined || value === null || value === '';
-        if (isEmpty) {
-          errors[field.name] = `${field.label || field.name} is required`;
-        }
+      if (!field.required) return;
+      const value = formData[field.name];
+      const isEmpty =
+        field.type === 'checkbox' ||
+        (field.type === 'select' && isDynamicMemberField(field))
+          ? !Array.isArray(value) || value.length === 0
+          : value === undefined || value === null || value === '';
+      if (!isEmpty) return;
+      if (field.hidden) {
+        hiddenFieldMissing = true;
+      } else {
+        errors[field.name] = `${field.label || field.name} is required`;
       }
     });
 
-    if (Object.keys(errors).length > 0) {
+    if (Object.keys(errors).length > 0 || hiddenFieldMissing) {
       setValidationErrors(errors);
-      toast.error('Please fill out all required fields');
+      toast.error(
+        hiddenFieldMissing
+          ? 'Some required information failed to load. Please refresh and try again.'
+          : 'Please fill out all required fields',
+      );
       return;
     }
 
@@ -826,7 +834,7 @@ const ReportSubmissionForm = () => {
             label={`${field.label}${field.required ? ' *' : ''}`}
             onChange={(e) => {
               const selected = groups.find((g) =>
-                useId ? g.id === e.target.value : g.name === e.target.value,
+                useId ? String(g.id) === e.target.value : g.name === e.target.value,
               );
               if (selected) handleDynamicGroupChange(field, selected);
             }}
