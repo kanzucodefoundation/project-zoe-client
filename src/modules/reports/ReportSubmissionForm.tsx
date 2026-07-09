@@ -175,12 +175,15 @@ const ReportSubmissionForm = () => {
 
   const [reportName, setReportName] = useState('');
   const [reportFields, setReportFields] = useState<IReportField[]>([]);
+  const [targetCategoryId, setTargetCategoryId] = useState<number | null>(null);
   const [formData, setFormData] = useState<Record<string, $TsFixMe>>({});
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [groupChoices, setGroupChoices] = useState<DynamicGroup[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
   const [dynamicOptions, setDynamicOptions] = useState<
     Record<string, DynamicGroup[]>
   >({});
@@ -210,6 +213,37 @@ const ReportSubmissionForm = () => {
         if (Array.isArray(response.fields)) {
           setReportFields(response.fields);
           setReportName(response.name || 'Submit Report');
+
+          const categoryId = response.targetGroupCategory?.id ?? null;
+          setTargetCategoryId(categoryId);
+
+          // If the report already has a dynamic_group_selector field, it handles
+          // group selection itself — no need for the form-level picker.
+          const hasGroupSelector = response.fields.some(
+            (f: IReportField) =>
+              Array.isArray(f.options) &&
+              f.options.some(
+                (o: $TsFixMe) => o?.type === 'dynamic_group_selector',
+              ),
+          );
+
+          if (categoryId && !hasGroupSelector) {
+            get(
+              remoteRoutes.groupsMyGroups,
+              (groups: $TsFixMe[]) => {
+                const inCategory = (Array.isArray(groups) ? groups : []).filter(
+                  (g) => g.categoryId === categoryId,
+                );
+                if (inCategory.length > 1) {
+                  setGroupChoices(inCategory);
+                } else if (inCategory.length === 1) {
+                  setSelectedGroupId(inCategory[0].id);
+                }
+              },
+              (err: $TsFixMe) =>
+                console.error('Failed to fetch user groups:', err),
+            );
+          }
         } else {
           toast.error('Failed to load report fields');
         }
@@ -550,10 +584,14 @@ const ReportSubmissionForm = () => {
 
     setSubmitting(true);
 
-    // Backend expects: { data: { fieldName: value, ... } }
-    const submissionData = {
-      data: formData,
-    };
+    if (groupChoices.length > 1 && !selectedGroupId) {
+      toast.error('Please select which group you are submitting this report for');
+      setSubmitting(false);
+      return;
+    }
+
+    const submissionData: Record<string, $TsFixMe> = { data: formData };
+    if (selectedGroupId) submissionData.selectedGroupId = selectedGroupId;
 
     // Use correct endpoint: POST /api/reports/:reportId/submissions
     post(
@@ -1028,6 +1066,26 @@ const ReportSubmissionForm = () => {
       </Typography>
 
       <Box display="flex" flexDirection="column" gap={3}>
+        {groupChoices.length > 1 && (
+          <FormControl required error={!selectedGroupId}>
+            <InputLabel>Which group are you submitting for?</InputLabel>
+            <Select
+              value={selectedGroupId ?? ''}
+              label="Which group are you submitting for?"
+              onChange={(e) => setSelectedGroupId(Number(e.target.value))}
+            >
+              {groupChoices.map((g) => (
+                <MenuItem key={g.id} value={g.id}>
+                  {g.name}
+                </MenuItem>
+              ))}
+            </Select>
+            {!selectedGroupId && (
+              <FormHelperText>Select a group to continue</FormHelperText>
+            )}
+          </FormControl>
+        )}
+
         {reportFields.map((field) => (
           <Box key={field.name}>{renderField(field)}</Box>
         ))}
