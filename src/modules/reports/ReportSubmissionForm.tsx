@@ -77,6 +77,7 @@ interface FellowshipMember {
 
 interface ScheduleData {
   exists: boolean;
+  isLeader?: boolean;
   id?: number;
   day?: number;
   label?: string;
@@ -496,26 +497,26 @@ const ReportSubmissionForm = () => {
   const handleScheduleSave = () => {
     if (!scheduleEditFieldName) return;
     const schedule = fellowshipSchedules[scheduleEditFieldName];
-    if (!schedule?.id) return;
+    const payload = { meetingDay: scheduleEditDay, startTime: scheduleEditTime, frequency: scheduleEditFrequency };
 
     setScheduleEditSaving(true);
-    put(
-      `${remoteRoutes.fellowships}/schedules/${schedule.id}`,
-      { meetingDay: scheduleEditDay, startTime: scheduleEditTime, frequency: scheduleEditFrequency },
-      () => {
-        // Re-fetch so the display and form value both update
-        const field = reportFields.find((f) => f.name === scheduleEditFieldName);
-        if (field) fetchFellowshipSchedule(field);
-        setScheduleEditOpen(false);
-        setScheduleEditSaving(false);
-        toast.success('Meeting schedule updated');
-      },
-      (error: $TsFixMe) => {
-        const message = error?.response?.data?.message || 'Failed to update schedule';
-        toast.error(message);
-        setScheduleEditSaving(false);
-      },
-    );
+    const onSuccess = () => {
+      const field = reportFields.find((f) => f.name === scheduleEditFieldName);
+      if (field) fetchFellowshipSchedule(field);
+      setScheduleEditOpen(false);
+      setScheduleEditSaving(false);
+      toast.success(schedule?.id ? 'Meeting schedule updated' : 'Meeting schedule created');
+    };
+    const onError = (error: $TsFixMe) => {
+      toast.error(error?.response?.data?.message || 'Failed to save schedule');
+      setScheduleEditSaving(false);
+    };
+
+    if (schedule?.id) {
+      put(`${remoteRoutes.fellowships}/schedules/${schedule.id}`, payload, onSuccess, onError);
+    } else {
+      post(`${remoteRoutes.fellowships}/schedules`, { ...payload, fellowshipGroupId: schedule?.fellowshipGroupId }, onSuccess, onError);
+    }
   };
 
   const handleSubmit = () => {
@@ -686,10 +687,36 @@ const ReportSubmissionForm = () => {
         );
       }
 
-      // Fallback: no schedule (edge case after auto-creation is in place)
+      if (schedule?.fellowshipGroupId) {
+        return (
+          <Alert
+            severity="warning"
+            variant="outlined"
+            action={
+              <Button
+                size="small"
+                onClick={() => {
+                  setScheduleEditFieldName(field.name);
+                  setScheduleEditDay(3);
+                  setScheduleEditTime('19:00');
+                  setScheduleEditFrequency('weekly');
+                  setScheduleEditOpen(true);
+                }}
+              >
+                Set up
+              </Button>
+            }
+          >
+            No meeting schedule set for your MC.
+          </Alert>
+        );
+      }
+
       return (
-        <Alert severity="warning" variant="outlined">
-          No meeting schedule found for your MC. Contact your administrator.
+        <Alert severity="info" variant="outlined">
+          {schedule?.isLeader === false
+            ? 'You are not assigned as a leader of any Missional Community.'
+            : 'No meeting schedule found for your MC. Contact your administrator.'}
         </Alert>
       );
     }
