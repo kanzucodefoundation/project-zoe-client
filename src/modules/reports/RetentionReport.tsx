@@ -188,10 +188,13 @@ export default function RetentionReport() {
       ];
     }
 
-    if (exportData.length > 0) {
-      worksheet.columns = Object.keys(exportData[0]).map((key) => ({ header: key, key }));
-      exportData.forEach((row) => worksheet.addRow(row));
+    if (exportData.length === 0) {
+      toast.warning('No data available to export for the selected period');
+      return;
     }
+
+    worksheet.columns = Object.keys(exportData[0]).map((key) => ({ header: key, key }));
+    exportData.forEach((row) => worksheet.addRow(row));
 
     let url: string | undefined;
     try {
