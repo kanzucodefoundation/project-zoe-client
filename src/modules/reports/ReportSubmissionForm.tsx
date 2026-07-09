@@ -175,7 +175,6 @@ const ReportSubmissionForm = () => {
 
   const [reportName, setReportName] = useState('');
   const [reportFields, setReportFields] = useState<IReportField[]>([]);
-  const [targetCategoryId, setTargetCategoryId] = useState<number | null>(null);
   const [formData, setFormData] = useState<Record<string, $TsFixMe>>({});
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
@@ -215,7 +214,6 @@ const ReportSubmissionForm = () => {
           setReportName(response.name || 'Submit Report');
 
           const categoryId = response.targetGroupCategory?.id ?? null;
-          setTargetCategoryId(categoryId);
 
           // If the report already has a dynamic_group_selector field, it handles
           // group selection itself — no need for the form-level picker.
