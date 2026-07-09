@@ -46,11 +46,13 @@ const staleWhileRevalidate = async (request) => {
   const networkResponsePromise = fetch(request)
     .then((response) => {
       if (response.ok) {
-        cache.put(request, response.clone());
+        cache.put(request, response.clone()).catch((error) => {
+          console.warn('[service-worker] Failed to cache asset:', error);
+        });
       }
       return response;
     })
-    .catch(() => cachedResponse);
+    .catch(() => cachedResponse || Response.error());
 
   return cachedResponse || networkResponsePromise;
 };
@@ -89,7 +91,10 @@ self.addEventListener('fetch', (event) => {
             const responseCopy = response.clone();
             caches
               .open(STATIC_CACHE)
-              .then((cache) => cache.put('/index.html', responseCopy));
+              .then((cache) => cache.put('/index.html', responseCopy))
+              .catch((error) => {
+                console.warn('[service-worker] Failed to cache navigation:', error);
+              });
           }
           return response;
         })
