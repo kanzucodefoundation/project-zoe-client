@@ -137,5 +137,6 @@ describe('restoreUser', () => {
     const store = makeStore();
     store.dispatch(restoreUser(fakeUser));
     expect(localStorage.getItem(AUTH_TOKEN_KEY)).toBeNull();
+    expect(localStorage.getItem(AUTH_USER_KEY)).toBeNull();
   });
 });

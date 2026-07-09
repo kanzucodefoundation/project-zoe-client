@@ -193,15 +193,21 @@ export default function RetentionReport() {
       exportData.forEach((row) => worksheet.addRow(row));
     }
 
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `retention_report_${selectedWindow}_${dateStr}.xlsx`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('Retention report downloaded successfully');
+    let url: string | undefined;
+    try {
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `retention_report_${selectedWindow}_${dateStr}.xlsx`;
+      a.click();
+      toast.success('Retention report downloaded successfully');
+    } catch {
+      toast.error('Failed to generate retention report file');
+    } finally {
+      if (url) URL.revokeObjectURL(url);
+    }
   };
 
   const yearLabel =

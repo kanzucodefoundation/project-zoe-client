@@ -2,9 +2,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { MemoryRouter, useNavigate } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { configureStore } from '@reduxjs/toolkit';
 import coreReducer from '../../data/coreSlice';
+import { AUTH_TOKEN_KEY } from '../../data/constants';
 import Login from './Login';
 import * as ajax from '../../utils/ajax';
 
@@ -20,9 +21,6 @@ vi.mock('react-router-dom', async (importOriginal) => {
 });
 
 const mockPost = vi.mocked(ajax.post);
-
-// suppress unused import warning — useNavigate is used by the mock factory above
-void useNavigate;
 
 const makeStore = () =>
   configureStore({ reducer: { core: coreReducer } });
@@ -180,7 +178,7 @@ describe('form submission', () => {
     await waitFor(() => {
       const state = store.getState().core;
       expect(state.user).toMatchObject({ username: 'alice' });
-      expect(localStorage.getItem('__demo__eva__token')).toBe(fakeToken);
+      expect(localStorage.getItem(AUTH_TOKEN_KEY)).toBe(fakeToken);
     });
   });
 });

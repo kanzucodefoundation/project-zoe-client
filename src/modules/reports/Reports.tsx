@@ -219,15 +219,21 @@ const Reports = () => {
     const fileName = `${activeReportName.replace(/\s+/g, '_')}_${dateStr}.xlsx`;
 
     // Download file
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('Report downloaded successfully');
+    let url: string | undefined;
+    try {
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      toast.success('Report downloaded successfully');
+    } catch {
+      toast.error('Failed to generate report file');
+    } finally {
+      if (url) URL.revokeObjectURL(url);
+    }
   };
 
   if (loadingReports) {

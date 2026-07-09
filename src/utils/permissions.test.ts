@@ -7,11 +7,9 @@ import {
   canViewAttendance,
   canEditAttendance,
 } from './permissions';
+import { appPermissions } from '../data/constants';
 
-const TASK_VIEW = 'TASK_VIEW';
-const TASK_EDIT = 'TASK_EDIT';
-const ATTENDANCE_VIEW = 'ATTENDANCE_VIEW';
-const ATTENDANCE_EDIT = 'ATTENDANCE_EDIT';
+const { roleTaskView: TASK_VIEW, roleTaskEdit: TASK_EDIT, roleAttendanceView: ATTENDANCE_VIEW, roleAttendanceEdit: ATTENDANCE_EDIT } = appPermissions;
 
 describe('getUserCapabilities', () => {
   it('returns empty set for null user', () => {

@@ -30,7 +30,13 @@ const storeDispatch = vi.mocked(store.dispatch);
 const makeAxiosError = (status?: number, data?: unknown): AxiosError => {
   const err = new AxiosError('Test error');
   if (status !== undefined) {
-    (err as any).response = { status, data: data ?? {}, headers: {}, config: {}, statusText: '' };
+    err.response = {
+      status,
+      data: data ?? {},
+      headers: {},
+      config: err.config ?? ({} as AxiosResponse['config']),
+      statusText: '',
+    };
   }
   return err;
 };
