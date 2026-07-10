@@ -292,8 +292,6 @@ const ContactDetail = () => {
                         label={gm.group.name}
                         color="primary"
                         size="medium"
-                        clickable 
-                        onClick={() => navigate(`${localRoutes.groups}/${gm.group.id}`)} 
                       />
                     ),
                 )}
