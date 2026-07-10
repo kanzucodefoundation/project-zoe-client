@@ -293,7 +293,7 @@ const ContactDetail = () => {
                         color="primary"
                         size="medium"
                         clickable 
-                        onClick={() => navigate(`${localRoutes.groups}/${gm.group.id}`)} 
+                        onClick={() => navigate(`${localRoutes.groups}/${gm.group?.id}`)} 
                       />
                     ),
                 )}
