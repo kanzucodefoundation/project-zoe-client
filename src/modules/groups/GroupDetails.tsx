@@ -754,9 +754,11 @@ const GroupDetails = () => {
                   flexDirection={{ xs: 'column', sm: 'row' }}
                   gap={2}
                   p={1.5}
-                  sx={{
+                  sx={{                    
                     bgcolor: 'action.hover',
                     borderRadius: 1,
+                    cursor: 'pointer',
+                    '&:hover': { bgcolor: 'action.selected' }, 
                   }}
                 >
                   <Box
@@ -767,11 +769,18 @@ const GroupDetails = () => {
                     flexGrow={1}
                     width={{ xs: '100%', sm: 'auto' }}
                     minWidth={0}
+                    onClick={() => navigate(`${localRoutes.contacts}/${membership.contactId || membership.contact?.id}`)}
                   >
-                    <Typography variant="body2" noWrap sx={{ minWidth: 0 }}>
-                      {membership.contact?.name ||
-                        `Contact #${membership.contactId}`}
-                    </Typography>
+                    <Typography 
+                      variant="body2" 
+                      noWrap 
+                      sx={{ 
+                        minWidth: 0,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {membership.contact?.name || `Contact #${membership.contactId}`}
+                    </Typography>                  
                     <Chip
                       label={getMembershipRole(membership)}
                       size="small"
