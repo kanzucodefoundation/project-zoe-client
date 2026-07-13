@@ -136,7 +136,9 @@ export default function UpdateStatusDialog({
       const purpose =
         s === TaskStatus.ATTENDED_FELLOWSHIP ? 'fellowship' : 'serving_team';
       ajax
-        .get(`${remoteRoutes.groups}`, { params: { purpose } })
+        .get(`${remoteRoutes.groups}`, {
+          params: { purpose, sameLocation: true },
+        })
         .then((r) => {
           const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
           setGroups(list);
