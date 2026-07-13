@@ -14,6 +14,7 @@ import {
   Radio,
   Checkbox,
   FormLabel,
+  FormGroup,
   FormHelperText,
   CircularProgress,
   Alert,
@@ -37,6 +38,7 @@ import { get, post, put } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import type { $TsFixMe } from '../../utils/types.ts';
 import type { RootState } from '../../data/store';
+import { useRef } from 'react';
 
 const WEEKDAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -257,7 +259,7 @@ const ReportSubmissionForm = () => {
     });
   };
 
-  const handleSmallGroupChange = (group: DynamicGroup | null) => {
+      const handleSmallGroupChange = (group: DynamicGroup | null) => {
     setFormData((prev) => {
       const next = { ...prev };
 
@@ -312,13 +314,12 @@ const ReportSubmissionForm = () => {
     }
 
     const lowerName = field.name.toLowerCase();
-    if (lowerName.includes('id')) {
+    if (lowerName.endsWith('id')) {
       handleChange(field.name, group.id);
     } else {
       handleChange(field.name, group.name);
     }
   };
-
   const fetchDynamicGroups = (field: IReportField) => {
     const config = getDynamicConfig(field);
     if (!config) return;
@@ -452,15 +453,54 @@ const ReportSubmissionForm = () => {
       },
     );
   };
-
-  const fetchFellowshipMembers = (field: IReportField) => {
+  const fellowshipMembersRequestIdRef = useRef<Record<string, number>>({});
+  const fetchFellowshipMembers = (field: IReportField, instantFormData?: $TsFixMe) => {
+    const activeFormContext = instantFormData || formData;
+    const rawGroupId = activeFormContext?.smallGroupId || activeFormContext?.groupId || null;
+    const currentGroupId = rawGroupId ? Number(rawGroupId) : null;
+    const requestId = (fellowshipMembersRequestIdRef.current[field.name] || 0) + 1;
+    fellowshipMembersRequestIdRef.current[field.name] = requestId;
+    if (!currentGroupId || isNaN(currentGroupId)) {
+      setFellowshipMembers((prev) => ({ ...prev, [field.name]: [] }));
+      setDynamicLoading((prev) => ({ ...prev, [field.name]: false })); 
+      return;
+    }
     setDynamicLoading((prev) => ({ ...prev, [field.name]: true }));
+    const queryUrl = `${remoteRoutes.groupsMembership}?groupId=${currentGroupId}&limit=100&skip=0`;
     get(
-      `${remoteRoutes.fellowships}/my-members`,
-      (response: FellowshipMember[]) => {
+      queryUrl,
+      (response: $TsFixMe) => {
+        if (fellowshipMembersRequestIdRef.current[field.name] !== requestId) return;
+        // Support different backend response shapes: bare array, { rows: [...] }, { data: [...] }, or { results: [...] }
+        const membershipRows = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.rows)
+          ? response.rows
+          : Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response?.results)
+          ? response.results
+          : [];
+
+        if (membershipRows.length === 0) {
+          console.warn(`Backend returned empty membership rows for groupId: ${currentGroupId}`);
+          setFellowshipMembers((prev) => ({ ...prev, [field.name]: [] }));
+          setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
+          return;
+        }
+
+        const mappedMembers = membershipRows.map((membership: $TsFixMe) => {
+          const contactObj = membership.contact || {};
+          const personObj = contactObj.person || {};
+          return {
+            id: membership.contactId || membership.id,
+            firstName: personObj.firstName || contactObj.name?.split(' ')[0] || 'Unknown',
+            lastName: personObj.lastName || contactObj.name?.split(' ').slice(1).join(' ') || 'Member',
+          };
+        });
         setFellowshipMembers((prev) => ({
           ...prev,
-          [field.name]: Array.isArray(response) ? response : [],
+          [field.name]: mappedMembers,
         }));
         setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
       },
@@ -468,10 +508,8 @@ const ReportSubmissionForm = () => {
         console.error('Failed to fetch fellowship members:', error);
         setFellowshipMembers((prev) => ({ ...prev, [field.name]: [] }));
         setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
-      },
-    );
-  };
-
+      }
+  )};
   // Fetch dynamic options when fields are loaded
   useEffect(() => {
     reportFields.forEach((field) => {
@@ -481,13 +519,19 @@ const ReportSubmissionForm = () => {
       if (field.type === 'select' && isDynamicScheduleField(field)) {
         fetchFellowshipSchedule(field);
       }
-      if (isDynamicMemberField(field)) {
-        fetchFellowshipMembers(field);
-      }
     });
   }, [reportFields]);
 
+    // Automatically reload the members checklist whenever a leader switches the MC dropdown choice
   useEffect(() => {
+    // Locate the dynamic checkbox field inside your form layout template configuration
+    const memberField = reportFields.find(isDynamicMemberField);
+    
+    if (memberField) {
+      // Pass the active form parameters context along down to the query processor string engine
+      fetchFellowshipMembers(memberField);
+    }
+  }, [formData?.smallGroupId, formData?.groupId, reportFields]);   useEffect(() => {
     if (reportFields.some(isSmallGroupNameField)) {
       fetchSmallGroups();
     }
@@ -931,6 +975,45 @@ const ReportSubmissionForm = () => {
             )}
           </FormControl>
         );
+
+        case 'checkbox':
+          return (
+            <FormControl error={hasError} required={field.required}>
+              <FormLabel>{field.label}</FormLabel>
+              <FormGroup>
+                {Array.isArray(field.options) &&
+                  field.options
+                    .filter((opt): opt is string => typeof opt === 'string')
+                    .map((option) => {
+                      const selected = Array.isArray(value) ? value.includes(option) : false;
+                      return (
+                        <FormControlLabel
+                          key={option}
+                          control={
+                            <Checkbox
+                              checked={selected}
+                              onChange={(e) => {
+                                const current = Array.isArray(value) ? [...value] : [];
+                                if (e.target.checked) {
+                                  if (!current.includes(option)) current.push(option);
+                                } else {
+                                  const idx = current.indexOf(option);
+                                  if (idx >= 0) current.splice(idx, 1);
+                                }
+                                handleChange(field.name, current);
+                              }}
+                            />
+                          }
+                          label={option}
+                        />
+                      );
+                    })}
+              </FormGroup>
+              {hasError && (
+                <FormHelperText>{validationErrors[field.name]}</FormHelperText>
+              )}
+            </FormControl>
+          );
 
       case 'select':
         return (
