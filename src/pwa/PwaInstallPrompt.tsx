@@ -30,7 +30,7 @@ type NavigatorWithStandalone = Navigator & {
 };
 
 const INSTALL_PROMPT_SNOOZE_KEY = 'project-zoe-pwa-install-snooze-until';
-const INSTALL_PROMPT_SNOOZE_MS = 6 * 60 * 60 * 1000;
+const INSTALL_PROMPT_SNOOZE_MS = 24 * 60 * 60 * 1000;
 const MAX_TIMEOUT_MS = 2_147_483_647;
 
 const isStandalone = () =>
