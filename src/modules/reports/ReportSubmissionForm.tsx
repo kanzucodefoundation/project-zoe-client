@@ -38,6 +38,7 @@ import { get, post, put } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import type { $TsFixMe } from '../../utils/types.ts';
 import type { RootState } from '../../data/store';
+import { useRef } from 'react';
 
 const WEEKDAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -452,20 +453,24 @@ const ReportSubmissionForm = () => {
       },
     );
   };
-
-  const fetchFellowshipMembers = (field: IReportField, instantFormData?: any) => {
-    const activeFormContext = instantFormData || formData;    
+  const fellowshipMembersRequestIdRef = useRef<Record<string, number>>({});
+  const fetchFellowshipMembers = (field: IReportField, instantFormData?: $TsFixMe) => {
+    const activeFormContext = instantFormData || formData;
     const rawGroupId = activeFormContext?.smallGroupId || activeFormContext?.groupId || null;
     const currentGroupId = rawGroupId ? Number(rawGroupId) : null;
+    const requestId = (fellowshipMembersRequestIdRef.current[field.name] || 0) + 1;
+    fellowshipMembersRequestIdRef.current[field.name] = requestId;
     if (!currentGroupId || isNaN(currentGroupId)) {
       setFellowshipMembers((prev) => ({ ...prev, [field.name]: [] }));
+      setDynamicLoading((prev) => ({ ...prev, [field.name]: false })); 
       return;
     }
     setDynamicLoading((prev) => ({ ...prev, [field.name]: true }));
     const queryUrl = `${remoteRoutes.groupsMembership}?groupId=${currentGroupId}&limit=100&skip=0`;
     get(
       queryUrl,
-      (response: any) => {
+      (response: $TsFixMe) => {
+        if (fellowshipMembersRequestIdRef.current[field.name] !== requestId) return;
         // Support different backend response shapes: bare array, { rows: [...] }, { data: [...] }, or { results: [...] }
         const membershipRows = Array.isArray(response)
           ? response
@@ -484,7 +489,7 @@ const ReportSubmissionForm = () => {
           return;
         }
 
-        const mappedMembers = membershipRows.map((membership: any) => {
+        const mappedMembers = membershipRows.map((membership: $TsFixMe) => {
           const contactObj = membership.contact || {};
           const personObj = contactObj.person || {};
           return {
