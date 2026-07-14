@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import store from './data/store'
 import App from './App.tsx'
+import { registerServiceWorker } from './pwa/registerServiceWorker.ts'
 import {
     QueryClient,
     QueryClientProvider,
@@ -17,6 +18,7 @@ import './index.css'
 import AppTheme from "./theme-wh/AppTheme.tsx";
 
 dayjs.extend(relativeTime);
+registerServiceWorker();
 
 const queryClient = new QueryClient()
 createRoot(document.getElementById('root')!).render(
