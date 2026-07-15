@@ -13,7 +13,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Download as DownloadIcon } from '@mui/icons-material';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { format, subDays } from 'date-fns';
 import { toast } from 'react-toastify';
 import { get } from '../../utils/ajax';
@@ -182,7 +182,7 @@ const Reports = () => {
 
   const activeReportName = reports.find((r) => r.id === activeTab)?.name || 'Report';
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (submissions.length === 0) {
       toast.warning('No data to export');
       return;
@@ -206,18 +206,34 @@ const Reports = () => {
       return exportRow;
     });
 
-    // Create worksheet and workbook
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Submissions');
+    // Create workbook and worksheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Submissions');
+    if (exportData.length > 0) {
+      worksheet.columns = Object.keys(exportData[0]).map((key) => ({ header: key, key }));
+      exportData.forEach((row) => worksheet.addRow(row));
+    }
 
     // Generate filename with report name and date
     const dateStr = format(new Date(), 'yyyy-MM-dd');
     const fileName = `${activeReportName.replace(/\s+/g, '_')}_${dateStr}.xlsx`;
 
     // Download file
-    XLSX.writeFile(workbook, fileName);
-    toast.success('Report downloaded successfully');
+    let url: string | undefined;
+    try {
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      toast.success('Report downloaded successfully');
+    } catch {
+      toast.error('Failed to generate report file');
+    } finally {
+      if (url) URL.revokeObjectURL(url);
+    }
   };
 
   if (loadingReports) {

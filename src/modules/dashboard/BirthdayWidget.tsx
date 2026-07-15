@@ -16,6 +16,8 @@ interface Birthday {
   id: number;
   name: string;
   upcomingDate: string;
+  // API provides an optional location field for grouping
+  location?: string | null;
 }
 
 interface BirthdayResponse {
@@ -45,7 +47,15 @@ const BirthdayWidget = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
+  const groupedBirthdays = (birthdays || []).reduce((acc: Record<string, Birthday[]>, item: Birthday) => {
+    const locationKey = item.location || 'General Locations';
 
+    if (!acc[locationKey]) {
+      acc[locationKey] = [];
+    }
+    acc[locationKey].push(item);
+    return acc;
+  }, Object.create(null) as Record<string, Birthday[]>);
   return (
     <Card variant="outlined" sx={{ height: '100%' }}>
       <CardContent>
@@ -92,25 +102,43 @@ const BirthdayWidget = () => {
           </Typography>
         ) : (
           <Stack spacing={1.5}>
-            {birthdays.map((birthday) => (
-              <Box
-                key={birthday.id}
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Typography variant="body2">{birthday.name}</Typography>
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ fontWeight: 500 }}
-                >
-                  {formatDate(birthday.upcomingDate)}
-                </Typography>
-              </Box>
-            ))}
+              {Object.keys(groupedBirthdays).map((locationHeader) => (
+                <Box key={locationHeader} sx={{ mb: 3 }}>
+                  {/* location header */}
+                  <Typography 
+                    variant="subtitle2" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: 'text.primary',
+                    }}
+                  >
+                    {locationHeader}
+                  </Typography>
+
+                  {/* individual birthday items */}
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, pl: 0.5 }}>
+                    {groupedBirthdays[locationHeader].map((birthday: Birthday) => (
+                      <Box
+                        key={birthday.id}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Typography variant="body2">{birthday.name}</Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ fontWeight: 500 }}
+                        >
+                          {formatDate(birthday.upcomingDate)}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              ))}
           </Stack>
         )}
       </CardContent>

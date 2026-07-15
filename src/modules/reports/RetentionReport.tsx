@@ -26,7 +26,7 @@ import {
   startOfYear,
   subDays,
 } from 'date-fns';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { toast } from 'react-toastify';
 import { useRetentionReport } from '../tasks/hooks';
 import type {
@@ -138,17 +138,19 @@ export default function RetentionReport() {
   const currentWeekSunday = getCurrentWeekSunday();
   const currentMonthNum = new Date().getMonth() + 1;
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!data) {
       toast.warning('No retention data to export');
       return;
     }
 
     const dateStr = format(new Date(), 'yyyy-MM-dd');
-    const workbook = XLSX.utils.book_new();
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Retention Report');
 
+    let exportData: Record<string, unknown>[];
     if (isMonthReport(data)) {
-      const exportData = data.months.map((m) => ({
+      exportData = data.months.map((m) => ({
         Month: m.monthName,
         'New Contacts': m.totalNewContacts,
         'Successful Calls': m.successfulCallsMade,
@@ -158,13 +160,8 @@ export default function RetentionReport() {
         Matched: m.teaHangout,
         Baptism: m.baptism,
       }));
-      XLSX.utils.book_append_sheet(
-        workbook,
-        XLSX.utils.json_to_sheet(exportData),
-        'Retention Report',
-      );
     } else if (isWeekReport(data)) {
-      const exportData = data.weeks.map((w) => ({
+      exportData = data.weeks.map((w) => ({
         Week: w.label,
         'Week Start': w.weekStart,
         'New Contacts': w.totalNewContacts,
@@ -175,13 +172,8 @@ export default function RetentionReport() {
         Matched: w.teaHangout,
         Baptism: w.baptism,
       }));
-      XLSX.utils.book_append_sheet(
-        workbook,
-        XLSX.utils.json_to_sheet(exportData),
-        'Retention Report',
-      );
     } else {
-      const exportData = [
+      exportData = [
         {
           Period: selectedPeriod.label,
           'Period Start': selectedPeriod.from,
@@ -194,18 +186,31 @@ export default function RetentionReport() {
           Baptised: data.baptised,
         },
       ];
-      XLSX.utils.book_append_sheet(
-        workbook,
-        XLSX.utils.json_to_sheet(exportData),
-        'Retention Report',
-      );
     }
 
-    XLSX.writeFile(
-      workbook,
-      `retention_report_${selectedWindow}_${dateStr}.xlsx`,
-    );
-    toast.success('Retention report downloaded successfully');
+    if (exportData.length === 0) {
+      toast.warning('No data available to export for the selected period');
+      return;
+    }
+
+    worksheet.columns = Object.keys(exportData[0]).map((key) => ({ header: key, key }));
+    exportData.forEach((row) => worksheet.addRow(row));
+
+    let url: string | undefined;
+    try {
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `retention_report_${selectedWindow}_${dateStr}.xlsx`;
+      a.click();
+      toast.success('Retention report downloaded successfully');
+    } catch {
+      toast.error('Failed to generate retention report file');
+    } finally {
+      if (url) URL.revokeObjectURL(url);
+    }
   };
 
   const yearLabel =

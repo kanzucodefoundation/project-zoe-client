@@ -100,7 +100,10 @@ export const extractErrorMessageFromData = (data: any = {}) => {
       response.message,
       response.errors,
     );
-    if (nestedMessage !== 'Invalid request format') {
+    if (
+      nestedMessage !== 'Invalid request format' &&
+      nestedMessage !== 'Bad Request Exception'
+    ) {
       return nestedMessage;
     }
     if (typeof response.error === 'string') {

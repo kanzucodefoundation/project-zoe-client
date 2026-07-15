@@ -17,7 +17,7 @@ import { login } from '../../data/coreSlice';
 import { post } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import loginBackground from '../../assets/images/login-background.jpg';
-import HelpFab from './HelpFab';
+import HelpFab, { NARROW_SCREEN_QUERY } from './HelpFab';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -146,6 +146,11 @@ const Login = () => {
           p: { xs: 3, sm: 6 },
           pt: { xs: 4, sm: 6 },
           backgroundColor: 'background.paper',
+          // Extra bottom clearance so the fixed Need Help FAB never covers
+          // the "Don't have an account?" link on narrow screens.
+          [NARROW_SCREEN_QUERY]: {
+            pb: 10,
+          },
         }}
       >
         <Box sx={{ width: '100%', maxWidth: 400 }}>
