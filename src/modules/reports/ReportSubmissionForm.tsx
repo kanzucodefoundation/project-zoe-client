@@ -568,8 +568,17 @@ const ReportSubmissionForm = () => {
     reportFields.forEach((field) => {
       if (!field.required) return;
       const value = formData[field.name];
-      const isEmpty =
-        field.type === 'checkbox' ||
+      const hasValue = value !== undefined && value !== null && value !== '';
+      if (
+        field.type === 'number' &&
+        hasValue &&
+        (!Number.isFinite(Number(value)) || Number(value) < 0)
+      ) {
+        errors[field.name] = `${field.label || field.name} must be 0 or greater`;
+        return;
+      }
+      if (!field.required) return;
+      const isEmpty =        field.type === 'checkbox' ||
         (field.type === 'select' && isDynamicMemberField(field))
           ? !Array.isArray(value) || value.length === 0
           : value === undefined || value === null || value === '';
@@ -920,6 +929,13 @@ const ReportSubmissionForm = () => {
             required={field.required}
             value={value}
             onChange={(e) => handleChange(field.name, e.target.value)}
+            // Blocks the minus key from being pressed
+            onKeyDown={(e) => {
+              if (e.key === '-' || e.code === 'Minus') {
+                e.preventDefault();
+              }
+            }}
+            inputProps={{ min: 0}}
             error={hasError}
             helperText={validationErrors[field.name]}
           />
