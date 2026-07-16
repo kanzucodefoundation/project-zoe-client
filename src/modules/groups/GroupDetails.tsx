@@ -240,7 +240,7 @@ const GroupDetails = () => {
     const fetchAllContacts = async () => {
       setContactsLoading(true);
       try {
-        const data = await getJson<ContactRef[]>(remoteRoutes.contactsPeopleCombo);
+        const data = await getJson<ContactRef[]>(remoteRoutes.contacts);
         if (!ignore) setAllContacts(Array.isArray(data) ? data : []);
       } catch{
         if (!ignore) toast.error('Failed to load people for selection.');
