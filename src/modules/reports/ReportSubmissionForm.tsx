@@ -566,7 +566,6 @@ const ReportSubmissionForm = () => {
     const errors: Record<string, string> = {};
     let hiddenFieldMissing = false;
     reportFields.forEach((field) => {
-      if (!field.required) return;
       const value = formData[field.name];
       const hasValue = value !== undefined && value !== null && value !== '';
       if (

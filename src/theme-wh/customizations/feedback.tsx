@@ -78,9 +78,9 @@ export const feedbackCustomizations: Components<Theme> = {
           color: gray[100],
         }),
       }),
-      circle: () => ({
+      circle:{
         strokeLinecap: 'round',
-      }),
+      },
     },
   },
 };
