@@ -39,10 +39,15 @@ interface PaginationInfo {
   offset: number;
 }
 
+interface ReportSummary {
+  weeklyAttendanceTotal: number;
+}
+
 interface SubmissionsResponse {
   submissions: Record<string, any>[];
   columns: Column[];
   pagination: PaginationInfo;
+  summary?: ReportSummary;
 }
 
 interface SubmissionDetails {
@@ -59,6 +64,7 @@ interface TabCache {
   data: Record<string, any>[];
   columns: Column[];
   dateRange: DateRange;
+  summary?: ReportSummary | null;
 }
 
 const Reports = () => {
@@ -72,6 +78,7 @@ const Reports = () => {
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [submissions, setSubmissions] = useState<Record<string, any>[]>([]);
   const [columns, setColumns] = useState<Column[]>([]);
+  const [summary, setSummary] = useState<ReportSummary | null>(null);
   const [tabCache, setTabCache] = useState<Record<number, TabCache>>({});
 
   // Modal state
@@ -121,6 +128,7 @@ const Reports = () => {
     if (cached && cached.dateRange === dateRange) {
       setSubmissions(cached.data);
       setColumns(cached.columns);
+      setSummary(cached.summary || null);
       return;
     }
 
@@ -135,9 +143,15 @@ const Reports = () => {
         const cols = response?.columns || [];
         setSubmissions(data);
         setColumns(cols);
+        setSummary(response?.summary || null);
         setTabCache((prev) => ({
           ...prev,
-          [activeTab]: { data, columns: cols, dateRange },
+          [activeTab]: {
+            data,
+            columns: cols,
+            dateRange,
+            summary: response?.summary || null
+          },
         }));
         setLoadingSubmissions(false);
       },
@@ -312,6 +326,15 @@ const Reports = () => {
           ))}
         </Tabs>
       )}
+      
+      {/* Weekly Attendance Summary */}
+      {summary && activeReportName === 'MC Attendance Report' && (
+        <Box mb={2}>
+          <Typography variant="h6">
+            Weekly Attendance Total: {summary.weeklyAttendanceTotal}
+            </Typography>
+            </Box>
+          )}
 
       {/* Table */}
       <ReportsTable
