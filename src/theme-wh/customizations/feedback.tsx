@@ -70,4 +70,17 @@ export const feedbackCustomizations: Components<Theme> = {
       }),
     },
   },
+  MuiCircularProgress: {
+    styleOverrides: {
+      root: ({ theme }) => ({
+        color: gray[700],
+        ...theme.applyStyles('dark', {
+          color: gray[100],
+        }),
+      }),
+      circle:{
+        strokeLinecap: 'round',
+      },
+    },
+  },
 };

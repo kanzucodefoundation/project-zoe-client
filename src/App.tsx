@@ -40,6 +40,7 @@ import ReportConfiguration from './modules/admin/reports/ReportConfiguration';
 import Groups from './modules/groups/Groups';
 import GroupDetails from './modules/groups/GroupDetails';
 import LayoutV2 from './components/layout-v2/LayoutV2.tsx';
+import PwaInstallPrompt from './pwa/PwaInstallPrompt';
 import FinancialAccounts from './modules/finance/FinancialAccounts';
 import ImportTransactions from './modules/finance/ImportTransactions';
 import Reconciliation from './modules/finance/Reconciliation';
@@ -139,6 +140,7 @@ function App() {
         }}
       />
       <LoaderDialog open={globalLoader} />
+      <PwaInstallPrompt />
       {user ? (
         <LayoutV2>
           <Routes>
