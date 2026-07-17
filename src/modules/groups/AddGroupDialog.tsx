@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -36,8 +36,18 @@ interface ComboOption {
   name: string;
 }
 
-const toComboOptions = (data: ComboOption[] | IGroupCategory[]) =>
-  (Array.isArray(data) ? data : []).map(({ id, name }) => ({ id, name }));
+// Same shape as ContactForm's group option: carries the parent's name for display.
+interface GroupOption extends ComboOption {
+  parentName?: string;
+}
+
+// Hierarchical shape returned by remoteRoutes.groups (local to this component,
+// mirrors ContactForm's local GroupNode used purely for flattening).
+type GroupTreeNode = {
+  id: number;
+  name: string;
+  children?: GroupTreeNode[];
+};
 
 const toComboOption = (
   value?: Pick<GroupNode, 'id' | 'name'> | GroupNode['parent'] | null,
@@ -51,6 +61,27 @@ const toComboOption = (
     name: value.name,
   };
 };
+
+// Flatten hierarchical groups, preserving parent name for display (same as ContactForm).
+const flattenGroups = (
+  nodes: GroupTreeNode[] | undefined,
+  parentName?: string,
+  excludeId?: number,
+): GroupOption[] => {
+  const out: GroupOption[] = [];
+  for (const n of nodes || []) {
+    if (n.id !== excludeId) {
+      out.push({ id: n.id, name: n.name, parentName });
+    }
+    if (n.children?.length) {
+      out.push(...flattenGroups(n.children, n.name, excludeId));
+    }
+  }
+  return out;
+};
+
+const getGroupLabel = (option: GroupOption) =>
+  option.parentName ? `${option.name} - ${option.parentName}` : option.name;
 
 const AddGroupDialog = ({
   open,
@@ -68,55 +99,11 @@ const AddGroupDialog = ({
   const [parent, setParent] = useState<ComboOption | null>(null);
   const [address, setAddress] = useState<IAddress | null>(null);
   const [categories, setCategories] = useState<IGroupCategory[]>([]);
-  const [groups, setGroups] = useState<ComboOption[]>([]);
+  const [groups, setGroups] = useState<GroupOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
   const isEditing = !!editGroup;
-
-  const getParentCategory = useCallback(
-    (categoryId: number | undefined | null) => {
-      if (!categoryId) {
-        return null;
-      }
-
-      const orderedCategories = [...categories].sort(
-        (left, right) => left.id - right.id,
-      );
-      const currentIndex = orderedCategories.findIndex(
-        (item) => item.id === categoryId,
-      );
-      if (
-        currentIndex === -1 ||
-        currentIndex === orderedCategories.length - 1
-      ) {
-        return null;
-      }
-
-      return orderedCategories[currentIndex + 1];
-    },
-    [categories],
-  );
-
-  const getParentDropdownCategories = useCallback(
-    (categoryId: number) => {
-      // const currentCategory = categories.find((item) => item.id === categoryId);
-      const higherCategory = getParentCategory(categoryId);
-      const scopedCategories = [higherCategory].filter(
-        (item): item is IGroupCategory => Boolean(item),
-      );
-
-      const uniqueById = new Map<number, IGroupCategory>();
-      scopedCategories.forEach((item) => {
-        if (!uniqueById.has(item.id)) {
-          uniqueById.set(item.id, item);
-        }
-      });
-
-      return Array.from(uniqueById.values());
-    },
-    [categories, getParentCategory],
-  );
 
   useEffect(() => {
     if (open) {
@@ -165,77 +152,42 @@ const AddGroupDialog = ({
     }
   }, [loadingData, open, editGroup, categories]);
 
+  // Fetch the full group hierarchy and flatten it, like ContactForm's Groups field.
+  // Excludes the group currently being edited so it can't be its own parent.
   useEffect(() => {
-    if (!open || !category) {
+    if (!open) {
       setGroups([]);
-      setParent(null);
-      return;
-    }
-
-    const parentCategories = getParentDropdownCategories(category.id);
-    if (!parentCategories.length) {
-      setGroups([]);
-      setParent(null);
       return;
     }
 
     let mounted = true;
 
-    const fetchCategoryGroups = (categoryName: string) =>
-      new Promise<ComboOption[]>((resolve) => {
-        get(
-          `${remoteRoutes.groupsCategories}/${encodeURIComponent(
-            categoryName,
-          )}`,
-          (data: ComboOption[]) => resolve(toComboOptions(data)),
-          () => resolve([]),
-        );
-      });
-
-    Promise.all(parentCategories.map((item) => fetchCategoryGroups(item.name)))
-      .then((allGroups) => {
+    get(
+      remoteRoutes.groups,
+      (data: any) => {
         if (!mounted) {
           return;
         }
-
-        const uniqueGroups = new Map<number, ComboOption>();
-        allGroups.flat().forEach((item) => {
-          if (item.id === editGroup?.id) {
-            return;
-          }
-          if (!uniqueGroups.has(item.id)) {
-            uniqueGroups.set(item.id, item);
-          }
-        });
-
-        const existingParent = toComboOption(editGroup?.parent);
-        const nextGroups = Array.from(uniqueGroups.values());
-        const hasExistingParent = existingParent
-          ? nextGroups.some((item) => `${item.id}` === `${existingParent.id}`)
-          : false;
-
-        if (existingParent && !hasExistingParent) {
-          nextGroups.unshift(existingParent);
-        }
-
-        setGroups(nextGroups);
-      })
-      .catch(() => {
+        const roots: GroupTreeNode[] = Array.isArray(data)
+          ? data
+          : data
+          ? [data]
+          : [];
+        const flat = flattenGroups(roots, undefined, editGroup?.id);
+        flat.sort((a, b) => a.name.localeCompare(b.name));
+        setGroups(flat);
+      },
+      () => {
         if (mounted) {
           setGroups([]);
         }
-      });
+      },
+    );
 
     return () => {
       mounted = false;
     };
-  }, [
-    open,
-    category,
-    editGroup?.id,
-    editGroup?.parent,
-    getParentDropdownCategories,
-  ]);
+  }, [open, editGroup?.id]);
 
   useEffect(() => {
     if (!open) {
@@ -379,12 +331,20 @@ const AddGroupDialog = ({
 
             <Autocomplete
               options={groups}
-              getOptionLabel={(option) => option.name}
+              getOptionLabel={getGroupLabel}
               value={parent}
               onChange={(_, newValue) => setParent(newValue)}
               renderInput={(params) => (
                 <TextField {...params} label="Parent Group" />
               )}
+              renderOption={(props, option) => {
+                const { key, ...restProps } = props;
+                return (
+                  <li key={option.id} {...restProps}>
+                    {getGroupLabel(option)}
+                  </li>
+                );
+              }}
               isOptionEqualToValue={(option, value) => option.id === value.id}
             />
 
