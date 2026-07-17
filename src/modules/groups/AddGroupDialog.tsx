@@ -66,15 +66,17 @@ const toComboOption = (
 const flattenGroups = (
   nodes: GroupTreeNode[] | undefined,
   parentName?: string,
+  excludeId?: number,
 ): GroupOption[] => {
   const out: GroupOption[] = [];
   for (const n of nodes || []) {
-    out.push({ id: n.id, name: n.name, parentName });
+    if (n.id !== excludeId) {
+      out.push({ id: n.id, name: n.name, parentName });
+    }
     if (n.children?.length) {
-      out.push(...flattenGroups(n.children, n.name));
+      out.push(...flattenGroups(n.children, n.name, excludeId));
     }
   }
-  out.sort((a, b) => a.name.localeCompare(b.name));
   return out;
 };
 
@@ -166,10 +168,13 @@ const AddGroupDialog = ({
         if (!mounted) {
           return;
         }
-        const roots: GroupTreeNode[] = Array.isArray(data) ? data : [data];
-        const flat = flattenGroups(roots).filter(
-          (item) => item.id !== editGroup?.id,
-        );
+        const roots: GroupTreeNode[] = Array.isArray(data)
+          ? data
+          : data
+          ? [data]
+          : [];
+        const flat = flattenGroups(roots, undefined, editGroup?.id);
+        flat.sort((a, b) => a.name.localeCompare(b.name));
         setGroups(flat);
       },
       () => {
@@ -332,11 +337,14 @@ const AddGroupDialog = ({
               renderInput={(params) => (
                 <TextField {...params} label="Parent Group" />
               )}
-              renderOption={(props, option) => (
-                <li {...props} key={option.id}>
-                  {getGroupLabel(option)}
-                </li>
-              )}
+              renderOption={(props, option) => {
+                const { key, ...restProps } = props;
+                return (
+                  <li key={option.id} {...restProps}>
+                    {getGroupLabel(option)}
+                  </li>
+                );
+              }}
               isOptionEqualToValue={(option, value) => option.id === value.id}
             />
 
