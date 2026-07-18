@@ -361,7 +361,7 @@ const Contacts = () => {
                           component="a"
                           href={`tel:${contact.phone}`}
                           onClick={(e) => e.stopPropagation()}
-                          sx={{ color: 'primary.main', textDecoration: 'none' }}
+                          sx={{ color: 'text.secondary', textDecoration: 'none' }}
                         >
                           {contact.phone}
                         </Typography>
@@ -372,7 +372,7 @@ const Contacts = () => {
                           component="a"
                           href={`mailto:${contact.email}`}
                           onClick={(e) => e.stopPropagation()}
-                          sx={{ color: 'primary.main', textDecoration: 'none' }}
+                          sx={{ color: 'text.secondary', textDecoration: 'none'}}
                         >
                           {contact.email}
                         </Typography>
