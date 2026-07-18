@@ -503,7 +503,7 @@ const GroupDetails = () => {
             )}
           </Box>
         </Box>
-        <Box display="flex" gap={1}>
+        <Box sx={{display:"flex", gap:"1rem", flexWrap:"wrap"}} >
           <Button
             variant="contained"
             startIcon={<SmsIcon />}
