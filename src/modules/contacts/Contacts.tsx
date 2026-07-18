@@ -208,7 +208,11 @@ const Contacts = () => {
     }
     handleMenuClose();
   };
-
+  const handleEditClose = () => {
+    setEditError(null);
+    setEditDialog(false);
+    setSelectedContact(null);
+  }
   const handleEdit = () => {
     setEditError(null);
     setEditDialog(true);
@@ -216,9 +220,7 @@ const Contacts = () => {
   };
 
   const handleEditSave = () => {
-    setEditError(null);
-    setEditDialog(false);
-    setSelectedContact(null);
+    handleEditClose()
     // Refresh contacts list; keep same pagination
     setFilter((prev) => ({ ...prev }));
   };
@@ -614,11 +616,7 @@ const Contacts = () => {
       {/* Edit Contact Dialog */}
       <Dialog
         open={editDialog}
-        onClose={() => {
-          setEditError(null);
-          setEditDialog(false);
-          setSelectedContact(null);
-        }}
+        onClose={handleEditClose}
         maxWidth="md"
         fullWidth
         fullScreen={isMobile}
@@ -634,11 +632,7 @@ const Contacts = () => {
           <ContactForm
             contactId={selectedContact?.id}
             onSave={handleEditSave}
-            onCancel={() => {
-              setEditError(null);
-              setEditDialog(false);
-              setSelectedContact(null);
-            }}
+            onCancel={handleEditClose}
             onError={(message) => setEditError(message || null)}
           />
         </DialogContent>
