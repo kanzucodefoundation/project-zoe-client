@@ -160,10 +160,6 @@ export default function CreateTaskDialog({
       fullScreen={isPhone}
       scroll="paper"
     >
-      <form onSubmit={formik.handleSubmit}>
-        <DialogTitle>New Task</DialogTitle>
-        <DialogContent dividers={isPhone}>
-          <Stack spacing={3} sx={{ mt: 1 }}>
       <form onSubmit={formik.handleSubmit} key={open ? 'open' : 'closed'}>
         <DialogTitle>New Task</DialogTitle>
         <DialogContent dividers={isPhone}>
