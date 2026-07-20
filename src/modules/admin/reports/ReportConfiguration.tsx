@@ -271,7 +271,7 @@ const ReportConfiguration = () => {
               sx={{
                 backgroundColor: isInactive ? 'action.selected' : 'action.hover',
                 '& .MuiTableCell-root': {
-                  color: isInactive ? 'text.primary' : 'text.secondary',
+                  color: isInactive ? 'text.secondary' : 'text.primary',
                 },
               }}
             >              <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
