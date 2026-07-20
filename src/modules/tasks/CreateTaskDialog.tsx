@@ -124,7 +124,7 @@ export default function CreateTaskDialog({
         .required('Contact is required'),
     }),
     onSubmit: (values, { resetForm }) => {
-      if (!values.contactId) return;
+      if (values.contactId == null) return;
       createTask.mutate(
         {
           contactId: values.contactId,
