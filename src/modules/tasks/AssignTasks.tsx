@@ -33,6 +33,8 @@ import { useLocationScopedTasks } from './hooks';
 import TaskStatusChip from './TaskStatusChip';
 import AssignTaskDialog from './AssignTaskDialog';
 import { CLOSED_STATUSES, TYPE_LABELS, type Task } from '../../utils/types';
+import AddIcon from '@mui/icons-material/Add';
+import CreateTaskDialog from './CreateTaskDialog';
 
 dayjs.extend(isBetween);
 
@@ -96,6 +98,7 @@ export default function AssignTasks() {
   const [dateRange, setDateRange] = useState<DateRange>('this_week');
   const [dialogTask, setDialogTask] = useState<Task | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const { data, isLoading } = useLocationScopedTasks({ limit: 200 });
 
@@ -109,10 +112,12 @@ export default function AssignTasks() {
       return dayjs(t.createdAt).isBetween(from, to, 'day', '[]');
     });
   }, [allTasks, dateRange]);
-
   const handleAssigned = (updated: Task) => {
     setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
   };
+  const handleCloseCreateDialog = () => {
+    setCreateOpen(false);
+  }
 
   const displayTasks =
     tasks.length > 0
@@ -141,28 +146,37 @@ export default function AssignTasks() {
             Manage and assign tasks to your team members.
           </Typography>
         </Box>
-
-        <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel id="date-range-label">Date Range</InputLabel>
-          <Select
-            labelId="date-range-label"
-            label="Date Range"
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value as DateRange)}
-            startAdornment={
-              <CalendarTodayIcon
-                fontSize="small"
-                sx={{ mr: 0.75, color: 'text.secondary' }}
-              />
-            }
+        <Box sx={{display:"flex", gap:"1rem", flexWrap:"wrap", alignItems:"center"}}>          
+          <FormControl size="small" sx={{ minWidth: 160 }}>
+            <InputLabel id="date-range-label">Date Range</InputLabel>
+            <Select
+              labelId="date-range-label"
+              label="Date Range"
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value as DateRange)}
+              startAdornment={
+                <CalendarTodayIcon
+                  fontSize="small"
+                  sx={{ mr: 0.75, color: 'text.secondary' }}
+                />
+              }
+            >
+              {(Object.keys(DATE_RANGE_LABELS) as DateRange[]).map((key) => (
+                <MenuItem key={key} value={key}>
+                  {DATE_RANGE_LABELS[key]}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateOpen(true)}
+            sx={{ minHeight: 44 }}
           >
-            {(Object.keys(DATE_RANGE_LABELS) as DateRange[]).map((key) => (
-              <MenuItem key={key} value={key}>
-                {DATE_RANGE_LABELS[key]}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            New Task
+          </Button>
+        </Box>
       </Stack>
 
       {isLoading ? (
@@ -189,6 +203,11 @@ export default function AssignTasks() {
         onClose={() => setDialogTask(null)}
         onAssigned={handleAssigned}
       />
+      <CreateTaskDialog
+        open={createOpen}
+        onClose={handleCloseCreateDialog}
+        onSuccess={() => setCreateOpen(false)}
+      />
     </Container>
   );
 }
@@ -212,7 +231,7 @@ function DesktopTable({
         <TableHead>
           <TableRow
             sx={(theme) => ({
-              bgcolor: 'background.paper',
+              bgcolor: 'action.hover',
               borderBottom: `1px solid ${theme.palette.divider}`,
             })}
           >

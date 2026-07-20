@@ -150,7 +150,8 @@ export default function ScheduleFormDialog({ open, onClose, editing }: Props) {
     onSuccess: () => {
       toast.success(editing ? 'Schedule updated.' : 'Schedule created.');
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
-      handleClose();
+      onClose();
+      formik.resetForm({ values: defaultValues });
     },
     onError: (error: any) => {
       const message =

@@ -19,17 +19,17 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import PeopleIcon from '@mui/icons-material/People';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import type { Dayjs } from 'dayjs';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useCreateTask } from './hooks';
 import { TaskType, TYPE_LABELS, type Task } from '../../utils/types';
-import ajax from '../../utils/ajax';
+import ajax,{ search } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 
 interface Props {
   open: boolean;
-  contactId: number;
+  contactId?: number;
   onClose: () => void;
   onSuccess: (task: Task) => void;
 }
@@ -38,6 +38,11 @@ interface UserOption {
   id: number;
   username: string;
   fullName: string;
+}
+
+interface ContactOption {
+  id: number;
+  name: string;
 }
 
 const TYPE_ICONS: Record<TaskType, React.ReactNode> = {
@@ -56,7 +61,10 @@ export default function CreateTaskDialog({
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [users, setUsers] = useState<UserOption[]>([]);
+  const [contactOptions, setContactOptions] = useState<ContactOption[]>([]);
+  const [contactSearchLoading, setContactSearchLoading] = useState(false);
   const createTask = useCreateTask(contactId);
+  const needsContactPicker = contactId === undefined;
 
   useEffect(() => {
     if (open) {
@@ -70,20 +78,50 @@ export default function CreateTaskDialog({
     }
   }, [open]);
 
+  const searchContacts = useCallback((query: string) => {
+    setContactSearchLoading(true);
+    search(
+      remoteRoutes.contacts,
+      { query: query || undefined },
+      (response) => {
+        const data = Array.isArray(response) ? response : response?.data ?? [];
+        setContactOptions(
+          data.map((c: any) => ({ id: c.id, name: c.name })),
+        );
+        setContactSearchLoading(false);
+      },
+      () => {
+        setContactOptions([]);
+        setContactSearchLoading(false);
+      },
+    );
+  }, []);
+  useEffect(() => {
+    if (open && needsContactPicker) {
+      searchContacts('');
+    }
+  }, [open, needsContactPicker, searchContacts]);
+
   const formik = useFormik({
     initialValues: {
+      contactId: contactId ?? null as number | null,
       type: TaskType.CALL,
       title: '',
       assignedToId: null as number | null,
       dueAt: null as Dayjs | null,
     },
+    enableReinitialize: true,
     validationSchema: Yup.object({
       type: Yup.string().required('Type is required'),
+      contactId: Yup.number()
+        .nullable()
+        .required('Contact is required'),
     }),
     onSubmit: (values, { resetForm }) => {
+      if (!values.contactId) return;
       createTask.mutate(
         {
-          contactId,
+          contactId: values.contactId,
           type: values.type,
           ...(values.title && { title: values.title }),
           ...(values.assignedToId !== null && {
@@ -101,11 +139,15 @@ export default function CreateTaskDialog({
       );
     },
   });
+  const handleCancel = () => {
+    formik.resetForm(); // Wipes the prior contact, title, assignee, etc.
+    onClose();          // Triggers the parent's close state
+  };
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleCancel}
       maxWidth="sm"
       fullWidth
       fullScreen={isPhone}
@@ -115,6 +157,32 @@ export default function CreateTaskDialog({
         <DialogTitle>New Task</DialogTitle>
         <DialogContent dividers={isPhone}>
           <Stack spacing={3} sx={{ mt: 1 }}>
+            {needsContactPicker && (
+              <Autocomplete
+                options={contactOptions}
+                getOptionLabel={(c) => c.name}
+                loading={contactSearchLoading}
+                onInputChange={(_, val) => searchContacts(val)}
+                onChange={(_, val) =>
+                  formik.setFieldValue('contactId', val?.id ?? null)
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Contact"
+                    required
+                    error={
+                      formik.touched.contactId && Boolean(formik.errors.contactId)
+                    }
+                    helperText={
+                      formik.touched.contactId && formik.errors.contactId
+                    }
+                    onBlur={() => formik.setFieldTouched('contactId', true)}
+                  />
+                )}
+              />
+            )}
+
             <ToggleButtonGroup
               exclusive
               value={formik.values.type}
@@ -165,7 +233,7 @@ export default function CreateTaskDialog({
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} fullWidth={isPhone}>
+          <Button onClick={handleCancel} fullWidth={isPhone}>
             Cancel
           </Button>
           <Button

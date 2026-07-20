@@ -263,14 +263,18 @@ const ReportConfiguration = () => {
       <TableContainer
         component={Paper}
         variant="outlined"
-        sx={{
-          backgroundColor: isInactive ? 'grey.50' : '#fff',
-        }}
+        sx={{backgroundColor: isInactive ? 'action.hover' : 'background.paper' }}
       >
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ backgroundColor: isInactive ? 'grey.100' : 'grey.50' }}>
-              <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+            <TableRow
+              sx={{
+                backgroundColor: isInactive ? 'action.selected' : 'action.hover',
+                '& .MuiTableCell-root': {
+                  color: isInactive ? 'text.primary' : 'text.secondary',
+                },
+              }}
+            >              <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Category</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Frequency</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>View Type</TableCell>
@@ -382,7 +386,7 @@ const ReportConfiguration = () => {
               cursor: 'pointer',
               py: 1,
               px: 2,
-              backgroundColor: 'grey.100',
+              backgroundColor: 'action.selected',
               borderRadius: 1,
               mb: showInactive ? 2 : 0,
             }}
