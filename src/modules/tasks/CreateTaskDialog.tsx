@@ -140,6 +140,7 @@ export default function CreateTaskDialog({
     },
   });
   const handleCancel = () => {
+    if (createTask.isPending) return; 
     formik.resetForm(); // Wipes the prior contact, title, assignee, etc.
     onClose();          // Triggers the parent's close state
   };

@@ -146,7 +146,7 @@ export default function AssignTasks() {
             Manage and assign tasks to your team members.
           </Typography>
         </Box>
-        <Box sx={{display:"flex", gap:"1rem", flexWrap:"wrap", alignItems:"center"}}>          
+        <Box sx={{display:"flex", gap:2, flexWrap:"wrap", alignItems:"center"}}>          
           <FormControl size="small" sx={{ minWidth: 160 }}>
             <InputLabel id="date-range-label">Date Range</InputLabel>
             <Select
