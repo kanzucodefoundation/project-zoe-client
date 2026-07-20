@@ -164,12 +164,18 @@ export default function CreateTaskDialog({
         <DialogTitle>New Task</DialogTitle>
         <DialogContent dividers={isPhone}>
           <Stack spacing={3} sx={{ mt: 1 }}>
+      <form onSubmit={formik.handleSubmit} key={open ? 'open' : 'closed'}>
+        <DialogTitle>New Task</DialogTitle>
+        <DialogContent dividers={isPhone}>
+          <Stack spacing={3} sx={{ mt: 1 }}>
             {needsContactPicker && (
               <Autocomplete
                 options={contactOptions}
                 getOptionLabel={(c) => c.name}
                 loading={contactSearchLoading}
-                onInputChange={(_, val) => debouncedSearchContacts(val)}
+                onInputChange={(_, val, reason) => {
+                  if (reason === 'input') debouncedSearchContacts(val);
+                }}
                 onChange={(_, val) =>
                   formik.setFieldValue('contactId', val?.id ?? null)
                 }
@@ -189,7 +195,6 @@ export default function CreateTaskDialog({
                 )}
               />
             )}
-
             <ToggleButtonGroup
               exclusive
               value={formik.values.type}
