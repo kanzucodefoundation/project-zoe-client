@@ -285,7 +285,7 @@ export default function AttendanceHistory() {
         </Box>
 
         {/* Filters */}
-        <Stack direction="row" spacing={2} flexWrap="wrap">
+        <Stack direction="row" sx={{flexWrap:"wrap", display:"flex", alignItems:"center", gap:"1rem"}}>
           <Autocomplete
             options={locations}
             getOptionLabel={(o) => o.name}
@@ -340,7 +340,7 @@ export default function AttendanceHistory() {
             <Typography variant="h6" color="text.secondary">
               No services found
             </Typography>
-            <Typography variant="body2" color="text.disabled" sx={{ mt: 0.5 }}>
+            <Typography variant="body2" color="text.disabled" sx={{ mt: 0.5, textAlign:"center" }} >
               {filterLocationId || filterSchedule
                 ? 'Try clearing the filters.'
                 : 'Check-in data will appear here after services run.'}

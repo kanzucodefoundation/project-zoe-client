@@ -122,7 +122,7 @@ export default function ServiceSchedules() {
         ) : null}
 
         {/* Filters */}
-        <Stack direction="row" spacing={2} flexWrap="wrap">
+        <Stack direction="row" sx={{flexWrap:"wrap", display:"flex", alignItems:"center", gap:"1rem"}}>
           <Autocomplete
             options={locations}
             getOptionLabel={(o) => o.name}
@@ -172,7 +172,7 @@ export default function ServiceSchedules() {
             <Typography variant="h6" color="text.secondary">
               No schedules found
             </Typography>
-            <Typography variant="body2" color="text.disabled">
+            <Typography variant="body2" color="text.disabled" sx={{textAlign:"center" }}>
               {filterLocationId || filterType !== 'all'
                 ? 'Try clearing the filters.'
                 : 'Create your first service schedule to get started.'}

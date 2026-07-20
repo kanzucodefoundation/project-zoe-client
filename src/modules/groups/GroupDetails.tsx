@@ -482,7 +482,7 @@ const GroupDetails = () => {
   return (
     <Container maxWidth="lg">
       {/* Header */}
-      <Box display="flex" alignItems="center" gap={2} mb={3}>
+      <Box display="flex" alignItems="center" gap={2} mb={3} flexWrap="wrap">
         <IconButton onClick={() => navigate(localRoutes.groups)}>
           <ArrowBackIcon />
         </IconButton>
@@ -503,7 +503,7 @@ const GroupDetails = () => {
             )}
           </Box>
         </Box>
-        <Box display="flex" gap={1}>
+        <Box sx={{display:"flex", gap:"1rem", flexWrap:"wrap"}} >
           <Button
             variant="contained"
             startIcon={<SmsIcon />}
@@ -648,30 +648,31 @@ const GroupDetails = () => {
             alignItems="center"
             gap={2}
             flexWrap="wrap"
-            padding={2}
+            paddingBottom={2}
           >
-              {!membershipsLoading && memberships.length > 0 ? (
-                <Chip
-                  label={`${memberships.length} ${
-                    memberships.length === 1 ? 'person' : 'people'
-                  }`}
-                  size="small"
-                  variant="outlined"
-                />
-              ) : null}
-              {canManageCurrentGroup && (
-                <Button
-                  startIcon={<PersonAddIcon />}
-                  variant="outlined"
-                  size="small"
-                  onClick={() => {
-                    setShowAddMemberForm(!showAddMemberForm);
-                    setSelectedContacts([]);
-                  }}
-                >
-                  {showAddMemberForm ? 'Close' : 'Add Member'}
-                </Button>
-              )}               </Box> 
+            {!membershipsLoading && memberships.length > 0 ? (
+              <Chip
+                label={`${memberships.length} ${
+                  memberships.length === 1 ? 'person' : 'people'
+                }`}
+                size="small"
+                variant="outlined"
+              />
+            ) : null}
+            {canManageCurrentGroup && (
+              <Button
+                startIcon={<PersonAddIcon />}
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  setShowAddMemberForm(!showAddMemberForm);
+                  setSelectedContacts([]);
+                }}
+              >
+                {showAddMemberForm ? 'Close' : 'Add Member'}
+              </Button>
+            )}               
+          </Box> 
           
         </Box>        
         <Divider sx={{ mb: 2 }} />
