@@ -26,6 +26,8 @@ import { useCreateTask } from './hooks';
 import { TaskType, TYPE_LABELS, type Task } from '../../utils/types';
 import ajax,{ search } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
+import { useMemo } from 'react';
+import debounce from 'lodash/debounce';
 
 interface Props {
   open: boolean;
@@ -96,6 +98,10 @@ export default function CreateTaskDialog({
       },
     );
   }, []);
+  const debouncedSearchContacts = useMemo(
+    () => debounce((query: string) => searchContacts(query), 300),
+    [searchContacts]
+  );
   useEffect(() => {
     if (open && needsContactPicker) {
       searchContacts('');
@@ -163,7 +169,7 @@ export default function CreateTaskDialog({
                 options={contactOptions}
                 getOptionLabel={(c) => c.name}
                 loading={contactSearchLoading}
-                onInputChange={(_, val) => searchContacts(val)}
+                onInputChange={(_, val) => debouncedSearchContacts(val)}
                 onChange={(_, val) =>
                   formik.setFieldValue('contactId', val?.id ?? null)
                 }
@@ -234,7 +240,7 @@ export default function CreateTaskDialog({
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancel} fullWidth={isPhone}>
+          <Button onClick={handleCancel} disabled={createTask.isPending} fullWidth={isPhone}>
             Cancel
           </Button>
           <Button
