@@ -274,7 +274,8 @@ const ReportConfiguration = () => {
                   color: isInactive ? 'text.secondary' : 'text.primary',
                 },
               }}
-            >              <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+            >              
+            <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Category</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Frequency</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>View Type</TableCell>
