@@ -123,6 +123,8 @@ const Reports = () => {
   useEffect(() => {
     if (activeTab === null) return;
 
+     let cancelled = false;
+
     // Check cache
     const cached = tabCache[activeTab];
     if (cached && cached.dateRange === dateRange) {
@@ -133,17 +135,23 @@ const Reports = () => {
     }
 
     setLoadingSubmissions(true);
+    setSummary(null);
+
     const { from, to } = getDateRange();
     const url = `${remoteRoutes.reports}/submissions/mygroups?reportId=${activeTab}&from=${from}&to=${to}&limit=20&offset=0`;
 
     get(
       url,
       (response: SubmissionsResponse) => {
+        if (cancelled) return;
+
         const data = response?.submissions || [];
         const cols = response?.columns || [];
+
         setSubmissions(data);
         setColumns(cols);
         setSummary(response?.summary || null);
+
         setTabCache((prev) => ({
           ...prev,
           [activeTab]: {
@@ -153,16 +161,23 @@ const Reports = () => {
             summary: response?.summary || null
           },
         }));
+
         setLoadingSubmissions(false);
+
       },
       (error: any) => {
+        if (cancelled) return;
         console.error('Failed to fetch submissions:', error);
         toast.error('Failed to load submissions');
         setSubmissions([]);
         setColumns([]);
         setLoadingSubmissions(false);
+        setSummary(null);
       },
     );
+    return () => {
+      cancelled = true;
+    };
   }, [activeTab, dateRange, getDateRange]);
 
   // Invalidate cache when date range changes
