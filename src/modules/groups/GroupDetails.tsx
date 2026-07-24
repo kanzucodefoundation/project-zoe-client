@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
@@ -215,6 +215,7 @@ const GroupDetails = () => {
   const [memberships, setMemberships] = useState<GroupMembership[]>([]);
   const [loading, setLoading] = useState(true);
   const [membershipsLoading, setMembershipsLoading] = useState(false);
+  const membershipsRequestIdRef = useRef(0);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -330,8 +331,9 @@ const GroupDetails = () => {
     }
   }, [groupId]);
 
-  const fetchMemberships = useCallback(async (signal?: AbortSignal) => {
+  const fetchMemberships = useCallback(async () => {
     if (!groupId) return;
+    const requestId = ++membershipsRequestIdRef.current;
     setMembershipsLoading(true);
     try {
       const currentSkip = page * rowsPerPage;
@@ -343,7 +345,7 @@ const GroupDetails = () => {
           groupId,
         )}&limit=${rowsPerPage}&skip=${currentSkip}`,
       );
-      if (signal?.aborted) return;
+      if (requestId !== membershipsRequestIdRef.current) return;
       const membershipList = Array.isArray(response?.data) ? response.data : [];
       const activeMemberships = membershipList.filter(
         (membership) => membership.isActive !== false,
@@ -351,18 +353,22 @@ const GroupDetails = () => {
       setMemberships(activeMemberships);
       setTotal(response?.total ?? 0);
     } catch (error: unknown) {
+      if (requestId !== membershipsRequestIdRef.current) return;
       console.error('Failed to fetch memberships:', error);
       toast.error('Failed to load group members');
     } finally {
-      setMembershipsLoading(false);
-    }  }, [groupId, page, rowsPerPage]);
-    
-    useEffect(() => {
-      fetchGroup();
-    }, [fetchGroup]);
-    useEffect(() => {    
-      fetchMemberships();
-    }, [fetchMemberships]);
+      if (requestId === membershipsRequestIdRef.current) {
+        setMembershipsLoading(false);
+      }
+    }
+  }, [groupId, page, rowsPerPage]);
+
+  useEffect(() => {
+    fetchGroup();
+  }, [fetchGroup]);
+  useEffect(() => {
+    fetchMemberships();
+  }, [fetchMemberships]);
 
   const handleRoleToggle = async (membership: GroupMembership) => {
     const nextRole =
