@@ -77,6 +77,7 @@ export const TYPE_LABELS: Record<TaskType, string> = {
 // utils/types.ts — add near the Task section
 export const NotificationType = {
   TASK_ASSIGNED: 'task_assigned',
+  TASK_REASSIGNED: 'task_reassigned',
   TASK_DUE: 'task_due',
   REPORT_SUBMITTED: 'report_submitted',
   SCHEDULE_CHANGED: 'schedule_changed',

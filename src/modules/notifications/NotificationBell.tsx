@@ -29,7 +29,7 @@ export default function NotificationBell() {
   const open = Boolean(anchorEl);
 
   const { data: unreadCount = 0 } = useUnreadCount();
-  const { data, isLoading } = useNotifications(1, 8); // preview: latest 8
+  const { data, isLoading, isError } = useNotifications(1, 8); // preview: latest 8
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
 
@@ -41,8 +41,6 @@ export default function NotificationBell() {
     handleClose();
     if (n.link) navigate(n.link);
   };
-
-  const { isError } = useNotifications(1, 20); 
   const notifications = data?.data ?? [];
 
   return (

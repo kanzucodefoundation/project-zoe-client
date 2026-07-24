@@ -23,11 +23,9 @@ export default function Notifications() {
   const [page, setPage] = useState(0);
   const rowsPerPage = 20;
 
-  const { data, isLoading } = useNotifications(page + 1, rowsPerPage);
+  const { data, isLoading, isError } = useNotifications(page + 1, rowsPerPage);
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
-
-  const { isError } = useNotifications(1, 20); 
   const notifications = data?.data ?? [];
   const total = data?.total ?? 0;
   const unreadCount = data?.unreadCount ?? 0;
