@@ -9,17 +9,18 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
 import NavbarBreadcrumbs from './NavbarBreadcrumbs';
-import MenuButton from './MenuButton';
 import ColorModeIconDropdown from './ColorModeIconDropdown';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../data/store';
 import { logout } from '../../data/coreSlice';
 import { get } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
+import NotificationBell from '../../modules/notifications/NotificationBell';
+import { useAuthToken } from '../../hooks/useAuthToken';
+import { useNotificationSocket } from '../../data/useNotificationSocket';
 
 interface LocationGroup {
   id: number;
@@ -30,6 +31,8 @@ interface LocationGroup {
 export default function Header() {
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.core);
+  const token = useAuthToken();
+  useNotificationSocket(token);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [userLocations, setUserLocations] = useState<LocationGroup[]>([]);
@@ -94,9 +97,7 @@ export default function Header() {
         >
           <NavbarBreadcrumbs />
           <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
-            <MenuButton showBadge aria-label="Open notifications">
-              <NotificationsRoundedIcon />
-            </MenuButton>
+            <NotificationBell />
             <ColorModeIconDropdown />
             {/* User Profile Menu */}
             <IconButton

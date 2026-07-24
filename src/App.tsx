@@ -55,6 +55,7 @@ import ManageNotifications from './modules/admin/notifications/ManageNotificatio
 import CheckInScreen from './modules/attendance/CheckInScreen';
 import ServiceSchedules from './modules/attendance/schedules/ServiceSchedules';
 import AttendanceHistory from './modules/attendance/history/AttendanceHistory';
+import NotificationsPage from './modules/notifications/Notifications.tsx';
 
 const Splash = () => (
   <div
@@ -296,6 +297,9 @@ function App() {
                 attendanceViewCapabilities,
               )}
             />
+            <Route 
+              path={localRoutes.notificationMessages} 
+              element={<NotificationsPage />} />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />
