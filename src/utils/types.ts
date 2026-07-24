@@ -74,7 +74,26 @@ export const TYPE_LABELS: Record<TaskType, string> = {
   [TaskType.MATCH]: 'Match',
   [TaskType.FOLLOW_UP]: 'Follow Up',
 };
+// utils/types.ts — add near the Task section
+export const NotificationType = {
+  TASK_ASSIGNED: 'task_assigned',
+  TASK_REASSIGNED: 'task_reassigned',
+  TASK_DUE: 'task_due',
+  REPORT_SUBMITTED: 'report_submitted',
+  SCHEDULE_CHANGED: 'schedule_changed',
+  GENERIC: 'generic',
+} as const;
+export type NotificationType = typeof NotificationType[keyof typeof NotificationType];
 
+export interface Notification {
+  id: number;
+  type: NotificationType;
+  title: string;
+  body: string | null;
+  link: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
 export const NEXT_STATUS_OPTIONS: TaskStatus[] = [
   TaskStatus.IN_PROGRESS,
   TaskStatus.DONE,

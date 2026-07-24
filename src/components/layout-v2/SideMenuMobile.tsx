@@ -5,7 +5,6 @@ import Drawer, { drawerClasses } from '@mui/material/Drawer';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -14,6 +13,7 @@ import { logout } from '../../data/coreSlice';
 import MenuButton from './MenuButton';
 import MenuContent from './MenuContent';
 import SidebarHelpButton from './SidebarHelpButton';
+import NotificationBell from '../../modules/notifications/NotificationBell';
 
 interface SideMenuMobileProps {
   open: boolean | undefined;
@@ -106,7 +106,7 @@ export default function SideMenuMobile({
             </Stack>
           </Stack>
           <MenuButton showBadge>
-            <NotificationsRoundedIcon />
+            <NotificationBell/>
           </MenuButton>
           <MenuButton aria-label="Close menu" onClick={toggleDrawer(false)}>
             <CloseRoundedIcon />
