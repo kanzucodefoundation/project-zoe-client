@@ -42,6 +42,7 @@ export default function NotificationBell() {
     if (n.link) navigate(n.link);
   };
 
+  const { isError } = useNotifications(1, 20); 
   const notifications = data?.data ?? [];
 
   return (
@@ -74,7 +75,7 @@ export default function NotificationBell() {
           <Box sx={{display:"flex", justifyContent:"space-between", py:3}}>
             <CircularProgress size={24} />
           </Box>
-        ) : !notifications ? (
+        ) : isError ? (
           <Box sx={{textAlign:"center", py:3}}>
             <Typography variant="body2" color="text.secondary">
               Unable to load notifications at this time

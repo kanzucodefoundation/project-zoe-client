@@ -27,6 +27,7 @@ export default function Notifications() {
   const markRead = useMarkNotificationRead();
   const markAllRead = useMarkAllNotificationsRead();
 
+  const { isError } = useNotifications(1, 20); 
   const notifications = data?.data ?? [];
   const total = data?.total ?? 0;
   const unreadCount = data?.unreadCount ?? 0;
@@ -58,11 +59,11 @@ export default function Notifications() {
         )}
       </Stack>
 
-        {isLoading ? (
+      {isLoading ? (
         <Box sx={{display:"flex", justifyContent:"center", py:3}}>
           <CircularProgress />
         </Box>
-      ) : !notifications ? (
+      ) : isError ? (
         <Box sx={{textAlign:"center", py:3}}>
           <Typography color="text.secondary">
             Unable to load notifications at this time

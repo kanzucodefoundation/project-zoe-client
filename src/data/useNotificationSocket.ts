@@ -6,7 +6,7 @@ import { notificationKeys } from '../modules/notifications/hooks';
 
 import { apiBaseUrl } from './constants';
 
-const SOCKET_URL = apiBaseUrl;
+const NOTIFICATIONS_SOCKET_URL = new URL('/notifications', apiBaseUrl).toString();
 
 export function useNotificationSocket(token: string | null) {
   const qc = useQueryClient();
@@ -15,7 +15,7 @@ export function useNotificationSocket(token: string | null) {
   useEffect(() => {
     if (!token) return;
 
-    const socket = io(`${SOCKET_URL}/notifications`, {
+    const socket = io(NOTIFICATIONS_SOCKET_URL, {
       auth: { token },
       transports: ['websocket'],
     });    
