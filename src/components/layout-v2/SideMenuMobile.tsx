@@ -105,9 +105,7 @@ export default function SideMenuMobile({
               </Typography>
             </Stack>
           </Stack>
-          <MenuButton showBadge>
-            <NotificationBell/>
-          </MenuButton>
+          <NotificationBell onCloseMenu={toggleDrawer(false)} />          
           <MenuButton aria-label="Close menu" onClick={toggleDrawer(false)}>
             <CloseRoundedIcon />
           </MenuButton>

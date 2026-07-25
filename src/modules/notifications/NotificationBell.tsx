@@ -23,7 +23,11 @@ import {
 import type { Notification } from '../../utils/types';
 import { localRoutes } from '../../data/constants';
 
-export default function NotificationBell() {
+interface NotificationBellProps {
+  onCloseMenu?: () => void;
+}
+
+export default function NotificationBell({ onCloseMenu }: NotificationBellProps) {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -39,6 +43,7 @@ export default function NotificationBell() {
   const handleItemClick = (n: Notification) => {
     if (!n.isRead) markRead.mutate(n.id);
     handleClose();
+    if (onCloseMenu) onCloseMenu();
     if (n.link) navigate(n.link);
   };
   const notifications = data?.data ?? [];
@@ -55,7 +60,14 @@ export default function NotificationBell() {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        slotProps={{ paper: { sx: { width: 360, maxHeight: 480 } } }}
+        slotProps={{ 
+          paper: { 
+            sx: { 
+              width: 'min(360px, calc(100vw - 16px))', // Prevents screen bleed on mobile
+              maxHeight: 480 
+            } 
+          } 
+        }}
       >
         <Box sx={{display:"flex", justifyContent:"space-between", alignItems:"center", p:1}}>
           <Typography variant="subtitle1"  sx={{ fontWeight: 600 }}>
@@ -70,7 +82,7 @@ export default function NotificationBell() {
         <Divider />
 
         {isLoading ? (
-          <Box sx={{display:"flex", justifyContent:"space-between", py:3}}>
+          <Box sx={{display:"flex", justifyContent:"center", py:3}}>
             <CircularProgress size={24} />
           </Box>
         ) : isError ? (
@@ -121,9 +133,10 @@ export default function NotificationBell() {
         <MenuItem
           onClick={() => {
             handleClose();
+            if (onCloseMenu) onCloseMenu();
             navigate(localRoutes.notificationMessages);
           }}
-          sx={{ fontWeight: 600 }}
+          sx={{ fontWeight: 600}}
         >
           View all notifications
         </MenuItem>
