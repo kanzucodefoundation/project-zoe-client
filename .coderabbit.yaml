@@ -5,12 +5,10 @@ reviews:
   request_changes_workflow: false
   auto_review:
     enabled: true
+    # develop only: release PRs (develop -> master) contain already-reviewed
+    # commits and are excluded by not listing master here.
     base_branches:
       - develop
-    # Release PRs (develop -> master) contain already-reviewed commits;
-    # skip them to save review quota.
-    ignore_title_keywords:
-      - "merge develop into master"
   path_instructions:
     - path: "src/**/*.{ts,tsx}"
       instructions: |
