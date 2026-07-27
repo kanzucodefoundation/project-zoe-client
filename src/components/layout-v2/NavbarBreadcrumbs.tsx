@@ -28,7 +28,7 @@ function pathToRegex(path: string): RegExp {
         : segment.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
     )
     .join('/');
-  return new RegExp(`^${pattern}$`);
+  return new RegExp(`^${pattern}/?$`); // allow one optional trailing slash
 }
 
 // Turn a constants key like 'financialCategoryRules' into 'Financial Category Rules'
@@ -38,15 +38,30 @@ function humanizeKey(key: string): string {
     .replace(/^./, (c) => c.toUpperCase());
 }
 
-// Built once from localRoutes — most specific (most segments) first, so e.g.
-// '/tasks/mine' is checked before the more generic '/tasks'.
+// Built once from localRoutes
 const routeEntries = Object.entries(localRoutes)
-  .map(([key, path]) => ({ key, path, regex: pathToRegex(path) }))
-  .sort((a, b) => b.path.split('/').length - a.path.split('/').length);
+  .map(([key, path]) => {
+    const segments = path.split('/').filter(Boolean);
+    return {
+      key,
+      path,
+      regex: pathToRegex(path),
+      depth: segments.length,
+      staticSegments: segments.filter((s) => !s.startsWith(':')).length,
+    };
+  })
+  .sort(
+    (a, b) => b.depth - a.depth || b.staticSegments - a.staticSegments,
+  );
+
+function normalizePathname(pathname: string): string {
+  return pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+}
 
 function getPageLabel(pathname: string): string {
-  if (pathname === '/' || pathname === localRoutes.dashboard) return 'Home';
-  const match = routeEntries.find(({ regex }) => regex.test(pathname));
+  const path = normalizePathname(pathname);
+  if (path === '/' || path === localRoutes.dashboard) return 'Home';
+  const match = routeEntries.find(({ regex }) => regex.test(path));
   return match ? humanizeKey(match.key) : 'Home';
 }
 
