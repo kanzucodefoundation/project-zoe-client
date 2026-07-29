@@ -18,7 +18,8 @@ export function useNotificationSocket(token: string | null) {
     const socket = io(NOTIFICATIONS_SOCKET_URL, {
       auth: { token },
       transports: ['websocket'],
-    });    
+      autoConnect: false,
+    });
     socketRef.current = socket;
 
     socket.on('notification:new', (notification) => {
@@ -32,8 +33,10 @@ export function useNotificationSocket(token: string | null) {
     socket.on('connect_error', (err) => {
       console.error('Notification socket connection error:', err.message);
     });
+    const connectTimer = setTimeout(() => socket.connect(), 0);
 
     return () => {
+      clearTimeout(connectTimer);
       socket.disconnect();
       if (socketRef.current === socket) {
         socketRef.current = null;
