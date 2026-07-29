@@ -108,6 +108,7 @@ export const localRoutes = {
 
   // Notifications
   notifications: '/admin/notifications',
+  notificationMessages: '/notifications',
 
   // Tasks
   tasks: '/tasks',
@@ -194,6 +195,7 @@ export const remoteRoutes = {
 
   // Notifications
   notificationSettings: `${apiBaseUrl}/api/notifications/settings`,
+  notificationMessages: `${apiBaseUrl}/api/notifications`,
 
   // Tasks
   tasks: `${apiBaseUrl}/api/tasks`,

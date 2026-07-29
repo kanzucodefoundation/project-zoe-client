@@ -83,6 +83,11 @@ const navItems: NavItem[] = [
     ],
   },
   {
+    name: 'Notifications',
+    icon: <SmsRoundedIcon />,
+    path: localRoutes.notificationMessages,
+  },
+  {
     name: 'Attendance',
     icon: <HowToRegRoundedIcon />,
     path: localRoutes.attendance,
