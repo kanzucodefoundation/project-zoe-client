@@ -68,7 +68,7 @@ export const localRoutes = {
 
   events: '/events',
   eventsDetails: '/events/:eventId',
-  eventActivities: '/events/:activitiesId',
+  // eventActivities: '/events/:activitiesId',
 
   reports: '/reports',
   reportsDetails: '/reports/:reportId',

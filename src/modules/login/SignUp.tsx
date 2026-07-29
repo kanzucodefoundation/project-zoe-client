@@ -587,8 +587,6 @@ const SignUp = () => {
               disabled={isSubmitting}
               sx={{
                 py: 1.5,
-                backgroundColor: '#1a2332',
-                '&:hover': { backgroundColor: '#2d4059' },
                 textTransform: 'none',
                 fontSize: '1rem',
                 mb: 2,

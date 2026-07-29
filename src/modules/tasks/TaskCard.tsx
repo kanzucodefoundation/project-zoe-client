@@ -112,7 +112,7 @@ export default function TaskCard({ task, onOpen, showContact = false }: Props) {
             to={`${localRoutes.contacts}/${task.contact.id}`}
             onClick={(e) => e.stopPropagation()}
             sx={{
-              color: 'primary.main',
+              color: 'text.primary',
               textDecoration: 'none',
               display: 'block',
               mb: 0.5,

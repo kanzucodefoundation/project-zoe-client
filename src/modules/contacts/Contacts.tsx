@@ -26,6 +26,7 @@ import {
   Stack,
   Chip,
   Divider,
+  Alert,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -85,6 +86,8 @@ const Contacts = () => {
 
   const [createDialog, setCreateDialog] = useState(false);
   const [uploadDialog, setUploadDialog] = useState(false);
+  const [editDialog, setEditDialog] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
   const [filter, setFilter] = useState<ContactFilter>({
     limit: CONTACT_FETCH_LIMIT,
     skip: 0,
@@ -204,6 +207,22 @@ const Contacts = () => {
       navigate(`${localRoutes.contacts}/${selectedContact.id}`);
     }
     handleMenuClose();
+  };
+  const handleEditClose = () => {
+    setEditError(null);
+    setEditDialog(false);
+    setSelectedContact(null);
+  }
+  const handleEdit = () => {
+    setEditError(null);
+    setEditDialog(true);
+    setAnchorEl(null);
+  };
+
+  const handleEditSave = () => {
+    handleEditClose()
+    // Refresh contacts list; keep same pagination
+    setFilter((prev) => ({ ...prev }));
   };
 
   const getInitials = (name: string) => {
@@ -361,7 +380,7 @@ const Contacts = () => {
                           component="a"
                           href={`tel:${contact.phone}`}
                           onClick={(e) => e.stopPropagation()}
-                          sx={{ color: 'primary.main', textDecoration: 'none' }}
+                          sx={{ color: 'text.secondary', textDecoration: 'none' }}
                         >
                           {contact.phone}
                         </Typography>
@@ -372,7 +391,7 @@ const Contacts = () => {
                           component="a"
                           href={`mailto:${contact.email}`}
                           onClick={(e) => e.stopPropagation()}
-                          sx={{ color: 'primary.main', textDecoration: 'none' }}
+                          sx={{ color: 'text.secondary', textDecoration: 'none'}}
                         >
                           {contact.email}
                         </Typography>
@@ -569,7 +588,7 @@ const Contacts = () => {
         onClose={handleMenuClose}
       >
         <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
-        <MenuItem onClick={handleViewDetails}>Edit</MenuItem>
+        <MenuItem onClick={handleEdit}>Edit</MenuItem>
       </Menu>
 
       {/* New Contact Dialog */}
@@ -590,6 +609,31 @@ const Contacts = () => {
               setFilter((prev) => ({ ...prev }));
             }}
             onCancel={() => setCreateDialog(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Contact Dialog */}
+      <Dialog
+        open={editDialog}
+        onClose={handleEditClose}
+        maxWidth="md"
+        fullWidth
+        fullScreen={isMobile}
+        scroll="paper"
+      >
+        <DialogTitle>Edit Contact</DialogTitle>
+        <DialogContent dividers={isMobile}>
+          {editError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {editError}
+            </Alert>
+          )}
+          <ContactForm
+            contactId={selectedContact?.id}
+            onSave={handleEditSave}
+            onCancel={handleEditClose}
+            onError={(message) => setEditError(message || null)}
           />
         </DialogContent>
       </Dialog>
