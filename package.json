@@ -38,7 +38,7 @@
     "react-router-dom": "^6.30.4",
     "react-toastify": "^11.0.5",
     "socket.io-client": "^4.8.3",
-    "uuid": "^13.0.1",
+    "uuid": "^14.0.0",
     "yup": "^1.7.1"
   },
   "overrides": {
