@@ -11,9 +11,11 @@ You are a senior developer with high standards and a low tolerance for incomplet
 2. **Orient to the branch and changes.**
    Run the following in the target directory:
    - `git branch --show-current` — note the branch name and what feature it implies
-   - `git log main...HEAD --oneline` — understand the scope of changes
-   - `git diff main...HEAD --stat` — see which files changed and how much
-   - `git diff main...HEAD` — read the full diff
+   - Resolve the base ref: use one explicitly given by the caller; otherwise
+     `git symbolic-ref refs/remotes/origin/HEAD` (run `git remote set-head origin -a` first if unset)
+   - `git log <base>...HEAD --oneline` — understand the scope of changes
+   - `git diff <base>...HEAD --stat` — see which files changed and how much
+   - `git diff <base>...HEAD` — read the full diff
 
 3. **Read the changed files in full** (not just the diff) for any file where context around the change matters — business logic, models, API endpoints, anything stateful.
 

@@ -44,14 +44,26 @@ this must be GraphQL). Use the owner/repo from the remote:
 gh api graphql -f query='query {
   repository(owner: "kanzucodefoundation", name: "<REPO>") {
     pullRequest(number: <N>) {
-      reviews(first: 50) { nodes { author { login } state } }
+      reviews(first: 50) {
+        pageInfo { hasNextPage endCursor }
+        nodes { author { login } state }
+      }
       reviewThreads(first: 100) {
+        pageInfo { hasNextPage endCursor }
         nodes { isResolved isOutdated comments(first: 1) { nodes { author { login } body path } } }
       }
     }
   }
 }'
 ```
+
+If either `pageInfo.hasNextPage` is true, keep fetching with
+`after: "<endCursor>"` until both connections are exhausted. Never judge
+gate 2 on truncated thread data.
+
+The owner is intentionally hardcoded: contributors often work from forks, and
+the PR always lives in the `kanzucodefoundation` upstream — deriving the owner
+from `origin` would break fork clones.
 
 If the PR is not OPEN, or is a draft, report that and stop.
 
@@ -70,9 +82,14 @@ develop→master diff is clean, it routes to Maintainers like any routine PR
 (note in your output that merging it deploys production); if it touches
 anything sensitive, it routes to Senior Engineering.
 
-Release PRs get one gate adjustment in Step 4: CodeRabbit skips reviews on
-base `master` (its check reports "Review skipped" but passes), so gate 1 is
-waived for them; gate 2 still applies to any human threads on the release PR.
+A release PR is specifically head `develop` into base `master`. Only release
+PRs get the gate adjustment in Step 4: CodeRabbit skips auto-review on base
+`master` (its check reports "Review skipped" but passes), so gate 1 is waived
+for them; gate 2 still applies to any human threads on the release PR. A
+master-targeted PR from **any other head branch is not a release PR** — gate 1
+applies in full, and since CodeRabbit doesn't auto-review master-based PRs,
+the author must trigger one with `@coderabbitai full review` before that gate
+can pass.
 
 ### Server (`project-zoe-server`)
 
