@@ -67,6 +67,7 @@ export default function TaskDrawer({
   const [attachLabel, setAttachLabel] = useState('');
   const [localTask, setLocalTask] = useState<Task | null>(task);
   const [usersLoading, setUsersLoading] = useState(false);
+  const [noLocationGroup, setNoLocationGroup] = useState(false);
 
   const reassign = useReassignTask();
   const addComment = useAddComment(localTask?.id ?? 0, contactId);
@@ -91,9 +92,11 @@ export default function TaskDrawer({
       : [];
     setUsers(currentAssignee);
     if (!locationGroupId) {
+      setNoLocationGroup(true);
       setUsersLoading(false);
       return;
     }
+    setNoLocationGroup(false);
     let ignore = false;
     setUsersLoading(true);
     ajax
@@ -117,7 +120,7 @@ export default function TaskDrawer({
     return () => {
       ignore = true;
     };
-  }, [localTask?.locationGroup?.id]);
+  }, [localTask?.locationGroup?.id, localTask?.assignedTo?.id]);
   if (!localTask) return null;
 
   const isClosed = CLOSED_STATUSES.includes(localTask.status);
@@ -298,16 +301,35 @@ export default function TaskDrawer({
             options={users}
             getOptionLabel={(u) => u.fullName}
             value={users.find((u) => u.id === localTask.assignedTo?.id) ?? null}
-            disabled={isClosed || !canEditTaskData || usersLoading}
+            disabled={isClosed || !canEditTaskData || usersLoading || noLocationGroup || reassign.isPending}
             onChange={(_, val) => {
               if (val && canEditTaskData) {
-                reassign.mutate({ id: localTask.id, assignedToId: val.id });
+                reassign.mutate(
+                  { id: localTask.id, assignedToId: val.id },
+                  {
+                    onSuccess: (updated) => {
+                      setLocalTask(updated);
+                      onTaskUpdated(updated);
+                    },
+                  },
+                );
               }
             }}
             renderInput={(params) => (
-              <TextField {...params} size="small" placeholder="Unassigned" />
+              <TextField
+                {...params}
+                size="small"
+                placeholder={
+                  noLocationGroup ? 'No location assigned yet' : 'Unassigned'
+                }
+              />
             )}
           />
+          {noLocationGroup && (
+            <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+              This contact isn't in a location group yet, so there's no one to suggest as an assignee.
+            </Typography>
+          )}
         </Box>
 
         {/* Due date */}
