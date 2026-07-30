@@ -228,3 +228,12 @@ export function extractUsersByLocation(
 ): UserOption[] {
   return Array.isArray(res.data) ? res.data : res.data.data;
 }
+
+export function toUserOption(u: TaskUser): UserOption {
+  const person = u.contact?.person;
+  return {
+    id: u.id,
+    username: u.username,
+    fullName: person ? `${person.firstName} ${person.lastName}` : u.username,
+  };
+}

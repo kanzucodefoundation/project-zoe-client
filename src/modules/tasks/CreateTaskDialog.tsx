@@ -64,6 +64,7 @@ export default function CreateTaskDialog({
       setUsersLoading(true);
       setNoLocationGroup(false);
       setUsers([]);
+      formik.setFieldValue('assignedToId', null);
       try {
         const locRes = await ajax.get(
           `${remoteRoutes.contactLocationGroup}/${contactId}`,
@@ -173,6 +174,7 @@ export default function CreateTaskDialog({
             <Autocomplete
               options={users}
               getOptionLabel={(u) => u.fullName}
+              value={users.find((u) => u.id === formik.values.assignedToId) ?? null}
               loading={usersLoading}
               disabled={noLocationGroup}
               onChange={(_, val) =>

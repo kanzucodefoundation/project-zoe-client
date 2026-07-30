@@ -27,7 +27,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TaskStatusChip from './TaskStatusChip';
 import UpdateStatusDialog from './UpdateStatusDialog';
 import { useReassignTask, useAddComment } from './hooks';
-import { CLOSED_STATUSES, extractUsersByLocation, type Task, type UserOption } from '../../utils/types';
+import { CLOSED_STATUSES, extractUsersByLocation, toUserOption, type Task, type UserOption } from '../../utils/types';
 import { taskApi } from './api';
 import { useQueryClient } from '@tanstack/react-query';
 import { taskKeys } from './hooks';
@@ -86,7 +86,10 @@ export default function TaskDrawer({
 
   useEffect(() => {
     const locationGroupId = localTask?.locationGroup?.id;
-    setUsers([]);
+    const currentAssignee = localTask?.assignedTo
+      ? [toUserOption(localTask.assignedTo)]
+      : [];
+    setUsers(currentAssignee);
     if (!locationGroupId) {
       setUsersLoading(false);
       return;
@@ -101,12 +104,12 @@ export default function TaskDrawer({
         const merged =
           localTask?.assignedTo &&
           !list.some((u) => u.id === localTask.assignedTo?.id)
-            ? [...list, localTask.assignedTo as unknown as UserOption]
+            ? [...list, toUserOption(localTask.assignedTo)]
             : list;
         setUsers(merged);
       })
       .catch(() => {
-        if (!ignore) setUsers([]);
+        if (!ignore) setUsers(currentAssignee);
       })
       .finally(() => {
         if (!ignore) setUsersLoading(false);
