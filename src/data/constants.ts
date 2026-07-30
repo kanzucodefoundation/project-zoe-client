@@ -150,6 +150,8 @@ export const remoteRoutes = {
   tags: `${apiBaseUrl}/api/tags`,
   users: `${apiBaseUrl}/api/users`,
   userGroups: `${apiBaseUrl}/api/user-groups`,
+  usersByLocation: `${apiBaseUrl}/api/users/by-location`,
+  contactLocationGroup: `${apiBaseUrl}/api/groups/contact-location`,
   roles: `${apiBaseUrl}/api/user-roles`,
   contactsPhone: `${apiBaseUrl}/api/crm/phones`,
   contactsAddress: `${apiBaseUrl}/api/crm/addresses`,

@@ -10,6 +10,7 @@ import {
   Stack,
   CircularProgress,
   Autocomplete,
+  Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -56,19 +57,48 @@ export default function CreateTaskDialog({
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [users, setUsers] = useState<UserOption[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [noLocationGroup, setNoLocationGroup] = useState(false);
   const createTask = useCreateTask(contactId);
 
   useEffect(() => {
-    if (open) {
-      ajax
-        .get(remoteRoutes.users)
-        .then((r) => {
-          const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
-          setUsers(list);
-        })
-        .catch(() => setUsers([]));
-    }
-  }, [open]);
+    if (!open) return;
+
+    let ignore = false;
+    const loadAssignableUsers = async () => {
+      setUsersLoading(true);
+      setNoLocationGroup(false);
+      setUsers([]);
+      try {
+        const locRes = await ajax.get(
+          `${remoteRoutes.contactLocationGroup}/${contactId}`,
+        );
+        const locationGroup = locRes.data as { id: number; name: string } | null;
+
+        if (!locationGroup) {
+          if (!ignore) setNoLocationGroup(true);
+          return;
+        }
+
+        const usersRes = await ajax.get(
+          `${remoteRoutes.usersByLocation}/${locationGroup.id}`,
+        );
+        const list = Array.isArray(usersRes.data)
+          ? usersRes.data
+          : usersRes.data?.data ?? [];
+        if (!ignore) setUsers(list);
+      } catch {
+        if (!ignore) setUsers([]);
+      } finally {
+        if (!ignore) setUsersLoading(false);
+      }
+    };
+
+    loadAssignableUsers();
+    return () => {
+      ignore = true;
+    };
+  }, [open, contactId]);
 
   const formik = useFormik({
     initialValues: {
@@ -148,13 +178,40 @@ export default function CreateTaskDialog({
             <Autocomplete
               options={users}
               getOptionLabel={(u) => u.fullName}
+              loading={usersLoading}
+              disabled={noLocationGroup}
               onChange={(_, val) =>
                 formik.setFieldValue('assignedToId', val?.id ?? null)
               }
               renderInput={(params) => (
-                <TextField {...params} label="Assign to (optional)" />
+                <TextField
+                  {...params}
+                  label="Assign to (optional)"
+                  placeholder={
+                    noLocationGroup
+                      ? 'No location assigned to this contact yet'
+                      : 'Select a team member'
+                  }
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {usersLoading ? (
+                          <CircularProgress color="inherit" size={16} />
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
               )}
             />
+            {noLocationGroup && (
+              <Typography variant="caption" color="text.secondary">
+                This contact isn't in a location group yet, so there's no one
+                to suggest as an assignee.
+              </Typography>
+            )}
 
             <DatePicker
               label="Due date (optional)"

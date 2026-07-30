@@ -90,15 +90,31 @@ export default function TaskDrawer({
   }, [task?.id]);
 
   useEffect(() => {
+    const locationGroupId = localTask?.locationGroup?.id;
+    if (!locationGroupId) {
+      setUsers([]);
+      return;
+    }
+    let ignore = false;
     ajax
-      .get(remoteRoutes.users)
+      .get(`${remoteRoutes.usersByLocation}/${locationGroupId}`)
       .then((r) => {
+        if (ignore) return;
         const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
-        setUsers(list);
+        const merged =
+          localTask?.assignedTo &&
+          !list.some((u: UserOption) => u.id === localTask.assignedTo?.id)
+            ? [...list, localTask.assignedTo as UserOption]
+            : list;
+        setUsers(merged);
       })
-      .catch(() => setUsers([]));
-  }, []);
-
+      .catch(() => {
+        if (!ignore) setUsers([]);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [localTask?.locationGroup?.id]);
   if (!localTask) return null;
 
   const isClosed = CLOSED_STATUSES.includes(localTask.status);
