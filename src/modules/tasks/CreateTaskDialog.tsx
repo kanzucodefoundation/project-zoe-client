@@ -24,21 +24,16 @@ import { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useCreateTask } from './hooks';
-import { TaskType, TYPE_LABELS, type Task } from '../../utils/types';
+import { TaskType, TYPE_LABELS, extractUsersByLocation, type Task, type UserOption } from '../../utils/types';
 import ajax from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
+import { toast } from 'react-toastify';
 
 interface Props {
   open: boolean;
   contactId: number;
   onClose: () => void;
   onSuccess: (task: Task) => void;
-}
-
-interface UserOption {
-  id: number;
-  username: string;
-  fullName: string;
 }
 
 const TYPE_ICONS: Record<TaskType, React.ReactNode> = {
@@ -83,12 +78,12 @@ export default function CreateTaskDialog({
         const usersRes = await ajax.get(
           `${remoteRoutes.usersByLocation}/${locationGroup.id}`,
         );
-        const list = Array.isArray(usersRes.data)
-          ? usersRes.data
-          : usersRes.data?.data ?? [];
-        if (!ignore) setUsers(list);
+        if (!ignore) setUsers(extractUsersByLocation(usersRes));
       } catch {
-        if (!ignore) setUsers([]);
+        if (!ignore) {
+          setUsers([]);
+          toast.error('Failed to load assignable users');
+        }
       } finally {
         if (!ignore) setUsersLoading(false);
       }

@@ -27,7 +27,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TaskStatusChip from './TaskStatusChip';
 import UpdateStatusDialog from './UpdateStatusDialog';
 import { useReassignTask, useAddComment } from './hooks';
-import { CLOSED_STATUSES, type Task } from '../../utils/types';
+import { CLOSED_STATUSES, extractUsersByLocation, type Task, type UserOption } from '../../utils/types';
 import { taskApi } from './api';
 import { useQueryClient } from '@tanstack/react-query';
 import { taskKeys } from './hooks';
@@ -43,12 +43,6 @@ interface Props {
   onClose: () => void;
   onTaskUpdated: (updated: Task) => void;
   contactId?: number;
-}
-
-interface UserOption {
-  id: number;
-  username: string;
-  fullName: string;
 }
 
 const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
@@ -72,6 +66,7 @@ export default function TaskDrawer({
   const [attachUrl, setAttachUrl] = useState('');
   const [attachLabel, setAttachLabel] = useState('');
   const [localTask, setLocalTask] = useState<Task | null>(task);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   const reassign = useReassignTask();
   const addComment = useAddComment(localTask?.id ?? 0, contactId);
@@ -91,25 +86,30 @@ export default function TaskDrawer({
 
   useEffect(() => {
     const locationGroupId = localTask?.locationGroup?.id;
+    setUsers([]);
     if (!locationGroupId) {
-      setUsers([]);
+      setUsersLoading(false);
       return;
     }
     let ignore = false;
+    setUsersLoading(true);
     ajax
       .get(`${remoteRoutes.usersByLocation}/${locationGroupId}`)
       .then((r) => {
         if (ignore) return;
-        const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
+        const list = extractUsersByLocation(r);
         const merged =
           localTask?.assignedTo &&
-          !list.some((u: UserOption) => u.id === localTask.assignedTo?.id)
-            ? [...list, localTask.assignedTo as UserOption]
+          !list.some((u) => u.id === localTask.assignedTo?.id)
+            ? [...list, localTask.assignedTo as unknown as UserOption]
             : list;
         setUsers(merged);
       })
       .catch(() => {
         if (!ignore) setUsers([]);
+      })
+      .finally(() => {
+        if (!ignore) setUsersLoading(false);
       });
     return () => {
       ignore = true;
@@ -295,7 +295,7 @@ export default function TaskDrawer({
             options={users}
             getOptionLabel={(u) => u.fullName}
             value={users.find((u) => u.id === localTask.assignedTo?.id) ?? null}
-            disabled={isClosed || !canEditTaskData}
+            disabled={isClosed || !canEditTaskData || usersLoading}
             onChange={(_, val) => {
               if (val && canEditTaskData) {
                 reassign.mutate({ id: localTask.id, assignedToId: val.id });

@@ -214,3 +214,17 @@ export interface TaskFilters {
   page?: number;
   limit?: number;
 }
+
+export interface UserOption {
+  id: number;
+  username: string;
+  fullName: string;
+}
+
+export type UsersByLocationResponse = UserOption[] | { data: UserOption[] };
+
+export function extractUsersByLocation(
+  res: { data: UsersByLocationResponse },
+): UserOption[] {
+  return Array.isArray(res.data) ? res.data : res.data.data;
+}

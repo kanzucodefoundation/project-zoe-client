@@ -18,13 +18,7 @@ import { remoteRoutes } from '../../data/constants';
 import { taskApi } from './api';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import type { Task } from '../../utils/types';
-
-interface UserOption {
-  id: number;
-  username: string;
-  fullName: string;
-}
+import { extractUsersByLocation, type Task, type UserOption } from '../../utils/types';
 
 interface Props {
   task: Task | null;
@@ -49,8 +43,9 @@ export default function AssignTaskDialog({
   useEffect(() => {
     if (!open) return;
     const locationGroupId = task?.locationGroup?.id;
+    setUsers([]); 
+    setSelectedUser(null); 
     if (!locationGroupId) {
-      setUsers([]);
       setUsersLoading(false);
       return;
     }
@@ -61,8 +56,7 @@ export default function AssignTaskDialog({
       .get(`${remoteRoutes.usersByLocation}/${locationGroupId}`)
       .then((r) => {
         if (ignore) return;
-        const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
-        setUsers(list);
+        setUsers(extractUsersByLocation(r));
       })
       .catch(() => {
         if (!ignore) setUsers([]);
@@ -168,7 +162,7 @@ export default function AssignTaskDialog({
             getOptionLabel={(u) => u.fullName || u.username}
             value={selectedUser}
             loading={usersLoading}
-            disabled={noLocationGroup}
+            disabled={noLocationGroup || usersLoading}
             onChange={(_, val) => setSelectedUser(val)}
             renderInput={(params) => (
               <TextField
