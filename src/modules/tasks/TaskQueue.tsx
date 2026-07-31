@@ -49,6 +49,11 @@ const UNASSIGNED: AssignableUser = {
   fullName: 'Unassigned',
 };
 
+// Stable reference so the effect below doesn't re-run every render when
+// useMyLocationGroups has no cached data yet (default `[]` would otherwise
+// be a new array on each render).
+const EMPTY_LOCATION_GROUP_IDS: number[] = [];
+
 export default function TaskQueue() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -64,7 +69,7 @@ export default function TaskQueue() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [noLocationGroup, setNoLocationGroup] = useState(false);
 
-  const { data: locationGroupIds = [], isLoading: locationGroupsLoading } =
+  const { data: locationGroupIds = EMPTY_LOCATION_GROUP_IDS, isLoading: locationGroupsLoading } =
     useMyLocationGroups();
 
   useEffect(() => {
@@ -75,14 +80,15 @@ export default function TaskQueue() {
       setAssignedTo(null);
       setUsersLoading(false);
       return;
-    }    setNoLocationGroup(false);
+    }
+    setNoLocationGroup(false);
     let ignore = false;
     setUsersLoading(true);
     Promise.all(
       locationGroupIds.map((id) =>
         ajax
           .get(`${remoteRoutes.usersByLocation}/${id}`)
-          .then(extractUsersByLocation)
+          .then((r) => extractUsersByLocation(r))
           .catch(() => []),
       ),
     )
@@ -248,7 +254,7 @@ export default function TaskQueue() {
               options={users}
               getOptionLabel={(u) => u.fullName}
               value={assignedTo}
-              disabled={usersLoading || noLocationGroup}
+              disabled={usersLoading || locationGroupsLoading || noLocationGroup}
               onChange={(_, val) => {
                 setAssignedTo(val);
                 setPagination((p) => ({ ...p, page: 0 }));
