@@ -27,7 +27,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import TaskStatusChip from './TaskStatusChip';
 import UpdateStatusDialog from './UpdateStatusDialog';
 import { useReassignTask, useAddComment } from './hooks';
-import { CLOSED_STATUSES, extractUsersByLocation, toUserOption, type Task, type UserOption } from '../../utils/types';
+import { CLOSED_STATUSES, type Task } from '../../utils/types';
 import { taskApi } from './api';
 import { useQueryClient } from '@tanstack/react-query';
 import { taskKeys } from './hooks';
@@ -43,6 +43,12 @@ interface Props {
   onClose: () => void;
   onTaskUpdated: (updated: Task) => void;
   contactId?: number;
+}
+
+interface UserOption {
+  id: number;
+  username: string;
+  fullName: string;
 }
 
 const IMAGE_EXTS = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
@@ -66,8 +72,6 @@ export default function TaskDrawer({
   const [attachUrl, setAttachUrl] = useState('');
   const [attachLabel, setAttachLabel] = useState('');
   const [localTask, setLocalTask] = useState<Task | null>(task);
-  const [usersLoading, setUsersLoading] = useState(false);
-  const [noLocationGroup, setNoLocationGroup] = useState(false);
 
   const reassign = useReassignTask();
   const addComment = useAddComment(localTask?.id ?? 0, contactId);
@@ -86,41 +90,15 @@ export default function TaskDrawer({
   }, [task?.id]);
 
   useEffect(() => {
-    const locationGroupId = localTask?.locationGroup?.id;
-    const currentAssignee = localTask?.assignedTo
-      ? [toUserOption(localTask.assignedTo)]
-      : [];
-    setUsers(currentAssignee);
-    if (!locationGroupId) {
-      setNoLocationGroup(true);
-      setUsersLoading(false);
-      return;
-    }
-    setNoLocationGroup(false);
-    let ignore = false;
-    setUsersLoading(true);
     ajax
-      .get(`${remoteRoutes.usersByLocation}/${locationGroupId}`)
+      .get(remoteRoutes.users)
       .then((r) => {
-        if (ignore) return;
-        const list = extractUsersByLocation(r);
-        const merged =
-          localTask?.assignedTo &&
-          !list.some((u) => u.id === localTask.assignedTo?.id)
-            ? [...list, toUserOption(localTask.assignedTo)]
-            : list;
-        setUsers(merged);
+        const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
+        setUsers(list);
       })
-      .catch(() => {
-        if (!ignore) setUsers(currentAssignee);
-      })
-      .finally(() => {
-        if (!ignore) setUsersLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [localTask?.locationGroup?.id, localTask?.assignedTo?.id]);
+      .catch(() => setUsers([]));
+  }, []);
+
   if (!localTask) return null;
 
   const isClosed = CLOSED_STATUSES.includes(localTask.status);
@@ -301,35 +279,16 @@ export default function TaskDrawer({
             options={users}
             getOptionLabel={(u) => u.fullName}
             value={users.find((u) => u.id === localTask.assignedTo?.id) ?? null}
-            disabled={isClosed || !canEditTaskData || usersLoading || noLocationGroup || reassign.isPending}
+            disabled={isClosed || !canEditTaskData}
             onChange={(_, val) => {
               if (val && canEditTaskData) {
-                reassign.mutate(
-                  { id: localTask.id, assignedToId: val.id },
-                  {
-                    onSuccess: (updated) => {
-                      setLocalTask(updated);
-                      onTaskUpdated(updated);
-                    },
-                  },
-                );
+                reassign.mutate({ id: localTask.id, assignedToId: val.id });
               }
             }}
             renderInput={(params) => (
-              <TextField
-                {...params}
-                size="small"
-                placeholder={
-                  noLocationGroup ? 'No location assigned yet' : 'Unassigned'
-                }
-              />
+              <TextField {...params} size="small" placeholder="Unassigned" />
             )}
           />
-          {noLocationGroup && (
-            <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
-              This contact isn't in a location group yet, so there's no one to suggest as an assignee.
-            </Typography>
-          )}
         </Box>
 
         {/* Due date */}

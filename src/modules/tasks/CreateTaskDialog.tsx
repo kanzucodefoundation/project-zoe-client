@@ -10,7 +10,6 @@ import {
   Stack,
   CircularProgress,
   Autocomplete,
-  Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -24,16 +23,21 @@ import { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useCreateTask } from './hooks';
-import { TaskType, TYPE_LABELS, extractUsersByLocation, type Task, type UserOption } from '../../utils/types';
+import { TaskType, TYPE_LABELS, type Task } from '../../utils/types';
 import ajax from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
-import { toast } from 'react-toastify';
 
 interface Props {
   open: boolean;
   contactId: number;
   onClose: () => void;
   onSuccess: (task: Task) => void;
+}
+
+interface UserOption {
+  id: number;
+  username: string;
+  fullName: string;
 }
 
 const TYPE_ICONS: Record<TaskType, React.ReactNode> = {
@@ -52,49 +56,19 @@ export default function CreateTaskDialog({
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [users, setUsers] = useState<UserOption[]>([]);
-  const [usersLoading, setUsersLoading] = useState(false);
-  const [noLocationGroup, setNoLocationGroup] = useState(false);
   const createTask = useCreateTask(contactId);
 
   useEffect(() => {
-    if (!open) return;
-
-    let ignore = false;
-    const loadAssignableUsers = async () => {
-      setUsersLoading(true);
-      setNoLocationGroup(false);
-      setUsers([]);
-      formik.setFieldValue('assignedToId', null);
-      try {
-        const locRes = await ajax.get(
-          `${remoteRoutes.contactLocationGroup}/${contactId}`,
-        );
-        const locationGroup = locRes.data as { id: number; name: string } | null;
-
-        if (!locationGroup) {
-          if (!ignore) setNoLocationGroup(true);
-          return;
-        }
-
-        const usersRes = await ajax.get(
-          `${remoteRoutes.usersByLocation}/${locationGroup.id}`,
-        );
-        if (!ignore) setUsers(extractUsersByLocation(usersRes));
-      } catch {
-        if (!ignore) {
-          setUsers([]);
-          toast.error('Failed to load assignable users');
-        }
-      } finally {
-        if (!ignore) setUsersLoading(false);
-      }
-    };
-
-    loadAssignableUsers();
-    return () => {
-      ignore = true;
-    };
-  }, [open, contactId]);
+    if (open) {
+      ajax
+        .get(remoteRoutes.users)
+        .then((r) => {
+          const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
+          setUsers(list);
+        })
+        .catch(() => setUsers([]));
+    }
+  }, [open]);
 
   const formik = useFormik({
     initialValues: {
@@ -174,41 +148,13 @@ export default function CreateTaskDialog({
             <Autocomplete
               options={users}
               getOptionLabel={(u) => u.fullName}
-              value={users.find((u) => u.id === formik.values.assignedToId) ?? null}
-              loading={usersLoading}
-              disabled={noLocationGroup}
               onChange={(_, val) =>
                 formik.setFieldValue('assignedToId', val?.id ?? null)
               }
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Assign to (optional)"
-                  placeholder={
-                    noLocationGroup
-                      ? 'No location assigned to this contact yet'
-                      : 'Select a team member'
-                  }
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {usersLoading ? (
-                          <CircularProgress color="inherit" size={16} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
+                <TextField {...params} label="Assign to (optional)" />
               )}
             />
-            {noLocationGroup && (
-              <Typography variant="caption" color="text.secondary">
-                This contact isn't in a location group yet, so there's no one
-                to suggest as an assignee.
-              </Typography>
-            )}
 
             <DatePicker
               label="Due date (optional)"

@@ -18,7 +18,13 @@ import { remoteRoutes } from '../../data/constants';
 import { taskApi } from './api';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { extractUsersByLocation, type Task, type UserOption } from '../../utils/types';
+import type { Task } from '../../utils/types';
+
+interface UserOption {
+  id: number;
+  username: string;
+  fullName: string;
+}
 
 interface Props {
   task: Task | null;
@@ -35,40 +41,20 @@ export default function AssignTaskDialog({
 }: Props) {
   const qc = useQueryClient();
   const [users, setUsers] = useState<UserOption[]>([]);
-  const [usersLoading, setUsersLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserOption | null>(null);
   const [comment, setComment] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
-    const locationGroupId = task?.locationGroup?.id;
-    setUsers([]); 
-    setSelectedUser(null); 
-    if (!locationGroupId) {
-      setUsersLoading(false);
-      return;
-    }
-
-    let ignore = false;
-    setUsersLoading(true);
     ajax
-      .get(`${remoteRoutes.usersByLocation}/${locationGroupId}`)
+      .get(remoteRoutes.users)
       .then((r) => {
-        if (ignore) return;
-        setUsers(extractUsersByLocation(r));
+        const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
+        setUsers(list);
       })
-      .catch(() => {
-        if (!ignore) setUsers([]);
-      })
-      .finally(() => {
-        if (!ignore) setUsersLoading(false);
-      });
+      .catch(() => setUsers([]));
+  }, []);
 
-    return () => {
-      ignore = true;
-    };
-  }, [open, task?.locationGroup?.id]);
   useEffect(() => {
     if (!open) {
       setSelectedUser(null);
@@ -99,7 +85,6 @@ export default function AssignTaskDialog({
   const contactName = task?.contact?.person
     ? `${task.contact.person.firstName} ${task.contact.person.lastName}`
     : undefined;
-  const noLocationGroup = open && !task?.locationGroup?.id;
 
   return (
     <Dialog
@@ -161,31 +146,14 @@ export default function AssignTaskDialog({
             options={users}
             getOptionLabel={(u) => u.fullName || u.username}
             value={selectedUser}
-            loading={usersLoading}
-            disabled={noLocationGroup || usersLoading}
             onChange={(_, val) => setSelectedUser(val)}
             renderInput={(params) => (
               <TextField
                 {...params}
                 label="Assign to"
-                placeholder={
-                  noLocationGroup
-                    ? 'No location assigned to this contact yet'
-                    : 'Select a team member'
-                }
+                placeholder="Select a team member"
                 required
                 size="small"
-                InputProps={{
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {usersLoading ? (
-                        <CircularProgress color="inherit" size={16} />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
-                }}
               />
             )}
           />

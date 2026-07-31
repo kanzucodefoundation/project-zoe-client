@@ -20,7 +20,7 @@ import {
   type GridPaginationModel,
 } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
-import { useLocationScopedTasks, useMyLocationGroups } from './hooks';
+import { useLocationScopedTasks } from './hooks';
 import TaskStatusChip from './TaskStatusChip';
 import TaskDrawer from './TaskDrawer';
 import TaskCard from './TaskCard';
@@ -29,21 +29,19 @@ import {
   TaskType,
   STATUS_LABELS,
   TYPE_LABELS,
-  extractUsersByLocation,
   type Task,
   type TaskFilters,
-  type UserOption,
 } from '../../utils/types';
 import { remoteRoutes } from '../../data/constants';
 import ajax from '../../utils/ajax';
 
-// UserOption.id is a plain `number` everywhere else (e.g. TaskDrawer's
-// reassign mutation expects a real user id). This queue's filter also needs
-// an "Unassigned" pseudo-option, so widen the id just for this local usage
-// rather than the shared type.
-type AssignableUser = Omit<UserOption, 'id'> & { id: number | 'unassigned' };
+interface UserOption {
+  id: number | 'unassigned';
+  username: string;
+  fullName: string;
+}
 
-const UNASSIGNED: AssignableUser = {
+const UNASSIGNED: UserOption = {
   id: 'unassigned',
   username: 'Unassigned',
   fullName: 'Unassigned',
@@ -54,53 +52,23 @@ export default function TaskQueue() {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [statusFilter, setStatusFilter] = useState<TaskStatus[]>([]);
   const [typeFilter, setTypeFilter] = useState<TaskType[]>([]);
-  const [assignedTo, setAssignedTo] = useState<AssignableUser | null>(null);
+  const [assignedTo, setAssignedTo] = useState<UserOption | null>(null);
   const [pagination, setPagination] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 20,
   });
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [users, setUsers] = useState<AssignableUser[]>([UNASSIGNED]);
-  const [usersLoading, setUsersLoading] = useState(false);
-  const [noLocationGroup, setNoLocationGroup] = useState(false);
-
-  const { data: locationGroupIds = [], isLoading: locationGroupsLoading } =
-    useMyLocationGroups();
+  const [users, setUsers] = useState<UserOption[]>([UNASSIGNED]);
 
   useEffect(() => {
-    if (locationGroupsLoading) return;
-    if (locationGroupIds.length === 0) {
-      setNoLocationGroup(true);
-      setUsers([UNASSIGNED]);
-      setAssignedTo(null);
-      setUsersLoading(false);
-      return;
-    }    setNoLocationGroup(false);
-    let ignore = false;
-    setUsersLoading(true);
-    Promise.all(
-      locationGroupIds.map((id) =>
-        ajax
-          .get(`${remoteRoutes.usersByLocation}/${id}`)
-          .then(extractUsersByLocation)
-          .catch(() => []),
-      ),
-    )
-      .then((results) => {
-        if (ignore) return;
-        const merged = results.flat();
-        const deduped = Array.from(
-          new Map(merged.map((u) => [u.id, u])).values(),
-        );
-        setUsers([UNASSIGNED, ...deduped]);
+    ajax
+      .get(remoteRoutes.users)
+      .then((r) => {
+        const list = Array.isArray(r.data) ? r.data : r.data?.data ?? [];
+        setUsers([UNASSIGNED, ...list]);
       })
-      .finally(() => {
-        if (!ignore) setUsersLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [locationGroupIds, locationGroupsLoading]);
+      .catch(() => {});
+  }, []);
 
   const filters: TaskFilters = {
     ...(statusFilter.length > 0 && { status: statusFilter }),
@@ -248,21 +216,13 @@ export default function TaskQueue() {
               options={users}
               getOptionLabel={(u) => u.fullName}
               value={assignedTo}
-              disabled={usersLoading || noLocationGroup}
               onChange={(_, val) => {
                 setAssignedTo(val);
                 setPagination((p) => ({ ...p, page: 0 }));
               }}
               sx={{ width: { xs: '100%', sm: 240 } }}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Assigned to"
-                  size="small"
-                  placeholder={
-                    noLocationGroup ? 'No locations assigned' : undefined
-                  }
-                />
+                <TextField {...params} label="Assigned to" size="small" />
               )}
             />
             {hasFilters && (
