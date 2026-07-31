@@ -1,0 +1,24 @@
+# CodeRabbit configuration — https://docs.coderabbit.ai/reference/configuration
+# Note: this file overrides any settings made in the CodeRabbit web UI.
+language: en-US
+reviews:
+  request_changes_workflow: false
+  auto_review:
+    enabled: true
+    # CodeRabbit always auto-reviews PRs targeting the default branch (master);
+    # base_branches only ADDS branches — it cannot exclude master. So release
+    # PRs (develop -> master) may get a redundant auto-review; the
+    # pr-review-merge skill does not require it (gate waived for release PRs).
+    base_branches:
+      - develop
+  path_instructions:
+    - path: "src/**/*.{ts,tsx}"
+      instructions: |
+        API calls go through src/utils/ajax.ts using route constants from
+        src/data/constants.ts (remoteRoutes). Flag hand-rolled fetch/axios calls
+        that bypass ajax.ts, and any change that assumes a server response shape
+        different from the types in src/utils/types.ts.
+    - path: "src/utils/{ajax,permissions}.ts"
+      instructions: |
+        Auth-token handling and capability checks. Scrutinize for token leakage,
+        weakened expiry handling, and capability checks that fail open.

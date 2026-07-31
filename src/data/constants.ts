@@ -68,7 +68,7 @@ export const localRoutes = {
 
   events: '/events',
   eventsDetails: '/events/:eventId',
-  eventActivities: '/events/:activitiesId',
+  // eventActivities: '/events/:activitiesId',
 
   reports: '/reports',
   reportsDetails: '/reports/:reportId',
@@ -108,6 +108,7 @@ export const localRoutes = {
 
   // Notifications
   notifications: '/admin/notifications',
+  notificationMessages: '/notifications',
 
   // Tasks
   tasks: '/tasks',
@@ -149,6 +150,8 @@ export const remoteRoutes = {
   tags: `${apiBaseUrl}/api/tags`,
   users: `${apiBaseUrl}/api/users`,
   userGroups: `${apiBaseUrl}/api/user-groups`,
+  usersByLocation: `${apiBaseUrl}/api/users/by-location`,
+  contactLocationGroup: `${apiBaseUrl}/api/groups/contact-location`,
   roles: `${apiBaseUrl}/api/user-roles`,
   contactsPhone: `${apiBaseUrl}/api/crm/phones`,
   contactsAddress: `${apiBaseUrl}/api/crm/addresses`,
@@ -194,6 +197,7 @@ export const remoteRoutes = {
 
   // Notifications
   notificationSettings: `${apiBaseUrl}/api/notifications/settings`,
+  notificationMessages: `${apiBaseUrl}/api/notifications`,
 
   // Tasks
   tasks: `${apiBaseUrl}/api/tasks`,

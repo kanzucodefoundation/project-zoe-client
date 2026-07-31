@@ -1,0 +1,48 @@
+import { useEffect, useRef } from 'react';
+import { io, Socket } from 'socket.io-client';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { notificationKeys } from '../modules/notifications/hooks';
+
+import { apiBaseUrl } from './constants';
+
+const NOTIFICATIONS_SOCKET_URL = new URL('/notifications', apiBaseUrl).toString();
+
+export function useNotificationSocket(token: string | null) {
+  const qc = useQueryClient();
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const socket = io(NOTIFICATIONS_SOCKET_URL, {
+      auth: { token },
+      transports: ['websocket'],
+      autoConnect: false,
+    });
+    socketRef.current = socket;
+
+    socket.on('notification:new', (notification) => {
+      // Bump unread count + prepend to the cached list without a full refetch
+      qc.setQueryData(notificationKeys.unreadCount, (old: number = 0) => old + 1);
+      qc.invalidateQueries({ queryKey: notificationKeys.list });
+
+      toast.info(notification.title, { autoClose: 5000 });
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Notification socket connection error:', err.message);
+    });
+    const connectTimer = setTimeout(() => socket.connect(), 0);
+
+    return () => {
+      clearTimeout(connectTimer);
+      socket.disconnect();
+      if (socketRef.current === socket) {
+        socketRef.current = null;
+      }
+    };
+  }, [token, qc]);
+
+  return socketRef;
+}
