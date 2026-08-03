@@ -61,6 +61,14 @@ interface TabCache {
   dateRange: DateRange;
 }
 
+interface McaSummary {
+  total: number;
+  breakdown: { groupId: number; groupName: string; total: number }[];
+  weekStart: string;
+  weekEnd: string;
+  reportFound: boolean;
+}
+
 const Reports = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -78,6 +86,22 @@ const Reports = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [submissionDetails, setSubmissionDetails] = useState<SubmissionDetails | null>(null);
+  const [mcaSummary, setMcaSummary] = useState<McaSummary | null>(null);
+  const [mcaLoading, setMcaLoading] = useState(true);
+
+  useEffect(() => {
+    get(
+      `${remoteRoutes.reports}/mca/weekly-summary`,
+      (response: McaSummary) => {
+        setMcaSummary(response);
+        setMcaLoading(false);
+      },
+      (error: any) => {
+        console.error('Failed to fetch MCA summary:', error);
+        setMcaLoading(false);
+      },
+    );
+  }, []);
 
   // Fetch report types on mount
   useEffect(() => {
@@ -311,6 +335,22 @@ const Reports = () => {
             <Tab key={report.id} label={report.name} value={report.id} />
           ))}
         </Tabs>
+      )}
+      {/* MC Attendance for the Week */}
+      {!mcaLoading && mcaSummary?.reportFound && (
+        <Box sx={{marginY:2, backgroundColor: 'text.primary', padding: 2, borderRadius: 1, color: 'background.paper'}}>
+          <Typography variant="h5">
+            This Week's MCA Summary - Total: {mcaSummary.total}
+          </Typography>
+          {mcaSummary.breakdown.length > 0 && (
+            <Box sx={{display:'flex', flexWrap:'wrap', gap:2, marginY:1}}>
+              {mcaSummary.breakdown.map((g) => (
+                <Typography key={g.groupId} variant="body2">
+                  {g.groupName}: {g.total}                </Typography>
+              ))}
+            </Box>
+          )}
+        </Box>  
       )}
 
       {/* Table */}
