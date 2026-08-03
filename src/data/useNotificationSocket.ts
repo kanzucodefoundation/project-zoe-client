@@ -17,7 +17,9 @@ export function useNotificationSocket(token: string | null) {
 
     const socket = io(NOTIFICATIONS_SOCKET_URL, {
       auth: { token },
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
+      tryAllTransports: true,
+      reconnectionAttempts: 5,
       autoConnect: false,
     });
     socketRef.current = socket;
