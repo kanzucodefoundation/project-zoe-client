@@ -96,7 +96,7 @@ const Reports = () => {
         setMcaSummary(response);
         setMcaLoading(false);
       },
-      (error: any) => {
+      (error) => {
         console.error('Failed to fetch MCA summary:', error);
         setMcaLoading(false);
       },
