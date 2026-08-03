@@ -17,7 +17,8 @@ export function useNotificationSocket(token: string | null) {
 
     const socket = io(NOTIFICATIONS_SOCKET_URL, {
       auth: { token },
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
+      tryAllTransports: true,
       autoConnect: false,
     });
     socketRef.current = socket;
@@ -32,6 +33,11 @@ export function useNotificationSocket(token: string | null) {
 
     socket.on('connect_error', (err) => {
       console.error('Notification socket connection error:', err.message);
+    });
+    socket.io.on('reconnect_attempt', (attempt) => {
+      if (attempt > 5) {
+        socket.disconnect();
+      }
     });
     const connectTimer = setTimeout(() => socket.connect(), 0);
 
