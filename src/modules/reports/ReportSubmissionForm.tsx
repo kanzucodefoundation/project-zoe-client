@@ -843,7 +843,7 @@ const ReportSubmissionForm = () => {
 
       return (
         <FormControl fullWidth error={hasError} component="fieldset">
-          <FormLabel component="legend">
+          <FormLabel component="legend" sx={{'&.Mui-focused': { color: 'text.secondary' },}}>
             {field.label}
             {field.required ? ' *' : ''}
           </FormLabel>
