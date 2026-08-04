@@ -341,15 +341,37 @@ const Reports = () => {
           ))}
         </Tabs>
       )}
-      
+
       {/* Weekly Attendance Summary */}
       {summary && activeReportName === 'MC Attendance Report' && (
-        <Box mb={2}>
-          <Typography variant="h6">
-            Weekly Attendance Total: {summary.weeklyAttendanceTotal}
-            </Typography>
-            </Box>
-          )}
+        <Box
+          sx={{
+            mb: 2,
+            p: 2,
+            borderRadius: 2,
+            border: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
+            display: 'inline-flex',
+            textAlign: 'center',
+            flexDirection: 'column',
+            minWidth: 220,
+          }}
+        >
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ textTransform: 'capitalize', letterSpacing: 1 }}
+          >
+            Weekly MC Attendance Total
+          </Typography>
+
+          <Typography variant="h3" fontWeight={600}>
+            {summary.weeklyAttendanceTotal}
+          </Typography>
+
+        </Box>
+      )}
 
       {/* Table */}
       <ReportsTable
