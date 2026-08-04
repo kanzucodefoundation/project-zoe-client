@@ -342,14 +342,6 @@ const Reports = () => {
           <Typography variant="h5">
             This Week's MCA Summary - Total: {mcaSummary.total}
           </Typography>
-          {mcaSummary.breakdown.length > 0 && (
-            <Box sx={{display:'flex', flexWrap:'wrap', gap:2, marginY:1}}>
-              {mcaSummary.breakdown.map((g) => (
-                <Typography key={g.groupId} variant="body2">
-                  {g.groupName}: {g.total}                </Typography>
-              ))}
-            </Box>
-          )}
         </Box>  
       )}
 
