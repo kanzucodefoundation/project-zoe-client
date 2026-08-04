@@ -337,10 +337,10 @@ const Reports = () => {
         </Tabs>
       )}
       {/* MC Attendance for the Week */}
-      {!mcaLoading && mcaSummary?.reportFound && (
+      {!mcaLoading && mcaSummary?.reportFound && (dateRange === '7') &&(
         <Box sx={{marginY:2, backgroundColor: 'text.primary', padding: 2, borderRadius: 1, color: 'background.paper'}}>
           <Typography variant="h5">
-            This Week's MCA Summary - Total: {mcaSummary.total}
+            This Week's Total Fellowship Attendance: {mcaSummary.total}
           </Typography>
         </Box>  
       )}
