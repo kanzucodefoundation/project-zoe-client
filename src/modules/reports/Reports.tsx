@@ -14,13 +14,14 @@ import {
 } from '@mui/material';
 import { Download as DownloadIcon } from '@mui/icons-material';
 import ExcelJS from 'exceljs';
-import { format, subDays, subWeeks } from 'date-fns';
+import { format, subDays, subWeeks, startOfWeek } from 'date-fns';
 import { toast } from 'react-toastify';
 import { get } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import ReportsTable from './ReportsTable';
 import ComplianceTable, { type ComplianceRow } from './ComplianceTable';
 import SubmissionDetailsModal from './SubmissionDetailsModal';
+import type {Column, SubmissionRow } from '../../utils/types';
 
 interface ReportType {
   id: number;
@@ -29,25 +30,10 @@ interface ReportType {
   fieldCount: number;
 }
 
-interface Column {
-  name: string;
-  label: string;
-}
-
 interface PaginationInfo {
   total: number;
   limit: number;
   offset: number;
-}
-
-// A single submission row as returned by the submissions endpoint. `data`
-// holds the dynamic, report-specific field values keyed by column name.
-interface SubmissionRow {
-  id: number;
-  data: Record<string, unknown>;
-  submittedBy: string | { name: string };
-  submittedAt: string;
-  [key: string]: unknown;
 }
 
 interface SubmissionsResponse {
@@ -89,12 +75,6 @@ interface McaSummary {
   weekEnd: string;
   reportFound: boolean;
 }
-
-// Earliest date the compliance endpoint is asked for when "All Time" is
-// selected. Using an explicit, far-past date (rather than omitting `from`)
-// ensures the backend doesn't silently apply its own lookback cap while the
-// UI still advertises the range as unbounded.
-const COMPLIANCE_EPOCH = '1970-01-01';
 
 // Small helper so we don't spread `any` around every catch handler.
 const getErrorMessage = (error: unknown): string =>
@@ -170,20 +150,29 @@ const Reports = () => {
     return { from, to };
   }, [dateRange]);
 
-  // Compliance is inherently a per-reporting-week concept, so the same
-  // dateRange control is reinterpreted here as "how many reporting weeks
-  // back": 7 days -> current week only, 30 days -> last 4 weeks, all time
-  // -> explicitly go back to COMPLIANCE_EPOCH so the backend doesn't apply
-  // its own (silent) lookback cap while the UI still says "All Time".
-  const getComplianceDateRange = useCallback((): { from: string; to: string } => {
-    const to = format(new Date(), 'yyyy-MM-dd');
+  // Reporting periods are Sunday-start weeks, matching the backend's
+  // getStartOfWeek()/reportingPeriod convention.
+  const getComplianceDateRange = useCallback((): { from?: string; to: string } => {
+    const now = new Date();
+    const to = format(now, 'yyyy-MM-dd');
+    const currentWeekStart = startOfWeek(now, { weekStartsOn: 0 });
+
     if (dateRange === '7') {
-      return { from: to, to };
+      // Current reporting week only.
+      return { from: format(currentWeekStart, 'yyyy-MM-dd'), to };
     }
     if (dateRange === '30') {
-      return { from: format(subWeeks(new Date(), 3), 'yyyy-MM-dd'), to };
+      // Last 4 completed reporting weeks, excluding the current (partial) week.
+      const lastCompletedWeekEnd = subDays(currentWeekStart, 1);
+      const from = subWeeks(currentWeekStart, 4);
+      return {
+        from: format(from, 'yyyy-MM-dd'),
+        to: format(lastCompletedWeekEnd, 'yyyy-MM-dd'),
+      };
     }
-    return { from: COMPLIANCE_EPOCH, to };
+    // All time: omit `from` entirely so the backend applies its own
+    // configured lookback cap, rather than forcing a hardcoded epoch here.
+    return { to };
   }, [dateRange]);
 
   // Fetch submissions when active tab or date range changes
@@ -232,7 +221,8 @@ const Reports = () => {
 
     setLoadingCompliance(true);
     const { from, to } = getComplianceDateRange();
-    const url = `${remoteRoutes.reports}/mc/compliance?to=${to}&from=${from}`;
+    const fromParam = from ? `&from=${from}` : '';
+    const url = `${remoteRoutes.reports}/mc/compliance?to=${to}${fromParam}`;
 
     get(
       url,
