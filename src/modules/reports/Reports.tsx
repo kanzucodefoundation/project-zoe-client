@@ -14,11 +14,12 @@ import {
 } from '@mui/material';
 import { Download as DownloadIcon } from '@mui/icons-material';
 import ExcelJS from 'exceljs';
-import { format, subDays } from 'date-fns';
+import { format, subDays, subWeeks } from 'date-fns';
 import { toast } from 'react-toastify';
 import { get } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import ReportsTable from './ReportsTable';
+import ComplianceTable, { type ComplianceRow } from './ComplianceTable';
 import SubmissionDetailsModal from './SubmissionDetailsModal';
 
 interface ReportType {
@@ -53,7 +54,17 @@ interface SubmissionDetails {
   submittedBy: string;
 }
 
+interface ComplianceResponse {
+  weekStarts: string[];
+  groups: ComplianceRow[];
+}
+
 type DateRange = 'all' | '7' | '30' | 'custom';
+
+// Sentinel tab id for the static "Submission Compliance" tab, distinct from
+// the numeric ids of dynamic report types fetched from the API.
+const COMPLIANCE_TAB_ID = 'compliance' as const;
+type ActiveTab = number | typeof COMPLIANCE_TAB_ID | null;
 
 interface TabCache {
   data: Record<string, any>[];
@@ -74,13 +85,15 @@ const Reports = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [reports, setReports] = useState<ReportType[]>([]);
-  const [activeTab, setActiveTab] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<ActiveTab>(null);
   const [dateRange, setDateRange] = useState<DateRange>('all');
   const [loadingReports, setLoadingReports] = useState(true);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [submissions, setSubmissions] = useState<Record<string, any>[]>([]);
   const [columns, setColumns] = useState<Column[]>([]);
   const [tabCache, setTabCache] = useState<Record<number, TabCache>>({});
+  const [complianceRows, setComplianceRows] = useState<ComplianceRow[]>([]);
+  const [loadingCompliance, setLoadingCompliance] = useState(false);
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -110,14 +123,15 @@ const Reports = () => {
       (response: any) => {
         const list: ReportType[] = Array.isArray(response) ? response : (response?.reports || []);
         setReports(list);
-        if (list.length > 0) {
-          setActiveTab(list[0].id);
-        }
+        // Fall back to the static Submission Compliance tab when there are
+        // no dynamic report types, rather than leaving activeTab as null.
+        setActiveTab(list.length > 0 ? list[0].id : COMPLIANCE_TAB_ID);
         setLoadingReports(false);
       },
       (error: any) => {
         console.error('Failed to fetch reports:', error);
         toast.error('Failed to load report types');
+        setActiveTab(COMPLIANCE_TAB_ID);
         setLoadingReports(false);
       },
     );
@@ -136,9 +150,24 @@ const Reports = () => {
     return { from, to };
   }, [dateRange]);
 
+  // Compliance is inherently a per-reporting-week concept, so the same
+  // dateRange control is reinterpreted here as "how many reporting weeks
+  // back": 7 days -> current week only, 30 days -> last 4 weeks, all time
+  // -> leave 'from' unset and let the backend apply its own lookback cap.
+  const getComplianceDateRange = useCallback((): { from?: string; to: string } => {
+    const to = format(new Date(), 'yyyy-MM-dd');
+    if (dateRange === '7') {
+      return { from: to, to };
+    }
+    if (dateRange === '30') {
+      return { from: format(subWeeks(new Date(), 3), 'yyyy-MM-dd'), to };
+    }
+    return { to };
+  }, [dateRange]);
+
   // Fetch submissions when active tab or date range changes
   useEffect(() => {
-    if (activeTab === null) return;
+    if (activeTab === null || activeTab === COMPLIANCE_TAB_ID) return;
 
     // Check cache
     const cached = tabCache[activeTab];
@@ -173,15 +202,45 @@ const Reports = () => {
         setLoadingSubmissions(false);
       },
     );
-  }, [activeTab, dateRange, getDateRange]);
+  }, [activeTab, dateRange, getDateRange, tabCache]);
 
+  // Fetch compliance data when the compliance tab (or date range) is active
+  useEffect(() => {
+    if (activeTab !== COMPLIANCE_TAB_ID) return;
+    let cancelled = false;
+
+    setLoadingCompliance(true);
+    const { from, to } = getComplianceDateRange();
+    const fromParam = from ? `&from=${from}` : '';
+    const url = `${remoteRoutes.reports}/mc/compliance?to=${to}${fromParam}`;
+
+    get(
+      url,
+      (response: ComplianceResponse) => {
+        if (cancelled) return;
+        setComplianceRows(response?.groups || []);
+        setLoadingCompliance(false);
+      },
+      (error: any) => {
+        if (cancelled) return;
+        console.error('Failed to fetch submission compliance:', error);
+        toast.error('Failed to load submission compliance');
+        setComplianceRows([]);
+        setLoadingCompliance(false);
+      },
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, dateRange, getComplianceDateRange]);
   // Invalidate cache when date range changes
   useEffect(() => {
     setTabCache({});
   }, [dateRange]);
 
   const handleRowClick = (row: Record<string, any>) => {
-    if (!activeTab || !row.id) return;
+    if (typeof activeTab !== 'number' || !row.id) return;
     setModalOpen(true);
     setDetailsLoading(true);
     setSubmissionDetails(null);
@@ -200,29 +259,35 @@ const Reports = () => {
     );
   };
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: ActiveTab) => {
     setActiveTab(newValue);
   };
 
   const activeReportName = reports.find((r) => r.id === activeTab)?.name || 'Report';
+  const isComplianceTab = activeTab === COMPLIANCE_TAB_ID;
 
   const handleDownload = async () => {
+    if (isComplianceTab) {
+      await downloadCompliance();
+      return;
+    }
+    await downloadSubmissions();
+  };
+
+  const downloadSubmissions = async () => {
     if (submissions.length === 0) {
       toast.warning('No data to export');
       return;
     }
 
-    // Build export data with proper column headers
     const exportData = submissions.map((row) => {
       const exportRow: Record<string, any> = {};
 
-      // Add dynamic columns from report fields
       columns.forEach((col) => {
         const value = row.data?.[col.name];
         exportRow[col.label] = value ?? '';
       });
 
-      // Add metadata columns
       const submittedBy = typeof row.submittedBy === 'object' ? row.submittedBy?.name : row.submittedBy;
       exportRow['Submitted By'] = submittedBy || '';
       exportRow['Submitted At'] = row.submittedAt ? row.submittedAt.slice(0, 10) : '';
@@ -230,19 +295,39 @@ const Reports = () => {
       return exportRow;
     });
 
-    // Create workbook and worksheet
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Submissions');
-    if (exportData.length > 0) {
-      worksheet.columns = Object.keys(exportData[0]).map((key) => ({ header: key, key }));
-      exportData.forEach((row) => worksheet.addRow(row));
-    }
-
-    // Generate filename with report name and date
     const dateStr = format(new Date(), 'yyyy-MM-dd');
     const fileName = `${activeReportName.replace(/\s+/g, '_')}_${dateStr}.xlsx`;
+    await exportToExcel(exportData, 'Submissions', fileName);
+  };
 
-    // Download file
+  const downloadCompliance = async () => {
+    if (complianceRows.length === 0) {
+      toast.warning('No data to export');
+      return;
+    }
+
+    const exportData = complianceRows.map((row) => ({
+      'MC Leader': row.leaderName,
+      'MC Group': row.groupName,
+      'Weeks Missed': `${row.weeksMissed} / ${row.weeksInRange}`,
+      'Missed Weeks': row.missedWeeks.join(', '),
+    }));
+
+    const dateStr = format(new Date(), 'yyyy-MM-dd');
+    const fileName = `MC_Submission_Compliance_${dateStr}.xlsx`;
+    await exportToExcel(exportData, 'Compliance', fileName);
+  };
+
+  const exportToExcel = async (
+    rows: Record<string, any>[],
+    sheetName: string,
+    fileName: string,
+  ) => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(sheetName);
+    worksheet.columns = Object.keys(rows[0]).map((key) => ({ header: key, key }));
+    rows.forEach((row) => worksheet.addRow(row));
+
     let url: string | undefined;
     try {
       const buffer = await workbook.xlsx.writeBuffer();
@@ -268,14 +353,9 @@ const Reports = () => {
     );
   }
 
-  if (reports.length === 0) {
-    return (
-      <Container maxWidth="lg">
-        <Typography variant="h4" gutterBottom>Reports</Typography>
-        <Typography color="textSecondary">No report types available</Typography>
-      </Container>
-    );
-  }
+  const downloadDisabled = isComplianceTab
+    ? loadingCompliance || complianceRows.length === 0
+    : loadingSubmissions || submissions.length === 0;
 
   return (
     <Container maxWidth="lg">
@@ -303,7 +383,7 @@ const Reports = () => {
             size="small"
             startIcon={<DownloadIcon />}
             onClick={handleDownload}
-            disabled={loadingSubmissions || submissions.length === 0}
+            disabled={downloadDisabled}
             sx={{ textTransform: 'none' }}
           >
             Download
@@ -316,11 +396,12 @@ const Reports = () => {
         <FormControl fullWidth sx={{ mb: 2 }}>
           <Select
             value={activeTab ?? ''}
-            onChange={(e) => setActiveTab(Number(e.target.value))}
+            onChange={(e) => setActiveTab(e.target.value === COMPLIANCE_TAB_ID ? COMPLIANCE_TAB_ID : Number(e.target.value))}
           >
             {reports.map((report) => (
               <MenuItem key={report.id} value={report.id}>{report.name}</MenuItem>
             ))}
+            <MenuItem value={COMPLIANCE_TAB_ID}>Submission Compliance</MenuItem>
           </Select>
         </FormControl>
       ) : (
@@ -334,24 +415,36 @@ const Reports = () => {
           {reports.map((report) => (
             <Tab key={report.id} label={report.name} value={report.id} />
           ))}
+          <Tab label="Submission Compliance" value={COMPLIANCE_TAB_ID} />
         </Tabs>
       )}
+
       {/* MC Attendance for the Week */}
-      {!mcaLoading && mcaSummary?.reportFound && (dateRange === '7') &&(
-        <Box sx={{marginY:2, backgroundColor: 'text.primary', padding: 2, borderRadius: 1, color: 'background.paper'}}>
+      {!mcaLoading && mcaSummary?.reportFound && (dateRange === '7') && (
+        <Box sx={{ marginY: 2, backgroundColor: 'text.primary', padding: 2, borderRadius: 1, color: 'background.paper' }}>
           <Typography variant="h5">
             This Week's Total Fellowship Attendance: {mcaSummary.total}
           </Typography>
-        </Box>  
+        </Box>
       )}
 
       {/* Table */}
-      <ReportsTable
-        columns={columns}
-        data={submissions}
-        loading={loadingSubmissions}
-        onRowClick={handleRowClick}
-      />
+      {isComplianceTab ? (
+        <ComplianceTable
+          rows={complianceRows}
+          loading={loadingCompliance}
+          showWeeksMissed={dateRange !== '7'}
+        />
+      ) : reports.length === 0 ? (
+        <Typography color="textSecondary">No report types available</Typography>
+      ) : (
+        <ReportsTable
+          columns={columns}
+          data={submissions}
+          loading={loadingSubmissions}
+          onRowClick={handleRowClick}
+        />
+      )}
 
       {/* Details Modal */}
       <SubmissionDetailsModal
