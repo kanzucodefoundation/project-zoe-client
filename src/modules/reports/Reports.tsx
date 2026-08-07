@@ -40,8 +40,18 @@ interface PaginationInfo {
   offset: number;
 }
 
+// A single submission row as returned by the submissions endpoint. `data`
+// holds the dynamic, report-specific field values keyed by column name.
+interface SubmissionRow {
+  id: number;
+  data: Record<string, unknown>;
+  submittedBy: string | { name: string };
+  submittedAt: string;
+  [key: string]: unknown;
+}
+
 interface SubmissionsResponse {
-  submissions: Record<string, any>[];
+  submissions: SubmissionRow[];
   columns: Column[];
   pagination: PaginationInfo;
 }
@@ -67,7 +77,7 @@ const COMPLIANCE_TAB_ID = 'compliance' as const;
 type ActiveTab = number | typeof COMPLIANCE_TAB_ID | null;
 
 interface TabCache {
-  data: Record<string, any>[];
+  data: SubmissionRow[];
   columns: Column[];
   dateRange: DateRange;
 }
@@ -80,6 +90,16 @@ interface McaSummary {
   reportFound: boolean;
 }
 
+// Earliest date the compliance endpoint is asked for when "All Time" is
+// selected. Using an explicit, far-past date (rather than omitting `from`)
+// ensures the backend doesn't silently apply its own lookback cap while the
+// UI still advertises the range as unbounded.
+const COMPLIANCE_EPOCH = '1970-01-01';
+
+// Small helper so we don't spread `any` around every catch handler.
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
+
 const Reports = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -89,7 +109,7 @@ const Reports = () => {
   const [dateRange, setDateRange] = useState<DateRange>('all');
   const [loadingReports, setLoadingReports] = useState(true);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
-  const [submissions, setSubmissions] = useState<Record<string, any>[]>([]);
+  const [submissions, setSubmissions] = useState<SubmissionRow[]>([]);
   const [columns, setColumns] = useState<Column[]>([]);
   const [tabCache, setTabCache] = useState<Record<number, TabCache>>({});
   const [complianceRows, setComplianceRows] = useState<ComplianceRow[]>([]);
@@ -109,8 +129,8 @@ const Reports = () => {
         setMcaSummary(response);
         setMcaLoading(false);
       },
-      (error) => {
-        console.error('Failed to fetch MCA summary:', error);
+      (error: unknown) => {
+        console.error('Failed to fetch MCA summary:', getErrorMessage(error));
         setMcaLoading(false);
       },
     );
@@ -128,8 +148,8 @@ const Reports = () => {
         setActiveTab(list.length > 0 ? list[0].id : COMPLIANCE_TAB_ID);
         setLoadingReports(false);
       },
-      (error: any) => {
-        console.error('Failed to fetch reports:', error);
+      (error: unknown) => {
+        console.error('Failed to fetch reports:', getErrorMessage(error));
         toast.error('Failed to load report types');
         setActiveTab(COMPLIANCE_TAB_ID);
         setLoadingReports(false);
@@ -153,8 +173,9 @@ const Reports = () => {
   // Compliance is inherently a per-reporting-week concept, so the same
   // dateRange control is reinterpreted here as "how many reporting weeks
   // back": 7 days -> current week only, 30 days -> last 4 weeks, all time
-  // -> leave 'from' unset and let the backend apply its own lookback cap.
-  const getComplianceDateRange = useCallback((): { from?: string; to: string } => {
+  // -> explicitly go back to COMPLIANCE_EPOCH so the backend doesn't apply
+  // its own (silent) lookback cap while the UI still says "All Time".
+  const getComplianceDateRange = useCallback((): { from: string; to: string } => {
     const to = format(new Date(), 'yyyy-MM-dd');
     if (dateRange === '7') {
       return { from: to, to };
@@ -162,7 +183,7 @@ const Reports = () => {
     if (dateRange === '30') {
       return { from: format(subWeeks(new Date(), 3), 'yyyy-MM-dd'), to };
     }
-    return { to };
+    return { from: COMPLIANCE_EPOCH, to };
   }, [dateRange]);
 
   // Fetch submissions when active tab or date range changes
@@ -194,8 +215,8 @@ const Reports = () => {
         }));
         setLoadingSubmissions(false);
       },
-      (error: any) => {
-        console.error('Failed to fetch submissions:', error);
+      (error: unknown) => {
+        console.error('Failed to fetch submissions:', getErrorMessage(error));
         toast.error('Failed to load submissions');
         setSubmissions([]);
         setColumns([]);
@@ -211,8 +232,7 @@ const Reports = () => {
 
     setLoadingCompliance(true);
     const { from, to } = getComplianceDateRange();
-    const fromParam = from ? `&from=${from}` : '';
-    const url = `${remoteRoutes.reports}/mc/compliance?to=${to}${fromParam}`;
+    const url = `${remoteRoutes.reports}/mc/compliance?to=${to}&from=${from}`;
 
     get(
       url,
@@ -221,9 +241,9 @@ const Reports = () => {
         setComplianceRows(response?.groups || []);
         setLoadingCompliance(false);
       },
-      (error: any) => {
+      (error: unknown) => {
         if (cancelled) return;
-        console.error('Failed to fetch submission compliance:', error);
+        console.error('Failed to fetch submission compliance:', getErrorMessage(error));
         toast.error('Failed to load submission compliance');
         setComplianceRows([]);
         setLoadingCompliance(false);
@@ -239,7 +259,7 @@ const Reports = () => {
     setTabCache({});
   }, [dateRange]);
 
-  const handleRowClick = (row: Record<string, any>) => {
+  const handleRowClick = (row: SubmissionRow) => {
     if (typeof activeTab !== 'number' || !row.id) return;
     setModalOpen(true);
     setDetailsLoading(true);
@@ -251,8 +271,8 @@ const Reports = () => {
         setSubmissionDetails(response);
         setDetailsLoading(false);
       },
-      (error: any) => {
-        console.error('Failed to fetch submission details:', error);
+      (error: unknown) => {
+        console.error('Failed to fetch submission details:', getErrorMessage(error));
         toast.error('Failed to load submission details');
         setDetailsLoading(false);
       },
@@ -281,11 +301,11 @@ const Reports = () => {
     }
 
     const exportData = submissions.map((row) => {
-      const exportRow: Record<string, any> = {};
+      const exportRow: Record<string, string | number> = {};
 
       columns.forEach((col) => {
         const value = row.data?.[col.name];
-        exportRow[col.label] = value ?? '';
+        exportRow[col.label] = (value as string | number) ?? '';
       });
 
       const submittedBy = typeof row.submittedBy === 'object' ? row.submittedBy?.name : row.submittedBy;
@@ -318,8 +338,8 @@ const Reports = () => {
     await exportToExcel(exportData, 'Compliance', fileName);
   };
 
-  const exportToExcel = async (
-    rows: Record<string, any>[],
+  const exportToExcel = async <T extends Record<string, string | number>>(
+    rows: T[],
     sheetName: string,
     fileName: string,
   ) => {
