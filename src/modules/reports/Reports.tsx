@@ -61,6 +61,14 @@ interface TabCache {
   dateRange: DateRange;
 }
 
+interface McaSummary {
+  total: number;
+  breakdown: { groupId: number; groupName: string; total: number }[];
+  weekStart: string;
+  weekEnd: string;
+  reportFound: boolean;
+}
+
 const Reports = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -78,6 +86,22 @@ const Reports = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [submissionDetails, setSubmissionDetails] = useState<SubmissionDetails | null>(null);
+  const [mcaSummary, setMcaSummary] = useState<McaSummary | null>(null);
+  const [mcaLoading, setMcaLoading] = useState(true);
+
+  useEffect(() => {
+    get(
+      `${remoteRoutes.reports}/mca/weekly-summary`,
+      (response: McaSummary) => {
+        setMcaSummary(response);
+        setMcaLoading(false);
+      },
+      (error) => {
+        console.error('Failed to fetch MCA summary:', error);
+        setMcaLoading(false);
+      },
+    );
+  }, []);
 
   // Fetch report types on mount
   useEffect(() => {
@@ -311,6 +335,14 @@ const Reports = () => {
             <Tab key={report.id} label={report.name} value={report.id} />
           ))}
         </Tabs>
+      )}
+      {/* MC Attendance for the Week */}
+      {!mcaLoading && mcaSummary?.reportFound && (dateRange === '7') &&(
+        <Box sx={{marginY:2, backgroundColor: 'text.primary', padding: 2, borderRadius: 1, color: 'background.paper'}}>
+          <Typography variant="h5">
+            This Week's Total Fellowship Attendance: {mcaSummary.total}
+          </Typography>
+        </Box>  
       )}
 
       {/* Table */}

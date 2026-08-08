@@ -180,7 +180,7 @@ export default function UpdateStatusDialog({
         <DialogContent dividers={isPhone}>
           <Stack spacing={3} sx={{ mt: 1 }}>
             <FormControl>
-              <FormLabel>New Status</FormLabel>
+              <FormLabel sx={{color:'text.primary'}}>New Status</FormLabel>
               <RadioGroup
                 value={formik.values.status}
                 onChange={(e) => formik.setFieldValue('status', e.target.value)}
