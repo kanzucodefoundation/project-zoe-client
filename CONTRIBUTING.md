@@ -45,11 +45,11 @@ Every PR passes through three layers before it can merge. `develop` and `master`
 
    The full gate and sensitive-path list lives in [`.claude/skills/pr-review-merge/SKILL.md`](./.claude/skills/pr-review-merge/SKILL.md). The skill never approves or merges anything.
 
-3. **A maintainer approves and merges** in the GitHub UI (squash merge). The approval can come from anyone with write access — but not the PR author.
+3. **A maintainer approves and merges** in the GitHub UI (squash merge). Both the approval and the merge require Maintainer membership — the PR author may not approve their own PR.
 
 To run the skill you need Claude Code started inside the repo (pull first — the skill ships in `.claude/skills/`), an authenticated `gh` CLI (`gh auth login`), and write access for the labelling step. If you work from a fork, run `gh repo set-default kanzucodefoundation/project-zoe-client` once so `gh` resolves PRs against the upstream repo.
 
-Releases (`develop` → `master`) follow the same process — the skill scans the full cumulative diff and routes it like any other PR. Merging to `master` deploys the production client. If a hotfix ever lands on `master` directly, back-merge it into `develop` immediately, using a merge commit (not squash).
+Releases (`develop` → `master`) follow the same process with one exception: the CodeRabbit-reviewed gate (gate 1) is waived for release PRs — CodeRabbit may report "Review skipped" on the release PR itself, and that is acceptable. All other gates still apply in full, including unresolved threads, CI green, non-trivial description, no credential-shaped files, and lockfile explained. This exception applies only to a PR with head `develop` targeting `master`; a PR from any other branch targeting `master` is not a release PR and must satisfy every gate including gate 1. Merging to `master` deploys the production client. If a hotfix ever lands on `master` directly, back-merge it into `develop` immediately, using a merge commit (not squash).
 
 ## Branch naming
 
