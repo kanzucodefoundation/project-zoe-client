@@ -12,17 +12,13 @@ import {
   IconButton,
 } from '@mui/material';
 import { MoreVert } from '@mui/icons-material';
-
-interface Column {
-  name: string;
-  label: string;
-}
+import type {Column, SubmissionRow } from '../../utils/types';
 
 interface Props {
   columns: Column[];
-  data: Record<string, any>[];
+  data: SubmissionRow[];
   loading: boolean;
-  onRowClick: (row: Record<string, any>) => void;
+  onRowClick: (row: SubmissionRow) => void;
 }
 
 const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {

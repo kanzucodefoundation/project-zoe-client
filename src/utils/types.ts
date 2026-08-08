@@ -221,6 +221,21 @@ export interface UserOption {
   fullName: string;
 }
 
+export interface Column {
+  name: string;
+  label: string;
+}
+
+// A single submission row as returned by the submissions endpoint. `data`
+// holds the dynamic, report-specific field values keyed by column name.
+export interface SubmissionRow {
+  id: number;
+  data: Record<string, unknown>;
+  submittedBy: string | { name: string };
+  submittedAt: string;
+  [key: string]: unknown;
+}
+
 export type UsersByLocationResponse = UserOption[] | { data: UserOption[] };
 
 export function extractUsersByLocation(
