@@ -57,7 +57,7 @@ interface ComplianceResponse {
 
 type DateRange = 'all' | '7' | '30' | 'custom';
 
-// Sentinel tab id for the static "Submission Compliance" tab, distinct from
+// Sentinel tab id for the static "MC Report Submission Compliance" tab, distinct from
 // the numeric ids of dynamic report types fetched from the API.
 const COMPLIANCE_TAB_ID = 'compliance' as const;
 type ActiveTab = number | typeof COMPLIANCE_TAB_ID | null;
@@ -123,7 +123,7 @@ const Reports = () => {
       (response: any) => {
         const list: ReportType[] = Array.isArray(response) ? response : (response?.reports || []);
         setReports(list);
-        // Fall back to the static Submission Compliance tab when there are
+        // Fall back to the static MC Report Submission Compliance tab when there are
         // no dynamic report types, rather than leaving activeTab as null.
         setActiveTab(list.length > 0 ? list[0].id : COMPLIANCE_TAB_ID);
         setLoadingReports(false);
@@ -233,8 +233,8 @@ const Reports = () => {
       },
       (error: unknown) => {
         if (cancelled) return;
-        console.error('Failed to fetch submission compliance:', getErrorMessage(error));
-        toast.error('Failed to load submission compliance');
+        console.error('Failed to fetch MC Report Submission Compliance:', getErrorMessage(error));
+        toast.error('Failed to load MC Report Submission Compliance');
         setComplianceRows([]);
         setLoadingCompliance(false);
       },
@@ -324,7 +324,7 @@ const Reports = () => {
     }));
 
     const dateStr = format(new Date(), 'yyyy-MM-dd');
-    const fileName = `MC_Submission_Compliance_${dateStr}.xlsx`;
+    const fileName = `MC_Report_Submission_Compliance_${dateStr}.xlsx`;
     await exportToExcel(exportData, 'Compliance', fileName);
   };
 
@@ -411,7 +411,7 @@ const Reports = () => {
             {reports.map((report) => (
               <MenuItem key={report.id} value={report.id}>{report.name}</MenuItem>
             ))}
-            <MenuItem value={COMPLIANCE_TAB_ID}>Submission Compliance</MenuItem>
+            <MenuItem value={COMPLIANCE_TAB_ID}>MC Report Submission Compliance</MenuItem>
           </Select>
         </FormControl>
       ) : (
@@ -425,7 +425,7 @@ const Reports = () => {
           {reports.map((report) => (
             <Tab key={report.id} label={report.name} value={report.id} />
           ))}
-          <Tab label="Submission Compliance" value={COMPLIANCE_TAB_ID} />
+          <Tab label="MC Report Submission Compliance" value={COMPLIANCE_TAB_ID} />
         </Tabs>
       )}
 
