@@ -3,14 +3,11 @@ import { io, Socket } from 'socket.io-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { notificationKeys } from '../modules/notifications/hooks';
-
 import { apiBaseUrl } from './constants';
 
-// `new URL('/notifications', apiBaseUrl)` discards any existing path in
-// apiBaseUrl (e.g. "/server") because a leading slash resolves as absolute.
-// Concatenate instead so the reverse-proxy prefix is preserved.
-const NOTIFICATIONS_SOCKET_URL = `${apiBaseUrl.replace(/\/+$/, '')}/notifications`;
-const SOCKET_IO_PATH = `${new URL(apiBaseUrl).pathname.replace(/\/+$/, '')}/socket.io`;
+const API_BASE_URL = new URL(apiBaseUrl, window.location.origin);
+const NOTIFICATIONS_SOCKET_URL = `${API_BASE_URL.origin}${API_BASE_URL.pathname.replace(/\/+$/, '')}/notifications`;
+const SOCKET_IO_PATH = `${API_BASE_URL.pathname.replace(/\/+$/, '')}/socket.io`;
 
 export function useNotificationSocket(token: string | null) {
   const qc = useQueryClient();
@@ -24,9 +21,7 @@ export function useNotificationSocket(token: string | null) {
       transports: ['websocket', 'polling'],
       reconnectionAttempts: 5,
       autoConnect: false,
-      // Engine.io handshake must hit the same proxy prefix as the REST API
-      // (e.g. "/server/socket.io"), otherwise it falls back to the origin
-      // root and errors out behind the proxy.
+      tryAllTransports: true,
       path: SOCKET_IO_PATH,
     });
     socketRef.current = socket;
