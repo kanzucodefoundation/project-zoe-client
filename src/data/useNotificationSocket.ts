@@ -3,10 +3,11 @@ import { io, Socket } from 'socket.io-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { notificationKeys } from '../modules/notifications/hooks';
-
 import { apiBaseUrl } from './constants';
 
-const NOTIFICATIONS_SOCKET_URL = new URL('/notifications', apiBaseUrl).toString();
+const API_BASE_URL = new URL(apiBaseUrl, window.location.origin);
+const NOTIFICATIONS_SOCKET_URL = `${API_BASE_URL.origin}${API_BASE_URL.pathname.replace(/\/+$/, '')}/notifications`;
+const SOCKET_IO_PATH = `${API_BASE_URL.pathname.replace(/\/+$/, '')}/socket.io`;
 
 export function useNotificationSocket(token: string | null) {
   const qc = useQueryClient();
@@ -18,9 +19,10 @@ export function useNotificationSocket(token: string | null) {
     const socket = io(NOTIFICATIONS_SOCKET_URL, {
       auth: { token },
       transports: ['websocket', 'polling'],
-      tryAllTransports: true,
       reconnectionAttempts: 5,
       autoConnect: false,
+      tryAllTransports: true,
+      path: SOCKET_IO_PATH,
     });
     socketRef.current = socket;
 
