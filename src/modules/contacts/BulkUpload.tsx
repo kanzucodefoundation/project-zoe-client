@@ -65,7 +65,7 @@ const TEMPLATES: Record<UploadMode, string> = {
   contacts:
     'First Name,Last Name,Email,Phone,Date of Birth,Gender,District,Country',
   guests:
-    'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You,Service Date',
+    'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You, Church Location, Service Date',
   believers:
     'First Name,Last Name,Phone,Email,Address,Led to Christ By,Led to Christ On,Notes',
   redzone: 'First Name,Last Name,Phone,Email,Gender,Notes',
@@ -369,8 +369,9 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             <br />• <strong>Last Name</strong> (required)
             <br />• <strong>Email</strong> (required — used for login)
             <br />• <strong>Phone</strong>
-            <br />• <strong>Date of Birth</strong> - DD/MM/YYYY, e.g. 5/Jan/1990
+            <br />• <strong>Date of Birth</strong> (DD/MM/YYYY, e.g. 05/01/1990 Unsupported formats are silently dropped.)
             <br />• <strong>Gender</strong> (Male/Female)
+            <br />• <strong>District</strong>
             <br />• <strong>Country</strong> (required)
             <br />
           </Typography>
