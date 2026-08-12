@@ -63,7 +63,7 @@ type UploadResult = ContactsUploadResult | ServiceUploadResult;
 
 const TEMPLATES: Record<UploadMode, string> = {
   contacts:
-    'firstName,lastName,email,phone,dateOfBirth,gender,district,country',
+    'First Name,Last Name,Email,Phone,Date of Birth,Gender,District,Country',
   guests:
     'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You,Service Date',
   believers:
@@ -365,15 +365,13 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             Required CSV Columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>firstName</strong> - First name (required)
-            <br />• <strong>lastName</strong> - Last name (required)
-            <br />• <strong>email</strong> - Email address (required — used for
-            login)
-            <br />• <strong>phone</strong> - Phone number
-            <br />• <strong>dateOfBirth</strong> - Date of birth (YYYY-MM-DD
-            format)
-            <br />• <strong>gender</strong> - Gender (Male/Female)
-            <br />• <strong>country</strong> - Country (required)
+            • <strong>First Name</strong> (required)
+            <br />• <strong>Last Name</strong> (required)
+            <br />• <strong>Email</strong> (required — used for login)
+            <br />• <strong>Phone</strong>
+            <br />• <strong>Date of Birth</strong> - DD/MM/YYYY, e.g. 5/Jan/1990
+            <br />• <strong>Gender</strong> (Male/Female)
+            <br />• <strong>Country</strong> (required)
             <br />
           </Typography>
         </Box>
@@ -385,16 +383,16 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             Required columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>firstName</strong> - First name (required)
-            <br />• <strong>lastName</strong> - Last name (required)
-            <br />• <strong>phone</strong> - Phone number
+            • <strong>First Name</strong> (required)
+            <br />• <strong>Last Name</strong> (required)
+            <br />• <strong>Phone</strong>
             <br />
           </Typography>
           <Typography variant="subtitle2" gutterBottom sx={{ mt: 1 }}>
             Optional columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>email</strong> - Email address
+            • <strong>Email</strong>
             <br />• <strong>Address</strong>
             <br />• <strong>How Did You Hear About Us</strong>
             <br />• <strong>How May We Pray For You</strong>
@@ -413,16 +411,16 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             Required columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>firstName</strong> - First name (required)
-            <br />• <strong>lastName</strong> - Last name (required)
-            <br />• <strong>phone</strong> - Phone number
+            • <strong>First Name</strong> (required)
+            <br />• <strong>Last Name</strong> (required)
+            <br />• <strong>Phone</strong>
             <br />
           </Typography>
           <Typography variant="subtitle2" gutterBottom sx={{ mt: 1 }}>
             Optional columns:
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            • <strong>email</strong> - Email address
+            • <strong>Email</strong>
             <br />• <strong>Address</strong>
             <br />• <strong>Led to Christ By</strong>
             <br />• <strong>Led to Christ On</strong> — YYYY-MM-DD or
