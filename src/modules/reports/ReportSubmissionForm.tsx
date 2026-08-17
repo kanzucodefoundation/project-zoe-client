@@ -206,6 +206,7 @@ const ReportSubmissionForm = () => {
   const [scheduleEditTime, setScheduleEditTime] = useState('19:00');
   const [scheduleEditFrequency, setScheduleEditFrequency] = useState<'weekly' | 'biweekly' | 'monthly'>('weekly');
   const [scheduleEditSaving, setScheduleEditSaving] = useState(false);
+  const [openPickers, setOpenPickers] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     get(
@@ -1009,6 +1010,10 @@ const ReportSubmissionForm = () => {
             <DatePicker
               label={field.label}
               value={value ? parseISO(value) : null}
+              maxDate={new Date()}
+              open={openPickers[field.name] ?? false}
+              onOpen={() => setOpenPickers((prev) => ({ ...prev, [field.name]: true }))}
+              onClose={() => setOpenPickers((prev) => ({ ...prev, [field.name]: false }))}
               onChange={
                 ((date: Date | null) =>
                   handleChange(
@@ -1022,6 +1027,16 @@ const ReportSubmissionForm = () => {
                   required: field.required,
                   error: hasError,
                   helperText: validationErrors[field.name],
+                  InputProps: { readOnly: true },
+                  onClick: () =>
+                    setOpenPickers((prev) => ({ ...prev, [field.name]: true })),
+                  onKeyDown: (e: React.KeyboardEvent) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setOpenPickers((prev) => ({ ...prev, [field.name]: true }));
+                    }
+                  },
+                  sx: { cursor: 'pointer' },
                 },
               }}
             />
