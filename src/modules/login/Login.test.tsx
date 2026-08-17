@@ -64,16 +64,13 @@ describe('Login rendering', () => {
     expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
   });
 
-  it('makes the support action clear and opens it in a new tab', () => {
+  it('renders the support link with safe external-link attributes', () => {
     renderLogin();
+    const supportLink = screen.getByRole('link', { name: /need help/i });
 
-    expect(screen.getByText(/need help/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: /open project zoe support options/i }),
-    ).toMatchObject({
-      target: '_blank',
-      rel: 'noopener noreferrer',
-    });
+    expect(supportLink).toHaveAttribute('href', 'https://linktr.ee/AtProjectZoe');
+    expect(supportLink).toHaveAttribute('target', '_blank');
+    expect(supportLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
   it('does not show an error alert on initial render', () => {
