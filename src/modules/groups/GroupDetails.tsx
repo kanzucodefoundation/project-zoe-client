@@ -110,6 +110,8 @@ type ManagedGroup =
   | string
   | { id?: number | string; groupId?: number | string };
 
+type ContactsResponse = ContactRef[] | { data: ContactRef[] };
+
 const getJson = <T,>(url: string): Promise<T> =>
   new Promise<T>((resolve, reject) => {
     get(
@@ -250,7 +252,10 @@ const GroupDetails = () => {
         while (keepFetching && !ignore && loopCount < MAX_LOOPS) {
           loopCount++;
           const url = `${remoteRoutes.contacts}?skip=${skip}&limit=${limit}`;
-          const data = await getJson<ContactRef[]>(url);
+          const response = await getJson<ContactsResponse>(url);
+          const data = response && !Array.isArray(response) && 'data' in response 
+            ? response.data 
+            : response;
           if (!Array.isArray(data) || data.length === 0) {
             keepFetching = false;
             break;
