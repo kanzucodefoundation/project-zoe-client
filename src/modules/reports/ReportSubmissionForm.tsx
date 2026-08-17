@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Container,
   Typography,
@@ -38,7 +38,6 @@ import { get, post, put } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import type { $TsFixMe } from '../../utils/types.ts';
 import type { RootState } from '../../data/store';
-import { useRef } from 'react';
 
 const WEEKDAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -207,7 +206,21 @@ const ReportSubmissionForm = () => {
   const [scheduleEditFrequency, setScheduleEditFrequency] = useState<'weekly' | 'biweekly' | 'monthly'>('weekly');
   const [scheduleEditSaving, setScheduleEditSaving] = useState(false);
   const [openPickers, setOpenPickers] = useState<Record<string, boolean>>({});
+  
+  const handleDateFieldOpen = useCallback((fieldName: string) => {
+    setOpenPickers((prev) => ({ ...prev, [fieldName]: true }));
+  }, []);
 
+  const handleDateFieldClose = useCallback((fieldName: string) => {
+    setOpenPickers((prev) => ({ ...prev, [fieldName]: false }));
+  }, []);
+
+  const handleDateFieldChange = useCallback(
+    (fieldName: string) => (date: Date | null) => {
+      handleChange(fieldName, date ? format(date, 'yyyy-MM-dd') : '');
+    },
+    [],
+  );
   useEffect(() => {
     get(
       `${remoteRoutes.reports}/${reportId}`,
@@ -1011,32 +1024,31 @@ const ReportSubmissionForm = () => {
               label={field.label}
               value={value ? parseISO(value) : null}
               maxDate={new Date()}
+              readOnly
               open={openPickers[field.name] ?? false}
-              onOpen={() => setOpenPickers((prev) => ({ ...prev, [field.name]: true }))}
-              onClose={() => setOpenPickers((prev) => ({ ...prev, [field.name]: false }))}
-              onChange={
-                ((date: Date | null) =>
-                  handleChange(
-                    field.name,
-                    date ? format(date, 'yyyy-MM-dd') : '',
-                  )) as $TsFixMe
-              }
+              onOpen={() => handleDateFieldOpen(field.name)}
+              onClose={() => handleDateFieldClose(field.name)}
+              onChange={handleDateFieldChange(field.name) as $TsFixMe}
               slotProps={{
                 textField: {
                   fullWidth: true,
                   required: field.required,
                   error: hasError,
                   helperText: validationErrors[field.name],
-                  InputProps: { readOnly: true },
-                  onClick: () =>
-                    setOpenPickers((prev) => ({ ...prev, [field.name]: true })),
-                  onKeyDown: (e: React.KeyboardEvent) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setOpenPickers((prev) => ({ ...prev, [field.name]: true }));
-                    }
+                  onClick: () => handleDateFieldOpen(field.name),
+                  sx: {
+                    cursor: 'pointer',
+                    '& .MuiInputBase-input': {
+                      WebkitTextFillColor: 'currentColor',
+                      color: 'text.primary',
+                    },
                   },
-                  sx: { cursor: 'pointer' },
+                },
+                openPickerButton: {
+                  sx: { color: 'action.active' },
+                },
+                openPickerIcon: {
+                  sx: { color: 'action.active' },
                 },
               }}
             />
