@@ -261,7 +261,7 @@ const GroupDetails = () => {
             keepFetching = false;
           }
         }
-        if (loopCount >= MAX_LOOPS) {
+        if (!ignore && keepFetching && loopCount === MAX_LOOPS) {
           console.warn(`[Pagination Guard] Reached maximum request cap of ${MAX_LOOPS}. Data may be truncated.`);
         }
         if (!ignore) setAllContacts(accumulatedContacts);
