@@ -268,6 +268,9 @@ const GroupDetails = () => {
         }
         if (!ignore && keepFetching && loopCount === MAX_LOOPS) {
           console.warn(`[Pagination Guard] Reached maximum request cap of ${MAX_LOOPS}. Data may be truncated.`);
+          toast.warning(
+            `Loaded the first ${accumulatedContacts.length} people. The list may be incomplete — try searching for a specific name if you don't see who you're looking for.`,
+          );
         }
         if (!ignore) setAllContacts(accumulatedContacts);
       } catch {
