@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactElement } from 'react';
 import {
   BrowserRouter as Router,
@@ -26,6 +26,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Import actual components
 import Login from './modules/login/Login';
+import OfflinePage from './modules/login/OfflinePage';
 import ForgotPassword from './modules/login/ForgotPassword';
 import SignUp from './modules/login/SignUp';
 import ResetPassword from './modules/login/ResetPassword';
@@ -92,11 +93,20 @@ const LoaderDialog = ({ open }: { open: boolean }) =>
 
 function App() {
   const dispatch = useDispatch();
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
   const { user, isLoadingUser, globalLoader } = useSelector(
     (state: RootState) => state.core,
   );
 
   useEffect(() => {
+    // Track browser connectivity
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
     // Try to restore user from localStorage on app start
     const storedUser = localStorage.getItem(AUTH_USER_KEY);
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
@@ -112,6 +122,11 @@ function App() {
     } else {
       dispatch(logout());
     }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, [dispatch]);
 
   if (isLoadingUser) {
@@ -143,6 +158,9 @@ function App() {
       <LoaderDialog open={globalLoader} />
       <PwaInstallPrompt />
       {user ? (
+        <>
+           <OfflinePage open={!isOnline} />
+
         <LayoutV2>
           <Routes>
             <Route path={localRoutes.dashboard} element={<Dashboard />} />
@@ -305,6 +323,7 @@ function App() {
             <Route path="*" element={<Dashboard />} />
           </Routes>
         </LayoutV2>
+      </>
       ) : (
         <Routes>
           <Route

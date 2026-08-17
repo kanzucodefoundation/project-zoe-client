@@ -181,6 +181,34 @@ describe('form submission', () => {
       expect(localStorage.getItem(AUTH_TOKEN_KEY)).toBe(fakeToken);
     });
   });
+
+  it('shows no internet error when offline', async () => {
+    const user = userEvent.setup();
+
+    Object.defineProperty(navigator, 'onLine', {
+      configurable: true,
+      value: false,
+    });
+
+    renderLogin();
+
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+
+    expect(
+      screen.getByRole('dialog', { name: /no internet connection/i }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('button', { name: /try again/i }),
+    ).toBeInTheDocument();
+
+    expect(mockPost).not.toHaveBeenCalled();
+
+    Object.defineProperty(navigator, 'onLine', {
+      configurable: true,
+      value: true,
+    });
+  });
 });
 
 // ─── navigation links ─────────────────────────────────────────────────────────

@@ -18,6 +18,7 @@ import { post } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import loginBackground from '../../assets/images/login-background.jpg';
 import HelpFab, { NARROW_SCREEN_QUERY } from './HelpFab';
+import OfflinePage from './OfflinePage';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -30,6 +31,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showOfflinePage, setShowOfflinePage] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -40,6 +42,12 @@ const Login = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!navigator.onLine) {
+      setShowOfflinePage(true);
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -67,6 +75,7 @@ const Login = () => {
       }}
     >
       <HelpFab />
+      <OfflinePage open={showOfflinePage} />
 
       {/* Mobile image masthead */}
       <Box
