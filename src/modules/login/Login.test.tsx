@@ -66,7 +66,9 @@ describe('Login rendering', () => {
 
   it('renders the support link with safe external-link attributes', () => {
     renderLogin();
-    const supportLink = screen.getByRole('link', { name: /need help/i });
+    const supportLink = screen.getByRole('link', {
+      name: /open project zoe support options/i,
+    });
 
     expect(supportLink).toHaveAttribute('href', 'https://linktr.ee/AtProjectZoe');
     expect(supportLink).toHaveAttribute('target', '_blank');
