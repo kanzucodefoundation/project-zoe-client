@@ -241,9 +241,31 @@ const GroupDetails = () => {
     const fetchAllContacts = async () => {
       setContactsLoading(true);
       try {
-        const data = await getJson<ContactRef[]>(remoteRoutes.contacts);
-        if (!ignore) setAllContacts(Array.isArray(data) ? data : []);
-      } catch{
+        const accumulatedContacts: ContactRef[] = [];
+        let skip = 0;
+        const limit = 100;
+        let keepFetching = true;
+        let loopCount = 0;
+        const MAX_LOOPS = 200;
+        while (keepFetching && !ignore && loopCount < MAX_LOOPS) {
+          loopCount++;
+          const url = `${remoteRoutes.contacts}?skip=${skip}&limit=${limit}`;
+          const data = await getJson<ContactRef[]>(url);
+          if (!Array.isArray(data) || data.length === 0) {
+            keepFetching = false;
+            break;
+          }
+          accumulatedContacts.push(...data);
+          skip += limit;
+          if (data.length < limit) {
+            keepFetching = false;
+          }
+        }
+        if (loopCount >= MAX_LOOPS) {
+          console.warn(`[Pagination Guard] Reached maximum request cap of ${MAX_LOOPS}. Data may be truncated.`);
+        }
+        if (!ignore) setAllContacts(accumulatedContacts);
+      } catch {
         if (!ignore) toast.error('Failed to load people for selection.');
       } finally {
         if (!ignore) setContactsLoading(false);
@@ -252,6 +274,7 @@ const GroupDetails = () => {
     fetchAllContacts();
     return () => { ignore = true; };
   }, [showAddMemberForm]);
+
   const handleBulkAddMembers = async () => {
     if (!groupId || selectedContacts.length === 0) return;
     setSubmittingMember(true);
