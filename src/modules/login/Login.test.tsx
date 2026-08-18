@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -13,6 +13,11 @@ vi.mock('../../utils/ajax', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../utils/ajax')>();
   return { ...actual, post: vi.fn() };
 });
+
+const originalOnlineDescriptor = Object.getOwnPropertyDescriptor(
+  Navigator.prototype,
+  'onLine',
+);
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -38,6 +43,16 @@ beforeEach(() => {
   mockPost.mockClear();
   mockNavigate.mockClear();
   localStorage.clear();
+});
+
+afterEach(() => {
+  if (originalOnlineDescriptor) {
+    Object.defineProperty(
+      Navigator.prototype,
+      'onLine',
+      originalOnlineDescriptor,
+    );
+  }
 });
 
 // ─── rendering ───────────────────────────────────────────────────────────────
@@ -180,6 +195,29 @@ describe('form submission', () => {
       expect(state.user).toMatchObject({ username: 'alice' });
       expect(localStorage.getItem(AUTH_TOKEN_KEY)).toBe(fakeToken);
     });
+  });
+
+  it('shows no internet error when offline', async () => {
+    const user = userEvent.setup();
+
+    Object.defineProperty(Navigator.prototype, 'onLine', {
+      configurable: true,
+      get: () => false,
+    });
+
+    renderLogin();
+
+    await user.click(screen.getByRole('button', { name: /sign in/i }));
+
+    expect(
+      screen.getByRole('dialog', { name: /no internet connection/i }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('button', { name: /try again/i }),
+    ).toBeInTheDocument();
+
+    expect(mockPost).not.toHaveBeenCalled();
   });
 });
 
