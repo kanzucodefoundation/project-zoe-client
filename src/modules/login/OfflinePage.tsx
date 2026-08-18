@@ -7,6 +7,7 @@ import {
     Typography,
 } from '@mui/material';
 import WifiOffRoundedIcon from '@mui/icons-material/WifiOffRounded';
+import { reloadPage } from '../../utils/browser';
 
 interface OfflinePageProps {
     open: boolean;
@@ -14,7 +15,7 @@ interface OfflinePageProps {
 
 const OfflinePage = ({ open }: OfflinePageProps) => {
     const handleRetry = () => {
-        window.location.reload();
+        reloadPage();
     };
 
     return (

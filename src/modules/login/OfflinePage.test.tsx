@@ -1,31 +1,35 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import OfflinePage from './OfflinePage';
 
+const { mockReloadPage } = vi.hoisted(() => ({
+  mockReloadPage: vi.fn(),
+}));
+
+vi.mock('../../utils/browser', () => ({
+  reloadPage: mockReloadPage,
+}));
+
+beforeEach(() => {
+  mockReloadPage.mockClear();
+});
+
 describe('OfflinePage', () => {
-    it('renders the offline message', () => {
-        render(<OfflinePage open={true} />);
+  it('renders the offline message', () => {
+    render(<OfflinePage open={true} />);
 
-        expect(screen.getByText('No Internet Connection')).toBeInTheDocument();
-        expect(
-            screen.getByText(
-                'Please check your internet connection and try again.',
-            ),
-        ).toBeInTheDocument();
-    });
+    expect(
+      screen.getByRole('dialog', { name: /no internet connection/i }),
+    ).toBeInTheDocument();
+  });
 
-    it('reloads the page when Try Again is clicked', () => {
-        const reload = vi.fn();
+  it('reloads the page when Try Again is clicked', () => {
+    render(<OfflinePage open={true} />);
 
-        Object.defineProperty(window, 'location', {
-            configurable: true,
-            value: { reload },
-        });
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Try Again' }),
+    );
 
-        render(<OfflinePage open={true} />);
-
-        fireEvent.click(screen.getByRole('button', { name: 'Try Again' }));
-
-        expect(reload).toHaveBeenCalled();
-    });
+    expect(mockReloadPage).toHaveBeenCalled();
+  });
 });
