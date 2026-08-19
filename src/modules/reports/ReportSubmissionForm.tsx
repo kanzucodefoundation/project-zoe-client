@@ -215,11 +215,19 @@ const ReportSubmissionForm = () => {
     setOpenPickers((prev) => ({ ...prev, [fieldName]: false }));
   }, []);
 
+  const handleChange = useCallback((name: string, value: $TsFixMe) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setValidationErrors((prev) => {
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  }, []);
   const handleDateFieldChange = useCallback(
     (fieldName: string) => (date: Date | null) => {
       handleChange(fieldName, date ? format(date, 'yyyy-MM-dd') : '');
     },
-    [],
+    [handleChange],
   );
   useEffect(() => {
     get(
@@ -297,16 +305,7 @@ const ReportSubmissionForm = () => {
   const isServiceLocationNameField = (field: IReportField): boolean =>
     field.name === 'serviceLocationName';
 
-  const handleChange = (name: string, value: $TsFixMe) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setValidationErrors((prev) => {
-      const next = { ...prev };
-      delete next[name];
-      return next;
-    });
-  };
-
-      const handleSmallGroupChange = (group: DynamicGroup | null) => {
+  const handleSmallGroupChange = (group: DynamicGroup | null) => {
     setFormData((prev) => {
       const next = { ...prev };
 
