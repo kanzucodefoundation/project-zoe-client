@@ -1023,12 +1023,14 @@ const ReportSubmissionForm = () => {
               label={field.label}
               value={value ? parseISO(value) : null}
               maxDate={new Date()}
-              readOnly
               open={openPickers[field.name] ?? false}
               onOpen={() => handleDateFieldOpen(field.name)}
               onClose={() => handleDateFieldClose(field.name)}
               onChange={handleDateFieldChange(field.name) as $TsFixMe}
               slotProps={{
+                field: {
+                  readOnly: true,
+                },
                 textField: {
                   fullWidth: true,
                   required: field.required,
