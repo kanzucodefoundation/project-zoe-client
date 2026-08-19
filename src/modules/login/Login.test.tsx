@@ -197,17 +197,13 @@ describe('form submission', () => {
     });
   });
 
-  it('shows no internet error when offline', async () => {
-    const user = userEvent.setup();
-
+  it('shows no internet error when offline', () => {
     Object.defineProperty(Navigator.prototype, 'onLine', {
       configurable: true,
       get: () => false,
     });
 
     renderLogin();
-
-    await user.click(screen.getByRole('button', { name: /sign in/i }));
 
     expect(
       screen.getByRole('dialog', { name: /no internet connection/i }),
@@ -218,6 +214,27 @@ describe('form submission', () => {
     ).toBeInTheDocument();
 
     expect(mockPost).not.toHaveBeenCalled();
+  });
+
+  it('dismisses the offline dialog when connectivity is restored', async () => {
+    Object.defineProperty(Navigator.prototype, 'onLine', {
+      configurable: true,
+      get: () => false,
+    });
+
+    renderLogin();
+
+    expect(
+      screen.getByRole('dialog', { name: /no internet connection/i }),
+    ).toBeInTheDocument();
+
+    window.dispatchEvent(new Event('online'));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: /no internet connection/i }),
+      ).not.toBeInTheDocument(),
+    );
   });
 });
 
