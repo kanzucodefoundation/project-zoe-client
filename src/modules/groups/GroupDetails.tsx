@@ -110,6 +110,8 @@ type ManagedGroup =
   | string
   | { id?: number | string; groupId?: number | string };
 
+type ContactsResponse = ContactRef[] | { data: ContactRef[] };
+
 const getJson = <T,>(url: string): Promise<T> =>
   new Promise<T>((resolve, reject) => {
     get(
@@ -241,9 +243,37 @@ const GroupDetails = () => {
     const fetchAllContacts = async () => {
       setContactsLoading(true);
       try {
-        const data = await getJson<ContactRef[]>(remoteRoutes.contacts);
-        if (!ignore) setAllContacts(Array.isArray(data) ? data : []);
-      } catch{
+        const accumulatedContacts: ContactRef[] = [];
+        let skip = 0;
+        const limit = 100;
+        let keepFetching = true;
+        let loopCount = 0;
+        const MAX_LOOPS = 200;
+        while (keepFetching && !ignore && loopCount < MAX_LOOPS) {
+          loopCount++;
+          const url = `${remoteRoutes.contacts}?skip=${skip}&limit=${limit}`;
+          const response = await getJson<ContactsResponse>(url);
+          const data = response && !Array.isArray(response) && 'data' in response 
+            ? response.data 
+            : response;
+          if (!Array.isArray(data) || data.length === 0) {
+            keepFetching = false;
+            break;
+          }
+          accumulatedContacts.push(...data);
+          skip += limit;
+          if (data.length < limit) {
+            keepFetching = false;
+          }
+        }
+        if (!ignore && keepFetching && loopCount === MAX_LOOPS) {
+          console.warn(`[Pagination Guard] Reached maximum request cap of ${MAX_LOOPS}. Data may be truncated.`);
+          toast.warning(
+            `Loaded the first ${accumulatedContacts.length} people. The list may be incomplete — try searching for a specific name if you don't see who you're looking for.`,
+          );
+        }
+        if (!ignore) setAllContacts(accumulatedContacts);
+      } catch {
         if (!ignore) toast.error('Failed to load people for selection.');
       } finally {
         if (!ignore) setContactsLoading(false);
@@ -252,6 +282,7 @@ const GroupDetails = () => {
     fetchAllContacts();
     return () => { ignore = true; };
   }, [showAddMemberForm]);
+
   const handleBulkAddMembers = async () => {
     if (!groupId || selectedContacts.length === 0) return;
     setSubmittingMember(true);
