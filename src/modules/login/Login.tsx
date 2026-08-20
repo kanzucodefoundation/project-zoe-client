@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   TextField,
   Button,
@@ -31,7 +31,20 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showOfflinePage, setShowOfflinePage] = useState(false);
+  const [showOfflinePage, setShowOfflinePage] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setShowOfflinePage(false);
+    const handleOffline = () => setShowOfflinePage(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
