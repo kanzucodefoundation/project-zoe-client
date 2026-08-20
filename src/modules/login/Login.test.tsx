@@ -79,6 +79,17 @@ describe('Login rendering', () => {
     expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
   });
 
+  it('renders the support link with safe external-link attributes', () => {
+    renderLogin();
+    const supportLink = screen.getByRole('link', {
+      name: /open project zoe support options/i,
+    });
+
+    expect(supportLink).toHaveAttribute('href', 'https://linktr.ee/AtProjectZoe');
+    expect(supportLink).toHaveAttribute('target', '_blank');
+    expect(supportLink).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
   it('does not show an error alert on initial render', () => {
     renderLogin();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
