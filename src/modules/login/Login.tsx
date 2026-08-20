@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   TextField,
   Button,
@@ -18,6 +18,7 @@ import { post } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import loginBackground from '../../assets/images/login-background.jpg';
 import HelpFab, { NARROW_SCREEN_QUERY } from './HelpFab';
+import OfflinePage from './OfflinePage';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -30,6 +31,20 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showOfflinePage, setShowOfflinePage] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setShowOfflinePage(false);
+    const handleOffline = () => setShowOfflinePage(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -40,6 +55,12 @@ const Login = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!navigator.onLine) {
+      setShowOfflinePage(true);
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -67,6 +88,7 @@ const Login = () => {
       }}
     >
       <HelpFab />
+      <OfflinePage open={showOfflinePage} />
 
       {/* Mobile image masthead */}
       <Box
@@ -146,10 +168,10 @@ const Login = () => {
           p: { xs: 3, sm: 6 },
           pt: { xs: 4, sm: 6 },
           backgroundColor: 'background.paper',
-          // Extra bottom clearance so the fixed Need Help FAB never covers
-          // the "Don't have an account?" link on narrow screens.
+          // Extra bottom clearance so the fixed help prompt and FAB never
+          // cover the "Don't have an account?" link on narrow screens.
           [NARROW_SCREEN_QUERY]: {
-            pb: 10,
+            pb: 14,
           },
         }}
       >

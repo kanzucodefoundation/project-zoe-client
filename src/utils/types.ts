@@ -74,7 +74,26 @@ export const TYPE_LABELS: Record<TaskType, string> = {
   [TaskType.MATCH]: 'Match',
   [TaskType.FOLLOW_UP]: 'Follow Up',
 };
+// utils/types.ts — add near the Task section
+export const NotificationType = {
+  TASK_ASSIGNED: 'task_assigned',
+  TASK_REASSIGNED: 'task_reassigned',
+  TASK_DUE: 'task_due',
+  REPORT_SUBMITTED: 'report_submitted',
+  SCHEDULE_CHANGED: 'schedule_changed',
+  GENERIC: 'generic',
+} as const;
+export type NotificationType = typeof NotificationType[keyof typeof NotificationType];
 
+export interface Notification {
+  id: number;
+  type: NotificationType;
+  title: string;
+  body: string | null;
+  link: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
 export const NEXT_STATUS_OPTIONS: TaskStatus[] = [
   TaskStatus.IN_PROGRESS,
   TaskStatus.DONE,
@@ -194,4 +213,42 @@ export interface TaskFilters {
   locationGroupIds?: number[];
   page?: number;
   limit?: number;
+}
+
+export interface UserOption {
+  id: number;
+  username: string;
+  fullName: string;
+}
+
+export interface Column {
+  name: string;
+  label: string;
+}
+
+// A single submission row as returned by the submissions endpoint. `data`
+// holds the dynamic, report-specific field values keyed by column name.
+export interface SubmissionRow {
+  id: number;
+  data: Record<string, unknown>;
+  submittedBy: string | { name: string };
+  submittedAt: string;
+  [key: string]: unknown;
+}
+
+export type UsersByLocationResponse = UserOption[] | { data: UserOption[] };
+
+export function extractUsersByLocation(
+  res: { data: UsersByLocationResponse },
+): UserOption[] {
+  return Array.isArray(res.data) ? res.data : res.data.data;
+}
+
+export function toUserOption(u: TaskUser): UserOption {
+  const person = u.contact?.person;
+  return {
+    id: u.id,
+    username: u.username,
+    fullName: person ? `${person.firstName} ${person.lastName}` : u.username,
+  };
 }

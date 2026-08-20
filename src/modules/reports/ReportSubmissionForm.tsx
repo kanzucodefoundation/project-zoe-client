@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Container,
   Typography,
@@ -38,7 +38,6 @@ import { get, post, put } from '../../utils/ajax';
 import { remoteRoutes, localRoutes } from '../../data/constants';
 import type { $TsFixMe } from '../../utils/types.ts';
 import type { RootState } from '../../data/store';
-import { useRef } from 'react';
 
 const WEEKDAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -206,7 +205,30 @@ const ReportSubmissionForm = () => {
   const [scheduleEditTime, setScheduleEditTime] = useState('19:00');
   const [scheduleEditFrequency, setScheduleEditFrequency] = useState<'weekly' | 'biweekly' | 'monthly'>('weekly');
   const [scheduleEditSaving, setScheduleEditSaving] = useState(false);
+  const [openPickers, setOpenPickers] = useState<Record<string, boolean>>({});
+  
+  const handleDateFieldOpen = useCallback((fieldName: string) => {
+    setOpenPickers((prev) => ({ ...prev, [fieldName]: true }));
+  }, []);
 
+  const handleDateFieldClose = useCallback((fieldName: string) => {
+    setOpenPickers((prev) => ({ ...prev, [fieldName]: false }));
+  }, []);
+
+  const handleChange = useCallback((name: string, value: $TsFixMe) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setValidationErrors((prev) => {
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  }, []);
+  const handleDateFieldChange = useCallback(
+    (fieldName: string) => (date: Date | null) => {
+      handleChange(fieldName, date ? format(date, 'yyyy-MM-dd') : '');
+    },
+    [handleChange],
+  );
   useEffect(() => {
     get(
       `${remoteRoutes.reports}/${reportId}`,
@@ -283,16 +305,7 @@ const ReportSubmissionForm = () => {
   const isServiceLocationNameField = (field: IReportField): boolean =>
     field.name === 'serviceLocationName';
 
-  const handleChange = (name: string, value: $TsFixMe) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setValidationErrors((prev) => {
-      const next = { ...prev };
-      delete next[name];
-      return next;
-    });
-  };
-
-      const handleSmallGroupChange = (group: DynamicGroup | null) => {
+  const handleSmallGroupChange = (group: DynamicGroup | null) => {
     setFormData((prev) => {
       const next = { ...prev };
 
@@ -843,7 +856,7 @@ const ReportSubmissionForm = () => {
 
       return (
         <FormControl fullWidth error={hasError} component="fieldset">
-          <FormLabel component="legend">
+          <FormLabel component="legend" sx={{'&.Mui-focused': { color: 'text.secondary' },}}>
             {field.label}
             {field.required ? ' *' : ''}
           </FormLabel>
@@ -1009,19 +1022,34 @@ const ReportSubmissionForm = () => {
             <DatePicker
               label={field.label}
               value={value ? parseISO(value) : null}
-              onChange={
-                ((date: Date | null) =>
-                  handleChange(
-                    field.name,
-                    date ? format(date, 'yyyy-MM-dd') : '',
-                  )) as $TsFixMe
-              }
+              maxDate={new Date()}
+              open={openPickers[field.name] ?? false}
+              onOpen={() => handleDateFieldOpen(field.name)}
+              onClose={() => handleDateFieldClose(field.name)}
+              onChange={handleDateFieldChange(field.name) as $TsFixMe}
               slotProps={{
+                field: {
+                  readOnly: true,
+                },
                 textField: {
                   fullWidth: true,
                   required: field.required,
                   error: hasError,
                   helperText: validationErrors[field.name],
+                  onClick: () => handleDateFieldOpen(field.name),
+                  sx: {
+                    cursor: 'pointer',
+                    '& .MuiInputBase-input': {
+                      WebkitTextFillColor: 'currentColor',
+                      color: 'text.primary',
+                    },
+                  },
+                },
+                openPickerButton: {
+                  sx: { color: 'action.active' },
+                },
+                openPickerIcon: {
+                  sx: { color: 'action.active' },
                 },
               }}
             />

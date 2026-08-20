@@ -20,7 +20,7 @@ export default function SidebarHelpButton() {
         fontWeight: 600,
       }}
     >
-      Need Help?
+      Contact Support.
     </Button>
   );
 }

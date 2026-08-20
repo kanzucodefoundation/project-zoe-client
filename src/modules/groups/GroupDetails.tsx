@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import {
@@ -110,6 +110,8 @@ type ManagedGroup =
   | string
   | { id?: number | string; groupId?: number | string };
 
+type ContactsResponse = ContactRef[] | { data: ContactRef[] };
+
 const getJson = <T,>(url: string): Promise<T> =>
   new Promise<T>((resolve, reject) => {
     get(
@@ -215,6 +217,7 @@ const GroupDetails = () => {
   const [memberships, setMemberships] = useState<GroupMembership[]>([]);
   const [loading, setLoading] = useState(true);
   const [membershipsLoading, setMembershipsLoading] = useState(false);
+  const membershipsRequestIdRef = useRef(0);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [messageModalOpen, setMessageModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -240,9 +243,37 @@ const GroupDetails = () => {
     const fetchAllContacts = async () => {
       setContactsLoading(true);
       try {
-        const data = await getJson<ContactRef[]>(remoteRoutes.contacts);
-        if (!ignore) setAllContacts(Array.isArray(data) ? data : []);
-      } catch{
+        const accumulatedContacts: ContactRef[] = [];
+        let skip = 0;
+        const limit = 100;
+        let keepFetching = true;
+        let loopCount = 0;
+        const MAX_LOOPS = 200;
+        while (keepFetching && !ignore && loopCount < MAX_LOOPS) {
+          loopCount++;
+          const url = `${remoteRoutes.contacts}?skip=${skip}&limit=${limit}`;
+          const response = await getJson<ContactsResponse>(url);
+          const data = response && !Array.isArray(response) && 'data' in response 
+            ? response.data 
+            : response;
+          if (!Array.isArray(data) || data.length === 0) {
+            keepFetching = false;
+            break;
+          }
+          accumulatedContacts.push(...data);
+          skip += limit;
+          if (data.length < limit) {
+            keepFetching = false;
+          }
+        }
+        if (!ignore && keepFetching && loopCount === MAX_LOOPS) {
+          console.warn(`[Pagination Guard] Reached maximum request cap of ${MAX_LOOPS}. Data may be truncated.`);
+          toast.warning(
+            `Loaded the first ${accumulatedContacts.length} people. The list may be incomplete — try searching for a specific name if you don't see who you're looking for.`,
+          );
+        }
+        if (!ignore) setAllContacts(accumulatedContacts);
+      } catch {
         if (!ignore) toast.error('Failed to load people for selection.');
       } finally {
         if (!ignore) setContactsLoading(false);
@@ -251,6 +282,7 @@ const GroupDetails = () => {
     fetchAllContacts();
     return () => { ignore = true; };
   }, [showAddMemberForm]);
+
   const handleBulkAddMembers = async () => {
     if (!groupId || selectedContacts.length === 0) return;
     setSubmittingMember(true);
@@ -330,44 +362,44 @@ const GroupDetails = () => {
     }
   }, [groupId]);
 
-  const fetchMemberships = useCallback(async (signal?: AbortSignal) => {
+  const fetchMemberships = useCallback(async () => {
     if (!groupId) return;
+    const requestId = ++membershipsRequestIdRef.current;
     setMembershipsLoading(true);
     try {
-      const currentSkip = page * rowsPerPage;      
-      const data = await getJson<GroupMembership | GroupMembership[]>(
+      const currentSkip = page * rowsPerPage;
+      const response = await getJson<{
+        data: GroupMembership[];
+        total: number;
+      }>(
         `${remoteRoutes.groupsMembership}?groupId=${encodeURIComponent(
           groupId,
-        )}&limit=${rowsPerPage}&skip=${currentSkip}`, 
+        )}&limit=${rowsPerPage}&skip=${currentSkip}`,
       );
-      if (signal?.aborted) return;
-      const membershipList = Array.isArray(data)
-        ? data
-        : data
-        ? [data as GroupMembership]
-        : [];
+      if (requestId !== membershipsRequestIdRef.current) return;
+      const membershipList = Array.isArray(response?.data) ? response.data : [];
       const activeMemberships = membershipList.filter(
         (membership) => membership.isActive !== false,
       );
       setMemberships(activeMemberships);
-      if (membershipList.length < rowsPerPage) {
-        setTotal(currentSkip + activeMemberships.length);
-      } else {
-        setTotal(currentSkip + rowsPerPage + 1);
-      }
+      setTotal(response?.total ?? 0);
     } catch (error: unknown) {
+      if (requestId !== membershipsRequestIdRef.current) return;
       console.error('Failed to fetch memberships:', error);
       toast.error('Failed to load group members');
     } finally {
-      setMembershipsLoading(false);
-    }  }, [groupId, page, rowsPerPage]); 
-    
-    useEffect(() => {
-      fetchGroup();
-    }, [fetchGroup]);
-    useEffect(() => {    
-      fetchMemberships();
-    }, [fetchMemberships]);
+      if (requestId === membershipsRequestIdRef.current) {
+        setMembershipsLoading(false);
+      }
+    }
+  }, [groupId, page, rowsPerPage]);
+
+  useEffect(() => {
+    fetchGroup();
+  }, [fetchGroup]);
+  useEffect(() => {
+    fetchMemberships();
+  }, [fetchMemberships]);
 
   const handleRoleToggle = async (membership: GroupMembership) => {
     const nextRole =
@@ -650,11 +682,9 @@ const GroupDetails = () => {
             flexWrap="wrap"
             paddingBottom={2}
           >
-            {!membershipsLoading && memberships.length > 0 ? (
+            {!membershipsLoading && total > 0 ? (
               <Chip
-                label={`${memberships.length} ${
-                  memberships.length === 1 ? 'person' : 'people'
-                }`}
+                label={`${total} ${total === 1 ? 'person' : 'people'}`}
                 size="small"
                 variant="outlined"
               />

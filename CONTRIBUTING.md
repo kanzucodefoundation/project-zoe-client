@@ -32,6 +32,25 @@ feature branch → develop (staging) → master (production)
 
 6. Once the change is verified on staging, it is promoted to `master` via a separate PR, which triggers the production deploy.
 
+## PR review & merge
+
+Every PR passes through three layers before it can merge. `develop` and `master` are protected: direct pushes are blocked, one approving review is required (pushing new commits dismisses earlier approvals), the `test` and `CodeRabbit` checks must pass, and only the Maintainers team can merge.
+
+1. **CodeRabbit** reviews automatically when the PR is opened. Resolve every thread it raises — unresolved threads (even outdated ones) block the next step. If it reports "Review rate limited" (quota exhausted), trigger it later by commenting `@coderabbitai full review` on the PR.
+
+2. **Run `/pr-review-merge <PR number>`** from Claude Code inside this repo. This is the second, judgment-based review plus triage: it checks the gates (CodeRabbit reviewed, threads resolved, CI green, real PR description, no credential-shaped files, lockfile changes explained), reviews the diff, and routes the PR with a label and a team review request:
+
+   - `ready-for-maintainer-review` — nothing sensitive touched; any maintainer can approve and merge.
+   - `needs-senior-review` — the diff touches sensitive paths (the API contract (`ajax.ts`, `remoteRoutes`, `types.ts`), auth/session code, login flows, capability-gated routing, deploy workflows); the Senior Engineering team must review first.
+
+   The full gate and sensitive-path list lives in [`.claude/skills/pr-review-merge/SKILL.md`](./.claude/skills/pr-review-merge/SKILL.md). The skill never approves or merges anything.
+
+3. **A maintainer approves and merges** in the GitHub UI (squash merge). Both the approval and the merge require Maintainer membership — the PR author may not approve their own PR.
+
+To run the skill you need Claude Code started inside the repo (pull first — the skill ships in `.claude/skills/`), an authenticated `gh` CLI (`gh auth login`), and write access for the labelling step. If you work from a fork, run `gh repo set-default kanzucodefoundation/project-zoe-client` once so `gh` resolves PRs against the upstream repo.
+
+Releases (`develop` → `master`) follow the same process with one exception: the CodeRabbit-reviewed gate (gate 1) is waived for release PRs — CodeRabbit may report "Review skipped" on the release PR itself, and that is acceptable. All other gates still apply in full, including unresolved threads, CI green, non-trivial description, no credential-shaped files, and lockfile explained. This exception applies only to a PR with head `develop` targeting `master`; a PR from any other branch targeting `master` is not a release PR and must satisfy every gate including gate 1. Merging to `master` deploys the production client. If a hotfix ever lands on `master` directly, back-merge it into `develop` immediately, using a merge commit (not squash).
+
 ## Branch naming
 
 ```

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -13,6 +13,11 @@ vi.mock('../../utils/ajax', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../utils/ajax')>();
   return { ...actual, post: vi.fn() };
 });
+
+const originalOnlineDescriptor = Object.getOwnPropertyDescriptor(
+  Navigator.prototype,
+  'onLine',
+);
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -40,6 +45,16 @@ beforeEach(() => {
   localStorage.clear();
 });
 
+afterEach(() => {
+  if (originalOnlineDescriptor) {
+    Object.defineProperty(
+      Navigator.prototype,
+      'onLine',
+      originalOnlineDescriptor,
+    );
+  }
+});
+
 // ─── rendering ───────────────────────────────────────────────────────────────
 
 describe('Login rendering', () => {
@@ -62,6 +77,17 @@ describe('Login rendering', () => {
   it('renders Sign up link', () => {
     renderLogin();
     expect(screen.getByRole('button', { name: /sign up/i })).toBeInTheDocument();
+  });
+
+  it('renders the support link with safe external-link attributes', () => {
+    renderLogin();
+    const supportLink = screen.getByRole('link', {
+      name: /open project zoe support options/i,
+    });
+
+    expect(supportLink).toHaveAttribute('href', 'https://linktr.ee/AtProjectZoe');
+    expect(supportLink).toHaveAttribute('target', '_blank');
+    expect(supportLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
   it('does not show an error alert on initial render', () => {
@@ -180,6 +206,46 @@ describe('form submission', () => {
       expect(state.user).toMatchObject({ username: 'alice' });
       expect(localStorage.getItem(AUTH_TOKEN_KEY)).toBe(fakeToken);
     });
+  });
+
+  it('shows no internet error when offline', () => {
+    Object.defineProperty(Navigator.prototype, 'onLine', {
+      configurable: true,
+      get: () => false,
+    });
+
+    renderLogin();
+
+    expect(
+      screen.getByRole('dialog', { name: /no internet connection/i }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole('button', { name: /try again/i }),
+    ).toBeInTheDocument();
+
+    expect(mockPost).not.toHaveBeenCalled();
+  });
+
+  it('dismisses the offline dialog when connectivity is restored', async () => {
+    Object.defineProperty(Navigator.prototype, 'onLine', {
+      configurable: true,
+      get: () => false,
+    });
+
+    renderLogin();
+
+    expect(
+      screen.getByRole('dialog', { name: /no internet connection/i }),
+    ).toBeInTheDocument();
+
+    window.dispatchEvent(new Event('online'));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('dialog', { name: /no internet connection/i }),
+      ).not.toBeInTheDocument(),
+    );
   });
 });
 
