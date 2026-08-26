@@ -376,11 +376,11 @@ const ContactForm = ({
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <FormControl fullWidth>
-              <InputLabel>Gender *</InputLabel>
+              <InputLabel>{contactId ? 'Gender' : 'Gender *'}</InputLabel>
               <Select
                 value={formData.gender}
                 onChange={(e) => handleChange('gender', e.target.value)}
-                label="Gender"
+                label={contactId ? 'Gender' : 'Gender *'}
               >
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
