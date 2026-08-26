@@ -210,14 +210,14 @@ const ContactForm = ({
     e.preventDefault();
     setSubmitting(true);
     onError?.('');
-    if (!formData.gender) {
+    const isEditing = Boolean(contactId);
+
+    if (!isEditing && !formData.gender) {
+      toast.error('Please select a gender.');
       onError?.('Please select a gender.');
       setSubmitting(false);
       return;
     }
-
-
-    const isEditing = Boolean(contactId);
     const successMessage = isEditing
       ? 'Contact updated successfully'
       : 'Contact created successfully';
@@ -375,8 +375,8 @@ const ContactForm = ({
             </Box>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth required>
-              <InputLabel>Gender</InputLabel>
+            <FormControl fullWidth>
+              <InputLabel>Gender *</InputLabel>
               <Select
                 value={formData.gender}
                 onChange={(e) => handleChange('gender', e.target.value)}
