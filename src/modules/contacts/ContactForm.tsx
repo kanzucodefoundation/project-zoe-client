@@ -210,6 +210,12 @@ const ContactForm = ({
     e.preventDefault();
     setSubmitting(true);
     onError?.('');
+    if (!formData.gender) {
+      onError?.('Please select a gender.');
+      setSubmitting(false);
+      return;
+    }
+
 
     const isEditing = Boolean(contactId);
     const successMessage = isEditing
@@ -369,13 +375,12 @@ const ContactForm = ({
             </Box>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <FormControl fullWidth>
+            <FormControl fullWidth required>
               <InputLabel>Gender</InputLabel>
               <Select
                 value={formData.gender}
                 onChange={(e) => handleChange('gender', e.target.value)}
                 label="Gender"
-                required
               >
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
