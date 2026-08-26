@@ -375,6 +375,7 @@ const ContactForm = ({
                 value={formData.gender}
                 onChange={(e) => handleChange('gender', e.target.value)}
                 label="Gender"
+                required
               >
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
