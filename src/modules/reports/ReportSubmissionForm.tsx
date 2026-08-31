@@ -170,10 +170,11 @@ const getManagedGroupIdSet = (
 };
 
 const ReportSubmissionForm = () => {
-  const { reportId } = useParams<{ reportId: string }>();
+  const { reportId, submissionId } = useParams<{ reportId: string; submissionId?: string }>();
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.core);
 
+  const isEditMode = Boolean(submissionId);
   const [reportName, setReportName] = useState('');
   const [reportFields, setReportFields] = useState<IReportField[]>([]);
   const [formData, setFormData] = useState<Record<string, $TsFixMe>>({});
@@ -278,6 +279,36 @@ const ReportSubmissionForm = () => {
       },
     );
   }, [reportId]);
+  // In edit mode, prefill formData once the report's fields are known --
+  // fields must load first so isDynamicMemberField/etc. checks below
+  // (and the dynamic-option fetch effect) have something to match against.
+  useEffect(() => {
+    if (!isEditMode || reportFields.length === 0) return;
+
+    get(
+      `${remoteRoutes.reports}/${reportId}/submissions/${submissionId}?raw=true`,
+      (response: $TsFixMe) => {
+        if (response?.data) {
+          // Saved submission values are authoritative during edit
+          // hydration -- merge them on top of whatever's already in
+          // formData (e.g. a default an auto-select effect wrote before
+          // this request resolved), not the other way around.
+          setFormData((prev) => ({ ...prev, ...response.data }));
+        }
+        if (response?.groupId) {
+          setSelectedGroupId(response.groupId);
+        }
+      },
+      (error: $TsFixMe) => {
+        console.error('Failed to fetch submission for editing:', error);
+        toast.error('Failed to load submission for editing');
+      },
+    );
+    // Intentionally excludes reportFields from deps beyond the length
+    // gate -- this should run once fields are available, not re-run on
+    // every fields re-render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditMode, reportId, submissionId, reportFields.length]);
 
   const isDynamicGroupField = (field: IReportField): boolean => {
     if (!field.options || !Array.isArray(field.options)) return false;
@@ -396,8 +427,10 @@ const ReportSubmissionForm = () => {
         setDynamicOptions((prev) => ({ ...prev, [field.name]: groups }));
         setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
 
-        // Auto-select if only one option
-        if (groups.length === 1) {
+        // Auto-select if only one option -- skip in edit mode, where the
+        // saved submission value (loaded by the hydration effect) is
+        // authoritative and must not be clobbered by this default.
+        if (groups.length === 1 && !isEditMode) {
           handleDynamicGroupChange(field, groups[0]);
         }
       },
@@ -434,7 +467,10 @@ const ReportSubmissionForm = () => {
         setSmallGroups(groups);
         setSmallGroupsLoading(false);
 
-        if (groups.length === 1) {
+        // Skip auto-select in edit mode -- same reasoning as the dynamic
+        // group/schedule fetches above: the saved value from hydration
+        // must win, not this convenience default.
+        if (groups.length === 1 && !isEditMode) {
           setFormData((prev) => {
             if (prev.smallGroupName || prev.smallGroupId) {
               return prev;
@@ -489,7 +525,11 @@ const ReportSubmissionForm = () => {
       (response: ScheduleData) => {
         setFellowshipSchedules((prev) => ({ ...prev, [field.name]: response }));
         setDynamicLoading((prev) => ({ ...prev, [field.name]: false }));
-        if (response.exists && response.day !== undefined) {
+        // In edit mode, the saved submission's day (from hydration) is
+        // authoritative -- the leader's *current* recurring schedule may
+        // have changed since this submission was made, and must not
+        // silently overwrite what was actually reported.
+        if (!isEditMode && response.exists && response.day !== undefined) {
           handleChange(field.name, response.day);
         }
       },
@@ -656,22 +696,34 @@ const ReportSubmissionForm = () => {
     const submissionData: Record<string, $TsFixMe> = { data: formData };
     if (selectedGroupId) submissionData.selectedGroupId = selectedGroupId;
 
-    // Use correct endpoint: POST /api/reports/:reportId/submissions
-    post(
-      `${remoteRoutes.reports}/${reportId}/submissions`,
-      submissionData,
-      () => {
-        toast.success('Report submitted successfully');
-        navigate(localRoutes.dashboard);
-      },
-      (error: $TsFixMe) => {
-        console.error('Submission failed:', error);
-        const message =
-          error?.response?.data?.message || 'Failed to submit report';
-        toast.error(message);
-        setSubmitting(false);
-      },
-    );
+    const onSubmitSuccess = () => {
+      toast.success(isEditMode ? 'Report updated successfully' : 'Report submitted successfully');
+      navigate(localRoutes.dashboard);
+    };
+    const onSubmitError = (error: $TsFixMe) => {
+      console.error('Submission failed:', error);
+      const message =
+        error?.response?.data?.message ||
+        (isEditMode ? 'Failed to update report' : 'Failed to submit report');
+      toast.error(message);
+      setSubmitting(false);
+    };
+
+    if (isEditMode) {
+      put(
+        `${remoteRoutes.reports}/${reportId}/submissions/${submissionId}`,
+        submissionData,
+        onSubmitSuccess,
+        onSubmitError,
+      );
+    } else {
+      post(
+        `${remoteRoutes.reports}/${reportId}/submissions`,
+        submissionData,
+        onSubmitSuccess,
+        onSubmitError,
+      );
+    }
   };
 
   const renderField = (field: IReportField) => {

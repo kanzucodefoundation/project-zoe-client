@@ -191,6 +191,12 @@ function App() {
               ])}
             />
             <Route
+              path="/reports/:reportId/submissions/:submissionId/edit"
+              element={renderProtectedElement(<ReportSubmissionForm />, [
+                appPermissions.roleReportView,
+              ])}
+            />
+            <Route
               path={localRoutes.groups}
               element={renderProtectedElement(<Groups />, [
                 appPermissions.roleGroupView,
