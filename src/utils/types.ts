@@ -233,6 +233,7 @@ export interface SubmissionRow {
   data: Record<string, unknown>;
   submittedBy: string | { name: string };
   submittedAt: string;
+  canEdit: boolean;
   [key: string]: unknown;
 }
 

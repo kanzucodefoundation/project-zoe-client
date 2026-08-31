@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -48,6 +49,7 @@ interface SubmissionDetails {
   labels: { name: string; label: string }[];
   submittedAt: string;
   submittedBy: string;
+  canEdit: boolean;
 }
 
 interface ComplianceResponse {
@@ -83,6 +85,7 @@ const getErrorMessage = (error: unknown): string =>
 const Reports = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigate = useNavigate();
 
   const [reports, setReports] = useState<ReportType[]>([]);
   const [activeTab, setActiveTab] = useState<ActiveTab>(null);
@@ -267,6 +270,17 @@ const Reports = () => {
         setDetailsLoading(false);
       },
     );
+  };
+  
+  const handleEditClick = (row: SubmissionRow) => {
+    if (typeof activeTab !== 'number' || !row.id) return;
+    navigate(`/reports/${activeTab}/submissions/${row.id}/edit`);
+  };
+
+  const handleEditFromModal = () => {
+    if (typeof activeTab !== 'number' || !submissionDetails?.id) return;
+    setModalOpen(false);
+    navigate(`/reports/${activeTab}/submissions/${submissionDetails.id}/edit`);
   };
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: ActiveTab) => {
@@ -453,6 +467,7 @@ const Reports = () => {
           data={submissions}
           loading={loadingSubmissions}
           onRowClick={handleRowClick}
+          onEditClick={handleEditClick}
         />
       )}
 
@@ -463,6 +478,7 @@ const Reports = () => {
         details={submissionDetails}
         loading={detailsLoading}
         reportName={activeReportName}
+        onEdit={handleEditFromModal}
       />
     </Container>
   );

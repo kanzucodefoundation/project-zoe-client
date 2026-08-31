@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -10,18 +11,48 @@ import {
   CircularProgress,
   Box,
   IconButton,
+  Menu,
+  MenuItem,
 } from '@mui/material';
-import { MoreVert } from '@mui/icons-material';
-import type {Column, SubmissionRow } from '../../utils/types';
+import { MoreVert as MoreVertIcon } from '@mui/icons-material';
+import type { Column, SubmissionRow } from '../../utils/types';
 
 interface Props {
   columns: Column[];
   data: SubmissionRow[];
   loading: boolean;
   onRowClick: (row: SubmissionRow) => void;
+  onEditClick: (row: SubmissionRow) => void;
 }
 
-const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {
+const ReportsTable = ({ columns, data, loading, onRowClick, onEditClick }: Props) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedRow, setSelectedRow] = useState<SubmissionRow | null>(null);
+
+  const handleMenuOpen = (
+    event: React.MouseEvent<HTMLElement>,
+    row: SubmissionRow,
+  ) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setSelectedRow(row);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedRow(null);
+  };
+
+  const handleViewDetails = () => {
+    if (selectedRow) onRowClick(selectedRow);
+    handleMenuClose();
+  };
+
+  const handleEdit = () => {
+    if (selectedRow) onEditClick(selectedRow);
+    handleMenuClose();
+  };
+
   const formatCell = (value: any): string => {
     if (value === null || value === undefined) return '-';
     // Try to detect ISO date strings
@@ -74,7 +105,7 @@ const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {
               Submitted At
             </TableCell>
             <TableCell align="right" sx={{ fontWeight: 'bold' }}>
-              Action
+              Actions
             </TableCell>
           </TableRow>
         </TableHead>
@@ -102,18 +133,27 @@ const ReportsTable = ({ columns, data, loading, onRowClick }: Props) => {
               <TableCell align="right">
                 <IconButton
                   size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRowClick(row);
-                  }}
+                  onClick={(e) => handleMenuOpen(e, row)}
                 >
-                  <MoreVert fontSize="small" />
+                  <MoreVertIcon fontSize="small" />
                 </IconButton>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Actions Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
+        {selectedRow?.canEdit && (
+          <MenuItem onClick={handleEdit}>Edit</MenuItem>
+        )}
+      </Menu>
     </TableContainer>
   );
 };

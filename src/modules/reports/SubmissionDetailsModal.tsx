@@ -23,6 +23,7 @@ interface SubmissionDetails {
   labels: SubmissionLabel[];
   submittedAt: string;
   submittedBy: string;
+  canEdit?: boolean;
 }
 
 interface Props {
@@ -31,6 +32,7 @@ interface Props {
   details: SubmissionDetails | null;
   loading: boolean;
   reportName: string;
+  onEdit?: () => void;
 }
 
 const SubmissionDetailsModal = ({
@@ -39,6 +41,7 @@ const SubmissionDetailsModal = ({
   details,
   loading,
   reportName,
+  onEdit,
 }: Props) => {
   const theme = useTheme();
   const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
@@ -106,10 +109,15 @@ const SubmissionDetailsModal = ({
           <Typography color="textSecondary">No details available</Typography>
         )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions>        
         <Button onClick={onClose} fullWidth={isPhone}>
           Close
         </Button>
+        {details?.canEdit && onEdit && (
+          <Button onClick={onEdit} variant="outlined">
+            Edit
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
