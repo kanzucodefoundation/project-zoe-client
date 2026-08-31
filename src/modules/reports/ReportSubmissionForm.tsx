@@ -175,6 +175,7 @@ const ReportSubmissionForm = () => {
   const { user } = useSelector((state: RootState) => state.core);
 
   const isEditMode = Boolean(submissionId);
+  const [submissionLoading, setSubmissionLoading] = useState(isEditMode);
   const [reportName, setReportName] = useState('');
   const [reportFields, setReportFields] = useState<IReportField[]>([]);
   const [formData, setFormData] = useState<Record<string, $TsFixMe>>({});
@@ -298,10 +299,12 @@ const ReportSubmissionForm = () => {
         if (response?.groupId) {
           setSelectedGroupId(response.groupId);
         }
+        setSubmissionLoading(false);
       },
       (error: $TsFixMe) => {
         console.error('Failed to fetch submission for editing:', error);
         toast.error('Failed to load submission for editing');
+        navigate(localRoutes.dashboard);
       },
     );
     // Intentionally excludes reportFields from deps beyond the length
@@ -649,6 +652,7 @@ const ReportSubmissionForm = () => {
   };
 
   const handleSubmit = () => {
+    if (isEditMode && submissionLoading) return;
     const errors: Record<string, string> = {};
     let hiddenFieldMissing = false;
     reportFields.forEach((field) => {
@@ -1220,7 +1224,7 @@ const ReportSubmissionForm = () => {
     }
   };
 
-  if (loading) {
+  if (loading || submissionLoading) {
     return (
       <Container maxWidth="md">
         <Box
