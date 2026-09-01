@@ -30,7 +30,7 @@ jobs:
         run: npm run test:run
 
       - name: Create .env file
-        run: echo "VITE_API_URL=https://projectzoe.kanzucodefoundation.org/server/" > ./.env
+        run: echo "VITE_API_URL=https://app.projectzoe.org/server/" > ./.env
 
       - name: Build
         run: npm run build
@@ -43,21 +43,21 @@ jobs:
           path: ~/.npm/_logs
 
       - name: Configure SSH
+        env:
+          SERVER_SSH_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
         run: |
           mkdir -p ~/.ssh/
-          echo "$DO_PRIVATE_KEY" > ~/.ssh/project-zoe-prod-1.key
-          chmod 600 ~/.ssh/project-zoe-prod-1.key
-          cat >>~/.ssh/config <<END
-          Host project-zoe-prod-1
-            HostName $DO_HOST
-            User $DO_USERNAME
-            IdentityFile ~/.ssh/project-zoe-prod-1.key
+          echo "$SERVER_SSH_KEY" > ~/.ssh/projectzoe.key
+          chmod 600 ~/.ssh/projectzoe.key
+          cat >> ~/.ssh/config << EOF
+          Host projectzoe-prod
+            HostName $SERVER_HOST
+            User $SERVER_USERNAME
+            IdentityFile ~/.ssh/projectzoe.key
             StrictHostKeyChecking no
-          END
-        env:
-          DO_USERNAME: ${{ secrets.DO_USERNAME }}
-          DO_PRIVATE_KEY: ${{ secrets.DO_PRIVATE_KEY }}
-          DO_HOST: ${{ secrets.DO_HOST }}
+          EOF
 
-      - name: Deploy the app
-        run: rsync -rtvO ./dist/ project-zoe-prod-1:/opt/project-zoe-client/dist/
+      - name: Deploy
+        run: rsync -rtvO --delete ./dist/ projectzoe-prod:/opt/projectzoe/production/client/dist/
