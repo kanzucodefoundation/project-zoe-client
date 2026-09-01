@@ -4,6 +4,8 @@ Project Zoe is a church relationship management system (RMS) centred on people. 
 
 This repo holds the React client, built with Vite and Material UI.
 
+**Documentation:** [docs.projectzoe.org](https://docs.projectzoe.org)
+
 ## Tech stack
 
 - **Framework:** React 19, TypeScript
@@ -50,6 +52,8 @@ This repo holds the React client, built with Vite and Material UI.
    ```
 
    The app runs on `http://localhost:5173` by default.
+
+> **Note:** This client is designed to work alongside the server at https://github.com/kanzucodefoundation/project-zoe-server.
 
 ## Available scripts
 
