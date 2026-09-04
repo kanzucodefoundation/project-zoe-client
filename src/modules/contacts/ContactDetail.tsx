@@ -167,6 +167,9 @@ const ContactDetail = () => {
   };
 
   const handleCloseConfirmDelete = () => {
+    if(deleting){
+      return;
+    }
     setConfirmDeleteOpen(false);
   };
 
@@ -567,7 +570,8 @@ const ContactDetail = () => {
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={confirmDeleteOpen}
-        onClose={handleCloseConfirmDelete}
+        onClose={deleting ? undefined : handleCloseConfirmDelete}
+        disableEscapeKeyDown={deleting}
         maxWidth="xs"
       >
         <DialogTitle>Delete Contact</DialogTitle>
@@ -577,7 +581,7 @@ const ContactDetail = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseConfirmDelete}>Cancel</Button>
+          <Button onClick={handleCloseConfirmDelete} disabled={deleting}>Cancel</Button>
           <Button
             color="error"
             variant="contained"
