@@ -13,6 +13,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogActions,
   Divider,
   List,
   ListItem,
@@ -34,8 +35,10 @@ import {
   CalendarToday as CalendarIcon,
   Work as WorkIcon,
   ArrowBack as ArrowBackIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
-import { get } from '../../utils/ajax';
+import { toast } from 'react-toastify';
+import { del, get } from '../../utils/ajax';
 import {
   remoteRoutes,
   localRoutes,
@@ -113,6 +116,8 @@ const ContactDetail = () => {
   const [editDialog, setEditDialog] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const canViewContactEditActions = hasAnyCapability(user, [
     appPermissions.roleCrmEdit,
   ]);
@@ -152,6 +157,41 @@ const ContactDetail = () => {
     setEditError(null);
     setEditDialog(false);
     fetchContact();
+  };
+
+  const handleDelete = () => {
+    if (!canViewContactEditActions || !contact) {
+      return;
+    }
+    setConfirmDeleteOpen(true);
+  };
+
+  const handleCloseConfirmDelete = () => {
+    if(deleting){
+      return;
+    }
+    setConfirmDeleteOpen(false);
+  };
+
+  const confirmDelete = () => {
+    if (!contact) {
+      return;
+    }
+
+    setDeleting(true);
+    del(
+      `${remoteRoutes.contacts}/${contact.id}`,
+      () => {
+        toast.success('Contact deleted successfully');
+        setConfirmDeleteOpen(false);
+        navigate(localRoutes.contacts);
+      },
+      (error: unknown) => {
+        console.error('Failed to delete contact:', error);
+        toast.error('Failed to delete contact');
+        setDeleting(false);
+      },
+    );
   };
 
   const getInitials = (contact: ContactData) => {
@@ -225,14 +265,26 @@ const ContactDetail = () => {
           Contact Details
         </Typography>
         {canViewContactEditActions ? (
-          <Button
-            variant="contained"
-            startIcon={<EditIcon />}
-            onClick={handleEdit}
-            fullWidth={isMobile}
-          >
-            Edit
-          </Button>
+          <>
+            <Button
+              variant="contained"
+              startIcon={<EditIcon />}
+              onClick={handleEdit}
+              fullWidth={isMobile}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDelete}
+              disabled={deleting}
+              fullWidth={isMobile}
+            >
+              {deleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </>
         ) : null}
       </Box>
 
@@ -513,6 +565,32 @@ const ContactDetail = () => {
             onError={(message) => setEditError(message || null)}
           />
         </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={confirmDeleteOpen}
+        onClose={deleting ? undefined : handleCloseConfirmDelete}
+        disableEscapeKeyDown={deleting}
+        maxWidth="xs"
+      >
+        <DialogTitle>Delete Contact</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete "{fullName}"? 
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmDelete} disabled={deleting}>Cancel</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={confirmDelete}
+            disabled={deleting}
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );
