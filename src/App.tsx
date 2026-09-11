@@ -57,6 +57,7 @@ import CheckInScreen from './modules/attendance/CheckInScreen';
 import ServiceSchedules from './modules/attendance/schedules/ServiceSchedules';
 import AttendanceHistory from './modules/attendance/history/AttendanceHistory';
 import NotificationsPage from './modules/notifications/Notifications.tsx';
+import QuickBooksSettings from './modules/integrations/QuickBooksSettings';
 
 const Splash = () => (
   <div
@@ -321,9 +322,17 @@ function App() {
                 attendanceViewCapabilities,
               )}
             />
-            <Route 
-              path={localRoutes.notificationMessages} 
-              element={<NotificationsPage />} />
+            <Route
+              path={localRoutes.notificationMessages}
+              element={<NotificationsPage />}
+            />
+            <Route
+              path={localRoutes.integrations}
+              element={renderProtectedElement(<QuickBooksSettings />, [
+                appPermissions.roleUserView,
+                appPermissions.roleUserEdit,
+              ])}
+            />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />

@@ -120,6 +120,9 @@ export const localRoutes = {
   attendance: '/attendance',
   attendanceSchedules: '/attendance/schedules',
   attendanceHistory: '/attendance/history',
+
+  // Integrations
+  integrations: '/admin/integrations',
 };
 
 export const apiBaseUrl =
@@ -205,4 +208,11 @@ export const remoteRoutes = {
   // Attendance
   services: `${apiBaseUrl}/api/services`,
   fellowships: `${apiBaseUrl}/api/fellowships`,
+
+  // Integrations — QuickBooks
+  quickbooksConnect: `${apiBaseUrl}/api/integrations/quickbooks/connect`,
+  quickbooksConnection: `${apiBaseUrl}/api/integrations/quickbooks/connection`,
+  quickbooksCompanyInfo: `${apiBaseUrl}/api/integrations/quickbooks/company-info`,
+  quickbooksUserInfo: `${apiBaseUrl}/api/integrations/quickbooks/userinfo`,
+  quickbooksCharges: `${apiBaseUrl}/api/integrations/quickbooks/charges`,
 };
