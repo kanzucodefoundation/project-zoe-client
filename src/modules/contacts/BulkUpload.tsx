@@ -63,7 +63,7 @@ type UploadResult = ContactsUploadResult | ServiceUploadResult;
 
 const TEMPLATES: Record<UploadMode, string> = {
   contacts:
-    'First Name,Last Name,Email,Phone,Date of Birth,Gender,District,Country',
+    'First Name,Last Name,Email,Phone,Date of Birth,Gender,District,Country,Tithe Number,QuickBooks Customer ID',
   guests:
     'First Name,Last Name,Phone,Email,Address,How Did You Hear About Us,How May We Pray For You, Church Location, Service Date',
   believers:
@@ -373,6 +373,8 @@ const BulkUpload = ({ onComplete, onCancel }: BulkUploadProps) => {
             <br />• <strong>Gender</strong> (Male/Female)
             <br />• <strong>District</strong>
             <br />• <strong>Country</strong> (required)
+            <br />• <strong>Tithe Number</strong> (optional — member's giving envelope number)
+            <br />• <strong>QuickBooks Customer ID</strong> (optional — links this contact to an existing QuickBooks Customer)
             <br />
           </Typography>
         </Box>

@@ -215,4 +215,10 @@ export const remoteRoutes = {
   quickbooksCompanyInfo: `${apiBaseUrl}/api/integrations/quickbooks/company-info`,
   quickbooksUserInfo: `${apiBaseUrl}/api/integrations/quickbooks/userinfo`,
   quickbooksCharges: `${apiBaseUrl}/api/integrations/quickbooks/charges`,
+  quickbooksReferences: `${apiBaseUrl}/api/integrations/quickbooks/references`,
+  externalMappings: `${apiBaseUrl}/api/integrations/mappings`,
+
+  // Finance — Accounting (QuickBooks posting)
+  financialAccounting: (txnId: number) =>
+    `${apiBaseUrl}/api/finance/transactions/${txnId}/accounting`,
 };

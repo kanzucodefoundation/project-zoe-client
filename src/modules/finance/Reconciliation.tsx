@@ -42,6 +42,7 @@ import { toast } from 'react-toastify';
 import { get, post, put } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { TransactionStatus } from './types';
+import QuickBooksPostingPanel from './QuickBooksPostingPanel';
 import type {
   Transaction,
   FinancialAccount,
@@ -431,6 +432,12 @@ const Reconciliation = () => {
                               </Tooltip>
                             </>
                           )}
+                        {tx.reconciliationMatch?.status === 'APPROVED' && (
+                          <QuickBooksPostingPanel
+                            transactionId={tx.id}
+                            onPosted={fetchTransactions}
+                          />
+                        )}
                       </TableCell>
                     </TableRow>
                   ))
