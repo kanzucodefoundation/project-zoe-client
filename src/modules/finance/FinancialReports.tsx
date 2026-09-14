@@ -134,8 +134,13 @@ const FinancialReports = () => {
         const link = document.createElement('a');
         link.href = url;
         link.download = `reconciliation-${from}-to-${to}.csv`;
+        // The anchor has to be in the document for the click to count in every
+        // browser, and the blob URL has to outlive the click: revoking it in
+        // the same task can cancel a download that has only just started.
+        document.body.appendChild(link);
         link.click();
-        URL.revokeObjectURL(url);
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
         setExporting(false);
         toast.success('Export downloaded');
       },
