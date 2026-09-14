@@ -30,12 +30,35 @@ export const disconnectQB = async (): Promise<void> => {
   await api.delete(remoteRoutes.quickbooksConnection);
 };
 
-export const fetchQBCompanyInfo = async (): Promise<any> => {
-  const res = await api.get(remoteRoutes.quickbooksCompanyInfo);
+/** The fields Zoe reads from QuickBooks' CompanyInfo response. */
+export interface QBCompanyInfo {
+  CompanyInfo?: {
+    CompanyName?: string;
+    LegalName?: string;
+    Country?: string;
+    CompanyAddr?: {
+      Line1?: string;
+      City?: string;
+      CountrySubDivisionCode?: string;
+    };
+  };
+}
+
+/** The OpenID profile QuickBooks returns for the connected user. */
+export interface QBUserInfo {
+  sub?: string;
+  givenName?: string;
+  familyName?: string;
+  email?: string;
+  emailVerified?: boolean;
+}
+
+export const fetchQBCompanyInfo = async (): Promise<QBCompanyInfo> => {
+  const res = await api.get<QBCompanyInfo>(remoteRoutes.quickbooksCompanyInfo);
   return res.data;
 };
 
-export const fetchQBUserInfo = async (): Promise<any> => {
-  const res = await api.get(remoteRoutes.quickbooksUserInfo);
+export const fetchQBUserInfo = async (): Promise<QBUserInfo> => {
+  const res = await api.get<QBUserInfo>(remoteRoutes.quickbooksUserInfo);
   return res.data;
 };

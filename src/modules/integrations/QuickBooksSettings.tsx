@@ -15,7 +15,15 @@ import LinkIcon from '@mui/icons-material/Link';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import Alert from '@mui/material/Alert';
 import { fetchQBConnection, getQBConnectUrl, disconnectQB } from './api';
+import { apiBaseUrl } from '../../data/constants';
+
+/**
+ * The origin the OAuth callback page is served from — the API, not this app.
+ * Only messages from that origin may end the connect flow.
+ */
+const OAUTH_CALLBACK_ORIGIN = new URL(apiBaseUrl, window.location.origin).origin;
 
 const POPUP_W = 600;
 const POPUP_H = 700;
@@ -38,7 +46,11 @@ export default function QuickBooksSettings() {
     popupRef.current = null;
     queryClient.invalidateQueries({ queryKey: ['qb-connection'] });
     if (message) {
-      isError ? toast.error(message) : toast.success(message);
+      if (isError) {
+        toast.error(message);
+      } else {
+        toast.success(message);
+      }
     }
   }, [queryClient, stopPolling]);
 
@@ -58,8 +70,8 @@ export default function QuickBooksSettings() {
         if (status.connected) {
           closePopupAndRefresh('QuickBooks connected!');
         }
-      } catch (_) {
-        // ignore transient polling errors
+      } catch {
+        // Transient polling errors are expected while the popup is open.
       }
     }, 2000);
   }, [stopPolling, closePopupAndRefresh, queryClient]);
@@ -67,7 +79,12 @@ export default function QuickBooksSettings() {
   // Clean up the poll interval when the component unmounts
   useEffect(() => () => stopPolling(), [stopPolling]);
 
-  const { data: connection, isLoading } = useQuery({
+  const {
+    data: connection,
+    isLoading,
+    isError: statusFailed,
+    refetch,
+  } = useQuery({
     queryKey: ['qb-connection'],
     queryFn: fetchQBConnection,
   });
@@ -104,6 +121,11 @@ export default function QuickBooksSettings() {
   // without waiting for the next poll cycle.
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
+      // Without these checks any page holding a handle on this window could
+      // stop the polling and fake either outcome.
+      if (event.origin !== OAUTH_CALLBACK_ORIGIN) return;
+      if (!popupRef.current || event.source !== popupRef.current) return;
+
       if (event.data?.type === 'QB_CONNECT_SUCCESS') {
         closePopupAndRefresh('QuickBooks connected!');
       } else if (event.data?.type === 'QB_CONNECT_ERROR') {
@@ -166,6 +188,14 @@ export default function QuickBooksSettings() {
                 size="small"
                 variant="outlined"
               />
+            ) : statusFailed ? (
+              <Chip
+                icon={<ErrorOutlineIcon fontSize="small" />}
+                label="Status unavailable"
+                color="warning"
+                size="small"
+                variant="outlined"
+              />
             ) : (
               <Chip
                 icon={<ErrorOutlineIcon fontSize="small" />}
@@ -175,6 +205,35 @@ export default function QuickBooksSettings() {
               />
             )}
           </Stack>
+
+          {statusFailed && (
+
+            <Alert
+
+              severity="warning"
+
+              sx={{ mt: 1.5 }}
+
+              action={
+
+                <Button color="inherit" size="small" onClick={() => refetch()}>
+
+                  Retry
+
+                </Button>
+
+              }
+
+            >
+
+              Could not check the QuickBooks connection. This does not mean it is
+
+              disconnected — the status request itself failed.
+
+            </Alert>
+
+          )}
+
 
           {connected && conn && (
             <>

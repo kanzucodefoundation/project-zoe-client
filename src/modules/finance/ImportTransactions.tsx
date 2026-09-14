@@ -33,9 +33,15 @@ import {
   Error as ErrorIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, post, postFile } from '../../utils/ajax';
+import { get, postAsync, postFile } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
-import type { FinancialAccount, ParsedTransaction, TransactionCategory, TransactionImportConfig } from './types';
+import type {
+  FinancialAccount,
+  GivingCategoryOption,
+  ParsedTransaction,
+  TransactionCategory,
+  TransactionImportConfig,
+} from './types';
 
 const steps = ['Select Account', 'Upload File', 'Review & Import'];
 
@@ -64,7 +70,11 @@ const ImportTransactions = () => {
 
   // Step 3: Parsed data
   const [parsedTransactions, setParsedTransactions] = useState<ParsedTransaction[]>([]);
-  const [importResult, setImportResult] = useState<{ imported: number; errors: string[] } | null>(null);
+  const [importResult, setImportResult] = useState<{ imported: number; errors: number } | null>(null);
+  const [importProgress, setImportProgress] = useState<{
+    done: number;
+    total: number;
+  } | null>(null);
 
   useEffect(() => {
     get(
@@ -89,7 +99,12 @@ const ImportTransactions = () => {
       remoteRoutes.financialGivingCategories,
       (data: GivingCategoryOption[]) => {
         setCategories(data);
-        const fallback = data.find((option) => option.isDefault) ?? data[0];
+        // Only an option backed by a Zoe category can be a fallback. Picking
+        // an unmapped QuickBooks item would file rows under a category they do
+        // not belong to.
+        const fallback =
+          data.find((option) => option.selectable && option.isDefault) ??
+          data.find((option) => option.selectable);
         if (fallback) {
           setConfig((prev) => ({
             ...prev,
@@ -105,17 +120,19 @@ const ImportTransactions = () => {
   }, []);
 
   const handleFileSelect = (selectedFile: File) => {
-    // Validated by extension rather than MIME type: browsers report CSV
-    // inconsistently (text/csv, application/vnd.ms-excel, or empty depending
-    // on the OS), and the server picks its reader by extension too.
-    const validExtensions = ['.csv', '.xlsx'];
+    const validTypes = [
+      'text/csv',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+    ];
+    const validExtensions = ['.csv', '.xlsx', '.xls'];
 
-    const hasValidExtension = validExtensions.some((ext) =>
-      selectedFile.name.toLowerCase().endsWith(ext),
+    const hasValidExtension = validExtensions.some(ext =>
+      selectedFile.name.toLowerCase().endsWith(ext)
     );
 
-    if (!hasValidExtension) {
-      setParseError('Please upload a .csv or .xlsx file');
+    if (!validTypes.includes(selectedFile.type) && !hasValidExtension) {
+      setParseError('Please upload a CSV or Excel file');
       return;
     }
 
@@ -177,7 +194,9 @@ const ImportTransactions = () => {
       },
       (err: unknown) => {
         setParseError(
-          err instanceof Error ? err.message : 'Failed to parse file',
+          err instanceof Error && err.message
+            ? err.message
+            : 'Failed to parse file',
         );
         setParsing(false);
       },
@@ -222,20 +241,10 @@ const ImportTransactions = () => {
         });
       }
 
-    post(
-      `${remoteRoutes.financialTransactions}/import`,
-      {
-        accountId: config.accountId,
-        transactions: validTransactions,
-      },
-      (result: { imported: number; errors: string[] }) => {
-        setImportResult(result);
-        toast.success(`Imported ${result.imported} transactions`);
-        setImporting(false);
-      },
-      (err: any) => {
-        toast.error(err?.message || 'Import failed');
-        setImporting(false);
+      setImportResult({ imported, errors: errors.length });
+      toast.success(`Imported ${imported} transactions`);
+      if (errors.length > 0) {
+        toast.warning(`${errors.length} rows were rejected`);
       }
     } catch (e: unknown) {
       // Whatever landed before the failure is already saved, so say so rather
@@ -367,8 +376,18 @@ const ImportTransactions = () => {
                       <MenuItem
                         key={option.qboItemId ?? option.category ?? option.label}
                         value={option.qboItemId ?? option.category ?? ''}
+                        disabled={!option.selectable}
                       >
                         {option.label}
+                        {!option.selectable && (
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            sx={{ ml: 1 }}
+                          >
+                            not linked to a Zoe category
+                          </Typography>
+                        )}
                         {option.internalLabel &&
                           option.qboItemName &&
                           option.qboItemName !== option.internalLabel && (
@@ -435,7 +454,7 @@ const ImportTransactions = () => {
               type="file"
               ref={fileInputRef}
               onChange={handleFileInputChange}
-              accept=".csv,.xlsx"
+              accept=".csv,.xlsx,.xls"
               style={{ display: 'none' }}
             />
 
@@ -464,7 +483,7 @@ const ImportTransactions = () => {
               <Typography variant="body1" mb={1}>
                 {isDragging
                   ? 'Drop the file here...'
-                  : 'Drag and drop a .csv or .xlsx file here'}
+                  : 'Drag and drop a CSV or Excel file here'}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 or click to select a file
@@ -515,27 +534,8 @@ const ImportTransactions = () => {
                 </Typography>
                 <Typography color="text.secondary" mb={3}>
                   {importResult.imported} transactions imported
-                  {importResult.errors.length > 0 &&
-                    `, ${importResult.errors.length} failed`}
+                  {importResult.errors > 0 && `, ${importResult.errors} errors`}
                 </Typography>
-
-                {importResult.errors.length > 0 && (
-                  <Alert severity="warning" sx={{ mb: 3, textAlign: 'left' }}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Rows that could not be imported
-                    </Typography>
-                    {/* Each message names the offending row, so showing them
-                        lets the user fix the file instead of guessing. */}
-                    <Box component="ul" sx={{ m: 0, pl: 2 }}>
-                      {importResult.errors.map((message) => (
-                        <li key={message}>
-                          <Typography variant="body2">{message}</Typography>
-                        </li>
-                      ))}
-                    </Box>
-                  </Alert>
-                )}
-
                 <Button variant="contained" onClick={handleReset}>
                   Import More
                 </Button>
@@ -569,8 +569,7 @@ const ImportTransactions = () => {
                         <TableCell>Message</TableCell>
                         <TableCell>Tithe no.</TableCell>
                         <TableCell align="right">Amount</TableCell>
-                        <TableCell>Category</TableCell>
-                        <TableCell>Why</TableCell>
+                        <TableCell>QuickBooks item</TableCell>
                         <TableCell>Status</TableCell>
                       </TableRow>
                     </TableHead>
@@ -646,11 +645,6 @@ const ImportTransactions = () => {
                                 }
                               />
                             </Tooltip>
-                          </TableCell>
-                          <TableCell>
-                            <Typography variant="caption" color="text.secondary">
-                              {tx.matchedRule || '-'}
-                            </Typography>
                           </TableCell>
                           <TableCell>
                             {tx.isValid ? (

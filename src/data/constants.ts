@@ -198,7 +198,6 @@ export const remoteRoutes = {
   financialReports: `${apiBaseUrl}/api/finance/reports`,
   financialDistributions: `${apiBaseUrl}/api/finance/distributions`,
   financialCategoryRules: `${apiBaseUrl}/api/finance/category-rules`,
-  financialReports: `${apiBaseUrl}/api/finance/reports`,
   financialGivingCategories: `${apiBaseUrl}/api/finance/giving-categories`,
   financialAccountingBatch: `${apiBaseUrl}/api/finance/accounting`,
 

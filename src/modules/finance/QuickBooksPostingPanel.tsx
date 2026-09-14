@@ -268,6 +268,10 @@ export default function QuickBooksPostingPanel({
           }`,
         );
         onPosted?.();
+      } else if (result.status === 'PENDING') {
+        // Recorded but not yet confirmed. Calling this a failure would invite a
+        // retry, and retrying is unsafe without an idempotency guarantee.
+        toast.info('Posting recorded — awaiting confirmation from QuickBooks');
       } else {
         toast.error('Posting failed — see details in panel');
       }
@@ -713,7 +717,20 @@ export default function QuickBooksPostingPanel({
           {/* ── Done ── */}
           {stage === 'done' && postingResult && (
             <Box>
-              {postingResult.status === 'POSTED' ? (
+              {postingResult.status === 'PENDING' ? (
+                <Stack alignItems="center" gap={1} py={2}>
+                  <CircularProgress size={32} />
+                  <Typography fontWeight={600}>Awaiting QuickBooks</Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    textAlign="center"
+                  >
+                    The posting was recorded but QuickBooks has not confirmed a
+                    receipt yet. Re-open this panel later to see the outcome.
+                  </Typography>
+                </Stack>
+              ) : postingResult.status === 'POSTED' ? (
                 <Stack alignItems="center" gap={1} py={2}>
                   <CheckCircleOutlineIcon
                     color="success"

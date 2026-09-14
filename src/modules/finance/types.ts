@@ -252,6 +252,11 @@ export interface ParsedTransaction {
   category: TransactionCategory;
   /** Why this row got its category: the rule that fired, or the default. */
   matchedRule?: string;
+  /** Tithe number read out of the statement message, e.g. TBGB0095. */
+  titheNumber?: string | null;
+  /** QuickBooks product/service this row will post against. */
+  externalItemId?: string | null;
+  externalItemName?: string | null;
   isValid: boolean;
   errors?: string[];
 }
