@@ -35,12 +35,13 @@ import {
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get } from '../../utils/ajax';
+import { get, downLoad } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import type { ReconciliationSummary, DistributionSummary, FinancialAccount } from './types';
 
 const FinancialReports = () => {
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [accounts, setAccounts] = useState<FinancialAccount[]>([]);
 
   // Filters
@@ -60,8 +61,8 @@ const FinancialReports = () => {
     setLoading(true);
 
     const params = new URLSearchParams({
-      dateFrom: dateFrom.format('YYYY-MM-DD'),
-      dateTo: dateTo.format('YYYY-MM-DD'),
+      startDate: dateFrom.format('YYYY-MM-DD'),
+      endDate: dateTo.format('YYYY-MM-DD'),
     });
     if (accountFilter !== 'ALL') {
       params.append('accountId', accountFilter.toString());
@@ -80,7 +81,7 @@ const FinancialReports = () => {
 
     // Fetch distribution summary
     get(
-      `${remoteRoutes.financialDistributions}/summary?${params.toString()}`,
+      `${remoteRoutes.financialReports}/distributions?${params.toString()}`,
       (data: DistributionSummary) => {
         setDistributionSummary(data);
         setLoading(false);
@@ -113,29 +114,44 @@ const FinancialReports = () => {
   const handleExport = () => {
     if (!dateFrom || !dateTo) return;
 
-    const params = new URLSearchParams({
-      dateFrom: dateFrom.format('YYYY-MM-DD'),
-      dateTo: dateTo.format('YYYY-MM-DD'),
-      format: 'csv',
-    });
+    const from = dateFrom.format('YYYY-MM-DD');
+    const to = dateTo.format('YYYY-MM-DD');
+
+    const params = new URLSearchParams({ startDate: from, endDate: to });
     if (accountFilter !== 'ALL') {
       params.append('accountId', accountFilter.toString());
     }
 
-    window.open(
+    setExporting(true);
+
+    // Fetched through the shared client so the request carries the bearer
+    // token, then saved from the blob. A window.open would open an
+    // unauthenticated tab and be rejected.
+    downLoad(
       `${remoteRoutes.financialReports}/export?${params.toString()}`,
-      '_blank'
+      (data: Blob) => {
+        const url = URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `reconciliation-${from}-to-${to}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+        setExporting(false);
+        toast.success('Export downloaded');
+      },
+      () => {
+        setExporting(false);
+        toast.error('Export failed');
+      }
     );
-    toast.success('Export started');
   };
 
   // Prepare chart data
-  const categoryData = reconciliationSummary?.byCategory
-    ? Object.entries(reconciliationSummary.byCategory).map(([category, amount]) => ({
-        label: category,
-        value: amount,
-      }))
-    : [];
+  const categoryData =
+    reconciliationSummary?.byCategory?.map(({ category, amount }) => ({
+      label: category,
+      value: amount,
+    })) ?? [];
 
   const locationData = distributionSummary?.byLocation
     ? Object.entries(distributionSummary.byLocation).map(([location, amount]) => ({
@@ -164,8 +180,9 @@ const FinancialReports = () => {
               variant="outlined"
               startIcon={<DownloadIcon />}
               onClick={handleExport}
+              disabled={exporting}
             >
-              Export CSV
+              {exporting ? 'Exporting...' : 'Export CSV'}
             </Button>
           </Box>
         </Box>
@@ -221,10 +238,10 @@ const FinancialReports = () => {
                 <Card>
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
-                      Total Imported
+                      Total Transactions
                     </Typography>
                     <Typography variant="h4">
-                      {reconciliationSummary?.totalImported.toLocaleString() || 0}
+                      {reconciliationSummary?.totalTransactions?.toLocaleString() ?? 0}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -233,10 +250,10 @@ const FinancialReports = () => {
                 <Card>
                   <CardContent>
                     <Typography variant="body2" color="text.secondary">
-                      Matched
+                      Reconciled
                     </Typography>
                     <Typography variant="h4" color="success.main">
-                      {reconciliationSummary?.totalMatched.toLocaleString() || 0}
+                      {reconciliationSummary?.reconciledCount?.toLocaleString() ?? 0}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -248,7 +265,7 @@ const FinancialReports = () => {
                       Pending
                     </Typography>
                     <Typography variant="h4" color="warning.main">
-                      {reconciliationSummary?.totalPending.toLocaleString() || 0}
+                      {reconciliationSummary?.pendingCount?.toLocaleString() ?? 0}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -261,7 +278,7 @@ const FinancialReports = () => {
                     </Typography>
                     <Typography variant="h4">
                       {reconciliationSummary?.matchRate
-                        ? `${Math.round(reconciliationSummary.matchRate * 100)}%`
+                        ? `${Math.round(reconciliationSummary.matchRate)}%`
                         : '0%'}
                     </Typography>
                   </CardContent>

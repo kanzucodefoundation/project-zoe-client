@@ -30,11 +30,6 @@ import {
   Tooltip,
   LinearProgress,
   Checkbox,
-  Alert,
-  AlertTitle,
-  Stack,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -43,10 +38,8 @@ import {
   Person as PersonIcon,
   Link as LinkIcon,
   Refresh as RefreshIcon,
-  ReceiptLong as ReceiptLongIcon,
-  AutoFixHigh as AutoMatchIcon,
-  DoneAll as DoneAllIcon,
-  Place as PlaceIcon,
+  AutoAwesome as AutoMatchIcon,
+  DoneAll as ApproveAllIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { get, getAsync, post, put } from '../../utils/ajax';
@@ -124,6 +117,12 @@ const getStatusColor = (status: TransactionStatus): 'warning' | 'success' | 'err
   }
 };
 
+/**
+ * Matches at or above this score are the ones "Approve All High Confidence"
+ * acts on, per the reconciliation tutorial.
+ */
+const HIGH_CONFIDENCE = 90;
+
 const Reconciliation = () => {
   const theme = useTheme();
   // Dialogs fill the screen on a phone, as they do elsewhere in the app.
@@ -149,16 +148,13 @@ const Reconciliation = () => {
   const [selectedContact, setSelectedContact] = useState<ContactOption | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // One selection drives both bulk actions. Transaction ids are kept because a
-  // row's useful action depends on its match state: a pending match can be
-  // approved, an approved one can be posted.
-  const [selectedTxnIds, setSelectedTxnIds] = useState<number[]>([]);
-  const [bulkApproving, setBulkApproving] = useState(false);
-  const [bulkPosting, setBulkPosting] = useState(false);
-  // Kept on screen rather than in a toast: a finance user needs to read the
-  // names back and act on them, which a message that disappears prevents.
-  const [postFailures, setPostFailures] = useState<PostFailure[]>([]);
-  const [autoMatching, setAutoMatching] = useState(false);
+  // Auto-match and bulk approval
+  const [running, setRunning] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const [selectedMatchIds, setSelectedMatchIds] = useState<number[]>([]);
+  // Transaction whose approve/reject request is in flight, so both controls
+  // on that row can be disabled without freezing the whole table.
+  const [resolvingId, setResolvingId] = useState<number | null>(null);
 
   const fetchTransactions = () => {
     setLoading(true);
@@ -195,6 +191,114 @@ const Reconciliation = () => {
     fetchAccounts();
     fetchTransactions();
   }, [statusFilter, accountFilter]);
+
+  // Selections are only meaningful against the rows on screen. Without this,
+  // ticking matches on one account, switching accounts and approving would
+  // silently approve the hidden ones.
+  useEffect(() => {
+    setSelectedMatchIds([]);
+  }, [statusFilter, accountFilter, search]);
+
+  /**
+   * Runs the matching engine over one account. The endpoint needs a specific
+   * account, so this is only offered once the account filter is narrowed.
+   */
+  const handleRunAutoMatch = () => {
+    if (accountFilter === 'ALL') {
+      toast.info('Choose an account first — auto-match runs one account at a time');
+      return;
+    }
+
+    setRunning(true);
+    post(
+      `${remoteRoutes.financialReconciliation}/run`,
+      {
+        accountId: accountFilter,
+        minConfidenceThreshold: 60,
+      },
+      (result: {
+        processed: number;
+        matched: number;
+        autoApproved: number;
+        errors: string[];
+      }) => {
+        setRunning(false);
+        toast.success(
+          `Matched ${result.matched} of ${result.processed} transactions`,
+        );
+        if (result.errors?.length) {
+          toast.warning(`${result.errors.length} could not be matched`);
+        }
+        setSelectedMatchIds([]);
+        fetchTransactions();
+      },
+      (err: unknown) => {
+        setRunning(false);
+        toast.error(err instanceof Error ? err.message : 'Auto-match failed');
+      },
+    );
+  };
+
+  /** Removes a transaction's match from the selection once it is resolved. */
+  const dropFromSelection = (transactionId: number) => {
+    const matchId = transactions.find((tx) => tx.id === transactionId)
+      ?.reconciliationMatch?.id;
+
+    if (matchId) {
+      setSelectedMatchIds((prev) => prev.filter((id) => id !== matchId));
+    }
+  };
+
+  const toggleMatchSelection = (matchId: number) => {
+    setSelectedMatchIds((prev) =>
+      prev.includes(matchId)
+        ? prev.filter((id) => id !== matchId)
+        : [...prev, matchId],
+    );
+  };
+
+  /** Ticks every pending match scoring at or above the high-confidence mark. */
+  const selectHighConfidence = () => {
+    setSelectedMatchIds(
+      pendingMatches
+        .filter((match) => (match.confidenceScore ?? 0) >= HIGH_CONFIDENCE)
+        .map((match) => match.id),
+    );
+  };
+
+  const handleBulkApprove = () => {
+    // Belt and braces: only ever submit ids that are still pending and on
+    // screen, even if something changed between selection and click.
+    const visibleIds = selectedMatchIds.filter((id) =>
+      pendingMatches.some((match) => match.id === id),
+    );
+
+    if (visibleIds.length === 0) {
+      setSelectedMatchIds([]);
+      return;
+    }
+
+    setApproving(true);
+    post(
+      `${remoteRoutes.financialReconciliation}/bulk-approve`,
+      { matchIds: visibleIds },
+      (result: { approved: number; errors: string[] }) => {
+        setApproving(false);
+        toast.success(`Approved ${result.approved} matches`);
+        if (result.errors?.length) {
+          toast.warning(`${result.errors.length} could not be approved`);
+        }
+        setSelectedMatchIds([]);
+        fetchTransactions();
+      },
+      (err: unknown) => {
+        setApproving(false);
+        toast.error(
+          err instanceof Error ? err.message : 'Bulk approval failed',
+        );
+      },
+    );
+  };
 
   const handleOpenMatchDialog = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
@@ -257,28 +361,36 @@ const Reconciliation = () => {
   };
 
   const handleApproveMatch = (transactionId: number) => {
+    setResolvingId(transactionId);
     put(
       `${remoteRoutes.financialReconciliation}/approve/${transactionId}`,
       {},
       () => {
         toast.success('Match approved');
+        setResolvingId(null);
+        dropFromSelection(transactionId);
         fetchTransactions();
       },
       () => {
+        setResolvingId(null);
         toast.error('Failed to approve match');
       }
     );
   };
 
   const handleRejectMatch = (transactionId: number) => {
+    setResolvingId(transactionId);
     put(
       `${remoteRoutes.financialReconciliation}/reject/${transactionId}`,
       {},
       () => {
         toast.success('Match rejected');
+        setResolvingId(null);
+        dropFromSelection(transactionId);
         fetchTransactions();
       },
       () => {
+        setResolvingId(null);
         toast.error('Failed to reject match');
       }
     );
@@ -398,6 +510,17 @@ const Reconciliation = () => {
         tx.narration?.toLowerCase().includes(search.toLowerCase())
     );
 
+  // Matches awaiting a decision — what the bulk controls operate on.
+  const pendingMatches = filteredTransactions
+    .map((tx) => tx.reconciliationMatch)
+    .filter(
+      (match): match is NonNullable<Transaction['reconciliationMatch']> =>
+        !!match && match.status === 'PENDING',
+    );
+  const highConfidenceCount = pendingMatches.filter(
+    (match) => (match.confidenceScore ?? 0) >= HIGH_CONFIDENCE,
+  ).length;
+
   const pendingCount = transactions.filter((tx) => tx.status === 'PENDING').length;
   const reconciledCount = transactions.filter((tx) => tx.status === 'RECONCILED').length;
 
@@ -454,21 +577,29 @@ const Reconciliation = () => {
         mb={3}
       >
         <Typography variant="h4">Reconciliation</Typography>
-        <Stack direction="row" gap={1}>
-          <Button
-            startIcon={
-              autoMatching ? <CircularProgress size={18} /> : <AutoMatchIcon />
+        <Box display="flex" gap={1} flexWrap="wrap">
+          <Tooltip
+            title={
+              accountFilter === 'ALL'
+                ? 'Choose an account to run auto-match'
+                : 'Find contacts for unmatched transactions on this account'
             }
-            variant="contained"
-            onClick={handleRunAutoMatch}
-            disabled={autoMatching}
           >
-            {autoMatching ? 'Matching…' : 'Run auto-match'}
-          </Button>
+            <span>
+              <Button
+                variant="contained"
+                startIcon={<AutoMatchIcon />}
+                onClick={handleRunAutoMatch}
+                disabled={running || accountFilter === 'ALL'}
+              >
+                {running ? 'Matching...' : 'Run Auto-Match'}
+              </Button>
+            </span>
+          </Tooltip>
           <Button startIcon={<RefreshIcon />} onClick={fetchTransactions}>
             Refresh
           </Button>
-        </Stack>
+        </Box>
       </Box>
 
       {/* Summary Cards */}
@@ -563,104 +694,47 @@ const Reconciliation = () => {
           </FormControl>
         </Box>
 
-        {actionableIds.length > 0 && (
-          <Alert
-            severity={selectedTxnIds.length > 0 ? 'info' : 'success'}
-            // The buttons live in the message rather than MUI's `action` slot:
-            // that slot pins itself to the right and never wraps, so on a phone
-            // the two buttons crushed the text. Here they simply drop below it.
-            sx={{ mb: 2, '& .MuiAlert-message': { width: '100%' } }}
+        {/* Bulk approval */}
+        {pendingMatches.length > 0 && (
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={2}
+            mb={2}
+            p={1.5}
+            sx={{ bgcolor: 'action.hover', borderRadius: 1 }}
+            flexWrap="wrap"
           >
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              alignItems={{ xs: 'stretch', sm: 'center' }}
-              justifyContent="space-between"
-              gap={1.5}
-            >
-              <Box>
-                {selectedTxnIds.length > 0
-                  ? `${selectedTxnIds.length} selected — ${approvableMatchIds.length} to approve, ${postableTxnIds.length} ready to post.`
-                  : `${actionableIds.length} transaction${
-                      actionableIds.length === 1 ? '' : 's'
-                    } need attention — tick the header box to select them all.`}
-              </Box>
-              <Stack direction="row" gap={1} flexShrink={0}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  sx={{ flex: { xs: 1, sm: 'none' }, whiteSpace: 'nowrap' }}
-                  startIcon={
-                    bulkApproving ? (
-                      <CircularProgress size={16} />
-                    ) : (
-                      <DoneAllIcon />
-                    )
-                  }
-                  onClick={handleBulkApprove}
-                  disabled={approvableMatchIds.length === 0 || bulkApproving}
-                >
-                  Approve {approvableMatchIds.length || ''}
-                </Button>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="secondary"
-                  sx={{ flex: { xs: 1, sm: 'none' }, whiteSpace: 'nowrap' }}
-                  startIcon={
-                    bulkPosting ? (
-                      <CircularProgress size={16} />
-                    ) : (
-                      <ReceiptLongIcon />
-                    )
-                  }
-                  onClick={handleBulkPost}
-                  disabled={postableTxnIds.length === 0 || bulkPosting}
-                >
-                  Post {postableTxnIds.length || ''}
-                </Button>
-              </Stack>
-            </Stack>
-          </Alert>
-        )}
-
-        {postFailures.length > 0 && (
-          <Alert
-            severity="warning"
-            sx={{ mb: 2 }}
-            onClose={() => setPostFailures([])}
-          >
-            <AlertTitle>
-              {postFailures.length} could not be posted to QuickBooks
-            </AlertTitle>
-            <Typography variant="body2" mb={1}>
-              Everything else in the batch went across. These need attention:
+            <Typography variant="body2">
+              {selectedMatchIds.length > 0
+                ? `${selectedMatchIds.length} selected`
+                : `${pendingMatches.length} awaiting approval`}
             </Typography>
-            <Stack component="ul" gap={0.75} sx={{ m: 0, pl: 2.5 }}>
-              {postFailures.map((failure) => (
-                <Box component="li" key={failure.transactionId}>
-                  <Typography variant="body2" component="span" fontWeight={600}>
-                    {failure.giver}
-                  </Typography>
-                  {failure.amount > 0 && (
-                    <Typography
-                      variant="body2"
-                      component="span"
-                      color="text.secondary"
-                    >
-                      {' '}
-                      · {failure.amount.toLocaleString()}
-                      {failure.transactionDate
-                        ? ` · ${failure.transactionDate}`
-                        : ''}
-                    </Typography>
-                  )}
-                  <Typography variant="caption" display="block">
-                    {failure.error}
-                  </Typography>
-                </Box>
-              ))}
-            </Stack>
-          </Alert>
+            <Button
+              size="small"
+              onClick={selectHighConfidence}
+              disabled={highConfidenceCount === 0}
+            >
+              Select high confidence ({highConfidenceCount})
+            </Button>
+            {selectedMatchIds.length > 0 && (
+              <Button size="small" onClick={() => setSelectedMatchIds([])}>
+                Clear
+              </Button>
+            )}
+            <Box flex={1} />
+            <Button
+              variant="contained"
+              size="small"
+              startIcon={<ApproveAllIcon />}
+              onClick={handleBulkApprove}
+              disabled={approving || selectedMatchIds.length === 0}
+            >
+              {approving
+                ? 'Approving...'
+                : `Approve ${selectedMatchIds.length || ''} selected`}
+            </Button>
+          </Box>
         )}
 
         {/* Transactions Table */}
@@ -673,28 +747,7 @@ const Reconciliation = () => {
             <Table stickyHeader size="small" sx={{ minWidth: 720 }}>
               <TableHead>
                 <TableRow>
-                  <TableCell padding="checkbox">
-                    <Tooltip
-                      title={
-                        actionableIds.length === 0
-                          ? 'Nothing to approve or post'
-                          : allSelected
-                            ? 'Clear selection'
-                            : 'Select everything that can be approved or posted'
-                      }
-                    >
-                      <span>
-                        <Checkbox
-                          size="small"
-                          disabled={actionableIds.length === 0}
-                          checked={allSelected}
-                          indeterminate={someSelected}
-                          onChange={toggleAll}
-                          inputProps={{ 'aria-label': 'Select all' }}
-                        />
-                      </span>
-                    </Tooltip>
-                  </TableCell>
+                  <TableCell padding="checkbox" />
                   <TableCell>Date</TableCell>
                   <TableCell>Sender</TableCell>
                   <TableCell>Phone</TableCell>
@@ -702,13 +755,14 @@ const Reconciliation = () => {
                   <TableCell>Category</TableCell>
                   <TableCell>Status</TableCell>
                   <TableCell>Match</TableCell>
+                  <TableCell align="right">Confidence</TableCell>
                   <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filteredTransactions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} align="center">
+                    <TableCell colSpan={10} align="center">
                       <Typography color="text.secondary" py={4}>
                         No transactions found
                       </Typography>
@@ -718,17 +772,21 @@ const Reconciliation = () => {
                   filteredTransactions.map((tx) => (
                     <TableRow key={tx.id} hover>
                       <TableCell padding="checkbox">
-                        {!tx.accountingPosting &&
-                          (tx.reconciliationMatch?.status === 'PENDING' ||
-                            tx.reconciliationMatch?.status === 'APPROVED') && (
+                        {tx.reconciliationMatch?.status === 'PENDING' && (
                           <Checkbox
                             size="small"
-                            checked={selectedTxnIds.includes(tx.id)}
-                            onChange={() => toggleOne(tx.id)}
-                            inputProps={{
-                              'aria-label': `Select ${
-                                tx.senderName ?? 'transaction'
-                              }`,
+                            checked={selectedMatchIds.includes(
+                              tx.reconciliationMatch.id,
+                            )}
+                            onChange={() =>
+                              toggleMatchSelection(tx.reconciliationMatch!.id)
+                            }
+                            slotProps={{
+                              input: {
+                                'aria-label': `Select match for ${
+                                  tx.senderName || 'transaction'
+                                } ${tx.amount}`,
+                              },
                             }}
                           />
                         )}
@@ -771,7 +829,28 @@ const Reconciliation = () => {
                         )}
                       </TableCell>
                       <TableCell align="right">
-                        {tx.status === 'PENDING' && (
+                        {tx.reconciliationMatch?.confidenceScore != null ? (
+                          <Chip
+                            label={`${Math.round(
+                              tx.reconciliationMatch.confidenceScore,
+                            )}%`}
+                            size="small"
+                            color={
+                              tx.reconciliationMatch.confidenceScore >=
+                              HIGH_CONFIDENCE
+                                ? 'success'
+                                : 'default'
+                            }
+                            variant="outlined"
+                          />
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell align="right">
+                        {tx.status === 'PENDING' &&
+                          (!tx.reconciliationMatch ||
+                            tx.reconciliationMatch.status === 'REJECTED') && (
                           <Tooltip title="Match to contact">
                             <IconButton
                               size="small"
@@ -781,13 +860,20 @@ const Reconciliation = () => {
                             </IconButton>
                           </Tooltip>
                         )}
-                        {tx.status === 'RECONCILED' &&
-                          tx.reconciliationMatch?.status === 'PENDING' && (
+                        {/*
+                          A pending match is what awaits approval. This used to
+                          also require tx.status === 'RECONCILED', which only
+                          becomes true once a match is approved — so these
+                          buttons could never appear and a matched transaction
+                          was stuck on PENDING forever.
+                        */}
+                        {tx.reconciliationMatch?.status === 'PENDING' && (
                             <>
                               <Tooltip title="Approve match">
                                 <IconButton
                                   size="small"
                                   color="success"
+                                  disabled={resolvingId === tx.id}
                                   onClick={() => handleApproveMatch(tx.id)}
                                 >
                                   <CheckCircleIcon />
@@ -797,6 +883,7 @@ const Reconciliation = () => {
                                 <IconButton
                                   size="small"
                                   color="error"
+                                  disabled={resolvingId === tx.id}
                                   onClick={() => handleRejectMatch(tx.id)}
                                 >
                                   <WarningIcon />

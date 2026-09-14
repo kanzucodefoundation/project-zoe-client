@@ -195,6 +195,7 @@ export const remoteRoutes = {
   financialAccounts: `${apiBaseUrl}/api/finance/accounts`,
   financialTransactions: `${apiBaseUrl}/api/finance/transactions`,
   financialReconciliation: `${apiBaseUrl}/api/finance/reconciliation`,
+  financialReports: `${apiBaseUrl}/api/finance/reports`,
   financialDistributions: `${apiBaseUrl}/api/finance/distributions`,
   financialCategoryRules: `${apiBaseUrl}/api/finance/category-rules`,
   financialReports: `${apiBaseUrl}/api/finance/reports`,

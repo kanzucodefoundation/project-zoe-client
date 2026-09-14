@@ -144,8 +144,16 @@ export interface DistributionBatch {
   periodStart: string;
   periodEnd: string;
   status: BatchStatus;
-  distributions: Distribution[];
-  totalAmount: number;
+  /**
+   * Only populated by the batch-detail endpoint. The list endpoint omits it
+   * and returns `distributionCount` instead, so `undefined` here means "not
+   * loaded", never "none".
+   */
+  distributions?: Distribution[];
+  /** Line count, returned by the list endpoint. */
+  distributionCount?: number;
+  /** Postgres numeric arrives as a string; coerce before formatting. */
+  totalAmount: number | string;
   createdBy?: {
     id: number;
     name: string;
@@ -164,19 +172,16 @@ export interface Distribution {
   batchId: number;
   sourceMatchId?: number;
   category: TransactionCategory;
-  fromAccount?: FinancialAccount;
-  fromAccountId?: number;
-  toAccount?: FinancialAccount;
-  toAccountId?: number;
-  toLocation?: {
+  /** Where the money goes — an account or a group, per the server entity. */
+  targetAccount?: FinancialAccount;
+  targetGroup?: {
     id: number;
     name: string;
   };
-  toLocationId?: number;
-  amount: number;
-  percentage?: number;
-  purpose: string;
-  transferred: boolean;
+  amount: number | string;
+  percentage?: number | string;
+  /** Free-text purpose from the distribution rule. */
+  description?: string;
   transferredAt?: string;
   transferReference?: string;
   metadata?: Record<string, unknown>;
@@ -245,13 +250,8 @@ export interface ParsedTransaction {
   /** The statement's free-text box — MoMo's "To message". */
   narration?: string;
   category: TransactionCategory;
-  /** Why this row got its category: a rule name, the message, or the default. */
+  /** Why this row got its category: the rule that fired, or the default. */
   matchedRule?: string;
-  /** Tithe number read out of the message, e.g. TBGB0095. */
-  titheNumber?: string | null;
-  /** QuickBooks product/service this row will post against. */
-  externalItemId?: string | null;
-  externalItemName?: string | null;
   isValid: boolean;
   errors?: string[];
 }
@@ -288,12 +288,21 @@ export interface DistributionCalculationRequest {
 
 // Report types
 export interface ReconciliationSummary {
-  totalImported: number;
-  totalMatched: number;
-  totalPending: number;
-  totalDisputed: number;
+  totalTransactions: number;
+  totalAmount: number;
+  pendingCount: number;
+  pendingAmount: number;
+  reconciledCount: number;
+  reconciledAmount: number;
+  disputedCount: number;
+  disputedAmount: number;
+  /** Already a percentage (0-100), not a fraction. */
   matchRate: number;
-  byCategory: Record<TransactionCategory, number>;
+  byCategory: {
+    category: string;
+    count: number;
+    amount: number;
+  }[];
 }
 
 export interface DistributionSummary {
