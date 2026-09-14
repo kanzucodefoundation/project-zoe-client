@@ -13,7 +13,9 @@ import {
   Select,
   MenuItem,
   FormControlLabel,
+  FormHelperText,
   Switch,
+  Tooltip,
   Table,
   TableBody,
   TableCell,
@@ -31,15 +33,22 @@ import {
   Error as ErrorIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, post } from '../../utils/ajax';
+import { get, postAsync } from '../../utils/ajax';
 import { remoteRoutes, AUTH_TOKEN_KEY } from '../../data/constants';
-import type { FinancialAccount, ParsedTransaction, TransactionCategory, TransactionImportConfig } from './types';
+import type {
+  FinancialAccount,
+  GivingCategoryOption,
+  ParsedTransaction,
+  TransactionCategory,
+  TransactionImportConfig,
+} from './types';
 
 const steps = ['Select Account', 'Upload File', 'Review & Import'];
 
 const ImportTransactions = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [accounts, setAccounts] = useState<FinancialAccount[]>([]);
+  const [categories, setCategories] = useState<GivingCategoryOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,7 +56,9 @@ const ImportTransactions = () => {
   // Step 1: Config
   const [config, setConfig] = useState<TransactionImportConfig>({
     accountId: 0,
-    defaultCategory: 'OFFERING' as TransactionCategory,
+    defaultCategory: 'TITHE' as TransactionCategory,
+    defaultItemId: null,
+    defaultItemName: null,
     applyServiceTimeRules: true,
   });
 
@@ -60,6 +71,10 @@ const ImportTransactions = () => {
   // Step 3: Parsed data
   const [parsedTransactions, setParsedTransactions] = useState<ParsedTransaction[]>([]);
   const [importResult, setImportResult] = useState<{ imported: number; errors: number } | null>(null);
+  const [importProgress, setImportProgress] = useState<{
+    done: number;
+    total: number;
+  } | null>(null);
 
   useEffect(() => {
     get(
@@ -76,6 +91,26 @@ const ImportTransactions = () => {
         toast.error('Failed to load accounts');
         setLoading(false);
       }
+    );
+
+    // Categories carry the QuickBooks product/service each one posts to, so the
+    // wizard names them the way the books do.
+    get(
+      remoteRoutes.financialGivingCategories,
+      (data: GivingCategoryOption[]) => {
+        setCategories(data);
+        const fallback = data.find((option) => option.isDefault) ?? data[0];
+        if (fallback) {
+          setConfig((prev) => ({
+            ...prev,
+            defaultCategory: (fallback.category ??
+              'TITHE') as TransactionCategory,
+            defaultItemId: fallback.qboItemId,
+            defaultItemName: fallback.qboItemName,
+          }));
+        }
+      },
+      () => {},
     );
   }, []);
 
@@ -135,6 +170,10 @@ const ImportTransactions = () => {
     formData.append('file', file);
     formData.append('accountId', config.accountId.toString());
     formData.append('defaultCategory', config.defaultCategory);
+    if (config.defaultItemId) {
+      formData.append('defaultItemId', config.defaultItemId);
+      formData.append('defaultItemName', config.defaultItemName ?? '');
+    }
     formData.append('applyServiceTimeRules', config.applyServiceTimeRules.toString());
 
     const token = localStorage.getItem(AUTH_TOKEN_KEY);
@@ -161,7 +200,14 @@ const ImportTransactions = () => {
       });
   };
 
-  const handleImport = () => {
+  /**
+   * Rows per request. A whole statement in one body runs past the server's JSON
+   * limit, so the reviewed rows go up in batches — which also gives the
+   * operator progress instead of one long silence.
+   */
+  const IMPORT_CHUNK_SIZE = 250;
+
+  const handleImport = async () => {
     const validTransactions = parsedTransactions.filter((t) => t.isValid);
     if (validTransactions.length === 0) {
       toast.error('No valid transactions to import');
@@ -169,23 +215,46 @@ const ImportTransactions = () => {
     }
 
     setImporting(true);
+    setImportProgress({ done: 0, total: validTransactions.length });
 
-    post(
-      `${remoteRoutes.financialTransactions}/import`,
-      {
-        accountId: config.accountId,
-        transactions: validTransactions,
-      },
-      (result: { imported: number; errors: number }) => {
-        setImportResult(result);
-        toast.success(`Imported ${result.imported} transactions`);
-        setImporting(false);
-      },
-      (err: any) => {
-        toast.error(err?.message || 'Import failed');
-        setImporting(false);
+    let imported = 0;
+    const errors: string[] = [];
+
+    try {
+      for (let i = 0; i < validTransactions.length; i += IMPORT_CHUNK_SIZE) {
+        const chunk = validTransactions.slice(i, i + IMPORT_CHUNK_SIZE);
+        const result = await postAsync<{
+          imported: number;
+          errors: string[];
+        }>(`${remoteRoutes.financialTransactions}/import`, {
+          accountId: config.accountId,
+          transactions: chunk,
+        });
+        imported += result.imported;
+        if (result.errors?.length) errors.push(...result.errors);
+        setImportProgress({
+          done: Math.min(i + chunk.length, validTransactions.length),
+          total: validTransactions.length,
+        });
       }
-    );
+
+      setImportResult({ imported, errors: errors.length });
+      toast.success(`Imported ${imported} transactions`);
+      if (errors.length > 0) {
+        toast.warning(`${errors.length} rows were rejected`);
+      }
+    } catch (e: unknown) {
+      // Whatever landed before the failure is already saved, so say so rather
+      // than implying the whole import was lost.
+      toast.error(
+        `${e instanceof Error ? e.message : 'Import failed'}${
+          imported > 0 ? ` — ${imported} rows were saved before this` : ''
+        }`,
+      );
+    } finally {
+      setImporting(false);
+      setImportProgress(null);
+    }
   };
 
   const handleReset = () => {
@@ -258,22 +327,72 @@ const ImportTransactions = () => {
                 </FormControl>
 
                 <FormControl fullWidth>
-                  <InputLabel>Default Category</InputLabel>
+                  <InputLabel>Fallback category</InputLabel>
                   <Select
-                    value={config.defaultCategory}
-                    label="Default Category"
-                    onChange={(e) =>
+                    value={config.defaultItemId ?? config.defaultCategory ?? ''}
+                    label="Fallback category"
+                    onChange={(e) => {
+                      const key = e.target.value as string;
+                      const option = categories.find(
+                        (c) => (c.qboItemId ?? c.category) === key,
+                      );
                       setConfig((prev) => ({
                         ...prev,
-                        defaultCategory: e.target.value as TransactionCategory,
-                      }))
-                    }
+                        defaultCategory: (option?.category ??
+                          'TITHE') as TransactionCategory,
+                        defaultItemId: option?.qboItemId ?? null,
+                        defaultItemName: option?.qboItemName ?? null,
+                      }));
+                    }}
                   >
-                    <MenuItem value="TITHE">Tithe</MenuItem>
-                    <MenuItem value="OFFERING">Offering</MenuItem>
-                    <MenuItem value="DONATION">Donation</MenuItem>
-                    <MenuItem value="ARISE_BUILD">Arise & Build</MenuItem>
+                    {(categories.length > 0
+                      ? categories
+                      : ([
+                          {
+                            category: 'TITHE',
+                            label: 'Tithe',
+                            selectable: true,
+                          },
+                          {
+                            category: 'OFFERING',
+                            label: 'Offering',
+                            selectable: true,
+                          },
+                          {
+                            category: 'DONATION',
+                            label: 'Donation',
+                            selectable: true,
+                          },
+                          {
+                            category: 'ARISE_BUILD',
+                            label: 'Arise & Build',
+                            selectable: true,
+                          },
+                        ] as GivingCategoryOption[])
+                    ).map((option) => (
+                      <MenuItem
+                        key={option.qboItemId ?? option.category ?? option.label}
+                        value={option.qboItemId ?? option.category ?? ''}
+                      >
+                        {option.label}
+                        {option.internalLabel &&
+                          option.qboItemName &&
+                          option.qboItemName !== option.internalLabel && (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{ ml: 1 }}
+                            >
+                              {option.internalLabel}
+                            </Typography>
+                          )}
+                      </MenuItem>
+                    ))}
                   </Select>
+                  <FormHelperText>
+                    Every QuickBooks product and service is listed. Used only
+                    when the statement message names none.
+                  </FormHelperText>
                 </FormControl>
 
                 <FormControlLabel
@@ -290,6 +409,14 @@ const ImportTransactions = () => {
                   }
                   label="Apply service time rules for category detection"
                 />
+
+                <Alert severity="info">
+                  Every row is matched to a QuickBooks product or service from
+                  the statement message first — <strong>WHARUAYXPOFFERTORY</strong>{' '}
+                  books against <strong>Offertory - YXP</strong>, not a generic
+                  offering. Names, phone numbers and tithe numbers are cleaned up
+                  automatically.
+                </Alert>
 
                 <Button
                   variant="contained"
@@ -402,7 +529,7 @@ const ImportTransactions = () => {
               </Box>
             ) : (
               <>
-                <Box display="flex" gap={2} mb={3}>
+                <Box display="flex" gap={2} mb={3} flexWrap="wrap">
                   <Chip
                     icon={<CheckCircleIcon />}
                     label={`${validCount} valid`}
@@ -420,14 +547,16 @@ const ImportTransactions = () => {
                 </Box>
 
                 <TableContainer sx={{ maxHeight: 400, mb: 3 }}>
-                  <Table stickyHeader size="small">
+                  <Table stickyHeader size="small" sx={{ minWidth: 720 }}>
                     <TableHead>
                       <TableRow>
                         <TableCell>Row</TableCell>
                         <TableCell>Date</TableCell>
                         <TableCell>Sender</TableCell>
+                        <TableCell>Message</TableCell>
+                        <TableCell>Tithe no.</TableCell>
                         <TableCell align="right">Amount</TableCell>
-                        <TableCell>Category</TableCell>
+                        <TableCell>QuickBooks item</TableCell>
                         <TableCell>Status</TableCell>
                       </TableRow>
                     </TableHead>
@@ -443,12 +572,66 @@ const ImportTransactions = () => {
                           <TableCell>
                             {new Date(tx.transactionDate).toLocaleDateString()}
                           </TableCell>
-                          <TableCell>{tx.senderName || tx.senderPhone || '-'}</TableCell>
+                          <TableCell>
+                            {tx.senderName || '-'}
+                            {tx.senderPhone && (
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                display="block"
+                              >
+                                {tx.senderPhone}
+                              </Typography>
+                            )}
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              maxWidth: 180,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            <Typography variant="caption" color="text.secondary">
+                              {tx.narration || '—'}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            {tx.titheNumber ? (
+                              <Chip
+                                label={tx.titheNumber}
+                                size="small"
+                                variant="outlined"
+                              />
+                            ) : (
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                —
+                              </Typography>
+                            )}
+                          </TableCell>
                           <TableCell align="right">
                             {tx.amount.toLocaleString()}
                           </TableCell>
                           <TableCell>
-                            <Chip label={tx.category} size="small" />
+                            <Tooltip title={tx.matchedRule ?? ''}>
+                              <Chip
+                                label={tx.externalItemName ?? tx.category}
+                                size="small"
+                                color={
+                                  tx.matchedRule === 'Default category'
+                                    ? 'default'
+                                    : 'primary'
+                                }
+                                variant={
+                                  tx.matchedRule === 'Default category'
+                                    ? 'outlined'
+                                    : 'filled'
+                                }
+                              />
+                            </Tooltip>
                           </TableCell>
                           <TableCell>
                             {tx.isValid ? (
@@ -468,7 +651,29 @@ const ImportTransactions = () => {
                   </Table>
                 </TableContainer>
 
-                {importing && <LinearProgress sx={{ mb: 2 }} />}
+                {importing && (
+                  <Box mb={2}>
+                    <LinearProgress
+                      variant={importProgress ? 'determinate' : 'indeterminate'}
+                      value={
+                        importProgress
+                          ? (importProgress.done / importProgress.total) * 100
+                          : undefined
+                      }
+                    />
+                    {importProgress && (
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        mt={0.5}
+                        display="block"
+                      >
+                        Imported {importProgress.done.toLocaleString()} of{' '}
+                        {importProgress.total.toLocaleString()}…
+                      </Typography>
+                    )}
+                  </Box>
+                )}
 
                 <Box display="flex" gap={2}>
                   <Button variant="outlined" onClick={handleReset} disabled={importing}>

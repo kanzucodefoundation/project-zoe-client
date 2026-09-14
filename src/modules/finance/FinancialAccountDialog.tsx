@@ -15,6 +15,8 @@ import {
   Box,
   CircularProgress,
   Alert,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import { get, post, put } from '../../utils/ajax';
@@ -57,6 +59,9 @@ const initialFormData: FinancialAccountFormData = {
 };
 
 const FinancialAccountDialog = ({ open, onClose, onSuccess, editAccount }: Props) => {
+  const theme = useTheme();
+  // Dialogs fill the screen on a phone, as they do elsewhere in the app.
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [formData, setFormData] = useState<FinancialAccountFormData>(initialFormData);
   const [groups, setGroups] = useState<GroupOption[]>([]);
   const [loading, setLoading] = useState(false);
@@ -165,7 +170,10 @@ const FinancialAccountDialog = ({ open, onClose, onSuccess, editAccount }: Props
   const isEdit = !!editAccount;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm"
+        fullWidth
+        fullScreen={isPhone}
+      >
       <DialogTitle>{isEdit ? 'Edit Account' : 'Add Account'}</DialogTitle>
       <DialogContent>
         {loading ? (

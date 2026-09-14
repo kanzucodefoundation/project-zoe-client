@@ -21,6 +21,8 @@ import {
   IconButton,
   Collapse,
   Alert,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -70,6 +72,9 @@ const getStatusIcon = (status: BatchStatus) => {
 };
 
 const Distributions = () => {
+  const theme = useTheme();
+  // Dialogs fill the screen on a phone, as they do elsewhere in the app.
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [batches, setBatches] = useState<DistributionBatch[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedBatch, setExpandedBatch] = useState<number | null>(null);
@@ -195,7 +200,14 @@ const Distributions = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="lg">
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        gap={2}
+        mb={3}
+      >
           <Typography variant="h4">Distributions</Typography>
           <Button
             variant="contained"
@@ -293,7 +305,7 @@ const Distributions = () => {
                 <Collapse in={expandedBatch === batch.id}>
                   <Box px={2} pb={2}>
                     <TableContainer>
-                      <Table size="small">
+                      <Table size="small" sx={{ minWidth: 720 }}>
                         <TableHead>
                           <TableRow>
                             <TableCell>Category</TableCell>
@@ -349,6 +361,7 @@ const Distributions = () => {
           onClose={() => setCreateDialogOpen(false)}
           maxWidth="sm"
           fullWidth
+          fullScreen={isPhone}
         >
           <DialogTitle>Create Distribution Batch</DialogTitle>
           <DialogContent>

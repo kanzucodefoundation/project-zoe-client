@@ -317,4 +317,49 @@ export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
   a.click();
 };
 
+// ── Promise-based variants ────────────────────────────────────────────────────
+// The callback helpers above swallow errors and resolve to `undefined`, which
+// makes them unusable with async/await. These variants resolve with the response
+// body and reject with a normalised Error carrying the server's message, so
+// callers can render failures inline instead of relying on a toast.
+
+export interface ApiError extends Error {
+  response?: AxiosResponse;
+}
+
+const asFriendlyError = (err: AxiosError): ApiError => {
+  if (err.response?.status === 401 || err.response?.status === 403) {
+    clearSession();
+    return new Error('Your session has expired. Please log in again.');
+  }
+  const message =
+    extractErrorMessageFromData(getErrorData(err)) ||
+    (err.message?.toLowerCase().includes('network')
+      ? "Can't reach server, Check connectivity"
+      : err.message) ||
+    'Invalid request, please contact admin';
+  const error: ApiError = new Error(message);
+  error.response = err.response;
+  return error;
+};
+
+export const getAsync = <T = unknown>(
+  url: string,
+  params?: Record<string, unknown>,
+): Promise<T> =>
+  api
+    .get<T>(url, params ? { params } : undefined)
+    .then((response) => response.data)
+    .catch((error: AxiosError) => {
+      throw asFriendlyError(error);
+    });
+
+export const postAsync = <T = unknown>(url: string, data: unknown): Promise<T> =>
+  api
+    .post<T>(url, data)
+    .then((response) => response.data)
+    .catch((error: AxiosError) => {
+      throw asFriendlyError(error);
+    });
+
 export default api;

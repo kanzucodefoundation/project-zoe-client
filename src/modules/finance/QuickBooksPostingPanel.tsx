@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Alert,
+  AlertTitle,
+  Autocomplete,
   Box,
   Button,
   Chip,
@@ -10,18 +12,20 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
+  Paper,
   Stack,
+  TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { toast } from 'react-toastify';
-import { get, post } from '../../utils/ajax';
+import { getAsync, postAsync } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 
 // ── Setup wizard types ────────────────────────────────────────────────────────
@@ -31,6 +35,14 @@ interface QboOption {
   name: string;
 }
 
+interface CustomerCreateDefaults {
+  displayName: string;
+  givenName?: string;
+  familyName?: string;
+  primaryPhone?: string;
+  primaryEmail?: string;
+}
+
 interface MissingMappingItem {
   code: string;
   internalReferenceType: string;
@@ -38,6 +50,10 @@ interface MissingMappingItem {
   internalName: string;
   externalReferenceType: string;
   qboOptions: QboOption[];
+  creatable: boolean;
+  createDefaults?: CustomerCreateDefaults;
+  suggestedOptionId?: string | null;
+  suggestionReason?: string | null;
 }
 
 interface DataIssue {
@@ -61,7 +77,7 @@ interface LineItem {
   quantity: number;
   amount: number;
   serviceDate: string;
-  class: { groupName: string } | null;
+  class: { groupName: string; isFallback: boolean } | null;
 }
 
 interface SalesReceiptPreview {
@@ -69,7 +85,7 @@ interface SalesReceiptPreview {
   referenceNumber: string | null;
   customer: { contactName: string };
   depositAccount: { financialAccountName: string };
-  location: { groupName: string } | null;
+  location: { groupName: string; isFallback: boolean } | null;
   lineItems: LineItem[];
   totalAmount: number;
   currency: string;
@@ -84,55 +100,108 @@ interface PostingResult {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/** Sentinel option id meaning "provision this record in QuickBooks instead". */
+const CREATE_NEW = '__create_new__';
+
 const externalTypeLabel: Record<string, string> = {
-  CUSTOMER: 'QBO Customer',
-  ITEM: 'QBO Item',
-  ACCOUNT: 'QBO Account',
-  LOCATION: 'QBO Location',
-  CLASS: 'QBO Class',
+  CUSTOMER: 'QuickBooks customer',
+  ITEM: 'QuickBooks product/service',
+  ACCOUNT: 'QuickBooks account',
+  LOCATION: 'QuickBooks location',
+  CLASS: 'QuickBooks class',
 };
 
 const internalTypeLabel: Record<string, string> = {
-  CONTACT: 'Contact',
-  GIVING_CATEGORY: 'Category',
-  FINANCIAL_ACCOUNT: 'Financial Account',
+  CONTACT: 'Giver',
+  GIVING_CATEGORY: 'Giving category',
+  FINANCIAL_ACCOUNT: 'Deposit account',
   GROUP: 'Group',
 };
+
+/**
+ * When a giver belongs to no Location or FOB, the gift is attributed to the
+ * mother group instead of blocking. That row needs explaining; the per-record
+ * rows do not.
+ */
+const fallbackHint: Record<string, string> = {
+  DEFAULT_LOCATION_MAPPING_MISSING:
+    'This giver is not in any Location group, so the gift is attributed to the mother group. Map it once and every unplaced giver is covered.',
+  DEFAULT_CLASS_MAPPING_MISSING:
+    'This giver is not in any FOB group, so the gift is attributed to the mother group. Map it once and every unplaced giver is covered.',
+};
+
+/** Server errors arrive as Errors carrying the API's message; anything else is a bug. */
+function messageOf(e: unknown): string | undefined {
+  return e instanceof Error ? e.message : undefined;
+}
 
 function mappingKey(m: MissingMappingItem) {
   return `${m.internalReferenceType}__${m.internalReferenceId}__${m.externalReferenceType}`;
 }
 
+type Choice = QboOption & { isCreate?: boolean };
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
-type Stage = 'idle' | 'checking' | 'setup' | 'saving' | 'preview' | 'posting' | 'done' | 'error';
+type Stage =
+  | 'idle'
+  | 'checking'
+  | 'setup'
+  | 'saving'
+  | 'preview'
+  | 'posting'
+  | 'done'
+  | 'error';
 
 interface Props {
   transactionId: number;
   onPosted?: () => void;
 }
 
-export default function QuickBooksPostingPanel({ transactionId, onPosted }: Props) {
+export default function QuickBooksPostingPanel({
+  transactionId,
+  onPosted,
+}: Props) {
+  const theme = useTheme();
+  // Dialogs fill the screen on a phone, as they do elsewhere in the app.
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [open, setOpen] = useState(false);
   const [stage, setStage] = useState<Stage>('idle');
   const [setupResult, setSetupResult] = useState<SetupResult | null>(null);
   const [selections, setSelections] = useState<Record<string, string>>({});
+  const [createForms, setCreateForms] = useState<
+    Record<string, CustomerCreateDefaults>
+  >({});
   const [preview, setPreview] = useState<SalesReceiptPreview | null>(null);
   const [postingResult, setPostingResult] = useState<PostingResult | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
 
   const base = remoteRoutes.financialAccounting(transactionId);
 
-  const loadSetup = async () => {
-    const result: SetupResult = await get(`${base}/setup`);
+
+  /** Applies a setup payload to local state, jumping to preview when ready. */
+  const applyResult = async (result: SetupResult) => {
     if (result.ready) {
-      const receiptPreview = await get(`${base}/preview`);
+      const receiptPreview = await getAsync<SalesReceiptPreview>(
+        `${base}/preview`,
+      );
       setPreview(receiptPreview);
       setStage('preview');
-    } else {
-      setSetupResult(result);
-      setSelections({});
-      setStage('setup');
+      return;
     }
+    setSetupResult(result);
+    // Pre-select the server's suggested match so the operator confirms rather
+    // than hunts through a long list.
+    setSelections(
+      Object.fromEntries(
+        result.missingMappings
+          .filter((m) => !!m.suggestedOptionId)
+          .map((m) => [mappingKey(m), m.suggestedOptionId as string]),
+      ),
+    );
+    setCreateForms({});
+    setStage('setup');
   };
 
   const handleOpen = async () => {
@@ -140,11 +209,14 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
     setStage('checking');
     setSetupResult(null);
     setSelections({});
+    setCreateForms({});
     setPreview(null);
     setPostingResult(null);
+    setErrorMessage(null);
     try {
-      await loadSetup();
-    } catch {
+      await applyResult(await getAsync<SetupResult>(`${base}/setup`));
+    } catch (e: unknown) {
+      setErrorMessage(messageOf(e) ?? null);
       setStage('error');
     }
   };
@@ -152,46 +224,55 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
   const handleSaveMappings = async () => {
     if (!setupResult) return;
     setStage('saving');
+    setErrorMessage(null);
     try {
       const mappings = setupResult.missingMappings.map((m) => {
-        const selectedId = selections[mappingKey(m)];
-        const selectedOption = m.qboOptions.find((o) => o.id === selectedId);
-        return {
+        const key = mappingKey(m);
+        const selectedId = selections[key];
+        const common = {
           internalReferenceType: m.internalReferenceType,
           internalReferenceId: m.internalReferenceId,
           externalReferenceType: m.externalReferenceType,
+        };
+        if (selectedId === CREATE_NEW) {
+          return { ...common, action: 'create' as const, create: createForms[key] };
+        }
+        return {
+          ...common,
+          action: 'link' as const,
           externalReferenceId: selectedId,
-          externalReferenceName: selectedOption?.name,
+          externalReferenceName: m.qboOptions.find((o) => o.id === selectedId)
+            ?.name,
         };
       });
 
-      const preflight = await post(`${base}/setup`, { mappings });
-      if (preflight.ready) {
-        const receiptPreview = await get(`${base}/preview`);
-        setPreview(receiptPreview);
-        setStage('preview');
-      } else {
-        // Re-fetch setup so any remaining issues show with full context
-        await loadSetup();
-      }
-    } catch {
-      setStage('error');
+      await applyResult(await postAsync<SetupResult>(`${base}/setup`, { mappings }));
+    } catch (e: unknown) {
+      // Keep the operator on the form with their entries intact — the common
+      // failure here is a duplicate customer name, which they can just edit.
+      setErrorMessage(messageOf(e) ?? 'Could not save the mappings.');
+      setStage('setup');
     }
   };
 
   const handlePost = async () => {
     setStage('posting');
     try {
-      const result = await post(`${base}/post`, {});
+      const result = await postAsync<PostingResult>(`${base}/post`, {});
       setPostingResult(result);
       setStage('done');
       if (result.status === 'POSTED') {
-        toast.success(`Posted to QuickBooks — receipt ${result.externalDocumentNumber ?? result.externalDocumentId}`);
+        toast.success(
+          `Posted to QuickBooks — receipt ${
+            result.externalDocumentNumber ?? result.externalDocumentId
+          }`,
+        );
         onPosted?.();
       } else {
         toast.error('Posting failed — see details in panel');
       }
-    } catch {
+    } catch (e: unknown) {
+      setErrorMessage(messageOf(e) ?? null);
       setStage('error');
     }
   };
@@ -201,12 +282,49 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
     setStage('idle');
   };
 
-  const allMappingsFilled =
-    setupResult?.missingMappings.every((m) => !!selections[mappingKey(m)]) ?? false;
+  const setSelection = (key: string, value: string, m: MissingMappingItem) => {
+    setSelections((prev) => ({ ...prev, [key]: value }));
+    if (value === CREATE_NEW && !createForms[key]) {
+      setCreateForms((prev) => ({
+        ...prev,
+        [key]: m.createDefaults ?? { displayName: m.internalName },
+      }));
+    }
+  };
 
-  const hasMappableBlockers = (setupResult?.missingMappings.length ?? 0) > 0;
-  const hasDataIssuesOnly =
-    !hasMappableBlockers && (setupResult?.dataIssues.length ?? 0) > 0;
+  const setCreateField = (
+    key: string,
+    field: keyof CustomerCreateDefaults,
+    value: string,
+  ) => {
+    setCreateForms((prev) => ({
+      ...prev,
+      [key]: { ...prev[key], [field]: value },
+    }));
+  };
+
+  const missingMappings = useMemo(
+    () => setupResult?.missingMappings ?? [],
+    [setupResult],
+  );
+  const dataIssues = setupResult?.dataIssues ?? [];
+
+  const allMappingsFilled = useMemo(
+    () =>
+      missingMappings.every((m) => {
+        const key = mappingKey(m);
+        const selected = selections[key];
+        if (!selected) return false;
+        if (selected === CREATE_NEW) {
+          return !!createForms[key]?.displayName?.trim();
+        }
+        return true;
+      }),
+    [missingMappings, selections, createForms],
+  );
+
+  const hasMappableBlockers = missingMappings.length > 0;
+  const hasDataIssuesOnly = !hasMappableBlockers && dataIssues.length > 0;
 
   return (
     <>
@@ -221,17 +339,22 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
         Post to QuickBooks
       </Button>
 
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="sm"
+        fullWidth
+        fullScreen={isPhone}
+      >
         <DialogTitle>Post to QuickBooks</DialogTitle>
 
         <DialogContent dividers>
           {/* ── Spinners ── */}
-          {(stage === 'checking' || stage === 'saving' || stage === 'posting') && (
+          {(stage === 'checking' ||
+            stage === 'saving' ||
+            stage === 'posting') && (
             <Stack alignItems="center" py={3} gap={1}>
               <CircularProgress size={32} />
               <Typography variant="body2" color="text.secondary">
                 {stage === 'checking' && 'Checking readiness…'}
-                {stage === 'saving' && 'Saving mappings…'}
+                {stage === 'saving' && 'Saving to QuickBooks…'}
                 {stage === 'posting' && 'Posting to QuickBooks…'}
               </Typography>
             </Stack>
@@ -242,57 +365,283 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
             <Box>
               {setupResult.contact && (
                 <Typography variant="body2" color="text.secondary" mb={2}>
-                  Giving transaction for <strong>{setupResult.contact.name}</strong>
+                  Giving transaction for{' '}
+                  <strong>{setupResult.contact.name}</strong>
                 </Typography>
               )}
 
-              {/* Data issues — not fixable inline */}
-              {setupResult.dataIssues.map((issue) => (
+              {errorMessage && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  {errorMessage}
+                </Alert>
+              )}
+
+              {/* Data issues — not fixable from this dialog */}
+              {dataIssues.map((issue) => (
                 <Alert severity="warning" key={issue.code} sx={{ mb: 1 }}>
                   {issue.message}
                 </Alert>
               ))}
 
-              {/* Missing mappings — resolve inline */}
+              {/* Missing mappings — resolved inline */}
               {hasMappableBlockers && (
                 <>
-                  <Stack direction="row" alignItems="center" gap={1} mb={2}>
-                    <ErrorOutlineIcon color="error" fontSize="small" />
-                    <Typography variant="body2" fontWeight={600}>
-                      Select the matching QuickBooks record for each item below
-                    </Typography>
-                  </Stack>
+                  <Typography variant="body2" fontWeight={600} mt={2} mb={1.5}>
+                    Match each item below to QuickBooks
+                  </Typography>
 
                   <Stack gap={2}>
-                    {setupResult.missingMappings.map((m) => (
-                      <FormControl key={mappingKey(m)} size="small" fullWidth>
-                        <InputLabel>
-                          {internalTypeLabel[m.internalReferenceType] ?? m.internalReferenceType}
-                          {' '}"{m.internalName}" →{' '}
-                          {externalTypeLabel[m.externalReferenceType] ?? m.externalReferenceType}
-                        </InputLabel>
-                        <Select
-                          label={`${internalTypeLabel[m.internalReferenceType] ?? m.internalReferenceType} "${m.internalName}" → ${externalTypeLabel[m.externalReferenceType] ?? m.externalReferenceType}`}
-                          value={selections[mappingKey(m)] ?? ''}
-                          onChange={(e) =>
-                            setSelections((prev) => ({ ...prev, [mappingKey(m)]: e.target.value }))
-                          }
+                    {missingMappings.map((m) => {
+                      const key = mappingKey(m);
+                      const selected = selections[key] ?? '';
+                      const isCreating = selected === CREATE_NEW;
+                      const form = createForms[key];
+
+                      const choices: Choice[] = [
+                        ...(m.creatable
+                          ? [
+                              {
+                                id: CREATE_NEW,
+                                name: `Create “${
+                                  m.createDefaults?.displayName ?? m.internalName
+                                }” as a new customer`,
+                                isCreate: true,
+                              },
+                            ]
+                          : []),
+                        ...m.qboOptions,
+                      ];
+                      const value =
+                        choices.find((c) => c.id === selected) ?? null;
+                      const showSuggestion =
+                        !!m.suggestionReason &&
+                        selected === m.suggestedOptionId;
+
+                      return (
+                        <Paper
+                          key={key}
+                          variant="outlined"
+                          sx={{ p: 2, borderRadius: 2 }}
                         >
-                          {m.qboOptions.map((opt) => (
-                            <MenuItem key={opt.id} value={opt.id}>
-                              {opt.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    ))}
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            display="block"
+                            mb={1}
+                          >
+                            {internalTypeLabel[m.internalReferenceType] ??
+                              m.internalReferenceType}
+                            {' · '}
+                            <Box component="span" fontWeight={600}>
+                              {m.internalName}
+                            </Box>
+                          </Typography>
+
+                          {fallbackHint[m.code] && (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              display="block"
+                              mb={1.5}
+                            >
+                              {fallbackHint[m.code]}
+                            </Typography>
+                          )}
+
+                          <Autocomplete
+                            size="small"
+                            fullWidth
+                            options={choices}
+                            value={value}
+                            getOptionLabel={(o) => o.name}
+                            isOptionEqualToValue={(o, v) => o.id === v.id}
+                            onChange={(_, next) =>
+                              setSelection(key, next?.id ?? '', m)
+                            }
+                            renderOption={(props, option) => {
+                              const { key: optKey, ...rest } =
+                                props as typeof props & { key: string };
+                              return (
+                                <Box
+                                  component="li"
+                                  key={optKey}
+                                  {...rest}
+                                  sx={{ gap: 1 }}
+                                >
+                                  {option.isCreate && (
+                                    // Inherits the row's text colour. The theme's
+                                    // primary is a near-black navy in both light
+                                    // and dark mode, so colouring this by palette
+                                    // made it unreadable on a dark menu.
+                                    <AddCircleOutlineIcon
+                                      fontSize="small"
+                                      color="inherit"
+                                    />
+                                  )}
+                                  <Typography
+                                    variant="body2"
+                                    color="text.primary"
+                                    fontWeight={option.isCreate ? 600 : 400}
+                                  >
+                                    {option.name}
+                                  </Typography>
+                                  {option.id === m.suggestedOptionId && (
+                                    <Chip
+                                      label="suggested"
+                                      size="small"
+                                      color="success"
+                                      variant="outlined"
+                                      sx={{ ml: 'auto' }}
+                                    />
+                                  )}
+                                </Box>
+                              );
+                            }}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label={
+                                  externalTypeLabel[m.externalReferenceType] ??
+                                  m.externalReferenceType
+                                }
+                                placeholder="Search…"
+                              />
+                            )}
+                          />
+
+                          {showSuggestion && (
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              gap={0.5}
+                              mt={0.75}
+                            >
+                              <AutoAwesomeIcon
+                                sx={{ fontSize: 14 }}
+                                color="success"
+                              />
+                              <Typography
+                                variant="caption"
+                                color="success.main"
+                              >
+                                Suggested — {m.suggestionReason}. Confirm or
+                                pick another.
+                              </Typography>
+                            </Stack>
+                          )}
+
+                          {m.creatable &&
+                            m.qboOptions.length === 0 &&
+                            !isCreating && (
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                display="block"
+                                mt={0.75}
+                              >
+                                No matching customer in QuickBooks yet — create
+                                one from this list.
+                              </Typography>
+                            )}
+
+                          {/* Inline "new customer" form */}
+                          {isCreating && form && (
+                            <Box mt={2}>
+                              <Alert
+                                severity="info"
+                                icon={<AddCircleOutlineIcon fontSize="small" />}
+                                sx={{ mb: 1.5, py: 0.5 }}
+                              >
+                                A new customer will be created in QuickBooks and
+                                linked to this giver.
+                              </Alert>
+                              <Stack gap={1.5}>
+                                <TextField
+                                  size="small"
+                                  fullWidth
+                                  required
+                                  label="Display name"
+                                  helperText="Must be unique in QuickBooks"
+                                  value={form.displayName ?? ''}
+                                  error={!form.displayName?.trim()}
+                                  onChange={(e) =>
+                                    setCreateField(
+                                      key,
+                                      'displayName',
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                                <Stack direction="row" gap={1.5}>
+                                  <TextField
+                                    size="small"
+                                    fullWidth
+                                    label="First name"
+                                    value={form.givenName ?? ''}
+                                    onChange={(e) =>
+                                      setCreateField(
+                                        key,
+                                        'givenName',
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                  <TextField
+                                    size="small"
+                                    fullWidth
+                                    label="Last name"
+                                    value={form.familyName ?? ''}
+                                    onChange={(e) =>
+                                      setCreateField(
+                                        key,
+                                        'familyName',
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                </Stack>
+                                <Stack direction="row" gap={1.5}>
+                                  <TextField
+                                    size="small"
+                                    fullWidth
+                                    label="Phone"
+                                    value={form.primaryPhone ?? ''}
+                                    onChange={(e) =>
+                                      setCreateField(
+                                        key,
+                                        'primaryPhone',
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                  <TextField
+                                    size="small"
+                                    fullWidth
+                                    label="Email"
+                                    value={form.primaryEmail ?? ''}
+                                    onChange={(e) =>
+                                      setCreateField(
+                                        key,
+                                        'primaryEmail',
+                                        e.target.value,
+                                      )
+                                    }
+                                  />
+                                </Stack>
+                              </Stack>
+                            </Box>
+                          )}
+                        </Paper>
+                      );
+                    })}
                   </Stack>
                 </>
               )}
 
               {hasDataIssuesOnly && (
                 <Typography variant="body2" color="text.secondary" mt={1}>
-                  These issues must be fixed in the CRM before this transaction can be posted.
+                  These need to be fixed in the CRM before this transaction can
+                  be posted.
                 </Typography>
               )}
             </Box>
@@ -303,17 +652,34 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
             <Box>
               <Stack direction="row" alignItems="center" gap={1} mb={2}>
                 <CheckCircleOutlineIcon color="success" />
-                <Typography fontWeight={600}>Ready to post — review before confirming</Typography>
+                <Typography fontWeight={600}>
+                  Ready to post — review before confirming
+                </Typography>
               </Stack>
               <Stack gap={0.5}>
                 <Row label="Customer" value={preview.customer.contactName} />
                 <Row label="Date" value={preview.transactionDate} />
-                {preview.referenceNumber && <Row label="Reference" value={preview.referenceNumber} />}
-                <Row label="Deposit To" value={preview.depositAccount.financialAccountName} />
-                {preview.location && <Row label="Location" value={preview.location.groupName} />}
+                {preview.referenceNumber && (
+                  <Row label="Reference" value={preview.referenceNumber} />
+                )}
+                <Row
+                  label="Deposit To"
+                  value={preview.depositAccount.financialAccountName}
+                />
+                {preview.location && (
+                  <Row
+                    label="Location"
+                    value={preview.location.groupName}
+                    note={preview.location.isFallback ? 'default' : undefined}
+                  />
+                )}
               </Stack>
               <Divider sx={{ my: 2 }} />
-              <Typography variant="caption" color="text.secondary" fontWeight={600}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight={600}
+              >
                 LINE ITEMS
               </Typography>
               {preview.lineItems.map((li, i) => (
@@ -327,13 +693,16 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
                   {li.class && (
                     <Typography variant="caption" color="text.secondary">
                       Class: {li.class.groupName}
+                      {li.class.isFallback && ' (default)'}
                     </Typography>
                   )}
                 </Box>
               ))}
               <Divider sx={{ my: 1 }} />
               <Stack direction="row" justifyContent="space-between">
-                <Typography variant="body2" fontWeight={600}>Total</Typography>
+                <Typography variant="body2" fontWeight={600}>
+                  Total
+                </Typography>
                 <Typography variant="body2" fontWeight={600}>
                   {preview.currency} {Number(preview.totalAmount).toLocaleString()}
                 </Typography>
@@ -346,25 +715,27 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
             <Box>
               {postingResult.status === 'POSTED' ? (
                 <Stack alignItems="center" gap={1} py={2}>
-                  <CheckCircleOutlineIcon color="success" sx={{ fontSize: 40 }} />
+                  <CheckCircleOutlineIcon
+                    color="success"
+                    sx={{ fontSize: 40 }}
+                  />
                   <Typography fontWeight={600}>Posted successfully</Typography>
                   {postingResult.externalDocumentNumber && (
-                    <Chip label={`Receipt #${postingResult.externalDocumentNumber}`} color="success" size="small" />
+                    <Chip
+                      label={`Receipt #${postingResult.externalDocumentNumber}`}
+                      color="success"
+                      size="small"
+                    />
                   )}
                   <Typography variant="caption" color="text.secondary">
                     QBO ID: {postingResult.externalDocumentId}
                   </Typography>
                 </Stack>
               ) : (
-                <Stack gap={1}>
-                  <Stack direction="row" alignItems="center" gap={1}>
-                    <ErrorOutlineIcon color="error" />
-                    <Typography fontWeight={600}>Posting failed</Typography>
-                  </Stack>
-                  <Typography variant="body2" color="text.secondary">
-                    {postingResult.errorMessage}
-                  </Typography>
-                </Stack>
+                <Alert severity="error">
+                  <AlertTitle>Posting failed</AlertTitle>
+                  {postingResult.errorMessage}
+                </Alert>
               )}
             </Box>
           )}
@@ -373,7 +744,9 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
           {stage === 'error' && (
             <Stack alignItems="center" gap={1} py={2}>
               <ErrorOutlineIcon color="error" sx={{ fontSize: 40 }} />
-              <Typography color="error">Something went wrong. Please try again.</Typography>
+              <Typography color="error" textAlign="center">
+                {errorMessage ?? 'Something went wrong. Please try again.'}
+              </Typography>
             </Stack>
           )}
         </DialogContent>
@@ -390,7 +763,7 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
               onClick={handleSaveMappings}
               disabled={!allMappingsFilled}
             >
-              Save Mappings & Continue
+              Save &amp; Continue
             </Button>
           )}
 
@@ -417,13 +790,24 @@ export default function QuickBooksPostingPanel({ transactionId, onPosted }: Prop
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({
+  label,
+  value,
+  note,
+}: {
+  label: string;
+  value: string;
+  note?: string;
+}) {
   return (
-    <Stack direction="row" gap={1}>
+    <Stack direction="row" gap={1} alignItems="center">
       <Typography variant="body2" color="text.secondary" minWidth={110}>
         {label}
       </Typography>
       <Typography variant="body2">{value}</Typography>
+      {note && (
+        <Chip label={note} size="small" variant="outlined" sx={{ height: 18 }} />
+      )}
     </Stack>
   );
 }

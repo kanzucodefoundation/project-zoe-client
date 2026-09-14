@@ -69,7 +69,7 @@ const FinancialReports = () => {
 
     // Fetch reconciliation summary
     get(
-      `${remoteRoutes.financialReconciliation}/summary?${params.toString()}`,
+      `${remoteRoutes.financialReports}/summary?${params.toString()}`,
       (data: ReconciliationSummary) => {
         setReconciliationSummary(data);
       },
@@ -123,7 +123,7 @@ const FinancialReports = () => {
     }
 
     window.open(
-      `${remoteRoutes.financialReconciliation}/export?${params.toString()}`,
+      `${remoteRoutes.financialReports}/export?${params.toString()}`,
       '_blank'
     );
     toast.success('Export started');
@@ -147,7 +147,14 @@ const FinancialReports = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="lg">
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        gap={2}
+        mb={3}
+      >
           <Typography variant="h4">Financial Reports</Typography>
           <Box display="flex" gap={1}>
             <Button startIcon={<RefreshIcon />} onClick={fetchReports}>
@@ -182,7 +189,7 @@ const FinancialReports = () => {
                 textField: { size: 'small', sx: { width: 180 } },
               }}
             />
-            <FormControl size="small" sx={{ minWidth: 200 }}>
+            <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 200 } }}>
               <InputLabel>Account</InputLabel>
               <Select
                 value={accountFilter}
@@ -324,7 +331,7 @@ const FinancialReports = () => {
                   Distribution Breakdown
                 </Typography>
                 <TableContainer>
-                  <Table size="small">
+                  <Table size="small" sx={{ minWidth: 720 }}>
                     <TableHead>
                       <TableRow>
                         <TableCell>Category</TableCell>
