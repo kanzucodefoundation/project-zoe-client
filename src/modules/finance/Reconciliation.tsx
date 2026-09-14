@@ -6,6 +6,7 @@ import {
   Paper,
   Table,
   TableBody,
+  TablePagination,
   TableCell,
   TableContainer,
   TableHead,
@@ -49,7 +50,7 @@ import {
   Place as PlaceIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, getAsync, post, put } from '../../utils/ajax';
+import { get, getAsync, post, postAsync, put } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { TransactionStatus } from './types';
 import QuickBooksPostingPanel from './QuickBooksPostingPanel';
@@ -68,6 +69,37 @@ interface PostFailure {
   transactionDate: string;
   error?: string;
 }
+
+/**
+ * How many gifts go to QuickBooks in one request.
+ *
+ * QuickBooks is called once per receipt and the server posts them one at a
+ * time, so a batch's duration grows with its size: sending a whole selection at
+ * once ran past the HTTP timeout at around twenty-five gifts and the finance
+ * user lost the result of the ones that had already gone across. A chunk keeps
+ * every request short, and the run reports progress instead of going quiet.
+ */
+const POST_CHUNK_SIZE = 10;
+
+/**
+ * A chunk's own timeout, well above the app default.
+ *
+ * Ten receipts against a slow QuickBooks can legitimately take longer than an
+ * ordinary request is allowed, and cutting one off mid-flight is worse than
+ * waiting: the receipts it already wrote would be reported as failures.
+ */
+const POST_CHUNK_TIMEOUT_MS = 120000;
+
+/**
+ * How many transactions to load for reconciling.
+ *
+ * The endpoint pages at 100 unless asked otherwise, which silently hid the rest
+ * of an imported statement. Reconciliation works on the whole batch — search,
+ * the posted/not-posted filters and "select everything actionable" all run
+ * across what has been loaded — so the screen fetches the set and pages it in
+ * the browser. The ceiling keeps one bad filter from pulling years of history.
+ */
+const FETCH_LIMIT = 1000;
 
 interface BatchPostResult {
   posted: number;
@@ -158,14 +190,29 @@ const Reconciliation = () => {
   const [selectedTxnIds, setSelectedTxnIds] = useState<number[]>([]);
   const [bulkApproving, setBulkApproving] = useState(false);
   const [bulkPosting, setBulkPosting] = useState(false);
+  // How far a chunked run has got, so a long post is visibly working.
+  const [postProgress, setPostProgress] = useState<{
+    done: number;
+    total: number;
+  } | null>(null);
   // Kept on screen rather than in a toast: a finance user needs to read the
   // names back and act on them, which a message that disappears prevents.
   const [postFailures, setPostFailures] = useState<PostFailure[]>([]);
   const [autoMatching, setAutoMatching] = useState(false);
 
+  // Set when the fetch came back full, which means there is more history behind
+  // it. Said out loud, because a silently truncated list is what hid the rest of
+  // an imported statement in the first place.
+  const [atFetchLimit, setAtFetchLimit] = useState(false);
+
+  // Paging happens in the browser, over the loaded set.
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+
   const fetchTransactions = () => {
     setLoading(true);
     const params = new URLSearchParams();
+    params.append('limit', FETCH_LIMIT.toString());
     if (isServerStatus(statusFilter)) params.append('status', statusFilter);
     if (accountFilter !== 'ALL') params.append('accountId', accountFilter.toString());
 
@@ -173,6 +220,7 @@ const Reconciliation = () => {
       `${remoteRoutes.financialTransactions}?${params.toString()}`,
       (data: Transaction[]) => {
         setTransactions(data);
+        setAtFetchLimit(data.length >= FETCH_LIMIT);
         // Ids from the previous list no longer mean anything.
         setSelectedTxnIds([]);
         setLoading(false);
@@ -198,6 +246,12 @@ const Reconciliation = () => {
     fetchAccounts();
     fetchTransactions();
   }, [statusFilter, accountFilter]);
+
+  // Any change to what is being shown starts from the first screen; staying on
+  // page 4 of a narrowed list shows nothing at all.
+  useEffect(() => {
+    setPage(0);
+  }, [statusFilter, accountFilter, search]);
 
   const handleOpenMatchDialog = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
@@ -372,35 +426,73 @@ const Reconciliation = () => {
     );
   };
 
-  const handleBulkPost = () => {
-    if (postableTxnIds.length === 0) return;
+  /** Describes a gift the server never got to answer for, using what is on screen. */
+  const failureFromRow = (
+    transactionId: number,
+    error: string,
+  ): PostFailure => {
+    const tx = transactions.find((t) => t.id === transactionId);
+    return {
+      transactionId,
+      status: 'FAILED',
+      giver: tx?.senderName ?? `Transaction ${transactionId}`,
+      amount: tx?.amount ?? 0,
+      transactionDate: tx?.transactionDate ?? '',
+      error,
+    };
+  };
+
+  const handleBulkPost = async () => {
+    const ids = postableTxnIds;
+    if (ids.length === 0) return;
+
     setBulkPosting(true);
     setPostFailures([]);
-    post(
-      `${remoteRoutes.financialAccountingBatch}/post-batch`,
-      { transactionIds: postableTxnIds },
-      (result: BatchPostResult) => {
-        if (result.posted > 0) {
-          toast.success(`Posted ${result.posted} to QuickBooks`);
-        }
-        // Every transaction is attempted, so a failure here is about those
-        // specific gifts — the rest have already gone across.
-        setPostFailures(
-          result.results.filter((r) => r.status === 'FAILED'),
+    setPostProgress({ done: 0, total: ids.length });
+
+    const failures: PostFailure[] = [];
+    let posted = 0;
+
+    // One chunk at a time, never in parallel: QuickBooks rate-limits per
+    // company, and gifts that arrive faster than it accepts them come back as
+    // failures a finance user would have to chase by hand.
+    for (let from = 0; from < ids.length; from += POST_CHUNK_SIZE) {
+      const chunk = ids.slice(from, from + POST_CHUNK_SIZE);
+
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const result = await postAsync<BatchPostResult>(
+          `${remoteRoutes.financialAccountingBatch}/post-batch`,
+          { transactionIds: chunk },
+          { timeout: POST_CHUNK_TIMEOUT_MS },
         );
-        if (result.failed > 0) {
-          toast.warning(
-            `${result.failed} could not be posted — see the list below`,
-          );
-        }
-        setBulkPosting(false);
-        fetchTransactions();
-      },
-      (err: unknown) => {
-        toast.error(errorMessage(err, 'Bulk posting failed'));
-        setBulkPosting(false);
-      },
-    );
+        posted += result.posted;
+        failures.push(...result.results.filter((r) => r.status === 'FAILED'));
+      } catch (err) {
+        // A chunk that never reached the server must not abandon the rest of
+        // the run. Name its gifts and carry on with the next chunk.
+        const message = errorMessage(err, 'Posting failed');
+        failures.push(...chunk.map((id) => failureFromRow(id, message)));
+      }
+
+      setPostProgress({ done: Math.min(from + chunk.length, ids.length), total: ids.length });
+    }
+
+    // Every gift is attempted, so a failure here is about those specific ones —
+    // the rest have already gone across.
+    setPostFailures(failures);
+    if (posted > 0) {
+      toast.success(`Posted ${posted} to QuickBooks`);
+    }
+    if (failures.length > 0) {
+      toast.warning(
+        `${failures.length} could not be posted — see the list below`,
+      );
+    }
+
+    setBulkPosting(false);
+    setPostProgress(null);
+    fetchTransactions();
   };
 
   const filteredTransactions = transactions
@@ -415,6 +507,19 @@ const Reconciliation = () => {
         tx.senderPhone?.includes(search) ||
         tx.narration?.toLowerCase().includes(search.toLowerCase())
     );
+
+  // Clamped rather than corrected in an effect: a list can shrink under the
+  // current page at any time, and MUI warns when asked to render a page that no
+  // longer exists.
+  const pageCount = Math.max(
+    1,
+    Math.ceil(filteredTransactions.length / rowsPerPage),
+  );
+  const currentPage = Math.min(page, pageCount - 1);
+  const visibleTransactions = filteredTransactions.slice(
+    currentPage * rowsPerPage,
+    currentPage * rowsPerPage + rowsPerPage,
+  );
 
   const pendingCount = transactions.filter((tx) => tx.status === 'PENDING').length;
   const reconciledCount = transactions.filter((tx) => tx.status === 'RECONCILED').length;
@@ -634,7 +739,9 @@ const Reconciliation = () => {
                   onClick={handleBulkPost}
                   disabled={postableTxnIds.length === 0 || bulkPosting}
                 >
-                  Post {postableTxnIds.length || ''}
+                  {postProgress
+                    ? `Posting ${postProgress.done}/${postProgress.total}`
+                    : `Post ${postableTxnIds.length || ''}`}
                 </Button>
               </Stack>
             </Stack>
@@ -678,6 +785,13 @@ const Reconciliation = () => {
                 </Box>
               ))}
             </Stack>
+          </Alert>
+        )}
+
+        {atFetchLimit && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            Showing the most recent {FETCH_LIMIT.toLocaleString()} transactions.
+            Narrow by account or status to reach older ones.
           </Alert>
         )}
 
@@ -733,7 +847,7 @@ const Reconciliation = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredTransactions.map((tx) => (
+                  visibleTransactions.map((tx) => (
                     <TableRow key={tx.id} hover>
                       <TableCell padding="checkbox">
                         {!tx.accountingPosting &&
@@ -856,6 +970,22 @@ const Reconciliation = () => {
               </TableBody>
             </Table>
           </TableContainer>
+        )}
+
+        {!loading && filteredTransactions.length > 0 && (
+          <TablePagination
+            component="div"
+            count={filteredTransactions.length}
+            page={currentPage}
+            onPageChange={(_, next) => setPage(next)}
+            rowsPerPage={rowsPerPage}
+            rowsPerPageOptions={[10, 25, 50, 100]}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            labelRowsPerPage="Rows"
+          />
         )}
       </Paper>
 

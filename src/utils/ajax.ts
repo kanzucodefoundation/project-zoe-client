@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import type { AxiosResponse } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from '../data/constants';
 import { logout } from '../data/coreSlice';
@@ -354,9 +354,14 @@ export const getAsync = <T = unknown>(
       throw asFriendlyError(error);
     });
 
-export const postAsync = <T = unknown>(url: string, data: unknown): Promise<T> =>
+export const postAsync = <T = unknown>(
+  url: string,
+  data: unknown,
+  /** Per-call overrides, such as a longer `timeout` for slow endpoints. */
+  config?: AxiosRequestConfig,
+): Promise<T> =>
   api
-    .post<T>(url, data)
+    .post<T>(url, data, config)
     .then((response) => response.data)
     .catch((error: AxiosError) => {
       throw asFriendlyError(error);
