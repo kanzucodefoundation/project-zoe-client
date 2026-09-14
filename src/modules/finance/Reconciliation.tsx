@@ -50,7 +50,14 @@ import {
   Place as PlaceIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, getAsync, post, postAsync, put } from '../../utils/ajax';
+import {
+  get,
+  getAsync,
+  isSessionExpired,
+  post,
+  postAsync,
+  put,
+} from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { TransactionStatus } from './types';
 import QuickBooksPostingPanel from './QuickBooksPostingPanel';
@@ -452,6 +459,7 @@ const Reconciliation = () => {
 
     const failures: PostFailure[] = [];
     let posted = 0;
+    let sessionLost = false;
 
     // One chunk at a time, never in parallel: QuickBooks rate-limits per
     // company, and gifts that arrive faster than it accepts them come back as
@@ -469,8 +477,20 @@ const Reconciliation = () => {
         posted += result.posted;
         failures.push(...result.results.filter((r) => r.status === 'FAILED'));
       } catch (err) {
-        // A chunk that never reached the server must not abandon the rest of
-        // the run. Name its gifts and carry on with the next chunk.
+        // A rejected session is the one failure worth stopping for: the rest of
+        // the chunks would go out without a token and come back looking like
+        // QuickBooks rejections, sending someone to chase receipts that were
+        // never sent. The gifts left over simply stay unposted.
+        if (isSessionExpired(err)) {
+          sessionLost = true;
+          toast.error(
+            errorMessage(err, 'Your session has expired. Please log in again.'),
+          );
+          break;
+        }
+
+        // Any other chunk that never reached the server must not abandon the
+        // rest of the run. Name its gifts and carry on with the next chunk.
         const message = errorMessage(err, 'Posting failed');
         failures.push(...chunk.map((id) => failureFromRow(id, message)));
       }
@@ -492,7 +512,10 @@ const Reconciliation = () => {
 
     setBulkPosting(false);
     setPostProgress(null);
-    fetchTransactions();
+    // Refreshing with a cleared session would only raise the same error again.
+    if (!sessionLost) {
+      fetchTransactions();
+    }
   };
 
   const filteredTransactions = transactions

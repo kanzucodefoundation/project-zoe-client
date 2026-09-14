@@ -325,12 +325,29 @@ export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
 
 export interface ApiError extends Error {
   response?: AxiosResponse;
+  /**
+   * The server rejected the session and it has been cleared.
+   *
+   * Carried explicitly because the message alone cannot be told apart from an
+   * ordinary failure, and a caller running a sequence of requests has to stop
+   * rather than send the rest without a token.
+   */
+  sessionExpired?: boolean;
 }
+
+/** True for the error `getAsync`/`postAsync` raise once the session is gone. */
+export const isSessionExpired = (err: unknown): boolean =>
+  err instanceof Error && (err as ApiError).sessionExpired === true;
 
 const asFriendlyError = (err: AxiosError): ApiError => {
   if (err.response?.status === 401 || err.response?.status === 403) {
     clearSession();
-    return new Error('Your session has expired. Please log in again.');
+    const expired: ApiError = new Error(
+      'Your session has expired. Please log in again.',
+    );
+    expired.response = err.response;
+    expired.sessionExpired = true;
+    return expired;
   }
   const message =
     extractErrorMessageFromData(getErrorData(err)) ||
