@@ -30,7 +30,7 @@ jobs:
         run: npm run test:run
 
       - name: Create .env file
-        run: echo "VITE_API_URL=https://app.projectzoe.org/server/" > ./.env
+        run: echo "VITE_API_URL=https://app.projectzoe.org" > ./.env
 
       - name: Build
         run: npm run build
