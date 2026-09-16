@@ -34,7 +34,7 @@ import {
   Error as ErrorIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, postAsync, postFile } from '../../utils/ajax';
+import { get, isSessionExpired, postAsync, postFile } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import type {
   FinancialAccount,
@@ -288,12 +288,22 @@ const ImportTransactions = () => {
           total: validTransactions.length,
         });
       } catch (e: unknown) {
-        // This batch never landed, so `i` is the first row the server has not
-        // seen. Stop here and offer to resume from it: carrying on would leave
-        // a hole in the middle of the statement, and starting over would send
-        // the rows before it twice.
         const reason = e instanceof Error ? e.message : 'Import failed';
         importInFlightRef.current = false;
+        setImporting(false);
+        setImportProgress(null);
+
+        // A session expiry clears the token; resuming would just fail again
+        // immediately. Don't offer the resume prompt — the user needs to log
+        // back in first, and the component will unmount when logout fires.
+        if (isSessionExpired(e)) {
+          toast.error(reason);
+          return;
+        }
+
+        // Any other failure: the batch never landed, so `i` is the first row
+        // the server has not seen. Offer to resume from there rather than
+        // starting over (which would re-send the rows already committed).
         setResumeFrom({
           index: i,
           rowLabel: validTransactions[i]?.rowIndex ?? i + 1,
@@ -301,8 +311,6 @@ const ImportTransactions = () => {
           errors: errorCount,
           reason,
         });
-        setImporting(false);
-        setImportProgress(null);
         toast.error(
           `${reason}${
             imported > 0 ? ` — ${imported} rows were saved before this` : ''

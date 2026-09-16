@@ -609,8 +609,8 @@ const Reconciliation = () => {
 
   const filteredTransactions = transactions
     .filter((tx) => {
-      if (statusFilter === 'POSTED') return !!tx.accountingPosting;
-      if (statusFilter === 'NOT_POSTED') return !tx.accountingPosting;
+      if (statusFilter === 'POSTED') return tx.accountingPosting?.status === 'POSTED';
+      if (statusFilter === 'NOT_POSTED') return tx.accountingPosting?.status !== 'POSTED';
       return true;
     })
     .filter(
@@ -731,7 +731,7 @@ const Reconciliation = () => {
             Posted
           </Typography>
           <Typography variant="h4" color="success.main">
-            {transactions.filter((tx) => tx.accountingPosting).length}
+            {transactions.filter((tx) => tx.accountingPosting?.status === 'POSTED').length}
           </Typography>
         </Paper>
         <Paper sx={{ p: 2, flex: '1 1 140px', minWidth: 140 }}>
@@ -1072,12 +1072,12 @@ const Reconciliation = () => {
                               </Tooltip>
                             </>
                           )}
-                        {tx.accountingPosting ? (
+                        {tx.accountingPosting?.status === 'POSTED' ? (
                           <Tooltip
                             title={
                               tx.accountingPosting.externalDocumentId
                                 ? `QuickBooks ID ${tx.accountingPosting.externalDocumentId}`
-                                : 'Already posted to QuickBooks'
+                                : 'Posted to QuickBooks'
                             }
                           >
                             <Chip
@@ -1089,6 +1089,15 @@ const Reconciliation = () => {
                               }
                               size="small"
                               color="success"
+                            />
+                          </Tooltip>
+                        ) : tx.accountingPosting?.status === 'PENDING' ? (
+                          <Tooltip title="Posting recorded — awaiting confirmation from QuickBooks">
+                            <Chip
+                              label="Pending"
+                              size="small"
+                              color="warning"
+                              variant="outlined"
                             />
                           </Tooltip>
                         ) : (
@@ -1338,7 +1347,11 @@ const Reconciliation = () => {
           {(confirmPost?.ids.length ?? 0) > rowsPerPage && (
             <Alert severity="info" sx={{ mt: 2 }}>
               This is more than the {rowsPerPage} rows on screen. Selecting all
-              covers every matching row, not just the current page.
+              covers{' '}
+              {atFetchLimit
+                ? `the ${FETCH_LIMIT.toLocaleString()} most recently loaded transactions`
+                : 'every matching row'}
+              , not just the current page.
             </Alert>
           )}
         </DialogContent>
