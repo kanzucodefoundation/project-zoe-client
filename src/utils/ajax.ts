@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import type { AxiosResponse } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from '../data/constants';
 import { logout } from '../data/coreSlice';
@@ -316,5 +316,72 @@ export const triggerDownLoad = (data: Blob, fileName = 'export.csv') => {
   a.download = fileName;
   a.click();
 };
+
+// ── Promise-based variants ────────────────────────────────────────────────────
+// The callback helpers above swallow errors and resolve to `undefined`, which
+// makes them unusable with async/await. These variants resolve with the response
+// body and reject with a normalised Error carrying the server's message, so
+// callers can render failures inline instead of relying on a toast.
+
+export interface ApiError extends Error {
+  response?: AxiosResponse;
+  /**
+   * The server rejected the session and it has been cleared.
+   *
+   * Carried explicitly because the message alone cannot be told apart from an
+   * ordinary failure, and a caller running a sequence of requests has to stop
+   * rather than send the rest without a token.
+   */
+  sessionExpired?: boolean;
+}
+
+/** True for the error `getAsync`/`postAsync` raise once the session is gone. */
+export const isSessionExpired = (err: unknown): boolean =>
+  err instanceof Error && (err as ApiError).sessionExpired === true;
+
+const asFriendlyError = (err: AxiosError): ApiError => {
+  if (err.response?.status === 401 || err.response?.status === 403) {
+    clearSession();
+    const expired: ApiError = new Error(
+      'Your session has expired. Please log in again.',
+    );
+    expired.response = err.response;
+    expired.sessionExpired = true;
+    return expired;
+  }
+  const message =
+    extractErrorMessageFromData(getErrorData(err)) ||
+    (err.message?.toLowerCase().includes('network')
+      ? "Can't reach server, Check connectivity"
+      : err.message) ||
+    'Invalid request, please contact admin';
+  const error: ApiError = new Error(message);
+  error.response = err.response;
+  return error;
+};
+
+export const getAsync = <T = unknown>(
+  url: string,
+  params?: Record<string, unknown>,
+): Promise<T> =>
+  api
+    .get<T>(url, params ? { params } : undefined)
+    .then((response) => response.data)
+    .catch((error: AxiosError) => {
+      throw asFriendlyError(error);
+    });
+
+export const postAsync = <T = unknown>(
+  url: string,
+  data: unknown,
+  /** Per-call overrides, such as a longer `timeout` for slow endpoints. */
+  config?: AxiosRequestConfig,
+): Promise<T> =>
+  api
+    .post<T>(url, data, config)
+    .then((response) => response.data)
+    .catch((error: AxiosError) => {
+      throw asFriendlyError(error);
+    });
 
 export default api;

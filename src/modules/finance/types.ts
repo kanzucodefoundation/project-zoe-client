@@ -82,6 +82,16 @@ export interface Transaction {
     rawData?: Record<string, unknown>;
   };
   reconciliationMatch?: ReconciliationMatch;
+  /** Set once this transaction has reached QuickBooks successfully. */
+  accountingPosting?: AccountingPosting | null;
+}
+
+export interface AccountingPosting {
+  id: number;
+  status: 'POSTED' | 'FAILED' | 'PENDING';
+  externalDocumentId: string | null;
+  externalDocumentNumber: string | null;
+  postedAt?: string | null;
 }
 
 export interface MatchSuggestion {
@@ -89,7 +99,12 @@ export interface MatchSuggestion {
     id: number;
     name: string;
     phone?: string;
+    /** Campus the gift will be attributed to. */
     location?: string;
+    /** FOB above that campus — the QuickBooks class the gift posts against. */
+    fob?: string;
+    /** True when both fell back to the mother group. */
+    attributionIsFallback?: boolean;
   };
   confidenceScore: number;
   matchReasons: string[];
@@ -219,6 +234,9 @@ export interface FinancialAccountFormData {
 export interface TransactionImportConfig {
   accountId: number;
   defaultCategory: TransactionCategory;
+  /** QuickBooks item to fall back to when a message names none. */
+  defaultItemId?: string | null;
+  defaultItemName?: string | null;
   applyServiceTimeRules: boolean;
 }
 
@@ -226,14 +244,44 @@ export interface ParsedTransaction {
   rowIndex: number;
   transactionDate: string;
   amount: number;
+  externalReference?: string | null;
   senderName?: string;
   senderPhone?: string;
+  /** The statement's free-text box — MoMo's "To message". */
   narration?: string;
   category: TransactionCategory;
   /** Why this row got its category: the rule that fired, or the default. */
   matchedRule?: string;
+  /** Tithe number read out of the statement message, e.g. TBGB0095. */
+  titheNumber?: string | null;
+  /** QuickBooks product/service this row will post against. */
+  externalItemId?: string | null;
+  externalItemName?: string | null;
   isValid: boolean;
   errors?: string[];
+}
+
+/** One account from the QuickBooks chart of accounts. */
+export interface QboAccountOption {
+  id: string;
+  name: string;
+  accountType: string | null;
+  currency: string | null;
+  /** Set when a Zoe account is already linked to this QuickBooks account. */
+  linkedAccountId: number | null;
+  linkedAccountName: string | null;
+}
+
+/** A giving category paired with the QuickBooks item it posts to. */
+export interface GivingCategoryOption {
+  category: TransactionCategory | null;
+  label: string;
+  internalLabel: string | null;
+  qboItemId: string | null;
+  qboItemName: string | null;
+  /** False for a QuickBooks item with no Zoe category behind it. */
+  selectable: boolean;
+  isDefault: boolean;
 }
 
 export interface DistributionCalculationRequest {

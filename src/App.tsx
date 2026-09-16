@@ -57,6 +57,7 @@ import CheckInScreen from './modules/attendance/CheckInScreen';
 import ServiceSchedules from './modules/attendance/schedules/ServiceSchedules';
 import AttendanceHistory from './modules/attendance/history/AttendanceHistory';
 import NotificationsPage from './modules/notifications/Notifications.tsx';
+import QuickBooksSettings from './modules/integrations/QuickBooksSettings';
 
 const Splash = () => (
   <div
@@ -321,9 +322,27 @@ function App() {
                 attendanceViewCapabilities,
               )}
             />
-            <Route 
-              path={localRoutes.notificationMessages} 
-              element={<NotificationsPage />} />
+            <Route
+              path={localRoutes.notificationMessages}
+              element={<NotificationsPage />}
+            />
+            {/*
+              Guarded on USER_* rather than the FINANCE_* pair the other finance
+              screens use, and deliberately so: connecting a QuickBooks company
+              is workspace setup, done once by whoever administers the
+              workspace, not part of the day-to-day giving work. The menu entry
+              sits under Admin for the same reason — keep the two in step if
+              this is ever revisited.
+
+              Note this only hides UI. The server enforces access on its own.
+            */}
+            <Route
+              path={localRoutes.integrations}
+              element={renderProtectedElement(<QuickBooksSettings />, [
+                appPermissions.roleUserView,
+                appPermissions.roleUserEdit,
+              ])}
+            />
             <Route path="/" element={<Dashboard />} />
             {/* We'll add more routes here as we migrate modules */}
             <Route path="*" element={<Dashboard />} />

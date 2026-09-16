@@ -120,6 +120,9 @@ export const localRoutes = {
   attendance: '/attendance',
   attendanceSchedules: '/attendance/schedules',
   attendanceHistory: '/attendance/history',
+
+  // Integrations
+  integrations: '/admin/integrations',
 };
 
 export const apiBaseUrl =
@@ -195,6 +198,8 @@ export const remoteRoutes = {
   financialReports: `${apiBaseUrl}/api/finance/reports`,
   financialDistributions: `${apiBaseUrl}/api/finance/distributions`,
   financialCategoryRules: `${apiBaseUrl}/api/finance/category-rules`,
+  financialGivingCategories: `${apiBaseUrl}/api/finance/giving-categories`,
+  financialAccountingBatch: `${apiBaseUrl}/api/finance/accounting`,
 
   // Notifications
   notificationSettings: `${apiBaseUrl}/api/notifications/settings`,
@@ -206,4 +211,16 @@ export const remoteRoutes = {
   // Attendance
   services: `${apiBaseUrl}/api/services`,
   fellowships: `${apiBaseUrl}/api/fellowships`,
+
+  // Integrations — QuickBooks
+  quickbooksConnect: `${apiBaseUrl}/api/integrations/quickbooks/connect`,
+  quickbooksConnection: `${apiBaseUrl}/api/integrations/quickbooks/connection`,
+  quickbooksCompanyInfo: `${apiBaseUrl}/api/integrations/quickbooks/company-info`,
+  quickbooksUserInfo: `${apiBaseUrl}/api/integrations/quickbooks/userinfo`,
+  quickbooksCharges: `${apiBaseUrl}/api/integrations/quickbooks/charges`,
+  externalMappings: `${apiBaseUrl}/api/integrations/mappings`,
+
+  // Finance — Accounting (QuickBooks posting)
+  financialAccounting: (txnId: number) =>
+    `${apiBaseUrl}/api/finance/transactions/${txnId}/accounting`,
 };

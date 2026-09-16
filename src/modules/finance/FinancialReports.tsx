@@ -134,8 +134,13 @@ const FinancialReports = () => {
         const link = document.createElement('a');
         link.href = url;
         link.download = `reconciliation-${from}-to-${to}.csv`;
+        // The anchor has to be in the document for the click to count in every
+        // browser, and the blob URL has to outlive the click: revoking it in
+        // the same task can cancel a download that has only just started.
+        document.body.appendChild(link);
         link.click();
-        URL.revokeObjectURL(url);
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 0);
         setExporting(false);
         toast.success('Export downloaded');
       },
@@ -163,7 +168,14 @@ const FinancialReports = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="lg">
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        gap={2}
+        mb={3}
+      >
           <Typography variant="h4">Financial Reports</Typography>
           <Box display="flex" gap={1}>
             <Button startIcon={<RefreshIcon />} onClick={fetchReports}>
@@ -199,7 +211,7 @@ const FinancialReports = () => {
                 textField: { size: 'small', sx: { width: 180 } },
               }}
             />
-            <FormControl size="small" sx={{ minWidth: 200 }}>
+            <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 200 } }}>
               <InputLabel>Account</InputLabel>
               <Select
                 value={accountFilter}
@@ -341,7 +353,7 @@ const FinancialReports = () => {
                   Distribution Breakdown
                 </Typography>
                 <TableContainer>
-                  <Table size="small">
+                  <Table size="small" sx={{ minWidth: 720 }}>
                     <TableHead>
                       <TableRow>
                         <TableCell>Category</TableCell>

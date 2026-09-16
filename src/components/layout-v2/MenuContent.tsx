@@ -28,6 +28,7 @@ import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
 import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import SmsRoundedIcon from '@mui/icons-material/SmsRounded';
+import IntegrationInstructionsRoundedIcon from '@mui/icons-material/IntegrationInstructionsRounded';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
@@ -153,6 +154,11 @@ const navItems: NavItem[] = [
         name: 'Manage Notifications',
         icon: <SmsRoundedIcon />,
         path: localRoutes.notifications,
+      },
+      {
+        name: 'Integrations',
+        icon: <IntegrationInstructionsRoundedIcon />,
+        path: localRoutes.integrations,
       },
       // { name: 'Group Categories', icon: <GroupRoundedIcon />, path: localRoutes.groupsCategories },
       // { name: 'Settings', icon: <SettingsRoundedIcon />, path: localRoutes.settings },

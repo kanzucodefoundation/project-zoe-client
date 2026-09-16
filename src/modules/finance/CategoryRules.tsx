@@ -28,6 +28,8 @@ import {
   Alert,
   Tooltip,
   Autocomplete,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -72,6 +74,9 @@ const initialFormData: RuleFormData = {
 };
 
 const CategoryRules = () => {
+  const theme = useTheme();
+  // Dialogs fill the screen on a phone, as they do elsewhere in the app.
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm'));
   const [rules, setRules] = useState<CategoryRule[]>([]);
   const [accounts, setAccounts] = useState<FinancialAccount[]>([]);
   const [loading, setLoading] = useState(true);
@@ -264,7 +269,14 @@ const CategoryRules = () => {
 
   return (
     <Container maxWidth="lg">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'stretch', sm: 'center' }}
+        gap={2}
+        mb={3}
+      >
         <Typography variant="h4">Category Rules</Typography>
         <Button
           variant="contained"
@@ -281,8 +293,8 @@ const CategoryRules = () => {
       </Alert>
 
       {/* Rules Table */}
-      <TableContainer component={Paper}>
-        <Table>
+      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+        <Table sx={{ minWidth: 720 }}>
           <TableHead>
             <TableRow>
               <TableCell width={50}>Order</TableCell>
@@ -359,7 +371,10 @@ const CategoryRules = () => {
       </TableContainer>
 
       {/* Add/Edit Dialog */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm"
+        fullWidth
+        fullScreen={isPhone}
+      >
         <DialogTitle>{editRule ? 'Edit Rule' : 'Add Rule'}</DialogTitle>
         <DialogContent>
           <Box display="flex" flexDirection="column" gap={3} mt={1}>
