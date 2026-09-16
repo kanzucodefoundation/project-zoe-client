@@ -25,6 +25,7 @@ import {
   Chip,
   CircularProgress,
   Alert,
+  AlertTitle,
   LinearProgress,
 } from '@mui/material';
 import {
@@ -74,6 +75,32 @@ const ImportTransactions = () => {
   const [importProgress, setImportProgress] = useState<{
     done: number;
     total: number;
+  } | null>(null);
+
+  /**
+   * Where to pick up after a run that died part-way through.
+   *
+   * The server commits each batch as it arrives and has no idea it is part of a
+   * larger run, so the rows that landed before the failure are already saved.
+   * Starting over would send them a second time, and `importParsed` saves every
+   * row it is given without looking for an existing one — there is no natural
+   * key and no unique constraint behind it, so the duplicates would stick, and
+   * a duplicated gift is not something you can tell apart afterwards.
+   *
+   * Holding the offset lets the operator resume from the first row the server
+   * never saw instead.
+   */
+  /** Set synchronously so a double-click cannot start a second import run. */
+  const importInFlightRef = useRef(false);
+
+  const [resumeFrom, setResumeFrom] = useState<{
+    /** Offset into the valid rows — what the next run slices from. */
+    index: number;
+    /** That row's number as the preview table shows it, which is what the operator reads. */
+    rowLabel: number;
+    imported: number;
+    errors: number;
+    reason: string;
   } | null>(null);
 
   useEffect(() => {
@@ -210,22 +237,41 @@ const ImportTransactions = () => {
    */
   const IMPORT_CHUNK_SIZE = 250;
 
-  const handleImport = async () => {
+  /**
+   * Send the reviewed rows from `startAt` onwards.
+   *
+   * `startAt` is non-zero only when resuming: every row before it is already on
+   * the server from the run that failed, and re-sending it would duplicate it.
+   */
+  const runImport = async (
+    startAt: number,
+    alreadyImported: number,
+    priorErrors: number,
+  ) => {
     const validTransactions = parsedTransactions.filter((t) => t.isValid);
     if (validTransactions.length === 0) {
       toast.error('No valid transactions to import');
       return;
     }
+    // `importing` cannot guard this alone: two clicks in the same frame both
+    // read it from before the first set it, and the statement would be imported
+    // twice. The server does not deduplicate, so that would stick.
+    if (importInFlightRef.current) return;
+    importInFlightRef.current = true;
 
     setImporting(true);
-    setImportProgress({ done: 0, total: validTransactions.length });
+    setResumeFrom(null);
+    setImportProgress({ done: startAt, total: validTransactions.length });
 
-    let imported = 0;
-    const errors: string[] = [];
+    let imported = alreadyImported;
+    // Only the count is carried: the per-row messages are the server's, and a
+    // resumed run must not double-count the ones the earlier run already showed.
+    let errorCount = priorErrors;
 
-    try {
-      for (let i = 0; i < validTransactions.length; i += IMPORT_CHUNK_SIZE) {
-        const chunk = validTransactions.slice(i, i + IMPORT_CHUNK_SIZE);
+    for (let i = startAt; i < validTransactions.length; i += IMPORT_CHUNK_SIZE) {
+      const chunk = validTransactions.slice(i, i + IMPORT_CHUNK_SIZE);
+
+      try {
         const result = await postAsync<{
           imported: number;
           errors: string[];
@@ -234,30 +280,53 @@ const ImportTransactions = () => {
           transactions: chunk,
         });
         imported += result.imported;
-        if (result.errors?.length) errors.push(...result.errors);
+        if (result.errors?.length) {
+          errorCount += result.errors.length;
+        }
         setImportProgress({
           done: Math.min(i + chunk.length, validTransactions.length),
           total: validTransactions.length,
         });
+      } catch (e: unknown) {
+        // This batch never landed, so `i` is the first row the server has not
+        // seen. Stop here and offer to resume from it: carrying on would leave
+        // a hole in the middle of the statement, and starting over would send
+        // the rows before it twice.
+        const reason = e instanceof Error ? e.message : 'Import failed';
+        importInFlightRef.current = false;
+        setResumeFrom({
+          index: i,
+          rowLabel: validTransactions[i]?.rowIndex ?? i + 1,
+          imported,
+          errors: errorCount,
+          reason,
+        });
+        setImporting(false);
+        setImportProgress(null);
+        toast.error(
+          `${reason}${
+            imported > 0 ? ` — ${imported} rows were saved before this` : ''
+          }`,
+        );
+        return;
       }
-
-      setImportResult({ imported, errors: errors.length });
-      toast.success(`Imported ${imported} transactions`);
-      if (errors.length > 0) {
-        toast.warning(`${errors.length} rows were rejected`);
-      }
-    } catch (e: unknown) {
-      // Whatever landed before the failure is already saved, so say so rather
-      // than implying the whole import was lost.
-      toast.error(
-        `${e instanceof Error ? e.message : 'Import failed'}${
-          imported > 0 ? ` — ${imported} rows were saved before this` : ''
-        }`,
-      );
-    } finally {
-      setImporting(false);
-      setImportProgress(null);
     }
+
+    importInFlightRef.current = false;
+    setImportResult({ imported, errors: errorCount });
+    toast.success(`Imported ${imported} transactions`);
+    if (errorCount > 0) {
+      toast.warning(`${errorCount} rows were rejected`);
+    }
+    setImporting(false);
+    setImportProgress(null);
+  };
+
+  const handleImport = () => runImport(0, 0, 0);
+
+  const handleResumeImport = () => {
+    if (!resumeFrom) return;
+    runImport(resumeFrom.index, resumeFrom.imported, resumeFrom.errors);
   };
 
   const handleReset = () => {
@@ -265,6 +334,7 @@ const ImportTransactions = () => {
     setFile(null);
     setParsedTransactions([]);
     setImportResult(null);
+    setResumeFrom(null);
     setParseError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -688,18 +758,58 @@ const ImportTransactions = () => {
                   </Box>
                 )}
 
+                {resumeFrom && (
+                  <Alert severity="warning" sx={{ mb: 2 }}>
+                    <AlertTitle>
+                      Import stopped after{' '}
+                      {resumeFrom.imported.toLocaleString()} of{' '}
+                      {validCount.toLocaleString()} rows
+                    </AlertTitle>
+                    <Typography variant="body2" gutterBottom>
+                      {resumeFrom.reason}
+                    </Typography>
+                    <Typography variant="body2">
+                      Everything before row{' '}
+                      {resumeFrom.rowLabel.toLocaleString()} is already saved.{' '}
+                      <strong>Resume</strong> sends only what is left. Starting
+                      over would import the saved rows a second time, and
+                      duplicate giving records cannot be told apart afterwards.
+                    </Typography>
+                  </Alert>
+                )}
+
                 <Box display="flex" gap={2}>
                   <Button variant="outlined" onClick={handleReset} disabled={importing}>
                     Start Over
                   </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleImport}
-                    disabled={importing || validCount === 0}
-                    startIcon={importing ? <CircularProgress size={20} /> : null}
-                  >
-                    {importing ? 'Importing...' : `Import ${validCount} Transactions`}
-                  </Button>
+                  {resumeFrom ? (
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      onClick={handleResumeImport}
+                      disabled={importing}
+                      startIcon={
+                        importing ? <CircularProgress size={20} /> : null
+                      }
+                    >
+                      {importing
+                        ? 'Importing...'
+                        : `Resume from row ${resumeFrom.rowLabel.toLocaleString()}`}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      onClick={handleImport}
+                      disabled={importing || validCount === 0}
+                      startIcon={
+                        importing ? <CircularProgress size={20} /> : null
+                      }
+                    >
+                      {importing
+                        ? 'Importing...'
+                        : `Import ${validCount} Transactions`}
+                    </Button>
+                  )}
                 </Box>
               </>
             )}

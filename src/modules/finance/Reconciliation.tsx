@@ -75,6 +75,16 @@ interface PostFailure {
   amount: number;
   transactionDate: string;
   error?: string;
+  /**
+   * The request never came back, so whether QuickBooks took the gift is
+   * unknown — a chunk that times out may well have been completed server-side.
+   * Reported differently from a gift QuickBooks actually rejected, because
+   * "failed" sends someone chasing a receipt that may already exist.
+   *
+   * Set by the client only. The server never sends this field, so a row that
+   * came back in `BatchPostResult.results` is always a real rejection.
+   */
+  unconfirmed?: boolean;
 }
 
 /**
@@ -197,6 +207,23 @@ const Reconciliation = () => {
   const [selectedTxnIds, setSelectedTxnIds] = useState<number[]>([]);
   const [bulkApproving, setBulkApproving] = useState(false);
   const [bulkPosting, setBulkPosting] = useState(false);
+  /**
+   * The batch awaiting confirmation.
+   *
+   * Posting writes receipts into the church's live QuickBooks and Zoe cannot
+   * take them back, so the bulk path asks first — the single-transaction panel
+   * already makes the operator click through "Confirm & Post" for one gift, and
+   * the button that can send a thousand should not be the easier of the two.
+   *
+   * The ids are captured when the dialog opens rather than read again on
+   * confirm: the operator is agreeing to a specific count and a specific sum,
+   * and re-deriving the list afterwards would let a refresh landing mid-dialog
+   * post a different batch from the one on the screen they agreed to.
+   */
+  const [confirmPost, setConfirmPost] = useState<{
+    ids: number[];
+    total: number;
+  } | null>(null);
   // How far a chunked run has got, so a long post is visibly working.
   const [postProgress, setPostProgress] = useState<{
     done: number;
@@ -205,6 +232,19 @@ const Reconciliation = () => {
   // Kept on screen rather than in a toast: a finance user needs to read the
   // names back and act on them, which a message that disappears prevents.
   const [postFailures, setPostFailures] = useState<PostFailure[]>([]);
+  /**
+   * Mirrors `postFailures` for the post-run reconciliation, which reads the
+   * list from inside an async callback. Reading the state variable there would
+   * see whatever it held when the run started, so dismissing the panel while
+   * the refresh was still in flight would bring the dismissed list back.
+   */
+  const postFailuresRef = useRef<PostFailure[]>([]);
+  const updatePostFailures = (next: PostFailure[]) => {
+    postFailuresRef.current = next;
+    setPostFailures(next);
+  };
+  /** Set synchronously so a double-click cannot start a second posting run. */
+  const postInFlightRef = useRef(false);
   const [autoMatching, setAutoMatching] = useState(false);
 
   // Set when the fetch came back full, which means there is more history behind
@@ -216,7 +256,13 @@ const Reconciliation = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
 
-  const fetchTransactions = () => {
+  /**
+   * `onLoaded` receives the rows the server just returned. A caller that needs
+   * to reconcile something against fresh state — such as the bulk post, which
+   * must find out which of its "failures" actually landed — cannot read
+   * `transactions` for that, because the state update is not visible yet.
+   */
+  const fetchTransactions = (onLoaded?: (rows: Transaction[]) => void) => {
     setLoading(true);
     const params = new URLSearchParams();
     params.append('limit', FETCH_LIMIT.toString());
@@ -231,6 +277,12 @@ const Reconciliation = () => {
         // Ids from the previous list no longer mean anything.
         setSelectedTxnIds([]);
         setLoading(false);
+        // Guarded on the type, not just on presence: this function is also used
+        // directly as an onClick handler, which hands it a click event as its
+        // first argument. Calling that would throw inside the success path and
+        // the shared client would report the load as failed even though the
+        // rows arrived.
+        if (typeof onLoaded === 'function') onLoaded(data);
       },
       () => {
         toast.error('Failed to load transactions');
@@ -446,15 +498,22 @@ const Reconciliation = () => {
       amount: tx?.amount ?? 0,
       transactionDate: tx?.transactionDate ?? '',
       error,
+      unconfirmed: true,
     };
   };
 
-  const handleBulkPost = async () => {
-    const ids = postableTxnIds;
+  const handleBulkPost = async (ids: number[]) => {
     if (ids.length === 0) return;
+    // `bulkPosting` cannot guard this on its own: two clicks landing in the same
+    // frame both read the state from before the first one set it, and the second
+    // would post the whole batch to QuickBooks a second time. A ref is updated
+    // synchronously, so it closes that window.
+    if (postInFlightRef.current) return;
+    postInFlightRef.current = true;
 
+    setConfirmPost(null);
     setBulkPosting(true);
-    setPostFailures([]);
+    updatePostFailures([]);
     setPostProgress({ done: 0, total: ids.length });
 
     const failures: PostFailure[] = [];
@@ -498,9 +557,14 @@ const Reconciliation = () => {
       setPostProgress({ done: Math.min(from + chunk.length, ids.length), total: ids.length });
     }
 
+    // Released as soon as the last request is done, and before anything that
+    // renders: every path through the loop is caught inside it, so the flag
+    // cannot be stranded true and leave posting permanently disabled.
+    postInFlightRef.current = false;
+
     // Every gift is attempted, so a failure here is about those specific ones —
     // the rest have already gone across.
-    setPostFailures(failures);
+    updatePostFailures(failures);
     if (posted > 0) {
       toast.success(`Posted ${posted} to QuickBooks`);
     }
@@ -514,7 +578,32 @@ const Reconciliation = () => {
     setPostProgress(null);
     // Refreshing with a cleared session would only raise the same error again.
     if (!sessionLost) {
-      fetchTransactions();
+      // A chunk that timed out was recorded as a failure without ever hearing
+      // back, and the server may well have completed it. The refreshed rows are
+      // the only authority on that, so any gift that now carries a posting is
+      // dropped from the list rather than sending someone to chase a receipt
+      // that already exists.
+      fetchTransactions((rows) => {
+        const postedIds = new Set(
+          rows.filter((tx) => tx.accountingPosting).map((tx) => tx.id),
+        );
+        // Read through the ref, not the `failures` this run built: the operator
+        // can dismiss the panel while this refresh is still in flight, and
+        // writing the old list back would undo that. Computed outside a state
+        // updater too, because an updater must stay pure — React is free to run
+        // it twice, and the toast would fire twice with it.
+        const current = postFailuresRef.current;
+        const remaining = current.filter(
+          (f) => !postedIds.has(f.transactionId),
+        );
+        const settled = current.length - remaining.length;
+        if (settled > 0) {
+          updatePostFailures(remaining);
+          toast.info(
+            `${settled} of those reached QuickBooks after all — removed from the list`,
+          );
+        }
+      });
     }
   };
 
@@ -568,12 +657,14 @@ const Reconciliation = () => {
       ? [tx.reconciliationMatch.id]
       : [],
   );
-  const postableTxnIds = selectedTxns
-    .filter(
-      (tx) =>
-        tx.reconciliationMatch?.status === 'APPROVED' && !tx.accountingPosting,
-    )
-    .map((tx) => tx.id);
+  const postableTxns = selectedTxns.filter(
+    (tx) =>
+      tx.reconciliationMatch?.status === 'APPROVED' && !tx.accountingPosting,
+  );
+  const postableTxnIds = postableTxns.map((tx) => tx.id);
+  // Shown in the confirmation so the operator is agreeing to a sum of money,
+  // not just a row count.
+  const postableTotal = postableTxns.reduce((sum, tx) => sum + tx.amount, 0);
 
   const allSelected =
     actionableIds.length > 0 &&
@@ -611,7 +702,7 @@ const Reconciliation = () => {
           >
             {autoMatching ? 'Matching…' : 'Run auto-match'}
           </Button>
-          <Button startIcon={<RefreshIcon />} onClick={fetchTransactions}>
+          <Button startIcon={<RefreshIcon />} onClick={() => fetchTransactions()}>
             Refresh
           </Button>
         </Stack>
@@ -759,7 +850,12 @@ const Reconciliation = () => {
                       <ReceiptLongIcon />
                     )
                   }
-                  onClick={handleBulkPost}
+                  onClick={() =>
+                    setConfirmPost({
+                      ids: postableTxnIds,
+                      total: postableTotal,
+                    })
+                  }
                   disabled={postableTxnIds.length === 0 || bulkPosting}
                 >
                   {postProgress
@@ -775,14 +871,22 @@ const Reconciliation = () => {
           <Alert
             severity="warning"
             sx={{ mb: 2 }}
-            onClose={() => setPostFailures([])}
+            onClose={() => updatePostFailures([])}
           >
             <AlertTitle>
-              {postFailures.length} could not be posted to QuickBooks
+              {postFailures.length} did not post to QuickBooks
             </AlertTitle>
             <Typography variant="body2" mb={1}>
               Everything else in the batch went across. These need attention:
             </Typography>
+            {postFailures.some((f) => f.unconfirmed) && (
+              <Typography variant="body2" mb={1}>
+                Some of these are marked <strong>not confirmed</strong>: the
+                request never came back, so check them in QuickBooks before
+                posting again. Anything that did land has already been removed
+                from this list and can no longer be selected.
+              </Typography>
+            )}
             <Stack component="ul" gap={0.75} sx={{ m: 0, pl: 2.5 }}>
               {postFailures.map((failure) => (
                 <Box component="li" key={failure.transactionId}>
@@ -801,6 +905,15 @@ const Reconciliation = () => {
                         ? ` · ${failure.transactionDate}`
                         : ''}
                     </Typography>
+                  )}
+                  {failure.unconfirmed && (
+                    <Chip
+                      label="Not confirmed"
+                      size="small"
+                      color="warning"
+                      variant="outlined"
+                      sx={{ ml: 1, height: 18, fontSize: '0.65rem' }}
+                    />
                   )}
                   <Typography variant="caption" display="block">
                     {failure.error}
@@ -1189,6 +1302,56 @@ const Reconciliation = () => {
               {saving ? 'Matching...' : 'Match'}
             </Button>
           )}
+        </DialogActions>
+      </Dialog>
+
+      {/*
+        Posting cannot be undone from Zoe, so the bulk run is confirmed first.
+
+        Deliberately not `fullScreen={isPhone}` like the form dialogs on these
+        screens: this is three lines and two buttons, and blowing it up to fill
+        a phone reads as a page the operator has navigated to rather than a
+        question about the tap they just made.
+      */}
+      <Dialog
+        open={confirmPost !== null}
+        onClose={() => setConfirmPost(null)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Post to QuickBooks?</DialogTitle>
+        <DialogContent>
+          <Typography gutterBottom>
+            This posts{' '}
+            <strong>
+              {confirmPost?.ids.length ?? 0} transaction
+              {confirmPost?.ids.length === 1 ? '' : 's'}
+            </strong>{' '}
+            totalling{' '}
+            <strong>{(confirmPost?.total ?? 0).toLocaleString()}</strong> to
+            QuickBooks.
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            A receipt is created in QuickBooks for each one. Zoe cannot undo
+            that — reversing it means editing QuickBooks directly.
+          </Typography>
+          {(confirmPost?.ids.length ?? 0) > rowsPerPage && (
+            <Alert severity="info" sx={{ mt: 2 }}>
+              This is more than the {rowsPerPage} rows on screen. Selecting all
+              covers every matching row, not just the current page.
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmPost(null)}>Cancel</Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => confirmPost && handleBulkPost(confirmPost.ids)}
+            startIcon={<ReceiptLongIcon />}
+          >
+            Post {confirmPost?.ids.length ?? 0}
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>
