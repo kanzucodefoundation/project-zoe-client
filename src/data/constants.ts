@@ -127,7 +127,7 @@ export const localRoutes = {
 
 export const apiBaseUrl =
   import.meta.env.VITE_API_URL ||
-  'https://projectzoe.kanzucodefoundation.org/server';
+  'https://app.projectzoe.org';
 
 export const remoteRoutes = {
   authServer: apiBaseUrl,
