@@ -375,9 +375,11 @@ const Reconciliation = () => {
   };
 
   const categoryPayload = (value: string) =>
-    value.startsWith('category:')
+    !value
+      ? { externalItemId: null, category: null }
+      : value.startsWith('category:')
       ? { externalItemId: null, category: value.slice('category:'.length) }
-      : { externalItemId: value || null };
+      : { externalItemId: value };
 
   const handleCategoryChange = (tx: Transaction, value: string) => {
     if (value === currentCategoryValue(tx)) return;
