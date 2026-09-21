@@ -64,6 +64,7 @@ import QuickBooksPostingPanel from './QuickBooksPostingPanel';
 import type {
   Transaction,
   FinancialAccount,
+  GivingCategoryOption,
   MatchSuggestion,
 } from './types';
 
@@ -205,6 +206,14 @@ const Reconciliation = () => {
   // row's useful action depends on its match state: a pending match can be
   // approved, an approved one can be posted.
   const [selectedTxnIds, setSelectedTxnIds] = useState<number[]>([]);
+  /**
+   * The QuickBooks products and services a gift can be booked against, which is
+   * what the Category column edits. Read from QuickBooks rather than a list
+   * held in Zoe, so the choices are the ones the accountants actually use.
+   */
+  const [givingCategories, setGivingCategories] = useState<GivingCategoryOption[]>([]);
+  /** Rows mid-save, so a slow request cannot be double-submitted. */
+  const [savingCategoryIds, setSavingCategoryIds] = useState<number[]>([]);
   const [bulkApproving, setBulkApproving] = useState(false);
   const [bulkPosting, setBulkPosting] = useState(false);
   /**
@@ -306,11 +315,108 @@ const Reconciliation = () => {
     fetchTransactions();
   }, [statusFilter, accountFilter]);
 
+
   // Any change to what is being shown starts from the first screen; staying on
   // page 4 of a narrowed list shows nothing at all.
   useEffect(() => {
     setPage(0);
   }, [statusFilter, accountFilter, search]);
+
+  const fetchGivingCategories = () => {
+    get(
+      remoteRoutes.financialGivingCategories,
+      (data: GivingCategoryOption[]) => {
+        setGivingCategories(data);
+      },
+      () => {
+        setGivingCategories([]);
+        toast.error(
+          'Giving categories could not be loaded from QuickBooks, so the category list is empty.',
+        );
+      }
+    );
+  };
+
+  // Fetched once: the QuickBooks chart does not change while a reviewer works
+  // through a statement, and it is a network round trip via Intuit. Declared
+  // after `fetchGivingCategories` so the effect reads it in scope.
+  useEffect(() => {
+    fetchGivingCategories();
+  }, []);
+
+  /**
+   * True once a gift has reached QuickBooks.
+   *
+   * The receipt names a specific item, and changing Zoe's copy afterwards does
+   * not touch it — the two would simply disagree, and nobody would find out
+   * until month end. The server refuses these as well; disabling the control is
+   * so the reviewer is not invited to try.
+   */
+  const isPosted = (tx: Transaction) =>
+    tx.accountingPosting?.status === 'POSTED';
+
+  // A QuickBooks item when there is one, otherwise the Zoe category behind it,
+  // so the column still works when QuickBooks cannot be reached.
+  const categoryValue = (option: GivingCategoryOption) =>
+    option.qboItemId ?? `category:${option.category}`;
+
+  const currentCategoryValue = (tx: Transaction) =>
+    tx.externalItemId ?? (tx.category ? `category:${tx.category}` : '');
+
+  // Never the raw value: an id the options list does not cover would otherwise
+  // render as a bare number in the table.
+  const categoryLabel = (tx: Transaction, value: string) => {
+    const option = givingCategories.find((o) => categoryValue(o) === value);
+    if (option) return option.label;
+    if (tx.externalItemName && tx.externalItemName !== tx.externalItemId) {
+      return tx.externalItemName;
+    }
+    return tx.category ?? 'Uncategorized';
+  };
+
+  const categoryPayload = (value: string) =>
+    value.startsWith('category:')
+      ? { externalItemId: null, category: value.slice('category:'.length) }
+      : { externalItemId: value || null };
+
+  const handleCategoryChange = (tx: Transaction, value: string) => {
+    if (value === currentCategoryValue(tx)) return;
+
+    setSavingCategoryIds((ids) => [...ids, tx.id]);
+    put(
+      remoteRoutes.financialTransactions,
+      { id: tx.id, ...categoryPayload(value) },
+      (updated: Transaction) => {
+        // Patched in place rather than refetching the whole list: a reviewer
+        // correcting a run of rows would otherwise lose their scroll position
+        // and their selection on every single change.
+        setTransactions((rows) =>
+          rows.map((row) =>
+            row.id === tx.id
+              ? {
+                  ...row,
+                  category: updated.category,
+                  externalItemId: updated.externalItemId,
+                  externalItemName: updated.externalItemName,
+                  requiresMatch: updated.requiresMatch,
+                }
+              : row
+          )
+        );
+        setSavingCategoryIds((ids) => ids.filter((id) => id !== tx.id));
+        toast.success('Category updated');
+      },
+      (error) => {
+        setSavingCategoryIds((ids) => ids.filter((id) => id !== tx.id));
+        // The server explains refusals in words the reviewer can act on —
+        // "already posted to QuickBooks", "that item was archived" — so the
+        // response body is worth more here than a generic failure notice.
+        toast.error(
+          error?.response?.data?.message ?? 'Failed to update the category'
+        );
+      }
+    );
+  };
 
   const handleOpenMatchDialog = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
@@ -639,10 +745,13 @@ const Reconciliation = () => {
   // A row is actionable when it has a match and has not already reached
   // QuickBooks. Re-posting a receipt would either be rejected or duplicate it,
   // so posted rows carry no checkbox and no action at all.
+  // Offertory needs no giver, so it is actionable on its own.
+  const needsNoMatch = (tx: Transaction) => tx.requiresMatch === false;
   const actionableTxns = filteredTransactions.filter(
     (tx) =>
       !tx.accountingPosting &&
-      (tx.reconciliationMatch?.status === 'PENDING' ||
+      (needsNoMatch(tx) ||
+        tx.reconciliationMatch?.status === 'PENDING' ||
         tx.reconciliationMatch?.status === 'APPROVED'),
   );
   const actionableIds = actionableTxns.map((tx) => tx.id);
@@ -659,12 +768,16 @@ const Reconciliation = () => {
   );
   const postableTxns = selectedTxns.filter(
     (tx) =>
-      tx.reconciliationMatch?.status === 'APPROVED' && !tx.accountingPosting,
+      (needsNoMatch(tx) || tx.reconciliationMatch?.status === 'APPROVED') &&
+      !tx.accountingPosting,
   );
   const postableTxnIds = postableTxns.map((tx) => tx.id);
   // Shown in the confirmation so the operator is agreeing to a sum of money,
   // not just a row count.
-  const postableTotal = postableTxns.reduce((sum, tx) => sum + tx.amount, 0);
+  const postableTotal = postableTxns.reduce(
+    (sum, tx) => sum + Number(tx.amount),
+    0,
+  );
 
   const allSelected =
     actionableIds.length > 0 &&
@@ -893,14 +1006,14 @@ const Reconciliation = () => {
                   <Typography variant="body2" component="span" fontWeight={600}>
                     {failure.giver}
                   </Typography>
-                  {failure.amount > 0 && (
+                  {Number(failure.amount) > 0 && (
                     <Typography
                       variant="body2"
                       component="span"
                       color="text.secondary"
                     >
                       {' '}
-                      · {failure.amount.toLocaleString()}
+                      · {Number(failure.amount).toLocaleString()}
                       {failure.transactionDate
                         ? ` · ${failure.transactionDate}`
                         : ''}
@@ -918,6 +1031,19 @@ const Reconciliation = () => {
                   <Typography variant="caption" display="block">
                     {failure.error}
                   </Typography>
+                  {/* Mappings are per category and currency, so fixing one
+                      failure clears every other row that shares it. */}
+                  <QuickBooksPostingPanel
+                    transactionId={failure.transactionId}
+                    onPosted={() => {
+                      updatePostFailures(
+                        postFailuresRef.current.filter(
+                          (f) => f.transactionId !== failure.transactionId,
+                        ),
+                      );
+                      fetchTransactions();
+                    }}
+                  />
                 </Box>
               ))}
             </Stack>
@@ -966,6 +1092,7 @@ const Reconciliation = () => {
                   <TableCell>Date</TableCell>
                   <TableCell>Sender</TableCell>
                   <TableCell>Phone</TableCell>
+                  <TableCell>Narration</TableCell>
                   <TableCell align="right">Amount</TableCell>
                   <TableCell>Category</TableCell>
                   <TableCell>Status</TableCell>
@@ -976,7 +1103,7 @@ const Reconciliation = () => {
               <TableBody>
                 {filteredTransactions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} align="center">
+                    <TableCell colSpan={10} align="center">
                       <Typography color="text.secondary" py={4}>
                         No transactions found
                       </Typography>
@@ -987,7 +1114,8 @@ const Reconciliation = () => {
                     <TableRow key={tx.id} hover>
                       <TableCell padding="checkbox">
                         {!tx.accountingPosting &&
-                          (tx.reconciliationMatch?.status === 'PENDING' ||
+                          (needsNoMatch(tx) ||
+                            tx.reconciliationMatch?.status === 'PENDING' ||
                             tx.reconciliationMatch?.status === 'APPROVED') && (
                           <Checkbox
                             size="small"
@@ -1006,15 +1134,78 @@ const Reconciliation = () => {
                       </TableCell>
                       <TableCell>{tx.senderName || '-'}</TableCell>
                       <TableCell>{tx.senderPhone || '-'}</TableCell>
+                      <TableCell>
+                        {tx.narration ? (
+                          <Tooltip title={tx.narration}>
+                            <Typography
+                              variant="body2"
+                              noWrap
+                              sx={{ maxWidth: 220 }}
+                            >
+                              {tx.narration}
+                            </Typography>
+                          </Tooltip>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
                       <TableCell align="right">
-                        {tx.amount.toLocaleString()}
+                        {Number(tx.amount).toLocaleString()}
                       </TableCell>
                       <TableCell>
-                        <Chip
-                          label={tx.category || 'Uncategorized'}
-                          size="small"
-                          variant="outlined"
-                        />
+                        {isPosted(tx) ? (
+                          <Tooltip title="Already posted to QuickBooks — correct it there instead">
+                            <Chip
+                              label={
+                                tx.externalItemName ||
+                                tx.category ||
+                                'Uncategorized'
+                              }
+                              size="small"
+                              variant="outlined"
+                            />
+                          </Tooltip>
+                        ) : (
+                          <Select
+                            size="small"
+                            variant="standard"
+                            disableUnderline
+                            displayEmpty
+                            value={currentCategoryValue(tx)}
+                            disabled={savingCategoryIds.includes(tx.id)}
+                            onChange={(e) =>
+                              handleCategoryChange(tx, e.target.value as string)
+                            }
+                            renderValue={(value) => (
+                              <Chip
+                                label={categoryLabel(tx, value as string)}
+                                size="small"
+                                variant="outlined"
+                                onClick={() => undefined}
+                              />
+                            )}
+                            sx={{
+                              '& .MuiSelect-select': { p: 0, pr: '20px!important' },
+                            }}
+                            inputProps={{
+                              'aria-label': `Giving category for ${
+                                tx.senderName ?? `transaction ${tx.id}`
+                              }`,
+                            }}
+                          >
+                            <MenuItem value="">
+                              <em>Uncategorized</em>
+                            </MenuItem>
+                            {givingCategories.map((option) => (
+                              <MenuItem
+                                key={categoryValue(option)}
+                                value={categoryValue(option)}
+                              >
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Chip
@@ -1034,12 +1225,20 @@ const Reconciliation = () => {
                               variant="outlined"
                             />
                           </Tooltip>
+                        ) : needsNoMatch(tx) ? (
+                          <Tooltip title="Books to a standing customer, so no giver is needed">
+                            <Chip
+                              label="No giver needed"
+                              size="small"
+                              variant="outlined"
+                            />
+                          </Tooltip>
                         ) : (
                           '-'
                         )}
                       </TableCell>
                       <TableCell align="right">
-                        {tx.status === 'PENDING' && (
+                        {tx.status === 'PENDING' && !needsNoMatch(tx) && (
                           <Tooltip title="Match to contact">
                             <IconButton
                               size="small"
@@ -1049,8 +1248,7 @@ const Reconciliation = () => {
                             </IconButton>
                           </Tooltip>
                         )}
-                        {tx.status === 'RECONCILED' &&
-                          tx.reconciliationMatch?.status === 'PENDING' && (
+                        {tx.reconciliationMatch?.status === 'PENDING' && (
                             <>
                               <Tooltip title="Approve match">
                                 <IconButton
@@ -1101,7 +1299,8 @@ const Reconciliation = () => {
                             />
                           </Tooltip>
                         ) : (
-                          tx.reconciliationMatch?.status === 'APPROVED' && (
+                          (needsNoMatch(tx) ||
+                            tx.reconciliationMatch?.status === 'APPROVED') && (
                             <QuickBooksPostingPanel
                               transactionId={tx.id}
                               onPosted={fetchTransactions}
@@ -1337,7 +1536,13 @@ const Reconciliation = () => {
               {confirmPost?.ids.length === 1 ? '' : 's'}
             </strong>{' '}
             totalling{' '}
-            <strong>{(confirmPost?.total ?? 0).toLocaleString()}</strong> to
+            <strong>
+              {Number(confirmPost?.total ?? 0).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </strong>{' '}
+            to
             QuickBooks.
           </Typography>
           <Typography variant="body2" color="text.secondary">

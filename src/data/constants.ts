@@ -30,6 +30,9 @@ export const appPermissions = {
 
   manageHelp: 'MANAGE_HELP',
 
+  roleIntegrationsView: 'INTEGRATIONS_VIEW',
+  roleIntegrationsEdit: 'INTEGRATIONS_EDIT',
+
   roleFinanceView: 'FINANCE_VIEW',
   roleFinanceEdit: 'FINANCE_EDIT',
 
@@ -122,7 +125,7 @@ export const localRoutes = {
   attendanceHistory: '/attendance/history',
 
   // Integrations
-  integrations: '/admin/integrations',
+  integrations: '/integrations',
 };
 
 export const apiBaseUrl =
