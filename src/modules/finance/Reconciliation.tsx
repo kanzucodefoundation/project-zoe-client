@@ -1202,6 +1202,7 @@ const Reconciliation = () => {
                               <MenuItem
                                 key={categoryValue(option)}
                                 value={categoryValue(option)}
+                                disabled={!option.selectable}
                               >
                                 {option.label}
                               </MenuItem>
