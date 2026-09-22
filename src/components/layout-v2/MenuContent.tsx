@@ -155,13 +155,17 @@ const navItems: NavItem[] = [
         icon: <SmsRoundedIcon />,
         path: localRoutes.notifications,
       },
-      {
-        name: 'Integrations',
-        icon: <IntegrationInstructionsRoundedIcon />,
-        path: localRoutes.integrations,
-      },
       // { name: 'Group Categories', icon: <GroupRoundedIcon />, path: localRoutes.groupsCategories },
       // { name: 'Settings', icon: <SettingsRoundedIcon />, path: localRoutes.settings },
+    ],
+  },
+  {
+    name: 'Integrations',
+    icon: <IntegrationInstructionsRoundedIcon />,
+    path: localRoutes.integrations,
+    requiredRoles: [
+      appPermissions.roleIntegrationsView,
+      appPermissions.roleIntegrationsEdit,
     ],
   },
   {

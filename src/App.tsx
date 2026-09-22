@@ -326,21 +326,13 @@ function App() {
               path={localRoutes.notificationMessages}
               element={<NotificationsPage />}
             />
-            {/*
-              Guarded on USER_* rather than the FINANCE_* pair the other finance
-              screens use, and deliberately so: connecting a QuickBooks company
-              is workspace setup, done once by whoever administers the
-              workspace, not part of the day-to-day giving work. The menu entry
-              sits under Admin for the same reason — keep the two in step if
-              this is ever revisited.
-
-              Note this only hides UI. The server enforces access on its own.
-            */}
+            {/* Its own permission, so a finance user can connect QuickBooks
+                without being made an admin. This only hides UI. */}
             <Route
               path={localRoutes.integrations}
               element={renderProtectedElement(<QuickBooksSettings />, [
-                appPermissions.roleUserView,
-                appPermissions.roleUserEdit,
+                appPermissions.roleIntegrationsView,
+                appPermissions.roleIntegrationsEdit,
               ])}
             />
             <Route path="/" element={<Dashboard />} />

@@ -68,7 +68,8 @@ export interface Transaction {
   account: FinancialAccount;
   accountId: number;
   transactionDate: string;
-  amount: number;
+  /** Postgres decimal arrives over the wire as a string — coerce with Number() before arithmetic or formatting. */
+  amount: number | string;
   externalReference?: string;
   senderName?: string;
   senderPhone?: string;
@@ -76,6 +77,14 @@ export interface Transaction {
   narration?: string;
   status: TransactionStatus;
   category?: TransactionCategory;
+  /**
+   * The QuickBooks product/service this row books against. Set by the importer
+   * from the statement message and correctable from the reconciliation table.
+   * Takes priority over `category` when the receipt is built, so the two are
+   * always changed together.
+   */
+  externalItemId?: string | null;
+  externalItemName?: string | null;
   importedAt: string;
   metadata?: {
     manualCategory?: TransactionCategory;
@@ -84,6 +93,8 @@ export interface Transaction {
   reconciliationMatch?: ReconciliationMatch;
   /** Set once this transaction has reached QuickBooks successfully. */
   accountingPosting?: AccountingPosting | null;
+  /** False for offertory: it books to a standing customer, so it needs no giver. */
+  requiresMatch?: boolean;
 }
 
 export interface AccountingPosting {
