@@ -704,7 +704,7 @@ const ImportTransactions = () => {
                             )}
                           </TableCell>
                           <TableCell align="right">
-                            {tx.amount.toLocaleString()}
+                            {Number(tx.amount).toLocaleString()}
                           </TableCell>
                           <TableCell>
                             <Tooltip title={tx.matchedRule ?? ''}>

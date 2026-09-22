@@ -603,7 +603,7 @@ const Reconciliation = () => {
       transactionId,
       status: 'FAILED',
       giver: tx?.senderName ?? `Transaction ${transactionId}`,
-      amount: tx?.amount ?? 0,
+      amount: Number(tx?.amount ?? 0),
       transactionDate: tx?.transactionDate ?? '',
       error,
       unconfirmed: true,
@@ -1358,7 +1358,7 @@ const Reconciliation = () => {
                 <strong>Phone:</strong> {selectedTransaction.senderPhone || 'N/A'}
               </Typography>
               <Typography>
-                <strong>Amount:</strong> {selectedTransaction.amount.toLocaleString()}
+                <strong>Amount:</strong> {Number(selectedTransaction.amount).toLocaleString()}
               </Typography>
               <Typography>
                 <strong>Date:</strong>{' '}

@@ -68,7 +68,8 @@ export interface Transaction {
   account: FinancialAccount;
   accountId: number;
   transactionDate: string;
-  amount: number;
+  /** Postgres decimal arrives over the wire as a string — coerce with Number() before arithmetic or formatting. */
+  amount: number | string;
   externalReference?: string;
   senderName?: string;
   senderPhone?: string;
