@@ -83,7 +83,7 @@ interface LineItem {
 interface SalesReceiptPreview {
   transactionDate: string;
   referenceNumber: string | null;
-  customer: { contactName: string };
+  customer: { contactName: string; postsAs: 'GIVER' | 'CATEGORY' };
   depositAccount: { financialAccountName: string };
   location: { groupName: string; isFallback: boolean } | null;
   lineItems: LineItem[];
@@ -661,7 +661,10 @@ export default function QuickBooksPostingPanel({
                 </Typography>
               </Stack>
               <Stack gap={0.5}>
-                <Row label="Customer" value={preview.customer.contactName} />
+                <Row
+                  label={preview.customer.postsAs === 'CATEGORY' ? 'Posts as' : 'Customer'}
+                  value={preview.customer.contactName}
+                />
                 <Row label="Date" value={preview.transactionDate} />
                 {preview.referenceNumber && (
                   <Row label="Reference" value={preview.referenceNumber} />
