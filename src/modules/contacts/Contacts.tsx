@@ -10,6 +10,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogActions,
   Table,
   TableBody,
   TableCell,
@@ -37,8 +38,16 @@ import {
   MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { search } from '../../utils/ajax';
-import { remoteRoutes, localRoutes } from '../../data/constants';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { del, search } from '../../utils/ajax';
+import {
+  remoteRoutes,
+  localRoutes,
+  appPermissions,
+} from '../../data/constants';
+import type { RootState } from '../../data/store';
+import { hasAnyCapability } from '../../utils/permissions';
 import ContactForm from './ContactForm';
 import BulkUpload from './BulkUpload';
 import {
@@ -95,6 +104,11 @@ const Contacts = () => {
   const [total, setTotal] = useState<number>(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const { user } = useSelector((state: RootState) => state.core);
+  const canEditContacts = hasAnyCapability(user, [appPermissions.roleCrmEdit]);
   const paginatedContacts = contacts.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage,
@@ -223,6 +237,44 @@ const Contacts = () => {
     handleEditClose()
     // Refresh contacts list; keep same pagination
     setFilter((prev) => ({ ...prev }));
+  };
+
+  const handleDelete = () => {
+    if (!selectedContact) return;
+
+    setContactToDelete(selectedContact);
+    setConfirmDeleteOpen(true);
+    handleMenuClose();
+  };
+
+  const handleCloseConfirmDelete = () => {
+    if(deleting) {
+      return;
+    }
+    setConfirmDeleteOpen(false);
+    setContactToDelete(null);
+  };
+
+  const confirmDelete = () => {
+    if (!contactToDelete) return;
+
+    setDeleting(true);
+    del(
+      `${remoteRoutes.contacts}/${contactToDelete.id}`,
+      () => {
+        toast.success('Contact deleted successfully');
+        setDeleting(false);
+        setConfirmDeleteOpen(false);
+        setContactToDelete(null);
+        // Refetch so the deleted contact drops out; keep same pagination
+        setFilter((prev) => ({ ...prev }));
+      },
+      (error: unknown) => {
+        console.error('Failed to delete contact:', error);
+        toast.error('Failed to delete contact');
+        setDeleting(false);
+      },
+    );
   };
 
   const getInitials = (name: string) => {
@@ -589,7 +641,38 @@ const Contacts = () => {
       >
         <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
         <MenuItem onClick={handleEdit}>Edit</MenuItem>
+        {canEditContacts ? (
+          <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
+            Delete
+          </MenuItem>
+        ) : null}
       </Menu>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={confirmDeleteOpen}
+        onClose={deleting ? undefined : handleCloseConfirmDelete}
+        disableEscapeKeyDown={deleting}
+        maxWidth="xs"
+      >
+        <DialogTitle>Delete Contact</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete "{contactToDelete?.name}"? 
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmDelete} disabled={deleting}>Cancel</Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={confirmDelete}
+            disabled={deleting}
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* New Contact Dialog */}
       <Dialog
