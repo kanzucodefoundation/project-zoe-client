@@ -1072,28 +1072,32 @@ const GroupDetails = () => {
             )}
           </Box>
         )}
-        <Box display="flex" justifyContent="center" mt={4} mb={2}>
-          {/*   Pagination Section */}
-          <Box
-            display="flex"
-            justifyContent={{ xs: 'center', sm: 'flex-end' }}
-            mt={1}
-            width="100%"
-          >
-            <TablePagination
-              component="div"
-              count={total}
-              page={page}
-              onPageChange={(_, newPage) => setPage(newPage)}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={(e) => {
-                const newLimit = parseInt(e.target.value, 10);
-                setRowsPerPage(newLimit);
-                setPage(0); // Snap back to page 1 on limit adjustments
-              }}
+        {/* Search spans the whole group, so paging does not apply to it: the
+            control would report a page-level total against a full-list
+            result, and turning a page would discard the loaded set. */}
+        {!searchTerm && (
+          <Box display="flex" justifyContent="center" mt={4} mb={2}>
+            <Box
+              display="flex"
+              justifyContent={{ xs: 'center', sm: 'flex-end' }}
+              mt={1}
+              width="100%"
+            >
+              <TablePagination
+                component="div"
+                count={total}
+                page={page}
+                onPageChange={(_, newPage) => setPage(newPage)}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={(e) => {
+                  const newLimit = parseInt(e.target.value, 10);
+                  setRowsPerPage(newLimit);
+                  setPage(0); // Snap back to page 1 on limit adjustments
+                }}
               />
+            </Box>
           </Box>
-        </Box>
+        )}
       </CollapsibleSection>
 
       {/* Edit Dialog */}
