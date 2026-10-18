@@ -5,10 +5,10 @@ export type StatusTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
 
 const TONE_SX: Record<StatusTone, ChipProps['sx']> = {
   neutral: { bgcolor: 'action.hover', color: 'text.secondary' },
-  success: { bgcolor: 'success.light', color: 'success.main' },
-  warning: { bgcolor: 'warning.light', color: 'warning.main' },
-  danger: { bgcolor: 'error.light', color: 'error.main' },
-  info: { bgcolor: 'info.light', color: 'info.main' },
+  success: { bgcolor: 'success.light', color: 'success.main', '& .MuiChip-label': { color: 'text.primary' } },
+  warning: { bgcolor: 'warning.light', color: 'warning.main', '& .MuiChip-label': { color: 'text.primary' } },
+  danger: { bgcolor: 'error.light', color: 'error.main', '& .MuiChip-label': { color: 'text.primary' } },
+  info: { bgcolor: 'info.light', color: 'info.main', '& .MuiChip-label': { color: 'text.primary' } },
 };
 
 const STATUS_MAP: Record<string, { tone: StatusTone; label: string }> = {

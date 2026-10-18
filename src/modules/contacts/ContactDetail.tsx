@@ -515,7 +515,7 @@ const ContactDetail = () => {
             </Alert>
           )}
           <ContactForm
-            contactId={contactId}
+            contactId={resolvedContactId?.toString()}
             onSave={handleEditSave}
             onCancel={() => {
               setEditError(null);

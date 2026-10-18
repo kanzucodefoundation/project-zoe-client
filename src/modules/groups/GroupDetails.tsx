@@ -245,6 +245,7 @@ const CollapsibleSection = ({
         aria-expanded={open}
         onClick={toggle}
         onKeyDown={(event) => {
+          if (event.target !== event.currentTarget) return;
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
             toggle();
@@ -307,6 +308,10 @@ const GroupDetails = () => {
   const [submittingMember, setSubmittingMember] = useState(false);
   const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [memberSearch, setMemberSearch] = useState('');
+  const [allMemberships, setAllMemberships] = useState<GroupMembership[] | null>(
+    null,
+  );
+  const [searchingAll, setSearchingAll] = useState(false);
   const [allContacts, setAllContacts] = useState<ContactRef[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<ContactRef[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
@@ -464,6 +469,7 @@ const GroupDetails = () => {
       );
       setMemberships(activeMemberships);
       setTotal(response?.total ?? 0);
+      setAllMemberships(null);
     } catch (error: unknown) {
       if (requestId !== membershipsRequestIdRef.current) return;
       console.error('Failed to fetch memberships:', error);
@@ -474,6 +480,47 @@ const GroupDetails = () => {
       }
     }
   }, [groupId, page, rowsPerPage]);
+
+  // Searching has to reach the whole group, not just the page in view, so
+  // the first search pages the membership list in full and reuses it after.
+  useEffect(() => {
+    if (!groupId || !memberSearch.trim() || allMemberships) return;
+    let ignore = false;
+
+    const loadEveryMember = async () => {
+      setSearchingAll(true);
+      try {
+        const collected: GroupMembership[] = [];
+        const limit = 100;
+        const MAX_PAGES = 200;
+        for (let pageIndex = 0; pageIndex < MAX_PAGES; pageIndex += 1) {
+          const response = await getJson<{ data: GroupMembership[] }>(
+            `${remoteRoutes.groupsMembership}?groupId=${encodeURIComponent(
+              groupId,
+            )}&limit=${limit}&skip=${pageIndex * limit}`,
+          );
+          const batch = Array.isArray(response?.data) ? response.data : [];
+          collected.push(...batch);
+          if (batch.length < limit) break;
+        }
+        if (!ignore) {
+          setAllMemberships(
+            collected.filter((m) => m.isActive !== false),
+          );
+        }
+      } catch {
+        // The page already in view stays searchable; nothing else changes.
+        if (!ignore) setAllMemberships(null);
+      } finally {
+        if (!ignore) setSearchingAll(false);
+      }
+    };
+
+    loadEveryMember();
+    return () => {
+      ignore = true;
+    };
+  }, [groupId, memberSearch, allMemberships]);
 
   useEffect(() => {
     fetchGroup();
@@ -590,12 +637,15 @@ const GroupDetails = () => {
   const isMember = (contactId: ContactRef['id']) =>
     memberships.some((m) => m.contactId === contactId);
 
-  const visibleMemberships = memberships.filter((m) => {
-    const term = memberSearch.trim().toLowerCase();
-    if (!term) return true;
-    const name = m.contact?.name || `Contact #${m.contactId}`;
-    return name.toLowerCase().includes(term);
-  });
+  // With a term, search the whole group; without one, show the page in view.
+  const searchTerm = memberSearch.trim().toLowerCase();
+  const visibleMemberships = searchTerm
+    ? (allMemberships ?? memberships).filter((m) =>
+        (m.contact?.name || `Contact #${m.contactId}`)
+          .toLowerCase()
+          .includes(searchTerm),
+      )
+    : memberships;
   return (
     <Container>
       {/* Header */}
@@ -874,6 +924,9 @@ const GroupDetails = () => {
           </Paper>
         )}
 
+        {/* The memberships endpoint takes only groupId, limit and skip, so
+            this filters what is loaded rather than searching the group. The
+            wording and the note below say so rather than implying otherwise. */}
         <TextField
           size="small"
           fullWidth
@@ -887,7 +940,11 @@ const GroupDetails = () => {
                 <SearchIcon fontSize="small" />
               </InputAdornment>
             ),
-            endAdornment: memberSearch ? (
+            endAdornment: searchingAll ? (
+              <InputAdornment position="end">
+                <CircularProgress size={16} />
+              </InputAdornment>
+            ) : memberSearch ? (
               <InputAdornment position="end">
                 <IconButton
                   size="small"

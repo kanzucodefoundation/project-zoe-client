@@ -365,6 +365,7 @@ export default function TaskQueue() {
             onPageChange={(_, page) =>
               setPagination((current) => ({ ...current, page }))
             }
+            rowsPerPageOptions={[10, 20, 50, 100]}
             rowsPerPage={pagination.pageSize}
             onRowsPerPageChange={(e) =>
               setPagination({ page: 0, pageSize: Number(e.target.value) })

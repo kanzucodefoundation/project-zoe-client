@@ -153,12 +153,14 @@ export const semantic: { light: SemanticColors; dark: SemanticColors } = {
     brandText: brand[700],
     brandSubtle: brand[50],
 
-    accent: orange[600],
+    // orange[600] is 4.15:1 against white, which fails AA both as a fill
+    // label and as text. 700 clears it at about 5.6:1.
+    accent: orange[700],
     accentSubtle: orange[50],
 
     success: green[600],
     successSubtle: green[50],
-    warning: orange[600],
+    warning: orange[700],
     warningSubtle: orange[50],
     danger: red[600],
     dangerSubtle: red[50],

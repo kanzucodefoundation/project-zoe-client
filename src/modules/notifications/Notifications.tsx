@@ -165,6 +165,7 @@ export default function Notifications() {
 
                   {!n.isRead && (
                     <Box
+                      role="img"
                       aria-label="Unread"
                       sx={{
                         width: 8,
@@ -179,8 +180,11 @@ export default function Notifications() {
                 </ListItemButton>
                 {idx < notifications.length - 1 && <Divider />}
               </Box>
-            ))}
-
+            ))}            
+          </>
+        )}
+        {total > 0 && (
+          <>
             <Divider />
             <TablePagination
               component="div"

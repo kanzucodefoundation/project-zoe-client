@@ -369,7 +369,7 @@ export default function MenuContent({
           )}
 
           <Collapse in={isOpen} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
+            <List disablePadding>
               {item.children.map((child) => renderNavItem(child, level + 1))}
             </List>
           </Collapse>

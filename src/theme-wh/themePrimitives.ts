@@ -42,43 +42,52 @@ export {
   layout,
 } from './tokens';
 
-const paletteFor = (c: SemanticColors) => ({
-  primary: {
-    main: c.brand,
-    light: c.brandSubtle,
-    dark: c.brandActive,
-    onSurface: c.brandText,
-    contrastText: c.textOnBrand,
-  },
-  secondary: {
-    main: c.accent,
-    light: c.accentSubtle,
-    contrastText: '#FFFFFF',
-  },
-  success: { main: c.success, light: c.successSubtle, contrastText: '#FFFFFF' },
-  warning: { main: c.warning, light: c.warningSubtle, contrastText: '#FFFFFF' },
-  error: { main: c.danger, light: c.dangerSubtle, contrastText: '#FFFFFF' },
-  info: { main: c.info, light: c.infoSubtle, contrastText: '#FFFFFF' },
-  background: { default: c.background, paper: c.surface },
-  text: {
-    primary: c.textPrimary,
-    secondary: c.textSecondary,
-    disabled: c.textMuted,
-  },
-  divider: c.border,
-  action: {
-    hover: alpha(c.textPrimary, 0.04),
-    hoverOpacity: 0.04,
-    selected: c.brandSubtle,
-    selectedOpacity: 0.08,
-    focus: c.focusRing,
-  },
-  baseShadow: shadow.sm,
-});
+const paletteFor = (c: SemanticColors, isDark: boolean) => {
+  // Dark-mode status colours are light tints, so white on them sits near
+  // 2:1. The readable label there is the page ground, not white.
+  const onStatus = isDark ? c.background : '#FFFFFF';
+
+  return {
+    primary: {
+      main: c.brand,
+      light: c.brandSubtle,
+      dark: c.brandActive,
+      onSurface: c.brandText,
+      contrastText: c.textOnBrand,
+    },
+    secondary: {
+      main: c.accent,
+      light: c.accentSubtle,
+      contrastText: onStatus,
+    },
+    success: { main: c.success, light: c.successSubtle, contrastText: onStatus },
+    warning: { main: c.warning, light: c.warningSubtle, contrastText: onStatus },
+    error: { main: c.danger, light: c.dangerSubtle, contrastText: onStatus },
+    info: { main: c.info, light: c.infoSubtle, contrastText: onStatus },
+    background: { default: c.background, paper: c.surface },
+    text: {
+      primary: c.textPrimary,
+      secondary: c.textSecondary,
+      disabled: c.textMuted,
+    },
+    divider: c.border,
+    action: {
+      hover: alpha(c.textPrimary, 0.04),
+      hoverOpacity: 0.04,
+      selected: c.brandSubtle,
+      selectedOpacity: 0.08,
+      // MUI fills a keyboard-focused row with this, so it has to be an
+      // overlay. `focusRing` is the outline colour and stays separate.
+      focus: alpha(c.textPrimary, 0.12),
+      focusOpacity: 0.12,
+    },
+    baseShadow: shadow.sm,
+  };
+};
 
 export const colorSchemes = {
-  light: { palette: paletteFor(semantic.light) },
-  dark: { palette: paletteFor(semantic.dark) },
+  light: { palette: paletteFor(semantic.light, false) },
+  dark: { palette: paletteFor(semantic.dark, true) },
 };
 export const typography = {
   fontFamily: 'Inter, sans-serif',

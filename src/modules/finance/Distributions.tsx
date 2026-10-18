@@ -323,7 +323,7 @@ const Distributions = () => {
                         disabled={executingId === batch.id}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleExecute(batch.id);
+                          setBatchToExecute(batch.id);
                         }}
                       >
                         {executingId === batch.id ? 'Executing...' : 'Execute'}

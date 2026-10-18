@@ -12,8 +12,22 @@ export const componentCustomizations: Components<Theme> = {
       },
       body: { overscrollBehaviorY: 'none' },
       'table, .zoe-tabular': { fontVariantNumeric: 'tabular-nums' },
-      '*': { scrollbarWidth: 'none', msOverflowStyle: 'none' },
-      '*::-webkit-scrollbar': { width: 0, height: 0, display: 'none' },
+      // Thin, and in a grey that reads as chrome rather than content. Stated
+      // for both engines: Firefox takes scrollbar-color, WebKit needs the
+      // pseudo-elements.
+      '*': {
+        scrollbarWidth: 'thin',
+        scrollbarColor: `${gray[300]} transparent`,
+      },
+      '*::-webkit-scrollbar': { width: 10, height: 10 },
+      '*::-webkit-scrollbar-track': { background: 'transparent' },
+      '*::-webkit-scrollbar-thumb': {
+        backgroundColor: gray[300],
+        borderRadius: 8,
+        border: '2px solid transparent',
+        backgroundClip: 'content-box',
+      },
+      '*::-webkit-scrollbar-thumb:hover': { backgroundColor: gray[400] },
       '@media (prefers-reduced-motion: reduce)': {
         '*, *::before, *::after': {
           animationDuration: '0.01ms !important',
@@ -68,9 +82,14 @@ export const componentCustomizations: Components<Theme> = {
         }),
       containedPrimary: ({ theme }) =>
         theme.applyStyles('dark', {
-          backgroundColor: '#FFFFFF',
-          color: semantic.dark.background,
-          '&:hover': { backgroundColor: alpha('#FFFFFF', 0.88) },
+          // Scoped away from the disabled state, which keeps its own grey.
+          '&:not(.Mui-disabled)': {
+            backgroundColor: '#FFFFFF',
+            color: semantic.dark.background,
+          },
+          '&:not(.Mui-disabled):hover': {
+            backgroundColor: alpha('#FFFFFF', 0.88),
+          },
         }),
       outlinedInherit: ({ theme }) => ({
         borderColor: alpha(semantic.light.textPrimary, 0.28),

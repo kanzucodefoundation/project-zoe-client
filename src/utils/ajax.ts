@@ -118,8 +118,39 @@ export const extractErrorMessageFromData = (data: any = {}) => {
   return undefined;
 };
 
-export const serverMessage = (err: unknown, fallback: string): string =>
-  extractErrorMessageFromData((err as AxiosError)?.response?.data) || fallback;
+export const serverMessage = (err: unknown, fallback: string): string => {
+  const extracted = extractErrorMessageFromData(
+    (err as AxiosError)?.response?.data,
+  );
+  return firstString(extracted) || fallback;
+};
+
+/**
+ * The first readable sentence inside a validation payload.
+ *
+ * `extractBadRequestErrorMessage` hands back whatever sits in `errors` when
+ * there is no `message`, so a field map like `{ name: ['Required'] }` comes
+ * out as an object. Passing that to a toast renders nothing useful and can
+ * break the render, so anything that is not a usable string is walked once
+ * for one.
+ */
+const firstString = (value: unknown): string => {
+  if (typeof value === 'string') return value.trim();
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      const found = firstString(entry);
+      if (found) return found;
+    }
+    return '';
+  }
+  if (value && typeof value === 'object') {
+    for (const entry of Object.values(value)) {
+      const found = firstString(entry);
+      if (found) return found;
+    }
+  }
+  return '';
+};
 
 export const handleError = (err: AxiosError, _res?: AxiosResponse) => {
   const defaultMessage = 'Invalid request, please contact admin';
