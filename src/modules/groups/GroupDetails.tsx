@@ -483,8 +483,12 @@ const GroupDetails = () => {
 
   // Searching has to reach the whole group, not just the page in view, so
   // the first search pages the membership list in full and reuses it after.
+  // Keyed on whether a search is active, not on the text: depending on the
+  // text restarts the whole load on every keystroke.
+  const hasMemberSearch = memberSearch.trim() !== '';
+
   useEffect(() => {
-    if (!groupId || !memberSearch.trim() || allMemberships) return;
+    if (!groupId || !hasMemberSearch || allMemberships) return;
     let ignore = false;
 
     const loadEveryMember = async () => {
@@ -494,6 +498,8 @@ const GroupDetails = () => {
         const limit = 100;
         const MAX_PAGES = 200;
         for (let pageIndex = 0; pageIndex < MAX_PAGES; pageIndex += 1) {
+          // Abandoned searches stop paging instead of running to MAX_PAGES.
+          if (ignore) return;
           const response = await getJson<{ data: GroupMembership[] }>(
             `${remoteRoutes.groupsMembership}?groupId=${encodeURIComponent(
               groupId,
@@ -519,8 +525,11 @@ const GroupDetails = () => {
     loadEveryMember();
     return () => {
       ignore = true;
+      // The abandoned run can no longer clear this, so the cleanup does;
+      // otherwise the spinner replaces the clear button for good.
+      setSearchingAll(false);
     };
-  }, [groupId, memberSearch, allMemberships]);
+  }, [groupId, hasMemberSearch, allMemberships]);
 
   useEffect(() => {
     fetchGroup();
@@ -543,8 +552,10 @@ const GroupDetails = () => {
         },
       );
 
-      setMemberships((currentMemberships) =>
-        currentMemberships.map((currentMembership) =>
+      // Both lists, or a role changed from the search results would keep
+      // showing the old one and the next click would resend the same role.
+      const applyRoleChange = (list: GroupMembership[]) =>
+        list.map((currentMembership) =>
           currentMembership.id === membership.id
             ? {
                 ...currentMembership,
@@ -552,7 +563,11 @@ const GroupDetails = () => {
                 role: updatedMembership.role || nextRole,
               }
             : currentMembership,
-        ),
+        );
+
+      setMemberships(applyRoleChange);
+      setAllMemberships((current) =>
+        current ? applyRoleChange(current) : current,
       );
 
       toast.success(
