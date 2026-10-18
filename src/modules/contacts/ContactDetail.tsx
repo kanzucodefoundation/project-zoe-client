@@ -118,17 +118,26 @@ const ContactDetail = () => {
   ]);
   const canViewTaskTab = canViewTasks(user);
 
+  // "me" is the route the account menu points at, so the signed-in user can
+  // reach their own record without knowing its id.
+  const isOwnProfile = contactId === 'me';
+  const resolvedContactId = isOwnProfile
+    ? (user?.contactId as number | undefined)
+    : contactId;
+
   useEffect(() => {
-    if (contactId) {
+    if (resolvedContactId) {
       fetchContact();
+    } else {
+      setLoading(false);
     }
-  }, [contactId]);
+  }, [resolvedContactId]);
 
   const fetchContact = () => {
-    if (!contactId) return;
+    if (!resolvedContactId) return;
 
     get(
-      `${remoteRoutes.contacts}/${contactId}`,
+      `${remoteRoutes.contacts}/${resolvedContactId}`,
       (response) => {
         setContact(mapApiResponse(response));
         setLoading(false);
@@ -192,7 +201,9 @@ const ContactDetail = () => {
     return (
       <Box>
         <Typography variant="h4" gutterBottom>
-          Contact Not Found
+          {isOwnProfile && !resolvedContactId
+            ? 'Your account is not linked to a contact record'
+            : 'Contact Not Found'}
         </Typography>
         <Button
           startIcon={<ArrowBackIcon />}
@@ -248,7 +259,6 @@ const ContactDetail = () => {
                   height: 120,
                   mx: 'auto',
                   mb: 2,
-                  bgcolor: 'primary.paper',
                   fontSize: '2rem',
                 }}
               >

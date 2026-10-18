@@ -6,7 +6,14 @@ import { dataDisplayCustomizations } from './customizations/dataDisplay';
 import { feedbackCustomizations } from './customizations/feedback';
 import { navigationCustomizations } from './customizations/navigation';
 import { surfacesCustomizations } from './customizations/surfaces';
-import { colorSchemes, typography, shadows, shape } from './themePrimitives';
+import { componentCustomizations } from './customizations/components';
+import {
+  colorSchemes,
+  typography,
+  shadows,
+  shape,
+  transitions,
+} from './themePrimitives';
 
 interface AppThemeProps {
   children: React.ReactNode;
@@ -32,12 +39,14 @@ export default function AppTheme(props: AppThemeProps) {
           typography,
           shadows,
           shape,
+          transitions,
           components: {
             ...inputsCustomizations,
             ...dataDisplayCustomizations,
             ...feedbackCustomizations,
             ...navigationCustomizations,
             ...surfacesCustomizations,
+            ...componentCustomizations,
             ...themeComponents,
           },
         });

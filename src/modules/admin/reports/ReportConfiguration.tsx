@@ -23,6 +23,7 @@ import {
   DialogActions,
   TextField,
   Alert,
+  ListItemIcon,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -32,7 +33,12 @@ import {
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import { get, put, post, del } from '../../../utils/ajax';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import ToggleOnOutlinedIcon from '@mui/icons-material/ToggleOnOutlined';
+import ToggleOffOutlinedIcon from '@mui/icons-material/ToggleOffOutlined';
 import { remoteRoutes } from '../../../data/constants';
+import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 
 interface IReport {
   id: number;
@@ -71,6 +77,7 @@ const ReportConfiguration = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [actionMenuReport, setActionMenuReport] = useState<IReport | null>(null);
+  const [reportToDelete, setReportToDelete] = useState<IReport | null>(null);
   const [jsonValue, setJsonValue] = useState('');
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -162,13 +169,9 @@ const ReportConfiguration = () => {
   };
 
   const handleDeleteReport = () => {
-    if (!actionMenuReport) return;
-    const report = actionMenuReport;
-    handleMenuClose();
-
-    if (!window.confirm(`Are you sure you want to delete "${report.name}"? This action cannot be undone.`)) {
-      return;
-    }
+    const report = reportToDelete;
+    if (!report) return;
+    setReportToDelete(null);
 
     del(
       `${remoteRoutes.reports}/${report.id}`,
@@ -275,12 +278,12 @@ const ReportConfiguration = () => {
                 },
               }}
             >              
-            <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Category</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Frequency</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>View Type</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Fields</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+            <TableCell >Name</TableCell>
+              <TableCell >Category</TableCell>
+              <TableCell >Frequency</TableCell>
+              <TableCell >View Type</TableCell>
+              <TableCell >Fields</TableCell>
+              <TableCell align="right" >Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -343,7 +346,7 @@ const ReportConfiguration = () => {
 
   if (isLoading) {
     return (
-      <Container maxWidth="lg">
+      <Container>
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
           <CircularProgress />
         </Box>
@@ -352,7 +355,7 @@ const ReportConfiguration = () => {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container>
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} flexWrap="wrap" gap={2}>
         <Box>
@@ -410,11 +413,32 @@ const ReportConfiguration = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleEditReport}>Edit Report</MenuItem>
+        <MenuItem onClick={handleEditReport}>
+          <ListItemIcon>
+            <EditOutlinedIcon fontSize="small" />
+          </ListItemIcon>
+          Edit Report
+        </MenuItem>
         <MenuItem onClick={handleToggleStatus}>
+          <ListItemIcon>
+            {actionMenuReport?.status === 'ACTIVE' && actionMenuReport?.active ? (
+              <ToggleOffOutlinedIcon fontSize="small" />
+            ) : (
+              <ToggleOnOutlinedIcon fontSize="small" />
+            )}
+          </ListItemIcon>
           {actionMenuReport?.status === 'ACTIVE' && actionMenuReport?.active ? 'Deactivate' : 'Activate'}
         </MenuItem>
-        <MenuItem onClick={handleDeleteReport} sx={{ color: 'error.main' }}>
+        <MenuItem
+          onClick={() => {
+            setReportToDelete(actionMenuReport);
+            handleMenuClose();
+          }}
+          sx={{ color: 'error.main' }}
+        >
+          <ListItemIcon sx={{ color: 'inherit' }}>
+            <DeleteOutlineIcon fontSize="small" />
+          </ListItemIcon>
           Delete
         </MenuItem>
       </Menu>
@@ -468,6 +492,20 @@ const ReportConfiguration = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <ConfirmDialog
+        open={Boolean(reportToDelete)}
+        title="Delete report"
+        message={
+          <>
+            Delete <strong>{reportToDelete?.name}</strong>? Submissions already
+            made against it are not removed.
+          </>
+        }
+        confirmLabel="Delete"
+        onConfirm={handleDeleteReport}
+        onClose={() => setReportToDelete(null)}
+      />
+
     </Container>
   );
 };

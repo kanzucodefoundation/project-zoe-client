@@ -3,8 +3,7 @@ import { svgIconClasses } from '@mui/material/SvgIcon';
 import { typographyClasses } from '@mui/material/Typography';
 import { buttonBaseClasses } from '@mui/material/ButtonBase';
 import { chipClasses } from '@mui/material/Chip';
-import { iconButtonClasses } from '@mui/material/IconButton';
-import { gray, red, green } from '../themePrimitives';
+import { gray, red, green, brand, ink, orange } from '../themePrimitives';
 
 export const dataDisplayCustomizations: Components<Theme> = {
   MuiList: {
@@ -104,6 +103,9 @@ export const dataDisplayCustomizations: Components<Theme> = {
             style: {
               borderColor: gray[200],
               backgroundColor: gray[100],
+              '&.MuiChip-clickable:hover': {
+                backgroundColor: gray[200],
+              },
               [`& .${chipClasses.label}`]: {
                 color: gray[500],
               },
@@ -113,6 +115,7 @@ export const dataDisplayCustomizations: Components<Theme> = {
               ...theme.applyStyles('dark', {
                 borderColor: gray[700],
                 backgroundColor: gray[800],
+                '&.MuiChip-clickable:hover': { backgroundColor: gray[700] },
                 [`& .${chipClasses.label}`]: {
                   color: gray[300],
                 },
@@ -124,11 +127,56 @@ export const dataDisplayCustomizations: Components<Theme> = {
           },
           {
             props: {
+              color: 'primary',
+            },
+            style: {
+              borderColor: brand[200],
+              backgroundColor: brand[50],
+              '&.MuiChip-clickable:hover': {
+                backgroundColor: brand[100],
+              },
+              [`& .${chipClasses.label}`]: { color: brand[700] },
+              [`& .${chipClasses.icon}`]: { color: brand[700] },
+              ...theme.applyStyles('dark', {
+                borderColor: ink[600],
+                backgroundColor: ink[800],
+                '&.MuiChip-clickable:hover': { backgroundColor: ink[700] },
+                [`& .${chipClasses.label}`]: { color: brand[200] },
+                [`& .${chipClasses.icon}`]: { color: brand[200] },
+              }),
+            },
+          },
+          {
+            props: {
+              color: 'secondary',
+            },
+            style: {
+              borderColor: orange[200],
+              backgroundColor: orange[50],
+              '&.MuiChip-clickable:hover': {
+                backgroundColor: orange[100],
+              },
+              [`& .${chipClasses.label}`]: { color: orange[700] },
+              [`& .${chipClasses.icon}`]: { color: orange[700] },
+              ...theme.applyStyles('dark', {
+                borderColor: orange[800],
+                backgroundColor: 'hsla(25, 90%, 20%, 0.5)',
+                '&.MuiChip-clickable:hover': { backgroundColor: 'hsla(25, 90%, 20%, 0.75)' },
+                [`& .${chipClasses.label}`]: { color: orange[300] },
+                [`& .${chipClasses.icon}`]: { color: orange[300] },
+              }),
+            },
+          },
+          {
+            props: {
               color: 'success',
             },
             style: {
               borderColor: green[200],
               backgroundColor: green[50],
+              '&.MuiChip-clickable:hover': {
+                backgroundColor: green[100],
+              },
               [`& .${chipClasses.label}`]: {
                 color: green[500],
               },
@@ -138,6 +186,7 @@ export const dataDisplayCustomizations: Components<Theme> = {
               ...theme.applyStyles('dark', {
                 borderColor: green[800],
                 backgroundColor: green[900],
+                '&.MuiChip-clickable:hover': { backgroundColor: green[800] },
                 [`& .${chipClasses.label}`]: {
                   color: green[300],
                 },
@@ -154,6 +203,9 @@ export const dataDisplayCustomizations: Components<Theme> = {
             style: {
               borderColor: red[100],
               backgroundColor: red[50],
+              '&.MuiChip-clickable:hover': {
+                backgroundColor: red[100],
+              },
               [`& .${chipClasses.label}`]: {
                 color: red[500],
               },
@@ -163,6 +215,7 @@ export const dataDisplayCustomizations: Components<Theme> = {
               ...theme.applyStyles('dark', {
                 borderColor: red[800],
                 backgroundColor: red[900],
+                '&.MuiChip-clickable:hover': { backgroundColor: red[800] },
                 [`& .${chipClasses.label}`]: {
                   color: red[200],
                 },
@@ -194,40 +247,6 @@ export const dataDisplayCustomizations: Components<Theme> = {
           },
         ],
       }),
-    },
-  },
-  MuiTablePagination: {
-    styleOverrides: {
-      root: ({ theme }) => ({
-        [theme.breakpoints.down('sm')]: {
-          overflow: 'hidden',
-          '& .MuiTablePagination-toolbar': {
-            alignItems: 'flex-start',
-            flexWrap: 'wrap',
-            gap: 1,
-            justifyContent: 'flex-end',
-            paddingLeft: 8,
-            paddingRight: 8,
-          },
-          '& .MuiTablePagination-spacer': {
-            display: 'none',
-          },
-          '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows':
-            {
-              margin: 0,
-            },
-        },
-      }),
-      actions: {
-        display: 'flex',
-        gap: 8,
-        marginRight: 6,
-        [`& .${iconButtonClasses.root}`]: {
-          minWidth: 0,
-          width: 36,
-          height: 36,
-        },
-      },
     },
   },
   MuiTableContainer: {

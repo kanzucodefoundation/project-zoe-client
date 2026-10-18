@@ -371,7 +371,7 @@ const Reports = () => {
 
   if (loadingReports) {
     return (
-      <Container maxWidth="lg">
+      <Container>
         <Typography variant="h4" gutterBottom>Loading Reports...</Typography>
       </Container>
     );
@@ -382,7 +382,7 @@ const Reports = () => {
     : loadingSubmissions || submissions.length === 0;
 
   return (
-    <Container maxWidth="lg">
+    <Container>
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={3} flexWrap="wrap" gap={2}>
         <Box>
@@ -391,7 +391,7 @@ const Reports = () => {
             View and manage report submissions
           </Typography>
         </Box>
-        <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap">
+        <Box display="flex" alignItems="stretch" gap={1.5} flexWrap="wrap">
           <FormControl size="small" sx={{ minWidth: 150 }}>
             <Select
               value={dateRange}
@@ -408,7 +408,7 @@ const Reports = () => {
             startIcon={<DownloadIcon />}
             onClick={handleDownload}
             disabled={downloadDisabled}
-            sx={{ textTransform: 'none' }}
+            sx={{ flexShrink: 0 }}
           >
             Download
           </Button>

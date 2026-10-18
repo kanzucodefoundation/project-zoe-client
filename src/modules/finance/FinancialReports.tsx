@@ -10,8 +10,6 @@ import {
   Select,
   MenuItem,
   CircularProgress,
-  Card,
-  CardContent,
   Table,
   TableBody,
   TableCell,
@@ -21,6 +19,9 @@ import {
   Chip,
   Button,
 } from '@mui/material';
+import PageHeader from '../../components/ui/PageHeader';
+import StatCard from '../../components/ui/StatCard';
+import StatGrid from '../../components/ui/StatGrid';
 import {
   PieChart,
   BarChart,
@@ -167,30 +168,29 @@ const FinancialReports = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Container maxWidth="lg">
-        <Box
-        display="flex"
-        flexDirection={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'stretch', sm: 'center' }}
-        gap={2}
-        mb={3}
-      >
-          <Typography variant="h4">Financial Reports</Typography>
-          <Box display="flex" gap={1}>
-            <Button startIcon={<RefreshIcon />} onClick={fetchReports}>
-              Refresh
-            </Button>
-            <Button
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              onClick={handleExport}
-              disabled={exporting}
-            >
-              {exporting ? 'Exporting...' : 'Export CSV'}
-            </Button>
-          </Box>
-        </Box>
+      <Container>
+        <PageHeader
+          title="Financial Reports"
+          actions={
+            <>
+              <Button
+                variant="outlined"
+                startIcon={<RefreshIcon />}
+                onClick={fetchReports}
+              >
+                Refresh
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<DownloadIcon />}
+                onClick={handleExport}
+                disabled={exporting}
+              >
+                {exporting ? 'Exporting...' : 'Export CSV'}
+              </Button>
+            </>
+          }
+        />
 
         {/* Filters */}
         <Paper sx={{ p: 2, mb: 3 }}>
@@ -237,59 +237,38 @@ const FinancialReports = () => {
           </Box>
         ) : (
           <>
-            {/* Summary Cards */}
-            <Grid container spacing={3} mb={3}>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="body2" color="text.secondary">
-                      Total Transactions
-                    </Typography>
-                    <Typography variant="h4">
-                      {reconciliationSummary?.totalTransactions?.toLocaleString() ?? 0}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="body2" color="text.secondary">
-                      Reconciled
-                    </Typography>
-                    <Typography variant="h4" color="success.main">
-                      {reconciliationSummary?.reconciledCount?.toLocaleString() ?? 0}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="body2" color="text.secondary">
-                      Pending
-                    </Typography>
-                    <Typography variant="h4" color="warning.main">
-                      {reconciliationSummary?.pendingCount?.toLocaleString() ?? 0}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="body2" color="text.secondary">
-                      Match Rate
-                    </Typography>
-                    <Typography variant="h4">
-                      {reconciliationSummary?.matchRate
-                        ? `${Math.round(reconciliationSummary.matchRate)}%`
-                        : '0%'}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
+            <StatGrid>
+              <StatCard
+                label="Total transactions"
+                value={
+                  reconciliationSummary?.totalTransactions?.toLocaleString() ??
+                  '0'
+                }
+              />
+              <StatCard
+                label="Reconciled"
+                valueColor="success.main"
+                value={
+                  reconciliationSummary?.reconciledCount?.toLocaleString() ??
+                  '0'
+                }
+              />
+              <StatCard
+                label="Pending"
+                valueColor="warning.main"
+                value={
+                  reconciliationSummary?.pendingCount?.toLocaleString() ?? '0'
+                }
+              />
+              <StatCard
+                label="Match rate"
+                value={
+                  reconciliationSummary?.matchRate
+                    ? `${Math.round(reconciliationSummary.matchRate)}%`
+                    : '0%'
+                }
+              />
+            </StatGrid>
 
             {/* Charts */}
             <Grid container spacing={3} mb={3}>

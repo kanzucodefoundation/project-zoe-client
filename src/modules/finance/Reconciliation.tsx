@@ -37,6 +37,9 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import PageHeader from '../../components/ui/PageHeader';
+import StatCard from '../../components/ui/StatCard';
+import StatGrid from '../../components/ui/StatGrid';
 import {
   Search as SearchIcon,
   CheckCircle as CheckCircleIcon,
@@ -56,8 +59,7 @@ import {
   isSessionExpired,
   post,
   postAsync,
-  put,
-} from '../../utils/ajax';
+  put, serverMessage } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { TransactionStatus } from './types';
 import QuickBooksPostingPanel from './QuickBooksPostingPanel';
@@ -474,7 +476,7 @@ const Reconciliation = () => {
         fetchTransactions();
       },
       (err: any) => {
-        toast.error(err?.message || 'Failed to match transaction');
+        toast.error(serverMessage(err, 'Failed to match transaction'));
         setSaving(false);
       }
     );
@@ -796,71 +798,65 @@ const Reconciliation = () => {
     );
 
   return (
-    <Container maxWidth="lg">
-      <Box
-        display="flex"
-        flexDirection={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'stretch', sm: 'center' }}
-        gap={2}
-        mb={3}
-      >
-        <Typography variant="h4">Reconciliation</Typography>
-        <Stack direction="row" gap={1}>
-          <Button
-            startIcon={
-              autoMatching ? <CircularProgress size={18} /> : <AutoMatchIcon />
-            }
-            variant="contained"
-            onClick={handleRunAutoMatch}
-            disabled={autoMatching}
-          >
-            {autoMatching ? 'Matching…' : 'Run auto-match'}
-          </Button>
-          <Button startIcon={<RefreshIcon />} onClick={() => fetchTransactions()}>
-            Refresh
-          </Button>
-        </Stack>
-      </Box>
+    <Container>
+      <PageHeader
+        title="Reconciliation"
+        actions={
+          <>
+            <Button
+              variant="outlined"
+              startIcon={<RefreshIcon />}
+              onClick={() => fetchTransactions()}
+            >
+              Refresh
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={
+                autoMatching ? (
+                  <CircularProgress size={18} />
+                ) : (
+                  <AutoMatchIcon />
+                )
+              }
+              onClick={handleRunAutoMatch}
+              disabled={autoMatching}
+            >
+              {autoMatching ? 'Matching…' : 'Run auto-match'}
+            </Button>
+          </>
+        }
+      />
 
-      {/* Summary Cards */}
-      <Box display="flex" gap={2} mb={3} flexWrap="wrap">
-        <Paper sx={{ p: 2, flex: '1 1 140px', minWidth: 140 }}>
-          <Typography variant="body2" color="text.secondary">
-            Pending
-          </Typography>
-          <Typography variant="h4" color="warning.main">
-            {pendingCount}
-          </Typography>
-        </Paper>
-        <Paper sx={{ p: 2, flex: '1 1 140px', minWidth: 140 }}>
-          <Typography variant="body2" color="text.secondary">
-            Reconciled
-          </Typography>
-          <Typography variant="h4" color="success.main">
-            {reconciledCount}
-          </Typography>
-        </Paper>
-        <Paper sx={{ p: 2, flex: '1 1 140px', minWidth: 140 }}>
-          <Typography variant="body2" color="text.secondary">
-            Posted
-          </Typography>
-          <Typography variant="h4" color="success.main">
-            {transactions.filter((tx) => tx.accountingPosting?.status === 'POSTED').length}
-          </Typography>
-        </Paper>
-        <Paper sx={{ p: 2, flex: '1 1 140px', minWidth: 140 }}>
-          <Typography variant="body2" color="text.secondary">
-            Match Rate
-          </Typography>
-          <Typography variant="h4">
-            {transactions.length > 0
+      <StatGrid>
+        <StatCard
+          label="Pending"
+          value={pendingCount}
+          valueColor="warning.main"
+        />
+        <StatCard
+          label="Reconciled"
+          value={reconciledCount}
+          valueColor="success.main"
+        />
+        <StatCard
+          label="Posted"
+          valueColor="success.main"
+          value={
+            transactions.filter(
+              (tx) => tx.accountingPosting?.status === 'POSTED',
+            ).length
+          }
+        />
+        <StatCard
+          label="Match rate"
+          value={`${
+            transactions.length > 0
               ? Math.round((reconciledCount / transactions.length) * 100)
-              : 0}
-            %
-          </Typography>
-        </Paper>
-      </Box>
+              : 0
+          }%`}
+        />
+      </StatGrid>
 
       <Paper sx={{ p: 2 }}>
         {/* Filters */}
@@ -1326,7 +1322,6 @@ const Reconciliation = () => {
             page={currentPage}
             onPageChange={(_, next) => setPage(next)}
             rowsPerPage={rowsPerPage}
-            rowsPerPageOptions={[10, 25, 50, 100]}
             onRowsPerPageChange={(e) => {
               setRowsPerPage(parseInt(e.target.value, 10));
               setPage(0);

@@ -118,6 +118,9 @@ export const extractErrorMessageFromData = (data: any = {}) => {
   return undefined;
 };
 
+export const serverMessage = (err: unknown, fallback: string): string =>
+  extractErrorMessageFromData((err as AxiosError)?.response?.data) || fallback;
+
 export const handleError = (err: AxiosError, _res?: AxiosResponse) => {
   const defaultMessage = 'Invalid request, please contact admin';
   const errorData = getErrorData(err);

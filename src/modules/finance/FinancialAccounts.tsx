@@ -26,14 +26,16 @@ import {
   InputLabel,
   Select,
   Alert,
-  Stack,
   List,
   ListItemButton,
   ListItemText,
   Tooltip,
+  Toolbar,
   useMediaQuery,
   useTheme,
+  ListItemIcon,
 } from '@mui/material';
+import PageHeader from '../../components/ui/PageHeader';
 import {
   Add as AddIcon,
   Search as SearchIcon,
@@ -176,7 +178,7 @@ const FinancialAccounts = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg">
+      <Container>
         <Box display="flex" justifyContent="center" py={6}>
           <CircularProgress />
         </Box>
@@ -228,55 +230,55 @@ const FinancialAccounts = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      {/* Header */}
-      <Box
-        display="flex"
-        flexDirection={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'stretch', sm: 'center' }}
-        gap={2}
-        mb={3}
-      >
-        <Typography variant="h4">Financial Accounts</Typography>
-        <Stack direction="row" gap={1}>
-          <Button
-            variant="contained"
-            startIcon={<CloudSyncIcon />}
-            onClick={handleOpenQboDialog}
-          >
-            Add from QuickBooks
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<AddIcon />}
-            onClick={() => setDialogOpen(true)}
-          >
-            Add manually
-          </Button>
-        </Stack>
-      </Box>
+    <Container>
+      <PageHeader
+        title="Financial Accounts"
+        actions={
+          <>
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={() => setDialogOpen(true)}
+            >
+              Add manually
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<CloudSyncIcon />}
+              onClick={handleOpenQboDialog}
+            >
+              Add from QuickBooks
+            </Button>
+          </>
+        }
+      />
 
-      {/* Search */}
-      <Box mb={3}>
-        <TextField
-          placeholder="Search accounts..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          size="small"
-          sx={{ width: { xs: '100%', sm: 300 } }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </Box>
-
-      {/* Accounts Table */}
       <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+        <Toolbar
+          variant="dense"
+          sx={{
+            px: 2,
+            gap: 1,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
+          <TextField
+            placeholder="Search accounts..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            size="small"
+            sx={{ width: { xs: '100%', sm: 300 } }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Toolbar>
+
         <Table sx={{ minWidth: 720 }}>
           <TableHead>
             <TableRow>
@@ -312,7 +314,13 @@ const FinancialAccounts = () => {
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>{account.ownerGroup?.name || '-'}</TableCell>
+                  <TableCell>
+                    {account.ownerGroup?.name || (
+                      <Box component="span" sx={{ color: 'text.disabled' }}>
+                        &mdash;
+                      </Box>
+                    )}
+                  </TableCell>
                   <TableCell>
                     {account.type === 'BANK' && account.metadata?.bankName && (
                       <Typography variant="body2" color="text.secondary">
@@ -355,18 +363,24 @@ const FinancialAccounts = () => {
         onClose={handleMenuClose}
       >
         <MenuItem onClick={handleEdit}>
-          <EditIcon fontSize="small" sx={{ mr: 1 }} />
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
           Edit
         </MenuItem>
         <MenuItem onClick={handleToggleActive}>
           {menuAccount?.isActive ? (
             <>
-              <ToggleOffIcon fontSize="small" sx={{ mr: 1 }} />
+              <ListItemIcon>
+                <ToggleOffIcon fontSize="small" />
+              </ListItemIcon>
               Deactivate
             </>
           ) : (
             <>
-              <ToggleOnIcon fontSize="small" sx={{ mr: 1 }} />
+              <ListItemIcon>
+                <ToggleOnIcon fontSize="small" />
+              </ListItemIcon>
               Activate
             </>
           )}

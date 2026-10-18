@@ -55,10 +55,10 @@ const ComplianceTable = ({ rows, loading, showWeeksMissed = true }: Props) => {
       <Table size="small">
         <TableHead>
           <TableRow sx={{ backgroundColor: 'primary.paper' }}>
-            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>MC Leader</TableCell>
-            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>MC Group</TableCell>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>MC Leader</TableCell>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>MC Group</TableCell>
             {showWeeksMissed && (
-              <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }} align="right">
+              <TableCell sx={{ whiteSpace: 'nowrap' }} align="right">
                 Weeks missed
               </TableCell>
             )}

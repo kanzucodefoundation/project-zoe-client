@@ -8,6 +8,7 @@ import { selectClasses } from '@mui/material/Select';
 import { tabClasses } from '@mui/material/Tab';
 import UnfoldMoreRoundedIcon from '@mui/icons-material/UnfoldMoreRounded';
 import { gray, brand } from '../themePrimitives';
+import { semantic } from '../tokens';
 
 export const navigationCustomizations: Components<Theme> = {
   MuiMenuItem: {
@@ -66,11 +67,11 @@ export const navigationCustomizations: Components<Theme> = {
         borderRadius: (theme.vars || theme).shape.borderRadius,
         border: '1px solid',
         borderColor: gray[200],
-        backgroundColor: (theme.vars || theme).palette.background.paper,
-        boxShadow: `inset 0 1px 0 1px hsla(220, 0%, 100%, 0.6), inset 0 -1px 0 1px hsla(220, 35%, 90%, 0.5)`,
+        backgroundColor: (theme.vars || theme).palette.background.default,
+        boxShadow: 'none',
         '&:hover': {
           borderColor: gray[300],
-          backgroundColor: (theme.vars || theme).palette.background.paper,
+          backgroundColor: (theme.vars || theme).palette.background.default,
           boxShadow: 'none',
         },
         [`&.${selectClasses.focused}`]: {
@@ -84,11 +85,11 @@ export const navigationCustomizations: Components<Theme> = {
         ...theme.applyStyles('dark', {
           borderRadius: (theme.vars || theme).shape.borderRadius,
           borderColor: gray[700],
-          backgroundColor: (theme.vars || theme).palette.background.paper,
-          boxShadow: `inset 0 1px 0 1px ${alpha(gray[700], 0.15)}, inset 0 -1px 0 1px hsla(220, 0%, 0%, 0.7)`,
+          backgroundColor: (theme.vars || theme).palette.background.default,
+          boxShadow: 'none',
           '&:hover': {
             borderColor: alpha(gray[700], 0.7),
-            backgroundColor: (theme.vars || theme).palette.background.paper,
+            backgroundColor: (theme.vars || theme).palette.background.default,
             boxShadow: 'none',
           },
           [`&.${selectClasses.focused}`]: {
@@ -183,11 +184,12 @@ export const navigationCustomizations: Components<Theme> = {
   MuiTab: {
     styleOverrides: {
       root: ({ theme }) => ({
-        padding: '6px 8px',
+        padding: '6px 10px',
         marginBottom: '8px',
         textTransform: 'none',
+        fontWeight: 600,
         minWidth: 'fit-content',
-        minHeight: 'fit-content',
+        minHeight: 40,
         color: (theme.vars || theme).palette.text.secondary,
         borderRadius: (theme.vars || theme).shape.borderRadius,
         border: '1px solid',
@@ -242,15 +244,17 @@ export const navigationCustomizations: Components<Theme> = {
           border: 'none',
           color: (theme.vars || theme).palette.success.main,
         },
+        // `.light` is the subtle wash in this palette, which is translucent
+        // in dark mode and leaves the marker invisible. Solid steps instead.
         ...theme.applyStyles('dark', {
           border: `1px solid ${gray[700]}`,
           '&.Mui-active': {
             border: 'none',
-            color: (theme.vars || theme).palette.primary.light,
+            color: semantic.dark.brandText,
           },
           '&.Mui-completed': {
             border: 'none',
-            color: (theme.vars || theme).palette.success.light,
+            color: semantic.dark.success,
           },
         }),
         variants: [

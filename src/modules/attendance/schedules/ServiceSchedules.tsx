@@ -84,7 +84,7 @@ export default function ServiceSchedules() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 2 }}>
+    <Container>
       <Stack spacing={3}>
         {/* Header */}
         <Stack

@@ -1,14 +1,12 @@
+import PageHeader from '../../components/ui/PageHeader';
 import { useState } from 'react';
 import {
   Container,
   Typography,
   Box,
-  Stack,
   Chip,
   CircularProgress,
   Paper,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../data/store';
@@ -20,8 +18,6 @@ import { TaskStatus, STATUS_LABELS, type Task } from '../../utils/types';
 const ALL_STATUSES = Object.values(TaskStatus) as TaskStatus[];
 
 export default function MyTasks() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const user = useSelector((state: RootState) => state.core.user);
   const [selectedStatuses, setSelectedStatuses] = useState<TaskStatus[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -53,23 +49,16 @@ export default function MyTasks() {
     : ALL_STATUSES.filter((s) => (grouped[s] ?? []).length > 0);
 
   return (
-    <Container
-      maxWidth="md"
-      disableGutters={isMobile}
-      sx={{ px: { xs: 0, sm: 2 } }}
-    >
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        spacing={0.5}
-        mb={{ xs: 1.5, sm: 3 }}
-      >
-        <Typography variant="h4">My Tasks</Typography>
-        <Typography variant="body2" color="text.secondary">
-          {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
-        </Typography>
-      </Stack>
+    <Container>
+      <PageHeader
+        title="My Tasks"
+        meta={
+          <Chip
+            size="small"
+            label={`${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'}`}
+          />
+        }
+      />
 
       <Paper
         variant="outlined"

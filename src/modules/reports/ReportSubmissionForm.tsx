@@ -23,7 +23,10 @@ import {
   DialogContent,
   DialogActions,
   Stack,
+  Paper,
 } from '@mui/material';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import PageHeader from '../../components/ui/PageHeader';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -1226,7 +1229,7 @@ const ReportSubmissionForm = () => {
 
   if (loading || submissionLoading) {
     return (
-      <Container maxWidth="md">
+      <Container>
         <Box
           display="flex"
           justifyContent="center"
@@ -1240,14 +1243,23 @@ const ReportSubmissionForm = () => {
   }
 
   return (
-    <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-        {reportName}
-      </Typography>
+    <Container sx={{ maxWidth: 760, mx: 'auto' }}>
+      <PageHeader
+        title={reportName}
+        actions={
+          <Button
+            startIcon={<ArrowBackRoundedIcon />}
+            onClick={() => navigate(localRoutes.dashboard)}
+            disabled={submitting}
+          >
+            Back
+          </Button>
+        }
+      />
 
-      <Box display="flex" flexDirection="column" gap={3}>
-        {groupChoices.length > 1 && (
-          <FormControl required error={!selectedGroupId}>
+      {groupChoices.length > 1 && (
+        <Paper sx={{ p: { xs: 2, sm: 2.5 }, mb: 2 }}>
+          <FormControl required fullWidth error={!selectedGroupId}>
             <InputLabel>Which group are you submitting for?</InputLabel>
             <Select
               value={selectedGroupId ?? ''}
@@ -1264,34 +1276,70 @@ const ReportSubmissionForm = () => {
               <FormHelperText>Select a group to continue</FormHelperText>
             )}
           </FormControl>
-        )}
+        </Paper>
+      )}
 
-        {reportFields.map((field) => (
-          <Box key={field.name}>{renderField(field)}</Box>
-        ))}
-
-        <Box display="flex" gap={2} mt={2}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={handleSubmit}
-            disabled={submitting}
-            sx={{
-              fontWeight: 'bold',
-            }}
-          >
-            {submitting ? 'Submitting...' : 'Submit Report'}
-          </Button>
-          <Button
-            variant="outlined"
-            size="large"
-            onClick={() => navigate(localRoutes.dashboard)}
-            disabled={submitting}
-          >
-            Cancel
-          </Button>
+      <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+        <Box display="flex" flexDirection="column">
+          {reportFields
+            .map((field) => ({ field, node: renderField(field) }))
+            .filter(({ node }) => Boolean(node))
+            .map(({ field, node }) => (
+              <Box
+                key={field.name}
+                sx={{
+                  py: 2.5,
+                  borderTop: '1px solid',
+                  borderColor: 'divider',
+                  '&:first-of-type': { pt: 0, borderTop: 'none' },
+                  '&:last-of-type': { pb: 0 },
+                }}
+              >
+                {node}
+              </Box>
+            ))}
         </Box>
+      </Paper>
+
+      <Box
+        sx={{
+          position: 'sticky',
+          bottom: 0,
+          mt: 2,
+          py: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: 1,
+          bgcolor: 'background.default',
+          borderTop: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Button
+          onClick={() => navigate(localRoutes.dashboard)}
+          disabled={submitting}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          disabled={submitting}
+          startIcon={
+            submitting ? (
+              <CircularProgress size={16} color="inherit" />
+            ) : undefined
+          }
+        >
+          {submitting
+            ? 'Submitting…'
+            : isEditMode
+              ? 'Save changes'
+              : 'Submit report'}
+        </Button>
       </Box>
+
       {/* Fellowship schedule edit dialog */}
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Dialog

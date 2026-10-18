@@ -8,6 +8,7 @@ import CheckBoxOutlineBlankRoundedIcon from '@mui/icons-material/CheckBoxOutline
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded';
 import { gray, brand } from '../themePrimitives';
+import { semantic } from '../tokens';
 
 
 export const inputsCustomizations: Components<Theme> = {
@@ -409,6 +410,10 @@ export const inputsCustomizations: Components<Theme> = {
         [`&.${outlinedInputClasses.focused}`]: {
           borderColor: brand[400],
           boxShadow: `0 0 0 3px ${alpha(brand[500], 0.1)}`,
+          ...theme.applyStyles('dark', {
+            borderColor: semantic.dark.brandText,
+            boxShadow: `0 0 0 3px ${alpha(semantic.dark.brandText, 0.2)}`,
+          }),
         },
         [`&.${outlinedInputClasses.focused} .${outlinedInputClasses.notchedOutline}`]: {
           borderWidth: 0,
@@ -458,6 +463,7 @@ export const inputsCustomizations: Components<Theme> = {
         color: (theme.vars || theme).palette.text.secondary,
         '&.Mui-focused': {
           color: brand[400],
+          ...theme.applyStyles('dark', { color: semantic.dark.brandText }),
         },
       }),
       outlined: ({ theme }) => ({
