@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import {
   Typography,
   Box,
@@ -20,8 +21,10 @@ import {
   TablePagination,
   Grid,
   Stack,
-  alpha,
+  ListItemIcon,
 } from '@mui/material';
+import StatCard from '../../components/ui/StatCard';
+import StatGrid from '../../components/ui/StatGrid';
 import {
   SendRounded as SendRoundedIcon,
   MoreVertRounded as MoreVertRoundedIcon,
@@ -354,60 +357,20 @@ const Dashboard = () => {
           >
             Sunday Service Metrics ({timeRangeLabel})
           </Typography>
-          <Grid container spacing={2} columns={12} sx={{ mb: 4 }}>
-            {summaryCardsDef.map((card) => {
-              const IconComponent = card.icon;
-              return (
-                <Grid key={card.key} size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <Card variant="outlined" sx={{ height: '100%' }}>
-                    <CardContent>
-                      <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="flex-start"
-                        spacing={2}
-                      >
-                        <Box sx={{ flexGrow: 1 }}>
-                          <Typography
-                            variant="subtitle2"
-                            color="text.secondary"
-                            gutterBottom
-                          >
-                            {card.label}
-                          </Typography>
-                          <Typography
-                            variant="h4"
-                            component="p"
-                            sx={{ fontWeight: 600 }}
-                          >
-                            {card.format
-                              ? summaryData[card.key].toLocaleString()
-                              : summaryData[card.key]}
-                          </Typography>
-                        </Box>
-                        <Box
-                          sx={{
-                            width: 48,
-                            height: 48,
-                            borderRadius: '50%',
-                            backgroundColor: (theme) =>
-                              alpha(theme.palette.primary.main, 0.1),
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'primary.paper',
-                            flexShrink: 0,
-                          }}
-                        >
-                          <IconComponent sx={{ fontSize: 28 }} />
-                        </Box>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
+          <StatGrid>
+            {summaryCardsDef.map((card) => (
+              <StatCard
+                key={card.key}
+                label={card.label}
+                icon={card.icon}
+                value={
+                  card.format
+                    ? summaryData[card.key].toLocaleString()
+                    : summaryData[card.key]
+                }
+              />
+            ))}
+          </StatGrid>
 
           {/* PGA Trend & Location Ranking */}
           <Typography
@@ -602,7 +565,12 @@ const Dashboard = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
+        <MenuItem onClick={handleViewDetails}>
+          <ListItemIcon>
+            <VisibilityOutlinedIcon fontSize="small" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
       </Menu>
     </Box>
   );

@@ -4,6 +4,7 @@ import LightModeIcon from '@mui/icons-material/LightModeRounded';
 import Box from '@mui/material/Box';
 import IconButton, {type IconButtonOwnProps } from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
+import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { useColorScheme } from '@mui/material/styles';
 
@@ -44,18 +45,21 @@ export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
   }[resolvedMode];
   return (
     <React.Fragment>
-      <IconButton
-        data-screenshot="toggle-mode"
-        onClick={handleClick}
-        disableRipple
-        size="small"
-        aria-controls={open ? 'color-scheme-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        {...props}
-      >
-        {icon}
-      </IconButton>
+      <Tooltip title={`Appearance: ${resolvedMode === 'dark' ? 'dark' : 'light'}`}>
+        <IconButton
+          data-screenshot="toggle-mode"
+          onClick={handleClick}
+          disableRipple
+          size="small"
+          aria-label="Change appearance"
+          aria-controls={open ? 'color-scheme-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}
+          {...props}
+        >
+          {icon}
+        </IconButton>
+      </Tooltip>
       <Menu
         anchorEl={anchorEl}
         id="account-menu"

@@ -110,9 +110,9 @@ const ManageNotifications = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container>
       <Box display="flex" alignItems="center" gap={1.5} mb={3}>
-        <SmsRoundedIcon color="primary" fontSize="large" />
+        <SmsRoundedIcon fontSize="large" sx={{ color: 'primary.onSurface' }} />
         <Box>
           <Typography variant="h5" fontWeight={600}>
             Manage Notifications

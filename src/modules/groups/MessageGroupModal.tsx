@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { SmsRounded as SmsIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, post } from '../../utils/ajax';
+import { get, post, serverMessage } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 
 interface Props {
@@ -77,7 +77,7 @@ const MessageGroupModal = ({ open, onClose, groupId, groupName }: Props) => {
         onClose();
       },
       (err: any) => {
-        setError(err?.message || 'Failed to send SMS');
+        setError(serverMessage(err, 'Failed to send SMS'));
         setSending(false);
       },
     );

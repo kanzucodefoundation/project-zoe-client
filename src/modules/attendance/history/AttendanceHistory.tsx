@@ -139,12 +139,7 @@ function AttendeeList({ serviceId }: { serviceId: number }) {
         >
           <ListItemAvatar sx={{ minWidth: 44 }}>
             <Avatar
-              sx={{
-                width: 32,
-                height: 32,
-                fontSize: '0.75rem',
-                bgcolor: 'primary.light',
-              }}
+              sx={{ width: 32, height: 32, fontSize: '0.75rem' }}
             >
               {getInitials(a.firstName, a.lastName)}
             </Avatar>
@@ -214,8 +209,15 @@ function InstanceRow({ instance }: { instance: ServiceInstance }) {
 
         <Stack direction="row" spacing={1.5} alignItems="center">
           <Stack direction="row" spacing={0.5} alignItems="center">
-            <PeopleRoundedIcon fontSize="small" color="primary" />
-            <Typography variant="body2" fontWeight={600} color="primary">
+            <PeopleRoundedIcon
+              fontSize="small"
+              sx={{ color: 'primary.onSurface' }}
+            />
+            <Typography
+              variant="body2"
+              fontWeight={600}
+              sx={{ color: 'primary.onSurface' }}
+            >
               {instance.cachedTotalCount}
             </Typography>
           </Stack>
@@ -272,7 +274,7 @@ export default function AttendanceHistory() {
   });
 
   return (
-    <Container maxWidth="md" sx={{ py: 2 }}>
+    <Container>
       <Stack spacing={3}>
         {/* Header */}
         <Box>

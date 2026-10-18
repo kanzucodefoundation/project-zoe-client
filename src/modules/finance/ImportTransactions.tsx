@@ -28,6 +28,7 @@ import {
   AlertTitle,
   LinearProgress,
 } from '@mui/material';
+import PageHeader from '../../components/ui/PageHeader';
 import {
   CloudUpload as CloudUploadIcon,
   CheckCircle as CheckCircleIcon,
@@ -354,7 +355,7 @@ const ImportTransactions = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg">
+      <Container>
         <Box display="flex" justifyContent="center" py={6}>
           <CircularProgress />
         </Box>
@@ -363,10 +364,10 @@ const ImportTransactions = () => {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" mb={3}>
-        Import Transactions
-      </Typography>
+    <Container>
+      <PageHeader
+        title="Import Transactions"
+      />
 
       <Paper sx={{ p: 3 }}>
         <Stepper activeStep={activeStep} sx={{ mb: 4 }}>

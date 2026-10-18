@@ -15,12 +15,8 @@ export default function SidebarHelpButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Need help? Get in touch with us"
-      sx={{
-        textTransform: 'none',
-        fontWeight: 600,
-      }}
     >
-      Contact Support.
+      Contact Support
     </Button>
   );
 }

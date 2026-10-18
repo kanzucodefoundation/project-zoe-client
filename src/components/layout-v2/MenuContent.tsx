@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
+import Tooltip from '@mui/material/Tooltip';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
@@ -9,7 +9,8 @@ import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
-import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
+import Diversity3RoundedIcon from '@mui/icons-material/Diversity3Rounded';
+import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded';
 import AssessmentRoundedIcon from '@mui/icons-material/AssessmentRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import ExpandLessRoundedIcon from '@mui/icons-material/ExpandLessRounded';
@@ -61,7 +62,7 @@ const navItems: NavItem[] = [
   },
   {
     name: 'Groups',
-    icon: <GroupRoundedIcon />,
+    icon: <Diversity3RoundedIcon />,
     path: localRoutes.groups,
     requiredRoles: [appPermissions.roleGroupView, appPermissions.roleGroupEdit],
   },
@@ -142,7 +143,7 @@ const navItems: NavItem[] = [
     children: [
       {
         name: 'Manage Users',
-        icon: <PeopleRoundedIcon />,
+        icon: <ManageAccountsRoundedIcon />,
         path: localRoutes.users,
       },
       {
@@ -155,7 +156,7 @@ const navItems: NavItem[] = [
         icon: <SmsRoundedIcon />,
         path: localRoutes.notifications,
       },
-      // { name: 'Group Categories', icon: <GroupRoundedIcon />, path: localRoutes.groupsCategories },
+      // { name: 'Group Categories', icon: <Diversity3RoundedIcon />, path: localRoutes.groupsCategories },
       // { name: 'Settings', icon: <SettingsRoundedIcon />, path: localRoutes.settings },
     ],
   },
@@ -213,9 +214,14 @@ const navItems: NavItem[] = [
 
 interface MenuContentProps {
   onNavigate?: () => void;
+  /** Icon rail. Labels are carried by tooltips instead. */
+  collapsed?: boolean;
 }
 
-export default function MenuContent({ onNavigate }: MenuContentProps) {
+export default function MenuContent({
+  onNavigate,
+  collapsed = false,
+}: MenuContentProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((state: RootState) => state.core);
@@ -283,111 +289,122 @@ export default function MenuContent({ onNavigate }: MenuContentProps) {
     return activePath === item.path;
   };
 
+  /**
+   * One row. The selected state comes from the theme rather than from here,
+   * so it stays the brand tint everywhere instead of each screen restating it.
+   */
+  const rowSx = (nested: boolean) => ({
+    borderRadius: 1.5,
+    minHeight: { xs: 44, md: 38 },
+    mb: 0.25,
+    px: collapsed ? 0 : 0.75,
+    pl: collapsed || !nested ? undefined : 2.25,
+    justifyContent: collapsed ? 'center' : 'flex-start',
+    color: 'text.secondary',
+    '&:hover': { color: 'text.primary' },
+  });
+
+  const iconSx = {
+    minWidth: collapsed ? 0 : 34,
+    color: 'inherit',
+    justifyContent: 'center',
+    '& svg': { fontSize: 20 },
+  };
+
+  const labelProps = (selected: boolean) => ({
+    fontSize: 14,
+    fontWeight: selected ? 600 : 500,
+    noWrap: true,
+  });
+
+  /** Collapsed rows are glyphs, so the name has to be reachable some way. */
+  const withTooltip = (node: React.ReactElement, label: string) =>
+    collapsed ? (
+      <Tooltip title={label} placement="right">
+        <Box sx={{ display: 'block' }}>{node}</Box>
+      </Tooltip>
+    ) : (
+      node
+    );
+
   const renderNavItem = (item: NavItem, level = 0) => {
     const selected = isSelected(item);
-    const isNested = level > 0;
 
     if (item.children) {
       const isOpen =
-        expandedMenu === item.name || activeParentName === item.name;
+        !collapsed &&
+        (expandedMenu === item.name || activeParentName === item.name);
 
       return (
-        <div key={item.name}>
-          <ListItem disablePadding sx={{ display: 'block', pl: level * 2 }}>
+        <Box component="li" key={item.name} sx={{ listStyle: 'none' }}>
+          {withTooltip(
             <ListItemButton
-              onClick={() => handleMenuToggle(item.name)}
+              // Collapsed there is nowhere to expand into, so the parent goes
+              // straight to its first child rather than doing nothing.
+              onClick={() =>
+                collapsed
+                  ? handleNavigate(item.children![0].path)
+                  : handleMenuToggle(item.name)
+              }
               selected={selected}
-              sx={{
-                py: 1.25,
-                px: 2,
-                minHeight: { xs: 52, md: 48 },
-                '&.Mui-selected': {
-                  backgroundColor: 'action.selected',
-                  '&:hover': {
-                    backgroundColor: 'action.selected',
-                  },
-                },
-              }}
+              aria-label={collapsed ? item.name : undefined}
+              sx={rowSx(level > 0)}
             >
-              <ListItemIcon
-                sx={{
-                  color: selected ? 'primary.paper' : 'inherit',
-                  minWidth: 40,
-                  '& svg': {
-                    fontSize: isNested ? 20 : 24,
-                  },
-                }}
-              >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText
-                primary={item.name}
-                primaryTypographyProps={{
-                  fontSize: '0.95rem',
-                  fontWeight: selected ? 600 : 400,
-                }}
-              />
-              <Box sx={{ ml: 'auto' }}>
-                {isOpen ? <ExpandLessRoundedIcon /> : <ExpandMoreRoundedIcon />}
-              </Box>
-            </ListItemButton>
-          </ListItem>
+              <ListItemIcon sx={iconSx}>{item.icon}</ListItemIcon>
+              {!collapsed && (
+                <>
+                  <ListItemText
+                    primary={item.name}
+                    primaryTypographyProps={labelProps(selected)}
+                  />
+                  {isOpen ? (
+                    <ExpandLessRoundedIcon sx={{ fontSize: 18 }} />
+                  ) : (
+                    <ExpandMoreRoundedIcon sx={{ fontSize: 18 }} />
+                  )}
+                </>
+              )}
+            </ListItemButton>,
+            item.name,
+          )}
+
           <Collapse in={isOpen} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {item.children.map((child) => renderNavItem(child, level + 1))}
             </List>
           </Collapse>
-        </div>
+        </Box>
       );
     }
 
     return (
-      <ListItem
-        key={item.name}
-        disablePadding
-        sx={{ display: 'block', pl: level * 2 }}
-      >
-        <ListItemButton
-          selected={selected}
-          onClick={() => handleNavigate(item.path)}
-          sx={{
-            py: 1.25,
-            px: 2,
-            minHeight: { xs: 52, md: 48 },
-            '&.Mui-selected': {
-              backgroundColor: 'action.selected',
-              '&:hover': {
-                backgroundColor: 'action.selected',
-              },
-            },
-          }}
-        >
-          <ListItemIcon
-            sx={{
-              color: selected ? 'primary.main' : 'inherit',
-              minWidth: 40,
-              '& svg': {
-                fontSize: isNested ? 20 : 24,
-              },
-            }}
+      <Box component="li" key={item.name} sx={{ listStyle: 'none' }}>
+        {withTooltip(
+          <ListItemButton
+            selected={selected}
+            onClick={() => handleNavigate(item.path)}
+            aria-label={collapsed ? item.name : undefined}
+            sx={rowSx(level > 0)}
           >
-            {item.icon}
-          </ListItemIcon>
-          <ListItemText
-            primary={item.name}
-            primaryTypographyProps={{
-              fontSize: '0.95rem',
-              fontWeight: selected ? 600 : 400,
-            }}
-          />
-        </ListItemButton>
-      </ListItem>
+            <ListItemIcon sx={iconSx}>{item.icon}</ListItemIcon>
+            {!collapsed && (
+              <ListItemText
+                primary={item.name}
+                primaryTypographyProps={labelProps(selected)}
+              />
+            )}
+          </ListItemButton>,
+          item.name,
+        )}
+      </Box>
     );
   };
 
   return (
-    <Stack sx={{ flexGrow: 1, p: { xs: 1, md: 1.5 } }}>
-      <List>{filteredNavItems.map((item) => renderNavItem(item))}</List>
+    <Stack sx={{ flexGrow: 1, py: 1 }}>
+      <List disablePadding sx={{ px: collapsed ? 0.75 : 1 }}>
+        {filteredNavItems.map((item) => renderNavItem(item))}
+      </List>
     </Stack>
   );
 }

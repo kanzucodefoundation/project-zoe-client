@@ -19,7 +19,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { toast } from 'react-toastify';
-import { get, post, put } from '../../utils/ajax';
+import { get, post, put, serverMessage } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import { AccountType } from './types';
 import type { FinancialAccount, FinancialAccountFormData } from './types';
@@ -146,7 +146,7 @@ const FinancialAccountDialog = ({ open, onClose, onSuccess, editAccount }: Props
           onSuccess();
         },
         (err: any) => {
-          setError(err?.message || 'Failed to update account');
+          setError(serverMessage(err, 'Failed to update account'));
           setSaving(false);
         }
       );
@@ -160,7 +160,7 @@ const FinancialAccountDialog = ({ open, onClose, onSuccess, editAccount }: Props
           onSuccess();
         },
         (err: any) => {
-          setError(err?.message || 'Failed to create account');
+          setError(serverMessage(err, 'Failed to create account'));
           setSaving(false);
         }
       );

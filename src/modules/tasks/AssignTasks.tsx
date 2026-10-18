@@ -1,3 +1,6 @@
+import PageHeader from '../../components/ui/PageHeader';
+import RowActions from '../../components/ui/RowActions';
+import PersonAddAltRoundedIcon from '@mui/icons-material/PersonAddAltRounded';
 import { useState, useMemo } from 'react';
 import {
   Container,
@@ -120,50 +123,34 @@ export default function AssignTasks() {
       : filteredTasks;
 
   return (
-    <Container
-      maxWidth="lg"
-      disableGutters={isMobile}
-      sx={{ px: { xs: 0, sm: 2 } }}
-    >
+    <Container>
       {/* Page header */}
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', sm: 'flex-end' }}
-        spacing={1.5}
-        mb={{ xs: 2, sm: 3 }}
-      >
-        <Box>
-          <Typography variant="h4" fontWeight={700}>
-            Assign Tasks
-          </Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>
-            Manage and assign tasks to your team members.
-          </Typography>
-        </Box>
-
-        <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel id="date-range-label">Date Range</InputLabel>
-          <Select
-            labelId="date-range-label"
-            label="Date Range"
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value as DateRange)}
-            startAdornment={
-              <CalendarTodayIcon
-                fontSize="small"
-                sx={{ mr: 0.75, color: 'text.secondary' }}
-              />
-            }
-          >
-            {(Object.keys(DATE_RANGE_LABELS) as DateRange[]).map((key) => (
-              <MenuItem key={key} value={key}>
-                {DATE_RANGE_LABELS[key]}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Stack>
+      <PageHeader
+        title="Assign Tasks"
+        actions={
+          <FormControl size="small" sx={{ minWidth: 160 }}>
+            <InputLabel id="date-range-label">Date Range</InputLabel>
+            <Select
+              labelId="date-range-label"
+              label="Date Range"
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value as DateRange)}
+              startAdornment={
+                <CalendarTodayIcon
+                  fontSize="small"
+                  sx={{ mr: 0.75, color: 'text.secondary' }}
+                />
+              }
+            >
+              {(Object.keys(DATE_RANGE_LABELS) as DateRange[]).map((key) => (
+                <MenuItem key={key} value={key}>
+                  {DATE_RANGE_LABELS[key]}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        }
+      />
 
       {isLoading ? (
         <Box display="flex" justifyContent="center" py={6}>
@@ -341,22 +328,17 @@ function DesktopTable({
                 </TableCell>
 
                 <TableCell align="right">
-                  <Tooltip
-                    title={closed ? 'Task is closed' : ''}
-                    placement="left"
-                  >
-                    <span>
-                      <Button
-                        size="small"
-                        color="primary"
-                        onClick={() => onAssign(task)}
-                        disabled={closed}
-                        sx={{ fontWeight: 600, minWidth: 'unset' }}
-                      >
-                        Assign
-                      </Button>
-                    </span>
-                  </Tooltip>
+                  <RowActions
+                    subject={task.title ?? undefined}
+                    actions={[
+                      {
+                        label: closed ? 'Assign (task is closed)' : 'Assign',
+                        icon: <PersonAddAltRoundedIcon fontSize="small" />,
+                        disabled: closed,
+                        onClick: () => onAssign(task),
+                      },
+                    ]}
+                  />
                 </TableCell>
               </TableRow>
             );

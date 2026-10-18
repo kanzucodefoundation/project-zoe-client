@@ -20,10 +20,11 @@ import {
   TextField,
   IconButton,
   Collapse,
-  Alert,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import PageHeader from '../../components/ui/PageHeader';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import {
   Add as AddIcon,
   ExpandMore as ExpandMoreIcon,
@@ -37,7 +38,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import type { Dayjs } from 'dayjs';
 import { toast } from 'react-toastify';
-import { get, post } from '../../utils/ajax';
+import { get, post, serverMessage } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import type { DistributionBatch, Distribution, BatchStatus } from './types';
 
@@ -85,6 +86,7 @@ const Distributions = () => {
   >({});
   const [loadingDetail, setLoadingDetail] = useState<number | null>(null);
   const [executingId, setExecutingId] = useState<number | null>(null);
+  const [batchToExecute, setBatchToExecute] = useState<number | null>(null);
 
   // Create dialog
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -140,7 +142,7 @@ const Distributions = () => {
         fetchBatches();
       },
       (err: any) => {
-        toast.error(err?.message || 'Failed to create batch');
+        toast.error(serverMessage(err, 'Failed to create batch'));
         setCreating(false);
       }
     );
@@ -175,10 +177,7 @@ const Distributions = () => {
   };
 
   const handleExecute = (batchId: number) => {
-    if (!window.confirm('Are you sure you want to execute this distribution? This action cannot be undone.')) {
-      return;
-    }
-
+    setBatchToExecute(null);
     setExecutingId(batchId);
     post(
       `${remoteRoutes.financialDistributions}/batches/${batchId}/execute`,
@@ -229,7 +228,7 @@ const Distributions = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg">
+      <Container>
         <Box display="flex" justifyContent="center" py={6}>
           <CircularProgress />
         </Box>
@@ -239,31 +238,20 @@ const Distributions = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Container maxWidth="lg">
-        <Box
-        display="flex"
-        flexDirection={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'stretch', sm: 'center' }}
-        gap={2}
-        mb={3}
-      >
-          <Typography variant="h4">Distributions</Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setCreateDialogOpen(true)}
-          >
-            Create Distribution
-          </Button>
-        </Box>
+      <Container>
+        <PageHeader
+          title="Distributions"
+          actions={
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setCreateDialogOpen(true)}
+            >
+              Create Distribution
+            </Button>
+          }
+        />
 
-        <Alert severity="info" sx={{ mb: 3 }}>
-          Distributions calculate how reconciled funds should be allocated based on category rules
-          (e.g., 10% of tithes to headquarters, 90% to local church).
-        </Alert>
-
-        {/* Batches List */}
         {batches.length === 0 ? (
           <Paper sx={{ p: 4, textAlign: 'center' }}>
             <Typography color="text.secondary">
@@ -279,7 +267,7 @@ const Distributions = () => {
                   display="flex"
                   alignItems="center"
                   p={2}
-                  sx={{ cursor: 'pointer' }}
+                  sx={{ cursor: 'pointer', flexWrap: 'wrap' }}
                   onClick={() => toggleExpand(batch.id)}
                 >
                   <IconButton size="small">
@@ -305,6 +293,7 @@ const Distributions = () => {
                     {batch.status === 'DRAFT' && (
                       <Button
                         size="small"
+                        variant="contained"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSubmitForApproval(batch.id);
@@ -316,7 +305,8 @@ const Distributions = () => {
                     {batch.status === 'PENDING_APPROVAL' && (
                       <Button
                         size="small"
-                        color="success"
+                        variant="contained"
+                        startIcon={<CheckCircleIcon />}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleApprove(batch.id);
@@ -493,6 +483,15 @@ const Distributions = () => {
             </Button>
           </DialogActions>
         </Dialog>
+      <ConfirmDialog
+        open={batchToExecute !== null}
+        title="Execute distribution"
+        message="Funds are allocated according to the category rules. This cannot be undone."
+        confirmLabel="Execute"
+        onConfirm={() => batchToExecute !== null && handleExecute(batchToExecute)}
+        onClose={() => setBatchToExecute(null)}
+      />
+
       </Container>
     </LocalizationProvider>
   );

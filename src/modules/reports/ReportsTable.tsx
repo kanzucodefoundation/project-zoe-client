@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import {
   Table,
   TableBody,
@@ -13,6 +15,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  ListItemIcon,
 } from '@mui/material';
 import { MoreVert as MoreVertIcon } from '@mui/icons-material';
 import type { Column, SubmissionRow } from '../../utils/types';
@@ -93,18 +96,18 @@ const ReportsTable = ({ columns, data, loading, onRowClick, onEditClick }: Props
             {columns.map((col) => (
               <TableCell
                 key={col.name}
-                sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                sx={{ whiteSpace: 'nowrap' }}
               >
                 {col.label}
               </TableCell>
             ))}
-            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>
               Submitted By
             </TableCell>
-            <TableCell sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
+            <TableCell sx={{ whiteSpace: 'nowrap' }}>
               Submitted At
             </TableCell>
-            <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+            <TableCell align="right" >
               Actions
             </TableCell>
           </TableRow>
@@ -149,9 +152,19 @@ const ReportsTable = ({ columns, data, loading, onRowClick, onEditClick }: Props
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
+        <MenuItem onClick={handleViewDetails}>
+          <ListItemIcon>
+            <VisibilityOutlinedIcon fontSize="small" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
         {selectedRow?.canEdit && (
-          <MenuItem onClick={handleEdit}>Edit</MenuItem>
+          <MenuItem onClick={handleEdit}>
+            <ListItemIcon>
+              <EditOutlinedIcon fontSize="small" />
+            </ListItemIcon>
+            Edit
+          </MenuItem>
         )}
       </Menu>
     </TableContainer>

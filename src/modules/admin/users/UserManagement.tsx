@@ -14,7 +14,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -40,6 +39,8 @@ import {
   Delete as DeleteIcon,
   Search as SearchIcon,
 } from '@mui/icons-material';
+import RowActions from '../../../components/ui/RowActions';
+import PageHeader from '../../../components/ui/PageHeader';
 import { toast } from 'react-toastify';
 import {
   get,
@@ -607,24 +608,18 @@ const UserManagement = () => {
 
     return (
       <>
-        <Box
-          display="flex"
-          flexDirection={{ xs: 'column', sm: 'row' }}
-          justifyContent={{ xs: 'flex-start', sm: 'space-between' }}
-          alignItems={{ xs: 'stretch', sm: 'center' }}
-          mb={{ xs: 2, sm: 3 }}
-          gap={1.5}
-        >
-          <Typography variant="h5">Users ({users.length})</Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleCreateUser}
-            fullWidth={isMobile}
-          >
-            Add User
-          </Button>
-        </Box>
+        <PageHeader
+          title={`Users (${users.length})`}
+          actions={
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleCreateUser}
+            >
+              Add User
+            </Button>
+          }
+        />
 
         <Box
           display="flex"
@@ -675,7 +670,6 @@ const UserManagement = () => {
                       sx={{
                         width: 44,
                         height: 44,
-                        bgcolor: 'primary.paper',
                         fontSize: '14px',
                       }}
                     >
@@ -729,19 +723,21 @@ const UserManagement = () => {
                     gap={0.5}
                     mt={1}
                   >
-                    <IconButton
-                      onClick={() => handleEditUser(currentUser)}
-                      size="small"
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => handleDeleteUser(currentUser)}
-                      size="small"
-                      color="error"
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
+<RowActions
+                      subject={currentUser.username}
+                      actions={[
+                        {
+                          label: 'Edit',
+                          icon: <EditIcon fontSize="small" />,
+                          onClick: () => handleEditUser(currentUser),
+                        },
+                        {
+                          label: 'Delete',
+                          icon: <DeleteIcon fontSize="small" />,
+                          onClick: () => handleDeleteUser(currentUser),
+                        },
+                      ]}
+                    />
                   </Box>
                 </CardContent>
               </Card>
@@ -766,12 +762,12 @@ const UserManagement = () => {
                       <Box display="flex" alignItems="center" gap={2}>
                         <Avatar
                           src={currentUser.avatar || undefined}
-                          sx={{ bgcolor: 'primary.paper' }}
+                          sx={{ width: 40, height: 40, fontSize: '14px' }}
                         >
                           {getInitials(currentUser)}
                         </Avatar>
                         <Box>
-                          <Typography variant="subtitle2">
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
                             {currentUser.fullName || currentUser.username}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
@@ -811,19 +807,21 @@ const UserManagement = () => {
                         : 'Never'}
                     </TableCell>
                     <TableCell>
-                      <IconButton
-                        onClick={() => handleEditUser(currentUser)}
-                        size="small"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleDeleteUser(currentUser)}
-                        size="small"
-                        color="error"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+<RowActions
+                      subject={currentUser.username}
+                      actions={[
+                        {
+                          label: 'Edit',
+                          icon: <EditIcon fontSize="small" />,
+                          onClick: () => handleEditUser(currentUser),
+                        },
+                        {
+                          label: 'Delete',
+                          icon: <DeleteIcon fontSize="small" />,
+                          onClick: () => handleDeleteUser(currentUser),
+                        },
+                      ]}
+                    />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -847,7 +845,6 @@ const UserManagement = () => {
               setRowsPerPage(parseInt(event.target.value, 10));
               setPage(0);
             }}
-            rowsPerPageOptions={[10, 25, 50, 100]}
           />
         </Box>
 
@@ -901,7 +898,7 @@ const UserManagement = () => {
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                  <Typography variant="subtitle2" >
                     {role.role}
                   </Typography>
                   <Chip
@@ -930,20 +927,22 @@ const UserManagement = () => {
                 </Stack>
 
                 <Box display="flex" justifyContent="flex-end" gap={0.5} mt={1}>
-                  <IconButton
-                    onClick={() => handleEditRoleDialog(role)}
-                    size="small"
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDeleteRole(role)}
-                    size="small"
-                    color="error"
-                    disabled={deletingRoleId === role.id}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
+<RowActions
+                    subject={role.role}
+                    actions={[
+                      {
+                        label: 'Edit',
+                        icon: <EditIcon fontSize="small" />,
+                        onClick: () => handleEditRoleDialog(role),
+                      },
+                      {
+                        label: 'Delete',
+                        icon: <DeleteIcon fontSize="small" />,
+                        disabled: deletingRoleId === role.id,
+                        onClick: () => handleDeleteRole(role),
+                      },
+                    ]}
+                  />
                 </Box>
               </CardContent>
             </Card>
@@ -986,20 +985,22 @@ const UserManagement = () => {
                     </Box>
                   </TableCell>
                   <TableCell>
-                    <IconButton
-                      onClick={() => handleEditRoleDialog(role)}
-                      size="small"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      onClick={() => handleDeleteRole(role)}
-                      size="small"
-                      color="error"
-                      disabled={deletingRoleId === role.id}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+<RowActions
+                    subject={role.role}
+                    actions={[
+                      {
+                        label: 'Edit',
+                        icon: <EditIcon fontSize="small" />,
+                        onClick: () => handleEditRoleDialog(role),
+                      },
+                      {
+                        label: 'Delete',
+                        icon: <DeleteIcon fontSize="small" />,
+                        disabled: deletingRoleId === role.id,
+                        onClick: () => handleDeleteRole(role),
+                      },
+                    ]}
+                  />
                   </TableCell>
                 </TableRow>
               ))}
@@ -1019,11 +1020,7 @@ const UserManagement = () => {
   );
 
   return (
-    <Container
-      maxWidth="lg"
-      disableGutters={isMobile}
-      sx={{ px: { xs: 0, sm: 2 } }}
-    >
+    <Container>
       <Box mb={{ xs: 2, sm: 3 }}>
         <Typography variant="h4" gutterBottom sx={{ px: { xs: 1, sm: 0 } }}>
           User Management
