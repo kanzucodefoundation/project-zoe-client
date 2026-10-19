@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import MenuOpenRoundedIcon from '@mui/icons-material/MenuOpenRounded';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 import { layout } from '../../theme-wh/tokens';
 import NavbarBreadcrumbs from './NavbarBreadcrumbs';
@@ -132,7 +132,10 @@ export default function Header({
                   aria-label="Expand sidebar"
                   size="small"
                 >
-                  <MenuRoundedIcon fontSize="small" />
+                  <MenuOpenRoundedIcon
+                    fontSize="small"
+                    sx={{ transform: 'scaleX(-1)' }}
+                  />
                 </IconButton>
               </Tooltip>
             )}
