@@ -1125,6 +1125,7 @@ const GroupDetails = () => {
           </>
         }
         confirmLabel="Delete"
+        destructive
         busy={deleting}
         onConfirm={handleDelete}
         onClose={() => setConfirmDelete(false)}

@@ -488,6 +488,7 @@ const Distributions = () => {
         title="Execute distribution"
         message="Funds are allocated according to the category rules. This cannot be undone."
         confirmLabel="Execute"
+        destructive
         onConfirm={() => batchToExecute !== null && handleExecute(batchToExecute)}
         onClose={() => setBatchToExecute(null)}
       />

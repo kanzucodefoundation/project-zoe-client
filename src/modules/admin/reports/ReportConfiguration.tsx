@@ -502,6 +502,7 @@ const ReportConfiguration = () => {
           </>
         }
         confirmLabel="Delete"
+        destructive
         onConfirm={handleDeleteReport}
         onClose={() => setReportToDelete(null)}
       />

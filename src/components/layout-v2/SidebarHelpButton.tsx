@@ -14,7 +14,6 @@ export default function SidebarHelpButton() {
       href={HELP_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Want to contact support? Get in touch with us"
     >
       Contact Support
     </Button>

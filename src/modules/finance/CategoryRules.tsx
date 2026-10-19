@@ -532,6 +532,7 @@ const CategoryRules = () => {
           </>
         }
         confirmLabel="Delete"
+        destructive
         busy={deleting}
         onConfirm={handleDelete}
         onClose={() => setRuleToDelete(null)}

@@ -12,6 +12,11 @@ export interface ConfirmDialogProps {
   confirmLabel?: string;
   cancelLabel?: string;
   busy?: boolean;
+  /**
+   * For actions that cannot be undone. Colours the confirm button as an error
+   * and leaves it unfocused, so Enter on an opened dialog cannot commit it.
+   */
+  destructive?: boolean;
   onConfirm: () => void;
   onClose: () => void;
 }
@@ -23,6 +28,7 @@ export default function ConfirmDialog({
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
   busy = false,
+  destructive = false,
   onConfirm,
   onClose,
 }: ConfirmDialogProps) {
@@ -43,10 +49,10 @@ export default function ConfirmDialog({
         </Button>
         <Button
           variant="contained"
-          color="primary"
+          color={destructive ? 'error' : 'primary'}
           onClick={onConfirm}
           disabled={busy}
-          autoFocus
+          autoFocus={!destructive}
         >
           {confirmLabel}
         </Button>

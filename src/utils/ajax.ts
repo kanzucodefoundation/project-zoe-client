@@ -119,8 +119,10 @@ export const extractErrorMessageFromData = (data: any = {}) => {
 };
 
 export const serverMessage = (err: unknown, fallback: string): string => {
+  // Through getErrorData, not response.data directly: the server sometimes
+  // sends the body as a JSON string, and that is the branch which parses it.
   const extracted = extractErrorMessageFromData(
-    (err as AxiosError)?.response?.data,
+    err ? getErrorData(err as AxiosError) : {},
   );
   return firstString(extracted) || fallback;
 };
