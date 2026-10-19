@@ -12,7 +12,6 @@ import {
   TableRow,
   Chip,
   Button,
-  IconButton,
   CircularProgress,
   Dialog,
   DialogTitle,
@@ -25,12 +24,13 @@ import {
   MenuItem,
   FormControlLabel,
   Switch,
-  Alert,
-  Tooltip,
   Autocomplete,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import PageHeader from '../../components/ui/PageHeader';
+import RowActions from '../../components/ui/RowActions';
+import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -38,7 +38,7 @@ import {
   DragIndicator as DragIndicatorIcon,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { get, post, put, del } from '../../utils/ajax';
+import { get, post, put, del, serverMessage } from '../../utils/ajax';
 import { remoteRoutes } from '../../data/constants';
 import type {
   CategoryRule,
@@ -86,6 +86,8 @@ const CategoryRules = () => {
   const [editRule, setEditRule] = useState<CategoryRule | null>(null);
   const [formData, setFormData] = useState<RuleFormData>(initialFormData);
   const [saving, setSaving] = useState(false);
+  const [ruleToDelete, setRuleToDelete] = useState<CategoryRule | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchRules = () => {
     setLoading(true);
@@ -161,8 +163,8 @@ const CategoryRules = () => {
 
     if (editRule) {
       put(
-        `${remoteRoutes.financialCategoryRules}/${editRule.id}`,
-        payload,
+        remoteRoutes.financialCategoryRules,
+        { ...payload, id: editRule.id },
         () => {
           toast.success('Rule updated');
           setSaving(false);
@@ -170,7 +172,7 @@ const CategoryRules = () => {
           fetchRules();
         },
         (err: any) => {
-          toast.error(err?.message || 'Failed to update rule');
+          toast.error(serverMessage(err, 'Failed to update rule'));
           setSaving(false);
         }
       );
@@ -185,31 +187,35 @@ const CategoryRules = () => {
           fetchRules();
         },
         (err: any) => {
-          toast.error(err?.message || 'Failed to create rule');
+          toast.error(serverMessage(err, 'Failed to create rule'));
           setSaving(false);
         }
       );
     }
   };
 
-  const handleDelete = (rule: CategoryRule) => {
-    if (!window.confirm(`Delete rule "${rule.name}"?`)) return;
+  const handleDelete = () => {
+    if (!ruleToDelete) return;
+    setDeleting(true);
 
     del(
-      `${remoteRoutes.financialCategoryRules}/${rule.id}`,
+      `${remoteRoutes.financialCategoryRules}/${ruleToDelete.id}`,
       () => {
         toast.success('Rule deleted');
+        setDeleting(false);
+        setRuleToDelete(null);
         fetchRules();
       },
       () => {
         toast.error('Failed to delete rule');
-      }
+        setDeleting(false);
+      },
     );
   };
 
   const handleToggleActive = (rule: CategoryRule) => {
     put(
-      `${remoteRoutes.financialCategoryRules}/${rule.id}`,
+      remoteRoutes.financialCategoryRules,
       { ...rule, isActive: !rule.isActive },
       () => {
         toast.success(`Rule ${rule.isActive ? 'disabled' : 'enabled'}`);
@@ -259,7 +265,7 @@ const CategoryRules = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg">
+      <Container>
         <Box display="flex" justifyContent="center" py={6}>
           <CircularProgress />
         </Box>
@@ -268,31 +274,20 @@ const CategoryRules = () => {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box
-        display="flex"
-        flexDirection={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'stretch', sm: 'center' }}
-        gap={2}
-        mb={3}
-      >
-        <Typography variant="h4">Category Rules</Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => handleOpenDialog()}
-        >
-          Add Rule
-        </Button>
-      </Box>
+    <Container>
+      <PageHeader
+        title="Category Rules"
+        actions={
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenDialog()}
+          >
+            Add Rule
+          </Button>
+        }
+      />
 
-      <Alert severity="info" sx={{ mb: 3 }}>
-        Category rules automatically classify imported transactions based on conditions like
-        account, keywords, time of day, or day of week. Rules are evaluated in priority order.
-      </Alert>
-
-      {/* Rules Table */}
       <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: 720 }}>
           <TableHead>
@@ -348,20 +343,21 @@ const CategoryRules = () => {
                     />
                   </TableCell>
                   <TableCell align="right">
-                    <Tooltip title="Edit">
-                      <IconButton size="small" onClick={() => handleOpenDialog(rule)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDelete(rule)}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                    <RowActions
+                      subject={rule.name}
+                      actions={[
+                        {
+                          label: 'Edit',
+                          icon: <EditIcon fontSize="small" />,
+                          onClick: () => handleOpenDialog(rule),
+                        },
+                        {
+                          label: 'Delete',
+                          icon: <DeleteIcon fontSize="small" />,
+                          onClick: () => setRuleToDelete(rule),
+                        },
+                      ]}
+                    />
                   </TableCell>
                 </TableRow>
               ))
@@ -526,6 +522,22 @@ const CategoryRules = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <ConfirmDialog
+        open={Boolean(ruleToDelete)}
+        title="Delete rule"
+        message={
+          <>
+            Delete <strong>{ruleToDelete?.name}</strong>? Transactions already
+            categorised by this rule keep their category.
+          </>
+        }
+        confirmLabel="Delete"
+        destructive
+        busy={deleting}
+        onConfirm={handleDelete}
+        onClose={() => setRuleToDelete(null)}
+      />
+
     </Container>
   );
 };

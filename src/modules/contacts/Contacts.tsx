@@ -29,12 +29,15 @@ import {
   Alert,
   useMediaQuery,
   useTheme,
+  ListItemIcon,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Search as SearchIcon,
   CloudUpload as UploadIcon,
   MoreVert as MoreVertIcon,
+  VisibilityOutlined as VisibilityOutlinedIcon,
+  EditOutlined as EditIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { search } from '../../utils/ajax';
@@ -236,7 +239,7 @@ const Contacts = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="lg">
+      <Container>
         <Box display="flex" justifyContent="center" py={6}>
           <CircularProgress />
         </Box>
@@ -245,11 +248,7 @@ const Contacts = () => {
   }
 
   return (
-    <Container
-      maxWidth="lg"
-      disableGutters={isMobile}
-      sx={{ px: { xs: 0, sm: 2 } }}
-    >
+    <Container>
       <Box
         display="flex"
         flexDirection={{ xs: 'column', sm: 'row' }}
@@ -347,7 +346,6 @@ const Contacts = () => {
                         sx={{
                           width: 44,
                           height: 44,
-                          bgcolor: 'primary.paper',
                           fontSize: '14px',
                         }}
                       >
@@ -426,41 +424,41 @@ const Contacts = () => {
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ width: 64, fontWeight: 'bold' }}>
+                    <TableCell sx={{ width: 64 }}>
                       #
                     </TableCell>
                     <TableCell sx={{ width: 56 }}></TableCell>
                     <TableCell
-                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                      sx={{ whiteSpace: 'nowrap' }}
                     >
                       Name
                     </TableCell>
                     <TableCell
-                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                      sx={{ whiteSpace: 'nowrap' }}
                     >
                       Email
                     </TableCell>
                     <TableCell
-                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                      sx={{ whiteSpace: 'nowrap' }}
                     >
                       Phone
                     </TableCell>
                     <TableCell
-                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                      sx={{ whiteSpace: 'nowrap' }}
                     >
                       Group
                     </TableCell>
                     <TableCell
-                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                      sx={{ whiteSpace: 'nowrap' }}
                     >
                       Status
                     </TableCell>
                     <TableCell
-                      sx={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}
+                      sx={{ whiteSpace: 'nowrap' }}
                     >
                       Date of Birth
                     </TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                    <TableCell align="right" >
                       Actions
                     </TableCell>
                   </TableRow>
@@ -484,7 +482,6 @@ const Contacts = () => {
                           sx={{
                             width: 40,
                             height: 40,
-                            bgcolor: 'primary.paper',
                             fontSize: '14px',
                           }}
                         >
@@ -492,7 +489,7 @@ const Contacts = () => {
                         </Avatar>
                       </TableCell>
                       <TableCell
-                        sx={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}
+                        sx={{ whiteSpace: 'nowrap', fontWeight: 600 }}
                       >
                         {contact.name}
                       </TableCell>
@@ -575,8 +572,7 @@ const Contacts = () => {
                 setRowsPerPage(newLimit);
                 setPage(0);
               }}
-              rowsPerPageOptions={[10, 25, 50, 100]}
-            />
+              />
           </Box>
         </>
       )}
@@ -587,8 +583,18 @@ const Contacts = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleViewDetails}>View Details</MenuItem>
-        <MenuItem onClick={handleEdit}>Edit</MenuItem>
+        <MenuItem onClick={handleViewDetails}>
+          <ListItemIcon>
+            <VisibilityOutlinedIcon fontSize="small" />
+          </ListItemIcon>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={handleEdit}>
+          <ListItemIcon>
+            <EditIcon fontSize="small" />
+          </ListItemIcon>
+          Edit
+        </MenuItem>
       </Menu>
 
       {/* New Contact Dialog */}

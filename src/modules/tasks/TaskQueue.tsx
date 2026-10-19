@@ -1,3 +1,4 @@
+import PageHeader from '../../components/ui/PageHeader';
 import { useEffect, useState } from 'react';
 import {
   Container,
@@ -11,14 +12,19 @@ import {
   CircularProgress,
   Paper,
   Pagination,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import {
-  DataGrid,
-  type GridColDef,
-  type GridPaginationModel,
-} from '@mui/x-data-grid';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import RowActions from '../../components/ui/RowActions';
+import { type GridPaginationModel } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import { useLocationScopedTasks, useMyLocationGroups } from './hooks';
 import TaskStatusChip from './TaskStatusChip';
@@ -137,63 +143,18 @@ export default function TaskQueue() {
     setPagination((p) => ({ ...p, page: 0 }));
   };
 
-  const columns: GridColDef[] = [
-    {
-      field: 'title',
-      headerName: 'Task',
-      flex: 1,
-      valueGetter: (_: unknown, row: Task) =>
-        row.title ?? TYPE_LABELS[row.type],
-    },
-    {
-      field: 'status',
-      headerName: 'Status',
-      width: 180,
-      renderCell: ({ row }: { row: Task }) => (
-        <TaskStatusChip status={row.status} />
-      ),
-    },
-    {
-      field: 'assignedTo',
-      headerName: 'Assigned To',
-      width: 150,
-      valueGetter: (_: unknown, row: Task) =>
-        row.assignedTo?.username ?? 'Unassigned',
-    },
-    {
-      field: 'dueAt',
-      headerName: 'Due',
-      width: 130,
-      valueGetter: (_: unknown, row: Task) =>
-        row.dueAt ? dayjs(row.dueAt).format('DD MMM YYYY') : '—',
-    },
-    {
-      field: 'createdAt',
-      headerName: 'Created',
-      width: 130,
-      valueGetter: (_: unknown, row: Task) =>
-        dayjs(row.createdAt).format('DD MMM YYYY'),
-    },
-  ];
 
   return (
-    <Container
-      maxWidth="lg"
-      disableGutters={isMobile}
-      sx={{ px: { xs: 0, md: 2 } }}
-    >
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        spacing={0.5}
-        mb={{ xs: 1.5, sm: 3 }}
-      >
-        <Typography variant="h4">Task Queue</Typography>
-        <Typography variant="body2" color="text.secondary">
-          {total} {total === 1 ? 'task' : 'tasks'}
-        </Typography>
-      </Stack>
+    <Container>
+      <PageHeader
+        title="Task Queue"
+        meta={
+          <Chip
+            size="small"
+            label={`${total} ${total === 1 ? 'task' : 'tasks'}`}
+          />
+        }
+      />
 
       {/* Filters */}
       <Paper
@@ -326,19 +287,91 @@ export default function TaskQueue() {
           )}
         </Stack>
       ) : (
-        <DataGrid
-          rows={tasks}
-          columns={columns}
-          rowCount={total}
-          paginationMode="server"
-          paginationModel={pagination}
-          onPaginationModelChange={setPagination}
-          pageSizeOptions={[10, 20, 50]}
-          onRowClick={({ row }) => setSelectedTask(row as Task)}
-          sx={{ cursor: 'pointer' }}
-          autoHeight
-          disableRowSelectionOnClick
-        />
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 720 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Task</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Assigned To</TableCell>
+                <TableCell>Due</TableCell>
+                <TableCell>Created</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {tasks.length === 0 ? (
+                <TableRow hover={false}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 5 }}>
+                    <Typography color="text.secondary">
+                      No tasks match the current filters.
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                tasks.map((task) => (
+                  <TableRow
+                    key={task.id}
+                    onClick={() => setSelectedTask(task)}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    <TableCell sx={{ fontWeight: 600 }}>
+                      {task.title ?? TYPE_LABELS[task.type]}
+                    </TableCell>
+                    <TableCell>
+                      <TaskStatusChip status={task.status} />
+                    </TableCell>
+                    <TableCell>
+                      {task.assignedTo?.username ?? (
+                        <Box component="span" sx={{ color: 'text.disabled' }}>
+                          Unassigned
+                        </Box>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {task.dueAt ? (
+                        dayjs(task.dueAt).format('DD MMM YYYY')
+                      ) : (
+                        <Box component="span" sx={{ color: 'text.disabled' }}>
+                          &mdash;
+                        </Box>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {dayjs(task.createdAt).format('DD MMM YYYY')}
+                    </TableCell>
+                    <TableCell align="right">
+                      <RowActions
+                        subject={task.title ?? TYPE_LABELS[task.type]}
+                        actions={[
+                          {
+                            label: 'Open task',
+                            icon: <VisibilityOutlinedIcon fontSize="small" />,
+                            onClick: () => setSelectedTask(task),
+                          },
+                        ]}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+
+          <TablePagination
+            component="div"
+            count={total}
+            page={pagination.page}
+            onPageChange={(_, page) =>
+              setPagination((current) => ({ ...current, page }))
+            }
+            rowsPerPageOptions={[10, 20, 50, 100]}
+            rowsPerPage={pagination.pageSize}
+            onRowsPerPageChange={(e) =>
+              setPagination({ page: 0, pageSize: Number(e.target.value) })
+            }
+          />
+        </TableContainer>
       )}
 
       <TaskDrawer

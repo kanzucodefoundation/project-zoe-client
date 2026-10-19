@@ -273,7 +273,7 @@ export default function CheckInScreen() {
   // --- Render ---
 
   return (
-    <Container maxWidth="md" sx={{ py: 2 }}>
+    <Container>
       <Stack spacing={2}>
         {/* Offline banner */}
         <OfflineBanner

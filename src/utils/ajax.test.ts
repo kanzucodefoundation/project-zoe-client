@@ -8,6 +8,7 @@ import {
   handleResponse,
   isTokenExpired,
   getToken,
+  serverMessage,
 } from './ajax';
 import { AUTH_TOKEN_KEY, AUTH_USER_KEY } from '../data/constants';
 
@@ -279,5 +280,49 @@ describe('getToken', () => {
   it('returns the stored token string', () => {
     localStorage.setItem(AUTH_TOKEN_KEY, 'my-test-token');
     expect(getToken()).toBe('my-test-token');
+  });
+});
+
+// ─── serverMessage ───────────────────────────────────────────────────────────
+
+describe('serverMessage', () => {
+  it('returns the message from an object body', () => {
+    const err = makeAxiosError(400, { message: 'Period already closed' });
+    expect(serverMessage(err, 'Failed')).toBe('Period already closed');
+  });
+
+  it('parses a body delivered as a JSON string', () => {
+    const err = makeAxiosError(
+      400,
+      JSON.stringify({ message: 'Period already closed' }),
+    );
+    expect(serverMessage(err, 'Failed')).toBe('Period already closed');
+  });
+
+  it('walks a validation field map down to the first string', () => {
+    const err = makeAxiosError(400, { errors: { name: ['Required'] } });
+    expect(serverMessage(err, 'Failed')).toBe('Required');
+  });
+
+  it('falls back when the body carries no readable message', () => {
+    const err = makeAxiosError(500, {});
+    expect(serverMessage(err, 'Failed to create batch')).toBe(
+      'Failed to create batch',
+    );
+  });
+
+  it('falls back on a plain-text body with nothing to extract', () => {
+    const err = makeAxiosError(502, '<html>Bad Gateway</html>');
+    expect(serverMessage(err, 'Failed')).toBe('Failed');
+  });
+
+  it('falls back for an error with no response at all', () => {
+    expect(serverMessage(makeAxiosError(), 'Failed')).toBe('Failed');
+  });
+
+  it('falls back for a non-Axios throwable', () => {
+    expect(serverMessage(new Error('Token expired'), 'Failed')).toBe('Failed');
+    expect(serverMessage(undefined, 'Failed')).toBe('Failed');
+    expect(serverMessage(null, 'Failed')).toBe('Failed');
   });
 });

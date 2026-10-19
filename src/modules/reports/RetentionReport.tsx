@@ -1,14 +1,12 @@
 import { useState } from 'react';
+import StatCard from '../../components/ui/StatCard';
+import StatGrid from '../../components/ui/StatGrid';
 import {
   Container,
   Typography,
   Box,
   ToggleButtonGroup,
   ToggleButton,
-  Grid,
-  Card,
-  CardContent,
-  Skeleton,
   Button,
   Table,
   TableBody,
@@ -219,7 +217,7 @@ export default function RetentionReport() {
       : '';
 
   return (
-    <Container maxWidth="lg">
+    <Container>
       <Box
         mb={3}
         display="flex"
@@ -270,63 +268,35 @@ export default function RetentionReport() {
 
       {/* Flat summary view: 90days / ytd */}
       {(!data || (!isMonthReport(data) && !isWeekReport(data))) && (
-        <Grid container spacing={3}>
+        <StatGrid>
           {SUMMARY_CARDS.map(({ label, key }) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={key}>
-              <Card sx={{ textAlign: 'center', p: 1 }}>
-                <CardContent>
-                  {isLoading ? (
-                    <Box display="flex" justifyContent="center" mb={1}>
-                      <Skeleton variant="rectangular" width={60} height={60} />
-                    </Box>
-                  ) : (
-                    <Typography variant="h3" fontWeight="bold">
-                      {(data as RetentionSummary)?.[key] ?? 0}
-                    </Typography>
-                  )}
-                  <Typography variant="body2" color="text.secondary">
-                    {label}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+            <StatCard
+              key={key}
+              label={label}
+              loading={isLoading}
+              value={(data as RetentionSummary)?.[key] ?? 0}
+            />
           ))}
-        </Grid>
+        </StatGrid>
       )}
 
       {/* Monthly view: totals cards + breakdown table */}
       {data && isMonthReport(data) && (
         <>
-          <Grid container spacing={3} mb={4}>
+          <StatGrid>
             {MONTH_CARDS.map(({ label, key }) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 1.7 }} key={key}>
-                <Card sx={{ textAlign: 'center', p: 1 }}>
-                  <CardContent>
-                    {isLoading ? (
-                      <Box display="flex" justifyContent="center" mb={1}>
-                        <Skeleton
-                          variant="rectangular"
-                          width={60}
-                          height={60}
-                        />
-                      </Box>
-                    ) : (
-                      <Typography variant="h3" fontWeight="bold">
-                        {
-                          (data.months.find(
-                            (m) => m.month === currentMonthNum,
-                          )?.[key] ?? 0) as number
-                        }
-                      </Typography>
-                    )}
-                    <Typography variant="body2" color="text.secondary">
-                      {label}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <StatCard
+                key={key}
+                label={label}
+                loading={isLoading}
+                value={
+                  (data.months.find((m) => m.month === currentMonthNum)?.[
+                    key
+                  ] ?? 0) as number
+                }
+              />
             ))}
-          </Grid>
+          </StatGrid>
 
           <TableContainer component={Paper} variant="outlined">
             <Table size="small">
@@ -362,36 +332,20 @@ export default function RetentionReport() {
       {/* Weekly view: totals cards + breakdown table */}
       {data && isWeekReport(data) && (
         <>
-          <Grid container spacing={3} mb={4}>
+          <StatGrid>
             {WEEK_CARDS.map(({ label, key }) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 1.7 }} key={key}>
-                <Card sx={{ textAlign: 'center', p: 1 }}>
-                  <CardContent>
-                    {isLoading ? (
-                      <Box display="flex" justifyContent="center" mb={1}>
-                        <Skeleton
-                          variant="rectangular"
-                          width={60}
-                          height={60}
-                        />
-                      </Box>
-                    ) : (
-                      <Typography variant="h3" fontWeight="bold">
-                        {
-                          (data.weeks.find(
-                            (w) => w.weekStart === currentWeekSunday,
-                          )?.[key] ?? 0) as number
-                        }
-                      </Typography>
-                    )}
-                    <Typography variant="body2" color="text.secondary">
-                      {label}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <StatCard
+                key={key}
+                label={label}
+                loading={isLoading}
+                value={
+                  (data.weeks.find((w) => w.weekStart === currentWeekSunday)?.[
+                    key
+                  ] ?? 0) as number
+                }
+              />
             ))}
-          </Grid>
+          </StatGrid>
 
           <TableContainer component={Paper} variant="outlined">
             <Table size="small">

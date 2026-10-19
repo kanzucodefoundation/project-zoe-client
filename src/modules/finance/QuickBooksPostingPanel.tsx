@@ -3,6 +3,7 @@ import {
   Alert,
   AlertTitle,
   Autocomplete,
+  createFilterOptions,
   Box,
   Button,
   Chip,
@@ -99,6 +100,15 @@ interface PostingResult {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+/**
+ * Only this many options are handed to the popup at a time.
+ *
+ * The Autocomplete renders every option it is given, with no virtualisation,
+ * so a company with thousands of customers froze the dropdown for seconds on
+ * open. Typing still searches the whole list; this caps what is drawn.
+ */
+const optionFilter = createFilterOptions<Choice>({ limit: 50 });
 
 /** Sentinel option id meaning "provision this record in QuickBooks instead". */
 const CREATE_NEW = '__create_new__';
@@ -456,6 +466,7 @@ export default function QuickBooksPostingPanel({
                             size="small"
                             fullWidth
                             options={choices}
+                            filterOptions={optionFilter}
                             value={value}
                             getOptionLabel={(o) => o.name}
                             isOptionEqualToValue={(o, v) => o.id === v.id}

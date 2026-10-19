@@ -278,7 +278,7 @@ const Groups = () => {
   const totalGroups = countTotalGroups(groups);
 
   return (
-    <Container maxWidth="lg">
+    <Container>
       {/* Header */}
       <Box
         display="flex"

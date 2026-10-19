@@ -1,45 +1,77 @@
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
+import MenuOpenRoundedIcon from '@mui/icons-material/MenuOpenRounded';
+import { layout } from '../../theme-wh/tokens';
 
-export default function SelectContent() {
+interface SelectContentProps {
+  collapsed?: boolean;
+  onToggleCollapsed?: () => void;
+}
+
+/**
+ * The brand lockup at the head of the rail.
+ *
+ * Sized to the top bar so the mark, the breadcrumb and the page title all sit
+ * on one line across the shell.
+ */
+export default function SelectContent({
+  collapsed = false,
+  onToggleCollapsed,
+}: SelectContentProps) {
   return (
     <Box
       sx={{
-        width: '100%',
-        height: 150,
+        height: layout.topbarHeight,
+        flexShrink: 0,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        background: (theme) =>
-          `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 50%, ${theme.palette.primary.main} 100%)`,
-        backgroundSize: '200% 200%',
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%)',
-          pointerEvents: 'none',
-        },
+        gap: 1,
+        px: collapsed ? 0 : 1.5,
+        justifyContent: collapsed ? 'center' : 'space-between',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
       }}
     >
-      <Typography
-        variant="h5"
-        sx={{
-          color: 'primary.contrastText',
-          fontWeight: 700,
-          letterSpacing: '0.5px',
-          textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        Project Zoe
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+        {/* The initials tile stands in for the wordmark only when there is no
+            room for it; it is not the brand's own mark. */}
+        {collapsed ? (
+          <Avatar
+            variant="rounded"
+            sx={{
+              width: 32,
+              height: 32,
+              flexShrink: 0,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              fontSize: 13,
+              fontWeight: 700,
+            }}
+          >
+            PZ
+          </Avatar>
+        ) : (
+          <Typography variant="h5" noWrap sx={{ lineHeight: 1.25 }}>
+            Project Zoe
+          </Typography>
+        )}
+      </Box>
+
+      {!collapsed && onToggleCollapsed && (
+        <Tooltip title="Collapse sidebar">
+          <IconButton
+            size="small"
+            onClick={onToggleCollapsed}
+            aria-label="Collapse sidebar"
+            sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+          >
+            <MenuOpenRoundedIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      )}
     </Box>
   );
 }

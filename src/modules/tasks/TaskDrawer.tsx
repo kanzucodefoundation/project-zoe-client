@@ -407,8 +407,15 @@ export default function TaskDrawer({
               <TextField
                 size="small"
                 multiline
+                maxRows={5}
                 fullWidth
                 placeholder="Add a comment…"
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    minHeight: 40,
+                    alignItems: 'flex-start',
+                  },
+                }}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 onKeyDown={(e) => {
@@ -424,7 +431,11 @@ export default function TaskDrawer({
                 onClick={handleSendComment}
                 disabled={addComment.isPending || !comment.trim()}
                 fullWidth={isPhone}
-                sx={{ alignSelf: { xs: 'stretch', sm: 'flex-start' } }}
+                sx={{
+                  alignSelf: { xs: 'stretch', sm: 'flex-start' },
+                  height: 40,
+                  flexShrink: 0,
+                }}
               >
                 Send
               </Button>

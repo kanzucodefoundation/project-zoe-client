@@ -33,19 +33,6 @@ function getInitials(firstName: string, lastName: string) {
   return `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase();
 }
 
-function getAvatarColor(id: number) {
-  const colors = [
-    '#1976d2',
-    '#388e3c',
-    '#f57c00',
-    '#7b1fa2',
-    '#c62828',
-    '#0097a7',
-    '#558b2f',
-    '#ad1457',
-  ];
-  return colors[id % colors.length];
-}
 
 interface RosterItemProps {
   canSelect: boolean;
@@ -59,7 +46,6 @@ const RosterItem = memo(
     const { id, firstName, lastName, isCheckedIn, isFirstTimer, isChild } =
       member;
     const initials = getInitials(firstName, lastName);
-    const avatarBg = getAvatarColor(id);
 
     return (
       <ListItem
@@ -83,10 +69,10 @@ const RosterItem = memo(
         }
         sx={{
           bgcolor: isCheckedIn
-            ? 'success.50'
+            ? 'success.light'
             : isSelected
-            ? 'primary.50'
-            : 'transparent',
+              ? 'primary.light'
+              : 'transparent',
           transition: 'background-color 0.15s',
         }}
       >
@@ -103,7 +89,7 @@ const RosterItem = memo(
           <ListItemAvatar>
             <Avatar
               sx={{
-                bgcolor: isCheckedIn ? 'success.main' : avatarBg,
+                ...(isCheckedIn && { bgcolor: 'success.main' }),
                 width: 44,
                 height: 44,
                 fontSize: '0.9rem',
